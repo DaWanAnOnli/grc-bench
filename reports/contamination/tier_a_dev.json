@@ -18,6 +18,179 @@
   }
  },
  "corpora": {
+  "agent_traces": {
+   "any_signal": {
+    "items_flagged": 0,
+    "rate": 0.0
+   },
+   "description": "Qoherent's agent traces of 15-18 Oct (new_data/), all message text",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.7769,
+     "min": 0.7183,
+     "p10": 0.7206,
+     "p25": 0.7243,
+     "p50": 0.7565,
+     "p75": 0.7717,
+     "p90": 0.7725,
+     "p95": 0.7745,
+     "p99": 0.7764
+    },
+    "passages_embedded": 33,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 1854,
+   "n_passages": 171347,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 0,
+    "rate": 0.0,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "1853 traces (1253 tier1 + 600 tier2); the shared system prompt is one document"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "new_data/GRC-Agent_tier1_dataset_v1_toolcalls/tier1_sft_trajectories.jsonl",
+     "sha256": "77d9404ac6c57bf810a2472ad42765ad4f89adbb606ec7e50ccf7cfa7e66d357"
+    },
+    {
+     "path": "new_data/GRC-Agent_tier2_dataset_v1/tier2_sft_trajectories.jsonl",
+     "sha256": "834fd66cf30c3210c16838c4c7d08fff5dcfb7f638cd2e4479dceb243add0a51"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.3095,
+     "min": 0.1961,
+     "p10": 0.1981,
+     "p25": 0.2115,
+     "p50": 0.2469,
+     "p75": 0.2833,
+     "p90": 0.2923,
+     "p95": 0.3002,
+     "p99": 0.3076
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "tier1/t1_addwire_blocks_complex_to_magphase_in0",
+     "doc_ref": "t1_addwire_blocks_complex_to_magphase_in0",
+     "embed": 0.7769,
+     "item": "The open flowgraph simulates a Rayleigh fading channel at 48 kHz: complex Gaussian noise with an RMS magnitude of 0.8 is throttled and its magnitude is written…",
+     "item_id": "gba-dev-07",
+     "ngram_shared": 0,
+     "tfidf": 0.2498,
+     "training": "port_id\": \"0\", \"dtype\": \"float\", \"domain\": \"stream\"}, {\"port_id\": \"1\", \"dtype\": \"float\", \"domain\": \"stream\"}], \"doc\": \"Convert a stream of gr_complex to magnitude and phase (both floats)\\n\\noutput[0] is the magnitude output[1] is the phase…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.7726,
+     "item": "The open flowgraph is a test bench for an upper-sideband (USB) transmitter: a two-tone audio signal (700 Hz with amplitude 0.4 and 2.4 kHz with amplitude 0.25)…",
+     "item_id": "gba-dev-05",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier2/t2_build_analog_rail_ff_to_analog_ctcss_squelch_ff",
+     "doc_ref": "t2_build_analog_rail_ff_to_analog_ctcss_squelch_ff",
+     "embed": 0.7719,
+     "item": "The open flowgraph models an amplifier that saturates: Gaussian noise with a standard deviation of 0.4 goes through a limiter (the Rail block) that clips at -0…",
+     "item_id": "gba-dev-06",
+     "ngram_shared": 0,
+     "tfidf": 0.1961,
+     "training": "real]=\"}, \"inputs\": [{\"port_id\": \"0\", \"dtype\": \"float\", \"domain\": \"stream\"}], \"outputs\": [{\"port_id\": \"0\", \"dtype\": \"float\", \"domain\": \"stream\"}], \"doc\": \"clips input values to min, max\\n\\nConstructor Specific Documentation:\\n\\nBuild a rai…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.7716,
+     "item": "Build a new flowgraph at a sample rate of 48 kHz that makes a band of noise centred on 10 kHz: generate complex Gaussian noise with amplitude 0.5, low-pass fil…",
+     "item_id": "gba-dev-01",
+     "ngram_shared": 0,
+     "tfidf": 0.2384,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier1/t1_topo_blocks_correctiq_auto_disable",
+     "doc_ref": "t1_topo_blocks_correctiq_auto_disable",
+     "embed": 0.7691,
+     "item": "The open flowgraph should mix a 10.7 kHz test signal (amplitude 0.8) down with an 8.7 kHz local oscillator at a sample rate of 48 kHz, low-pass filter the prod…",
+     "item_id": "gba-dev-03",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Multiply** block into the flowgraph and connect it such that it accepts the outputs from **Low Pass Filter** and **Signal Source** :\\n[](https://wiki.gnuradio.org/index.php?title=File:Frequency_shifting_flowgraph_multiply.png)\\n\\nThe multi…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.7587,
+     "item": "Build a new flowgraph at a sample rate of 48 kHz that tests DC removal: make float Gaussian noise with amplitude 0.2, add a constant offset of 0.5, throttle it…",
+     "item_id": "gba-dev-02",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier2/t2_build_blocks_vector_to_streams_to_analog_agc2_xx",
+     "doc_ref": "t2_build_blocks_vector_to_streams_to_analog_agc2_xx",
+     "embed": 0.7542,
+     "item": "Generate the Python code of the open flowgraph into a new folder named export, as export/stream_mux_demo.py, and write a JSON file mux.json in the project fold…",
+     "item_id": "gba-dev-10",
+     "ngram_shared": 0,
+     "tfidf": 0.2681,
+     "training": "n\\nArgs:\\n itemsize : the item size of the stream\\n lengths : a vector (list/tuple) specifying the number of items to copy to each output stream.\"}, {\"block_id\": \"blocks_stream_mux\", \"label\": \"Stream Mux\", \"category\": \"Core > Stream Operat…"
+    },
+    {
+     "doc_id": "tier2/t2_rewire_blocks_complex_to_magphase",
+     "doc_ref": "t2_rewire_blocks_complex_to_magphase",
+     "embed": 0.7482,
+     "item": "The open flowgraph takes the magnitude of complex noise with an Embedded Python block. Save that Embedded Python block to the block library as a reusable block…",
+     "item_id": "gba-dev-09",
+     "ngram_shared": 0,
+     "tfidf": 0.2855,
+     "training": "port_id\": \"1\", \"dtype\": \"float\", \"domain\": \"stream\"}], \"doc\": \"Convert a stream of gr_complex to magnitude and phase (both floats)\\n\\noutput[0] is the magnitude output[1] is the phase (in radians)\\n\\nConstructor Specific Documentation:\\n\\n…"
+    },
+    {
+     "doc_id": "tier1/t1_topo_dtv_catv_frame_sync_enc_bb_disable",
+     "doc_ref": "t1_topo_dtv_catv_frame_sync_enc_bb_disable",
+     "embed": 0.7244,
+     "item": "Without changing the open flowgraph, tell me three things about it: how many bits the quantizer uses, the frequency of the test signal in Hz, and the noise lev…",
+     "item_id": "gba-dev-08",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "nQuestions :\\n * If we do not account for the multiplier, what type of signal will generate the second part of this flowgraph (at the throttle output)?\\n * What is the effect the multiplier (source is at 25 Khz which is 1/4 of the sampling…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_dtv_dvbt_reed_solomon_dec_in0",
+     "doc_ref": "t1_addwire_dtv_dvbt_reed_solomon_dec_in0",
+     "embed": 0.7238,
+     "item": "Run the open flowgraph for about two seconds, then look at the samples it wrote to limited.dat and tell me the level at which the limiter clips the positive pe…",
+     "item_id": "gba-dev-11",
+     "ngram_shared": 0,
+     "tfidf": 0.2032,
+     "training": "with a probe. But this is a simple wiring task. Let me do a quick bounded run to confirm validity at runtime. Note: null source producing 1632-byte items, decoder processes blocks of 8... it may work. Let's run for a few seconds. run_flowg…"
+    }
+   ]
+  },
   "repaired": {
    "any_signal": {
     "items_flagged": 0,

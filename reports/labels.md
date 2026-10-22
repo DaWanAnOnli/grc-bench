@@ -126,7 +126,7 @@ Eval plan §4.2: results are reported by cleaned label only, and no group with f
 
 - **Proposal: merge into `design`** and report one group "design + gnuradio_usage" (50 test items). Reason: both are about building and configuring a system: choosing blocks, parameters and methods. Most of the test items read 'how would you implement / configure X'.
 - **Lexical check (agrees):** on the training questions only, the TF-IDF centroid of `gnuradio_usage` is closest to `design` (cosine 0.671). `design` 0.671, `reasoning` 0.593, `factual` 0.580, `diagnosis` 0.572, `calculation` 0.368.
-- **Alternative A (no merge):** Tier K v1.0 adds about 100 block-catalog questions (eval plan §4.2; WS3b), all about GNU Radio blocks, ports, types and rates, which is the gnuradio_usage definition. If the group rule is applied to Tier K as a whole (285 items) rather than to the 185 frozen questions, `gnuradio_usage` has about 111 items and needs no merge. GRC-Agent needs this skill most (Data Summary §6), so keeping it visible is worth considering.
+- **Alternative A (no merge):** Tier K v1.0 adds 100 GNU Radio behaviour questions (eval plan §4.2; WS3b), all about what GNU Radio blocks do to a stream, which is the gnuradio_usage definition. If the group rule is applied to Tier K as a whole (285 items) rather than to the 185 frozen questions, `gnuradio_usage` has about 111 items and needs no merge. GRC-Agent needs this skill most (Data Summary §6), so keeping it visible is worth considering.
 - **Alternative B:** merge into `factual` if the team sees the frozen usage questions as procedural recall. That would conflict with reporting factual recall separately (next section).
 - Note for the decision: several of the frozen `gnuradio_usage` test items are not about GNU Radio itself (USRP VM setup, Python implementations, Phaser). They were labelled that way by the generator, and the rule map keeps that label.
 
@@ -145,10 +145,10 @@ Lexical similarity between all clean types (TF-IDF centroids over the training q
 
 Proposal §5.1 and eval plan §4.2 report factual recall and reasoning separately, because looped models such as Nanbeige4.2 may trade recall for reasoning [14]. Proposed mapping, **for team decision; to be fixed in the G2 pre-registration before any test run**:
 
-- **Recall:** `factual` (30 test items), plus the WS3b block-catalog questions, whose answers are block properties read from the YAML (pure recall).
-- **Reasoning:** `reasoning`, `calculation`, `design` and `diagnosis` (144 test items).
+- **Recall:** `factual` (30 test items).
+- **Reasoning:** `reasoning`, `calculation`, `design` and `diagnosis` (144 test items), plus the WS3b GNU Radio behaviour questions, whose answers combine knowing what a block does with a short computation on the stated input.
 - **`gnuradio_usage` (11 frozen test items):** put them in the reasoning family, in line with the merge into `design` proposed above (they ask how to implement or configure something). The alternative is to leave them out of the two-way split.
-- The split goes by item, not only by task type: a block-catalog question counts as recall even if its task_type is `gnuradio_usage`.
+- The split goes by item, not only by task type: a behaviour question counts as reasoning whatever its task_type.
 - The recall group is much smaller than the reasoning group (30 vs 155 frozen items), so its intervals are wider. Print the MDE beside it (eval plan §9).
 
 ## Team review

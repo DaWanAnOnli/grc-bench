@@ -23,6 +23,7 @@ Every benchmark tier is compared with every training-side corpus:
 | repaired_glm | 3,042 | 55,753 | 3042 repaired answers; 423 rows for dev questions dropped |
 | sft_sessions | 32 | 60,828 | 32 sessions (12 sft_train + 20 quarantine); system prompt included |
 | task_specs | 62 | 75 | 62 goals; grc_agent_scenario 15, qoherent_collection_task 15, sft_quarantined_session 20, sft_trainable_session 12 |
+| agent_traces | 1,854 | 171,347 | 1853 traces (1253 tier1 + 600 tier2); the shared system prompt is one document |
 
 ## Method and thresholds
 
@@ -43,24 +44,26 @@ Every benchmark tier is compared with every training-side corpus:
 
 | Training corpus | 8-gram twin | 8-gram ≥ 50% | TF-IDF ≥ thr (lexical) | Embedding ≥ thr | Any signal |
 |---|---:|---:|---:|---:|---:|
-| train_questions | 26 (9.1%) | 0 (0.0%) | 43 (15.1%) | 37 (13.0%) | 66 (23.2%) |
-| teacher_answers | 30 (10.5%) | 0 (0.0%) | 17 (6.0%) | 10 (3.5%) | 41 (14.4%) |
-| repaired | 5 (1.8%) | 0 (0.0%) | 0 (0.0%) | 2 (0.7%) | 6 (2.1%) |
-| repaired_glm | 5 (1.8%) | 0 (0.0%) | 0 (0.0%) | 2 (0.7%) | 6 (2.1%) |
-| sft_sessions | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| train_questions | 27 (9.5%) | 0 (0.0%) | 43 (15.1%) | 37 (13.0%) | 67 (23.5%) |
+| teacher_answers | 49 (17.2%) | 0 (0.0%) | 17 (6.0%) | 10 (3.5%) | 60 (21.1%) |
+| repaired | 23 (8.1%) | 0 (0.0%) | 0 (0.0%) | 2 (0.7%) | 24 (8.4%) |
+| repaired_glm | 23 (8.1%) | 0 (0.0%) | 0 (0.0%) | 2 (0.7%) | 24 (8.4%) |
+| sft_sessions | 6 (2.1%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 6 (2.1%) |
 | task_specs | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
-| **all corpora** | 30 (10.5%) | | 45 (15.8%) | 38 (13.3%) | **68 (23.9%)** |
+| agent_traces | 5 (1.8%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 5 (1.8%) |
+| **all corpora** | 50 (17.5%) | | 45 (15.8%) | 38 (13.3%) | **88 (30.9%)** |
 
 Distribution of each item's maximum cosine (quantiles over items):
 
 | Training corpus | TF-IDF p50 | p90 | p99 | max | Embedding p50 | p90 | p99 | max | Embedding scope |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| train_questions | 0.315 | 0.596 | 0.790 | 0.920 | 0.807 | 0.896 | 0.954 | 0.987 | all passages |
-| teacher_answers | 0.337 | 0.515 | 0.662 | 0.752 | 0.805 | 0.855 | 0.905 | 0.943 | TF-IDF candidates |
-| repaired | 0.258 | 0.377 | 0.482 | 0.509 | 0.771 | 0.824 | 0.869 | 0.891 | TF-IDF candidates |
-| repaired_glm | 0.261 | 0.379 | 0.497 | 0.503 | 0.767 | 0.824 | 0.859 | 0.891 | TF-IDF candidates |
-| sft_sessions | 0.232 | 0.321 | 0.441 | 0.475 | 0.746 | 0.787 | 0.831 | 0.867 | TF-IDF candidates |
-| task_specs | 0.148 | 0.206 | 0.272 | 0.334 | 0.673 | 0.723 | 0.780 | 0.790 | all passages |
+| train_questions | 0.344 | 0.596 | 0.790 | 0.920 | 0.805 | 0.896 | 0.954 | 0.987 | all passages |
+| teacher_answers | 0.348 | 0.515 | 0.662 | 0.752 | 0.808 | 0.855 | 0.905 | 0.943 | TF-IDF candidates |
+| repaired | 0.268 | 0.378 | 0.482 | 0.509 | 0.787 | 0.832 | 0.869 | 0.891 | TF-IDF candidates |
+| repaired_glm | 0.272 | 0.378 | 0.497 | 0.503 | 0.783 | 0.832 | 0.872 | 0.891 | TF-IDF candidates |
+| sft_sessions | 0.241 | 0.313 | 0.412 | 0.475 | 0.761 | 0.827 | 0.844 | 0.867 | TF-IDF candidates |
+| task_specs | 0.159 | 0.240 | 0.285 | 0.344 | 0.702 | 0.780 | 0.797 | 0.799 | all passages |
+| agent_traces | 0.257 | 0.361 | 0.479 | 0.507 | 0.755 | 0.818 | 0.846 | 0.879 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 
@@ -72,6 +75,7 @@ Agreement between signals (items flagged by both):
 | repaired_glm | 0 | 1 | 0 | 0 |
 | sft_sessions | 0 | 0 | 0 | 0 |
 | task_specs | 0 | 0 | 0 | 0 |
+| agent_traces | 0 | 0 | 0 | 0 |
 
 Per-item scores: `reports/contamination/tier_k_test_items.jsonl`; top pairs per corpus: `reports/contamination/tier_k_test.json`; flagged pairs for review: `handoff/review_sheets/contamination_tier_k_test.csv`.
 
@@ -85,6 +89,7 @@ Per-item scores: `reports/contamination/tier_k_test_items.jsonl`; top pairs per 
 | repaired_glm | 2 (1.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 2 (1.0%) |
 | sft_sessions | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | task_specs | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| agent_traces | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | **all corpora** | 7 (3.5%) | | 14 (7.0%) | 22 (11.0%) | **33 (16.5%)** |
 
 Distribution of each item's maximum cosine (quantiles over items):
@@ -97,6 +102,7 @@ Distribution of each item's maximum cosine (quantiles over items):
 | repaired_glm | 0.280 | 0.382 | 0.488 | 0.511 | 0.764 | 0.825 | 0.855 | 0.875 | TF-IDF candidates |
 | sft_sessions | 0.206 | 0.277 | 0.358 | 0.451 | 0.728 | 0.778 | 0.810 | 0.820 | TF-IDF candidates |
 | task_specs | 0.122 | 0.193 | 0.285 | 0.332 | 0.663 | 0.718 | 0.771 | 0.799 | all passages |
+| agent_traces | 0.204 | 0.292 | 0.386 | 0.423 | 0.715 | 0.778 | 0.817 | 0.846 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 
@@ -108,6 +114,7 @@ Agreement between signals (items flagged by both):
 | repaired_glm | 0 | 0 | 0 | 0 |
 | sft_sessions | 0 | 0 | 0 | 0 |
 | task_specs | 0 | 0 | 0 | 0 |
+| agent_traces | 0 | 0 | 0 | 0 |
 
 Per-item scores: `reports/contamination/tier_k_dev_items.jsonl`; top pairs per corpus: `reports/contamination/tier_k_dev.json`; flagged pairs for review: `handoff/review_sheets/contamination_tier_k_dev.csv`.
 
@@ -121,6 +128,7 @@ Per-item scores: `reports/contamination/tier_k_dev_items.jsonl`; top pairs per c
 | repaired_glm | 3 (15.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 3 (15.0%) |
 | sft_sessions | 1 (5.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (5.0%) |
 | task_specs | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| agent_traces | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | **all corpora** | 3 (15.0%) | | 0 (0.0%) | 0 (0.0%) | **3 (15.0%)** |
 
 Distribution of each item's maximum cosine (quantiles over items):
@@ -133,6 +141,7 @@ Distribution of each item's maximum cosine (quantiles over items):
 | repaired_glm | 0.252 | 0.274 | 0.299 | 0.300 | 0.818 | 0.841 | 0.860 | 0.863 | TF-IDF candidates |
 | sft_sessions | 0.258 | 0.311 | 0.340 | 0.343 | 0.784 | 0.798 | 0.810 | 0.811 | TF-IDF candidates |
 | task_specs | 0.192 | 0.222 | 0.230 | 0.230 | 0.771 | 0.790 | 0.808 | 0.808 | all passages |
+| agent_traces | 0.214 | 0.243 | 0.308 | 0.319 | 0.800 | 0.820 | 0.829 | 0.830 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 
@@ -144,6 +153,7 @@ Agreement between signals (items flagged by both):
 | repaired_glm | 0 | 0 | 0 | 0 |
 | sft_sessions | 0 | 0 | 0 | 0 |
 | task_specs | 0 | 0 | 0 | 0 |
+| agent_traces | 0 | 0 | 0 | 0 |
 
 Per-item scores: `reports/contamination/tier_f_test_items.jsonl`; top pairs per corpus: `reports/contamination/tier_f_test.json`; flagged pairs for review: `handoff/review_sheets/contamination_tier_f_test.csv`.
 
@@ -157,7 +167,8 @@ Per-item scores: `reports/contamination/tier_f_test_items.jsonl`; top pairs per 
 | repaired_glm | 1 (10.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (10.0%) |
 | sft_sessions | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | task_specs | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
-| **all corpora** | 1 (10.0%) | | 0 (0.0%) | 0 (0.0%) | **1 (10.0%)** |
+| agent_traces | 1 (10.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (10.0%) |
+| **all corpora** | 2 (20.0%) | | 0 (0.0%) | 0 (0.0%) | **2 (20.0%)** |
 
 Distribution of each item's maximum cosine (quantiles over items):
 
@@ -169,6 +180,7 @@ Distribution of each item's maximum cosine (quantiles over items):
 | repaired_glm | 0.235 | 0.297 | 0.390 | 0.400 | 0.793 | 0.822 | 0.828 | 0.829 | TF-IDF candidates |
 | sft_sessions | 0.243 | 0.272 | 0.275 | 0.275 | 0.791 | 0.807 | 0.817 | 0.818 | TF-IDF candidates |
 | task_specs | 0.188 | 0.202 | 0.241 | 0.245 | 0.774 | 0.789 | 0.791 | 0.791 | all passages |
+| agent_traces | 0.220 | 0.261 | 0.278 | 0.279 | 0.763 | 0.780 | 0.790 | 0.791 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 
@@ -180,6 +192,7 @@ Agreement between signals (items flagged by both):
 | repaired_glm | 0 | 0 | 0 | 0 |
 | sft_sessions | 0 | 0 | 0 | 0 |
 | task_specs | 0 | 0 | 0 | 0 |
+| agent_traces | 0 | 0 | 0 | 0 |
 
 Per-item scores: `reports/contamination/tier_f_dev_items.jsonl`; top pairs per corpus: `reports/contamination/tier_f_dev.json`; flagged pairs for review: `handoff/review_sheets/contamination_tier_f_dev.csv`.
 
@@ -193,6 +206,7 @@ Per-item scores: `reports/contamination/tier_f_dev_items.jsonl`; top pairs per c
 | repaired_glm | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | sft_sessions | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | task_specs | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| agent_traces | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | **all corpora** | 0 (0.0%) | | 0 (0.0%) | 0 (0.0%) | **0 (0.0%)** |
 
 Distribution of each item's maximum cosine (quantiles over items):
@@ -205,6 +219,7 @@ Distribution of each item's maximum cosine (quantiles over items):
 | repaired_glm | 0.248 | 0.279 | 0.309 | 0.314 | 0.774 | 0.823 | 0.840 | 0.840 | TF-IDF candidates |
 | sft_sessions | 0.261 | 0.342 | 0.355 | 0.356 | 0.770 | 0.812 | 0.820 | 0.821 | TF-IDF candidates |
 | task_specs | 0.175 | 0.213 | 0.253 | 0.266 | 0.765 | 0.786 | 0.793 | 0.793 | all passages |
+| agent_traces | 0.233 | 0.304 | 0.341 | 0.342 | 0.763 | 0.804 | 0.820 | 0.826 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 
@@ -216,6 +231,7 @@ Agreement between signals (items flagged by both):
 | repaired_glm | 0 | 0 | 0 | 0 |
 | sft_sessions | 0 | 0 | 0 | 0 |
 | task_specs | 0 | 0 | 0 | 0 |
+| agent_traces | 0 | 0 | 0 | 0 |
 
 Per-item scores: `reports/contamination/tier_a_test_items.jsonl`; top pairs per corpus: `reports/contamination/tier_a_test.json`; flagged pairs for review: `handoff/review_sheets/contamination_tier_a_test.csv`.
 
@@ -229,6 +245,7 @@ Per-item scores: `reports/contamination/tier_a_test_items.jsonl`; top pairs per 
 | repaired_glm | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | sft_sessions | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | task_specs | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| agent_traces | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | **all corpora** | 0 (0.0%) | | 0 (0.0%) | 0 (0.0%) | **0 (0.0%)** |
 
 Distribution of each item's maximum cosine (quantiles over items):
@@ -241,6 +258,7 @@ Distribution of each item's maximum cosine (quantiles over items):
 | repaired_glm | 0.224 | 0.276 | 0.288 | 0.289 | 0.779 | 0.798 | 0.819 | 0.821 | TF-IDF candidates |
 | sft_sessions | 0.258 | 0.314 | 0.338 | 0.340 | 0.769 | 0.780 | 0.787 | 0.787 | TF-IDF candidates |
 | task_specs | 0.179 | 0.243 | 0.268 | 0.270 | 0.754 | 0.789 | 0.794 | 0.794 | all passages |
+| agent_traces | 0.247 | 0.292 | 0.308 | 0.309 | 0.756 | 0.772 | 0.776 | 0.777 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 
@@ -252,6 +270,7 @@ Agreement between signals (items flagged by both):
 | repaired_glm | 0 | 0 | 0 | 0 |
 | sft_sessions | 0 | 0 | 0 | 0 |
 | task_specs | 0 | 0 | 0 | 0 |
+| agent_traces | 0 | 0 | 0 | 0 |
 
 Per-item scores: `reports/contamination/tier_a_dev_items.jsonl`; top pairs per corpus: `reports/contamination/tier_a_dev.json`; flagged pairs for review: `handoff/review_sheets/contamination_tier_a_dev.csv`.
 

@@ -1,16 +1,16 @@
 {
  "all_corpora": {
   "any": {
-   "items_flagged": 1,
-   "rate": 0.1
+   "items_flagged": 2,
+   "rate": 0.2
   },
   "embed": {
    "items_flagged": 0,
    "rate": 0.0
   },
   "ngram": {
-   "items_flagged": 1,
-   "rate": 0.1
+   "items_flagged": 2,
+   "rate": 0.2
   },
   "tfidf": {
    "items_flagged": 0,
@@ -18,6 +18,179 @@
   }
  },
  "corpora": {
+  "agent_traces": {
+   "any_signal": {
+    "items_flagged": 1,
+    "rate": 0.1
+   },
+   "description": "Qoherent's agent traces of 15-18 Oct (new_data/), all message text",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.7912,
+     "min": 0.7383,
+     "p10": 0.7406,
+     "p25": 0.749,
+     "p50": 0.7626,
+     "p75": 0.7759,
+     "p90": 0.7801,
+     "p95": 0.7857,
+     "p99": 0.7901
+    },
+    "passages_embedded": 27,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 1854,
+   "n_passages": 171347,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 1,
+    "rate": 0.1,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "1853 traces (1253 tier1 + 600 tier2); the shared system prompt is one document"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "new_data/GRC-Agent_tier1_dataset_v1_toolcalls/tier1_sft_trajectories.jsonl",
+     "sha256": "77d9404ac6c57bf810a2472ad42765ad4f89adbb606ec7e50ccf7cfa7e66d357"
+    },
+    {
+     "path": "new_data/GRC-Agent_tier2_dataset_v1/tier2_sft_trajectories.jsonl",
+     "sha256": "834fd66cf30c3210c16838c4c7d08fff5dcfb7f638cd2e4479dceb243add0a51"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.2793,
+     "min": 0.1915,
+     "p10": 0.1993,
+     "p25": 0.2064,
+     "p50": 0.2198,
+     "p75": 0.2429,
+     "p90": 0.261,
+     "p95": 0.2702,
+     "p99": 0.2775
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.7912,
+     "item": "This flowgraph is a heterodyne mixer that converts a radio-frequency (RF) test carrier down to an intermediate frequency (IF). It runs at a sample rate of 48 k…",
+     "item_id": "gbf-dev-04",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier2/t2_correct_analog_rail_ff",
+     "doc_ref": "t2_correct_analog_rail_ff",
+     "embed": 0.7789,
+     "item": "This flowgraph models an amplifier that saturates: Gaussian noise goes through a limiter (the Rail block), and two File Sinks record the noise entering the lim…",
+     "item_id": "gbf-dev-05",
+     "ngram_shared": 0,
+     "tfidf": 0.2241,
+     "training": "dtype\": \"float\", \"domain\": \"stream\"}], \"outputs\": [{\"port_id\": \"0\", \"dtype\": \"float\", \"domain\": \"stream\"}], \"doc\": \"clips input values to min, max\\n\\nConstructor Specific Documentation:\\n\\nBuild a rail block.\\n\\nArgs:\\n lo : the low value…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.7759,
+     "item": "In this empty flowgraph, build a test bench for a single-sideband (SSB) transmitter that uses the phasing method. Set samp_rate to 48 kHz; this is the sample r…",
+     "item_id": "gbf-dev-06",
+     "ngram_shared": 0,
+     "tfidf": 0.259,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.7759,
+     "item": "This flowgraph demonstrates the effect of quantization. It runs at a sample rate of 48 kHz. A Noise Source produces noise with a standard deviation of 0.1 (-20…",
+     "item_id": "gbf-dev-08",
+     "ngram_shared": 0,
+     "tfidf": 0.2107,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.765,
+     "item": "This flowgraph plays a repeating NRZ test pattern: a Vector Source sends +1/-1 symbols as rectangular pulses, 8 samples per symbol (4 kBd at 32 kHz), through a…",
+     "item_id": "gbf-dev-03",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.7601,
+     "item": "In this flowgraph, simulate the amplitude of a Rayleigh flat-fading channel at a sample rate of 48 kHz. Generate complex Gaussian noise with an RMS magnitude o…",
+     "item_id": "gbf-dev-02",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier1/t1_nmm_analog_pll_carriertracking_cc_query",
+     "doc_ref": "t1_nmm_analog_pll_carriertracking_cc_query",
+     "embed": 0.7555,
+     "item": "This flowgraph is a filter test bench. It runs at a sample rate of 48 kHz with real (float) samples throughout. A Fast Noise Source generates Gaussian white no…",
+     "item_id": "gbf-dev-09",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "has a sample rate of 48 kHz. That data is fed to a Frequency Xlating FIR Filter which shifts the tones above and below the center frequency. It also decimates (divides) the sample rate by 50, producing an output sample rate of 960.\\nThe Qu…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_logpwrfft_x_in0",
+     "doc_ref": "t1_addwire_logpwrfft_x_in0",
+     "embed": 0.7468,
+     "item": "This flowgraph simulates a burst BPSK link and its receiver. A Vector Source repeats one packet of bytes: the 8-byte preamble 0x2E 0xA4 0xAF 0x33 0x1F 0x22 0xF…",
+     "item_id": "gbf-dev-10",
+     "ngram_shared": 0,
+     "tfidf": 0.1918,
+     "training": "per symbol (payload).\\n sync_word1: The first sync preamble symbol. This has to be with\\n | zeros on alternating carriers. Used for fine and\\n | coarse frequency offset and timing estimation.\\n sync_word2: The second sync preamble symbol.…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_blocks_short_to_float_in0",
+     "doc_ref": "t1_addwire_blocks_short_to_float_in0",
+     "embed": 0.7408,
+     "item": "In this empty flowgraph, build a sync-word detector for a test bit stream. Use a repeating Vector Source to play this 64-bit pattern, one sample per bit, leftm…",
+     "item_id": "gbf-dev-01",
+     "ngram_shared": 0,
+     "tfidf": 0.1874,
+     "training": "based on the pattern . Basically, if:\\n\\n\\n\\n\\n\\nThis block is designed for unpacked bits - that is, every input sample is a bit, either a 1 or 0. It's possible to use packed bits as symbols, but the depuncturing will be done on the symbol…"
+    },
+    {
+     "doc_id": "tier2/t2_correct_analog_rail_ff",
+     "doc_ref": "t2_correct_analog_rail_ff",
+     "embed": 0.7383,
+     "item": "This flowgraph demonstrates time-division multiplexing of two streams of real 32-bit float samples. Two repeating Vector Sources produce stream A (1, 2, 3, 4,…",
+     "item_id": "gbf-dev-07",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "dtype\": \"float\", \"domain\": \"stream\"}], \"outputs\": [{\"port_id\": \"0\", \"dtype\": \"float\", \"domain\": \"stream\"}], \"doc\": \"clips input values to min, max\\n\\nConstructor Specific Documentation:\\n\\nBuild a rail block.\\n\\nArgs:\\n lo : the low value…"
+    }
+   ]
+  },
   "repaired": {
    "any_signal": {
     "items_flagged": 1,
@@ -1071,6 +1244,9 @@
    "teacher_answers:ngram",
    "repaired:ngram",
    "repaired_glm:ngram"
+  ],
+  "gbf-dev-10": [
+   "agent_traces:ngram"
   ]
  },
  "implements": [

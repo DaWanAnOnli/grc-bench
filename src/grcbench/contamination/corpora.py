@@ -18,6 +18,9 @@ Training side (every benchmark tier is compared with every corpus):
                    arguments of every message)
   task_specs       reports/reference/training_task_specs.json goals (Qoherent collection tasks,
                    GRC-Agent scenarios, the SFT sessions' tasks): what Tier-A instructions must avoid
+  agent_traces     Qoherent's 1,853 agent traces of 15-18 Oct (new_data/, tier1 + tier2): every message's
+                   text (user prompts, assistant content and reasoning, tool calls and tool results); the
+                   system prompt, the same in every trace, is one document of its own
 
 Dev questions are excluded from every training use (handoff to the training team), so answer and
 repair rows whose question is a dev question are dropped as well, and the number dropped is
@@ -38,14 +41,15 @@ from pathlib import Path
 from typing import Any, Iterator
 
 from grcbench.common.io import iter_jsonl, read_json, sha256_file
-from grcbench.common.paths import DATASET, FROZEN, ITEMS, REPO, REPORTS, SFT_RELEASE, SPLITS
+from grcbench.common.paths import AGENT_TRACES, DATASET, FROZEN, ITEMS, REPO, REPORTS, SFT_RELEASE, SPLITS
 
 PASSAGE_WORDS = 64
 PASSAGE_STRIDE = 32
 PASSAGE_SINGLE_MAX = PASSAGE_WORDS + PASSAGE_STRIDE // 2   # 80 words: every frozen question is one passage
 
 TIERS = ("tier_k_test", "tier_k_dev", "tier_f_test", "tier_f_dev", "tier_a_test", "tier_a_dev")
-CORPORA = ("train_questions", "teacher_answers", "repaired", "repaired_glm", "sft_sessions", "task_specs")
+CORPORA = ("train_questions", "teacher_answers", "repaired", "repaired_glm", "sft_sessions", "task_specs",
+           "agent_traces")
 
 DEV_SPLIT = SPLITS / "tier_k_dev.json"
 TASK_SPECS = REPORTS / "reference" / "training_task_specs.json"
@@ -266,7 +270,7 @@ def _repaired(folder: str, name: str, dev: set[str] | None) -> Corpus:
 
 
 def _message_text(m: dict[str, Any]) -> Iterator[str]:
-    for key in ("content", "thinking"):
+    for key in ("content", "thinking", "reasoning"):
         if isinstance(m.get(key), str) and m[key].strip():
             yield m[key]
     for call in m.get("tool_calls") or []:
@@ -309,6 +313,25 @@ def _task_specs(dev: set[str] | None) -> Corpus:
                   embed_all=True)
 
 
+def _agent_traces(dev: set[str] | None) -> Corpus:
+    docs, sources, counts, systems = [], [], [], set()
+    for tier, path in AGENT_TRACES.items():
+        sources.append(_source(path))
+        n = 0
+        for r in iter_jsonl(path):
+            systems.add(r.get("system") or "")
+            text = "\n\n".join(t for m in r.get("messages", []) if m.get("role") != "system" for t in _message_text(m))
+            docs.append(Doc(f"{tier}/{r['scenario_id']}", text, ref=r["scenario_id"]))
+            n += 1
+        counts.append(f"{n} {tier}")
+    first = min(systems) if systems else ""
+    common = "\n".join(line for line in first.splitlines()
+                       if not line.startswith(("Session ID", "Active flowgraph file path")))
+    docs.append(Doc("system_prompt", common, ref="system_prompt"))
+    return Corpus("agent_traces", "Qoherent's agent traces of 15-18 Oct (new_data/), all message text", docs, sources,
+                  [f"{len(docs) - 1} traces ({' + '.join(counts)}); the shared system prompt is one document"])
+
+
 LOADERS = {
     "train_questions": _train_questions,
     "teacher_answers": _teacher_answers,
@@ -316,6 +339,7 @@ LOADERS = {
     "repaired_glm": lambda dev: _repaired("10_repaired_glm", "repaired_glm", dev),
     "sft_sessions": _sft_sessions,
     "task_specs": _task_specs,
+    "agent_traces": _agent_traces,
 }
 
 

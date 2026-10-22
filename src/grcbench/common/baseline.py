@@ -1,7 +1,8 @@
 """Take or check the baseline manifests of everything GRC-Bench must never modify.
 
-    gb baseline take    # once, before the first run
-    gb baseline check   # at any time; non-zero exit if anything changed
+    gb baseline take          # once, before the first run
+    gb baseline take --add    # add the manifest of a root that has none yet; the others stay as they are
+    gb baseline check         # at any time; non-zero exit if anything changed
 
 Full manifests live in ~/grc-bench-work/baseline (machine-specific); the summary goes into
 reports/environment.json.
@@ -24,6 +25,7 @@ ROOTS = {
     "gnuradio_user_state": HOME / ".local" / "state" / "gnuradio",
     "project_data": PROJECT / "data",
     "documents_benchmark_and_evaluation": PROJECT / "benchmark and evaluation",
+    "project_new_data": PROJECT / "new_data",        # Qoherent's agent traces of 15-18 Oct
 }
 ROOT_FILES = sorted(p.name for p in PROJECT.glob("*.docx"))   # proposals and data summaries
 BASE_DIR = WORK / "baseline"
@@ -53,10 +55,25 @@ def take() -> None:
     print(json.dumps(summary, indent=1))
 
 
+def add_missing() -> list[str]:
+    """Write the manifest of every root that has none in the baseline yet; never touch existing ones."""
+    ensure(BASE_DIR)
+    added = []
+    for name, snap in _snapshot().items():
+        if not (BASE_DIR / f"{name}.json").exists():
+            write_json(BASE_DIR / f"{name}.json", snap)
+            added.append(f"{name} ({snap['n_files']} files)")
+    return added
+
+
 def check() -> int:
     snaps = _snapshot()
     bad = 0
     for name, snap in snaps.items():
+        if not (BASE_DIR / f"{name}.json").exists():
+            print(f"{name:40s} NOT IN THE BASELINE YET (gb baseline take --add)")
+            bad += 1
+            continue
         before = read_json(BASE_DIR / f"{name}.json")
         diff = manifest.compare(before, snap)
         n = sum(len(v) for v in diff.values())
@@ -71,6 +88,10 @@ def check() -> int:
 
 def main(argv: list[str]) -> int:
     cmd = argv[0] if argv else "check"
+    if cmd == "take" and "--add" in argv:
+        added = add_missing()
+        print("added: " + (", ".join(added) if added else "nothing (every root is in the baseline)"))
+        return 0
     if cmd == "take":
         if (BASE_DIR / "grc_agent_repo.json").exists() and "--force" not in argv:
             print(f"baseline already taken in {BASE_DIR}; use --force to replace it")

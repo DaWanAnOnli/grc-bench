@@ -22,7 +22,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from .paths import REPO, WORK
+from .paths import AGENT_TRACES, REPO, WORK
 
 # command, extra arguments; each takes --out <root> and writes the paths it owns below that root
 GENERATORS = [
@@ -30,8 +30,11 @@ GENERATORS = [
     ("labels", ["build"]),
     ("tier-k-items", []),
     ("calc", []),
+    ("traces", []),
     ("blockq", []),
 ]
+# generators whose inputs live outside the repository: skipped (and said so) where they are absent
+OPTIONAL_INPUTS = {"traces": list(AGENT_TRACES.values())}
 CHECKS = [("blocks", ["--check"]), ("calc", ["--check"])]
 # files in a Tier-F task folder that build.py does not write: gate results, the script itself, and the
 # golden edit derived by `./gb tier-a tier-f-golden`
@@ -56,6 +59,9 @@ def _gb(args: list[str], cwd: Path = REPO) -> subprocess.CompletedProcess:
 def _generators(work: Path) -> list[str]:
     problems = []
     for cmd, extra in GENERATORS:
+        if not all(p.is_file() for p in OPTIONAL_INPUTS.get(cmd, [])):
+            print(f"{cmd:14s} skipped: its inputs are not on this machine")
+            continue
         trees = []
         for k in (1, 2):
             root = work / f"run{k}" / cmd

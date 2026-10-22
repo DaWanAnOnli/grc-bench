@@ -1,16 +1,16 @@
 {
  "all_corpora": {
   "any": {
-   "items_flagged": 68,
-   "rate": 0.2386
+   "items_flagged": 88,
+   "rate": 0.3088
   },
   "embed": {
    "items_flagged": 38,
    "rate": 0.1333
   },
   "ngram": {
-   "items_flagged": 30,
-   "rate": 0.1053
+   "items_flagged": 50,
+   "rate": 0.1754
   },
   "tfidf": {
    "items_flagged": 45,
@@ -18,10 +18,183 @@
   }
  },
  "corpora": {
+  "agent_traces": {
+   "any_signal": {
+    "items_flagged": 5,
+    "rate": 0.0175
+   },
+   "description": "Qoherent's agent traces of 15-18 Oct (new_data/), all message text",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8786,
+     "min": 0.6058,
+     "p10": 0.6752,
+     "p25": 0.7058,
+     "p50": 0.7549,
+     "p75": 0.7994,
+     "p90": 0.8182,
+     "p95": 0.8275,
+     "p99": 0.8456
+    },
+    "passages_embedded": 605,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 1854,
+   "n_passages": 171347,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 5,
+    "rate": 0.0175,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "1853 traces (1253 tier1 + 600 tier2); the shared system prompt is one document"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "new_data/GRC-Agent_tier1_dataset_v1_toolcalls/tier1_sft_trajectories.jsonl",
+     "sha256": "77d9404ac6c57bf810a2472ad42765ad4f89adbb606ec7e50ccf7cfa7e66d357"
+    },
+    {
+     "path": "new_data/GRC-Agent_tier2_dataset_v1/tier2_sft_trajectories.jsonl",
+     "sha256": "834fd66cf30c3210c16838c4c7d08fff5dcfb7f638cd2e4479dceb243add0a51"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.5073,
+     "min": 0.1071,
+     "p10": 0.1602,
+     "p25": 0.2005,
+     "p50": 0.2568,
+     "p75": 0.3098,
+     "p90": 0.3611,
+     "p95": 0.4098,
+     "p99": 0.4789
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "tier1/t1_addwire_low_pass_filter_in0",
+     "doc_ref": "t1_addwire_low_pass_filter_in0",
+     "embed": 0.8786,
+     "item": "Design a low-pass FIR filter with a specific transition bandwidth and number of taps.",
+     "item_id": "q_5b2311bc18e2921a",
+     "ngram_shared": 0,
+     "tfidf": 0.5073,
+     "training": "to design a low-pass FIR filter. The normalized width of the transition band is what sets the number of taps required. Narrow --> more taps. Window type determines maximum attenuation and passband ripple.\\n\\n| Parameter | Type | Default Va…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_vocoder_gsm_fr_decode_ps_in0",
+     "doc_ref": "t1_addwire_vocoder_gsm_fr_decode_ps_in0",
+     "embed": 0.8575,
+     "item": "In GNU Radio 3.10, take the GSM full-rate Audio Decoder block (`vocoder_gsm_fr_decode_ps`) with its default settings. Its input receives 3 vectors of 33 byte v…",
+     "item_id": "bq_d04b25527afdb3c0",
+     "ngram_shared": 0,
+     "tfidf": 0.3937,
+     "training": "results\": [{\"block_id\": \"vocoder_gsm_fr_decode_ps\", \"label\": \"GSM full-rate Audio Decoder\", \"category\": \"Core > Audio\", \"params\": {}, \"inputs\": [{\"port_id\": \"0\", \"dtype\": \"byte\", \"domain\": \"stream\", \"vlen\": 33}], \"outputs\": [{\"port_id\": \"0…"
+    },
+    {
+     "doc_id": "tier2/t2_build_blocks_stream_to_vector_decimator_to_analog_agc2_xx",
+     "doc_ref": "t2_build_blocks_stream_to_vector_decimator_to_analog_agc2_xx",
+     "embed": 0.8457,
+     "item": "In GNU Radio 3.10, take the Vector to Streams block (`blocks_vector_to_streams`) set to IO Type float, Num Streams 2, with its other parameters at their defaul…",
+     "item_id": "bq_08d39c038b34ff5c",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "stream\"} {\"ok\": true, \"query\": \"blocks_vector_to_stream vector to stream\", \"results\": [{\"block_id\": \"blocks_vector_to_stream\", \"label\": \"Vector to Stream\", \"category\": \"Core > Stream Operators\", \"params\": {\"type\": \"enum=[complex,float,int,…"
+    },
+    {
+     "doc_id": "tier2/t2_build_blocks_stream_to_vector_decimator_to_analog_agc2_xx",
+     "doc_ref": "t2_build_blocks_stream_to_vector_decimator_to_analog_agc2_xx",
+     "embed": 0.8456,
+     "item": "In GNU Radio 3.10, take the Vector to Streams block (`blocks_vector_to_streams`) set to IO Type float, Num Streams 4, with its other parameters at their defaul…",
+     "item_id": "bq_1aa4a94aff6d15e8",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "stream\"} {\"ok\": true, \"query\": \"blocks_vector_to_stream vector to stream\", \"results\": [{\"block_id\": \"blocks_vector_to_stream\", \"label\": \"Vector to Stream\", \"category\": \"Core > Stream Operators\", \"params\": {\"type\": \"enum=[complex,float,int,…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_iir_filter_xxx_in0",
+     "doc_ref": "t1_addwire_iir_filter_xxx_in0",
+     "embed": 0.8438,
+     "item": "Design a digital filter with specified frequency response using z-transform techniques, and explain how the pole-zero placement affects the filter's characteri…",
+     "item_id": "q_bccc058a98001bcb",
+     "ngram_shared": 0,
+     "tfidf": 0.2741,
+     "training": "n digital frequency specifications into analog frequencies.\\n\\n w_a = (2/T)tan(wT/2)\\n\\n 2. Use an analog filter design technique to design the filter.\\n\\n 3. Use the bilinear transformation to convert the analog filter design to a\\n digit…"
+    },
+    {
+     "doc_id": "tier2/t2_build_blocks_stream_to_vector_decimator_to_analog_agc2_xx",
+     "doc_ref": "t2_build_blocks_stream_to_vector_decimator_to_analog_agc2_xx",
+     "embed": 0.8383,
+     "item": "In GNU Radio 3.10, take the Vector to Streams block (`blocks_vector_to_streams`) set to IO Type float, Num Streams 3, with its other parameters at their defaul…",
+     "item_id": "bq_4fb479b4b85eadb7",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "stream\"} {\"ok\": true, \"query\": \"blocks_vector_to_stream vector to stream\", \"results\": [{\"block_id\": \"blocks_vector_to_stream\", \"label\": \"Vector to Stream\", \"category\": \"Core > Stream Operators\", \"params\": {\"type\": \"enum=[complex,float,int,…"
+    },
+    {
+     "doc_id": "tier2/t2_rewire_analog_am_demod_cf",
+     "doc_ref": "t2_rewire_analog_am_demod_cf",
+     "embed": 0.8376,
+     "item": "In GNU Radio 3.10, take the AM Demod block (`analog_am_demod_cf`) set to Channel Rate 64000, Audio Decimation 2, Audio Pass 5000, Audio Stop 5500. Its input re…",
+     "item_id": "bq_4502231644f56887",
+     "ngram_shared": 0,
+     "tfidf": 0.3212,
+     "training": "domain\":\"catalog\"} {\"ok\": true, \"query\": \"analog_am_demod_cf block parameters\", \"results\": [{\"block_id\": \"analog_am_demod_cf\", \"label\": \"AM Demod\", \"category\": \"Core > Modulators\", \"params\": {\"chan_rate\": \"[real]=\", \"audio_decim\": \"[int]=\"…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_blocks_unpacked_to_packed_xx_in0",
+     "doc_ref": "t1_addwire_blocks_unpacked_to_packed_xx_in0",
+     "embed": 0.8299,
+     "item": "In GNU Radio 3.10, take the Unpacked to Packed block (`blocks_unpacked_to_packed_xx`) set to Type byte, Bits per Chunk 1, Endianness LSB, with its other parame…",
+     "item_id": "bq_6518824686c47736",
+     "ngram_shared": 0,
+     "tfidf": 0.292,
+     "training": "result. final_result {\"actions_taken\":[\"Added blocks_unpacked_to_packed_xx_0 (type=int, bits_per_chunk=2, endianness=MSB, num_ports=1)\",\"Added int null_source_0 and connected it to blocks_unpacked_to_packed_xx_0 input port 0\",\"Added int nu…"
+    },
+    {
+     "doc_id": "tier1/t1_retune_freq_xlating_fft_filter_ccc",
+     "doc_ref": "t1_retune_freq_xlating_fft_filter_ccc",
+     "embed": 0.8296,
+     "item": "In GNU Radio 3.10, take the FFT Filter block (`fft_filter_xxx`) set to Type Float->Float (Real Taps), Decimation 1, Taps [0.25, 0.5, 0.25], Sample Delay 0, Num…",
+     "item_id": "bq_10b787f8b13212b7",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Frequency Xlating FFT Filter ccc minoutbuf parameter\", \"results\": [{\"block_id\": \"freq_xlating_fft_filter_ccc\", \"label\": \"Frequency Xlating FFT Filter\", \"category\": \"Core > Channelizers\", \"params\": {\"decim\": \"[int]=1\", \"taps\": \"[complex_vec…"
+    },
+    {
+     "doc_id": "tier1/t1_retune_iir_filter_xxx",
+     "doc_ref": "t1_retune_iir_filter_xxx",
+     "embed": 0.829,
+     "item": "In GNU Radio 3.10, take the IIR Filter block (`iir_filter_xxx`) set to Type Float->Float (Double Taps), Feed-forward Taps [1.0], Feedback Taps [1.0, 0.5], Old…",
+     "item_id": "bq_a7793095ebce45ed",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "real_vector]=\", \"fbtaps\": \"[real_vector]=\", \"oldstyle\": \"[bool]=True\"}, \"inputs\": [{\"port_id\": \"0\", \"dtype\": \"float\", \"domain\": \"stream\"}], \"outputs\": [{\"port_id\": \"0\", \"dtype\": \"float\", \"domain\": \"stream\"}], \"doc\": \"\"}, {\"block_id\": \"sing…"
+    }
+   ]
+  },
   "repaired": {
    "any_signal": {
-    "items_flagged": 6,
-    "rate": 0.0211
+    "items_flagged": 24,
+    "rate": 0.0842
    },
    "description": "repaired answers (10_repaired)",
    "embedding": {
@@ -29,15 +202,15 @@
     "max_cosine_quantiles": {
      "max": 0.8906,
      "min": 0.6661,
-     "p10": 0.7207,
-     "p25": 0.7403,
-     "p50": 0.7715,
-     "p75": 0.7937,
-     "p90": 0.8237,
-     "p95": 0.8401,
-     "p99": 0.8685
+     "p10": 0.7248,
+     "p25": 0.7565,
+     "p50": 0.7867,
+     "p75": 0.8086,
+     "p90": 0.8316,
+     "p95": 0.8502,
+     "p99": 0.8689
     },
-    "passages_embedded": 591,
+    "passages_embedded": 564,
     "rate": 0.007,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -48,8 +221,8 @@
    "n_passages": 40896,
    "ngram": {
     "items_coverage_ge_50pct": 0,
-    "items_with_twin": 5,
-    "rate": 0.0175,
+    "items_with_twin": 23,
+    "rate": 0.0807,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -72,11 +245,11 @@
     "max_cosine_quantiles": {
      "max": 0.5091,
      "min": 0.1719,
-     "p10": 0.1995,
-     "p25": 0.2181,
-     "p50": 0.2577,
-     "p75": 0.3152,
-     "p90": 0.3772,
+     "p10": 0.209,
+     "p25": 0.241,
+     "p50": 0.2681,
+     "p75": 0.3191,
+     "p90": 0.3781,
      "p95": 0.4328,
      "p99": 0.4824
     },
@@ -116,6 +289,16 @@
      "training": "Integrating a custom C++ block into GNU Radio involves creating a module, implementing the DSP logic in C++, and defining a YAML file that tells GNU Radio Companion (GRC) how to represent that block in the GUI. ### 1. Module and Block Gene…"
     },
     {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8682,
+     "item": "In GNU Radio 3.10, take the FFT Filter block (`fft_filter_xxx`) set to Type Float->Float (Real Taps), Decimation 1, Taps [0.25, 0.5, 0.25], Sample Delay 0, Num…",
+     "item_id": "bq_10b787f8b13212b7",
+     "ngram_shared": 0,
+     "tfidf": 0.2902,
+     "training": "40, 0.25, 0.10, 0.03, 0.02] # your custom coefficients decim = 5 fir_decim = filter.fir_filter_ccf(decim, taps) # complex->complex, float taps # or filter.fir_filter_fff(decim, taps) for float in/out ``` **GNU Radio Companion (GRC)** 1. Ad…"
+    },
+    {
      "doc_id": "devstral-small2-24b/q_5c5bf9ddedf1c9b6",
      "doc_ref": "q_5c5bf9ddedf1c9b6",
      "embed": 0.8677,
@@ -124,6 +307,16 @@
      "ngram_shared": 0,
      "tfidf": 0.3783,
      "training": "Here is a GNU Radio flowgraph that generates and displays a Short-Time Fourier Transform (STFT) spectrogram for a complex (or real) input signal. Assumptions: - Input signal is sampled at fs (Hz). - Window length N samples; FFT size M >= N…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8623,
+     "item": "In GNU Radio 3.10, take the FFT Filter block (`fft_filter_xxx`) set to Type Float->Float (Real Taps), Decimation 1, Taps [2.0, 0.0, 1.0], Sample Delay 0, Num.…",
+     "item_id": "bq_af46529d76824fca",
+     "ngram_shared": 0,
+     "tfidf": 0.2643,
+     "training": "40, 0.25, 0.10, 0.03, 0.02] # your custom coefficients decim = 5 fir_decim = filter.fir_filter_ccf(decim, taps) # complex->complex, float taps # or filter.fir_filter_fff(decim, taps) for float in/out ``` **GNU Radio Companion (GRC)** 1. Ad…"
     },
     {
      "doc_id": "laguna-s21/q_8e715848825bfea8",
@@ -136,6 +329,26 @@
      "training": "Fourier Transforms: Continuous-Time vs Discrete-Time Signal Processing ## Fundamental Definitions ### Continuous-Time Fourier Transform (CTFT) The CTFT operates on continuous-time signals x(t): $$X(\\omega) = \\int_{-\\infty}^{\\infty} x(t)e^{…"
     },
     {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8565,
+     "item": "In GNU Radio 3.10, take the FFT Filter block (`fft_filter_xxx`) set to Type Float->Float (Real Taps), Decimation 1, Taps [1.0, -1.0], Sample Delay 0, Num. Thre…",
+     "item_id": "bq_5c9548ce3b0510ed",
+     "ngram_shared": 0,
+     "tfidf": 0.2598,
+     "training": "40, 0.25, 0.10, 0.03, 0.02] # your custom coefficients decim = 5 fir_decim = filter.fir_filter_ccf(decim, taps) # complex->complex, float taps # or filter.fir_filter_fff(decim, taps) for float in/out ``` **GNU Radio Companion (GRC)** 1. Ad…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8541,
+     "item": "In GNU Radio 3.10, take the IIR Filter block (`iir_filter_xxx`) set to Type Float->Float (Double Taps), Feed-forward Taps [1.0], Feedback Taps [1.0, 0.25], Old…",
+     "item_id": "bq_84ebebd96401c90f",
+     "ngram_shared": 0,
+     "tfidf": 0.286,
+     "training": "40, 0.25, 0.10, 0.03, 0.02] # your custom coefficients decim = 5 fir_decim = filter.fir_filter_ccf(decim, taps) # complex->complex, float taps # or filter.fir_filter_fff(decim, taps) for float in/out ``` **GNU Radio Companion (GRC)** 1. Ad…"
+    },
+    {
      "doc_id": "laguna-s21/q_757965c9a466fe61",
      "doc_ref": "q_757965c9a466fe61",
      "embed": 0.8523,
@@ -144,53 +357,13 @@
      "ngram_shared": 0,
      "tfidf": null,
      "training": "Here is a GNU Radio flowgraph design to compute and plot the Fourier Transform of a sine wave: ``` [GNU Radio Flowgraph: Sine Wave FFT Analysis] Blocks: 1. Block: Signal Source - Waveform: Sine - Sample Rate: 44100 Hz - Frequency: 1000 Hz…"
-    },
-    {
-     "doc_id": "laguna-s21/q_caa1475820754dc2",
-     "doc_ref": "q_caa1475820754dc2",
-     "embed": 0.8508,
-     "item": "What is the purpose of pilot subcarriers in an OFDM system, and how are they used for channel estimation?",
-     "item_id": "q_ae04c5efce9d1445",
-     "ngram_shared": 0,
-     "tfidf": 0.2939,
-     "training": "OFDM Channel Estimation Implementation ## Core Concept Channel estimation in OFDM estimates the channel frequency response (CFR) across all subcarriers using known pilot symbols embedded in the transmitted signal. ## Pilot Structure **Comb…"
-    },
-    {
-     "doc_id": "devstral-small2-24b/q_675db4f5383a2ae7",
-     "doc_ref": "q_675db4f5383a2ae7",
-     "embed": 0.8502,
-     "item": "Design a GNU Radio flowgraph that computes and displays the PSD of a signal. What blocks would you use?",
-     "item_id": "q_fa9d9fc746d70de8",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "To design a GNU Radio flowgraph that estimates the Signal-to-Noise Ratio (SNR) of a received signal, you would typically use the following blocks: 1. **Source Block**: This could be a file source, signal source, or a hardware source (e.g.,…"
-    },
-    {
-     "doc_id": "devstral-small2-24b/q_675db4f5383a2ae7",
-     "doc_ref": "q_675db4f5383a2ae7",
-     "embed": 0.8486,
-     "item": "Design a GNU Radio flowgraph that injects AWGN noise into a signal and measures the resulting BER. What blocks would you use?",
-     "item_id": "q_a30cd9eea6b2d765",
-     "ngram_shared": 0,
-     "tfidf": 0.2813,
-     "training": "To design a GNU Radio flowgraph that estimates the Signal-to-Noise Ratio (SNR) of a received signal, you would typically use the following blocks: 1. **Source Block**: This could be a file source, signal source, or a hardware source (e.g.,…"
-    },
-    {
-     "doc_id": "devstral-small2-24b/q_62017f925f288e5f",
-     "doc_ref": "q_62017f925f288e5f",
-     "embed": 0.8462,
-     "item": "If an FIR filter introduces excessive delay, how can this be mitigated?",
-     "item_id": "q_5f4031f20f0afcd9",
-     "ngram_shared": 0,
-     "tfidf": 0.2487,
-     "training": "To mitigate excessive delay introduced by an FIR filter in a real-time system, consider the following approaches: ### 1. **Reduce Filter Order (Number of Taps)** - **Reasoning**: The group delay of an FIR filter is approximately \\( N/2 \\)…"
     }
    ]
   },
   "repaired_glm": {
    "any_signal": {
-    "items_flagged": 6,
-    "rate": 0.0211
+    "items_flagged": 24,
+    "rate": 0.0842
    },
    "description": "repaired answers (10_repaired_glm)",
    "embedding": {
@@ -198,15 +371,15 @@
     "max_cosine_quantiles": {
      "max": 0.8906,
      "min": 0.6661,
-     "p10": 0.7251,
-     "p25": 0.7464,
-     "p50": 0.7669,
-     "p75": 0.7914,
-     "p90": 0.824,
-     "p95": 0.8388,
-     "p99": 0.8593
+     "p10": 0.7302,
+     "p25": 0.7633,
+     "p50": 0.7833,
+     "p75": 0.804,
+     "p90": 0.8318,
+     "p95": 0.8499,
+     "p99": 0.8719
     },
-    "passages_embedded": 613,
+    "passages_embedded": 585,
     "rate": 0.007,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -217,8 +390,8 @@
    "n_passages": 55753,
    "ngram": {
     "items_coverage_ge_50pct": 0,
-    "items_with_twin": 5,
-    "rate": 0.0175,
+    "items_with_twin": 23,
+    "rate": 0.0807,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -240,12 +413,12 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.5035,
-     "min": 0.1595,
-     "p10": 0.2002,
-     "p25": 0.2199,
-     "p50": 0.2612,
-     "p75": 0.312,
-     "p90": 0.3786,
+     "min": 0.1674,
+     "p10": 0.2094,
+     "p25": 0.2404,
+     "p50": 0.2724,
+     "p75": 0.3168,
+     "p90": 0.3776,
      "p95": 0.4237,
      "p99": 0.4972
     },
@@ -275,6 +448,26 @@
      "training": "The ZMQ PUB Sink and ZMQ SUB Source blocks serve as the bridge between separate GNU Radio flowgraphs, enabling inter-process communication that simulates a complete AM transmission system. **Roles of the Blocks:** - **ZMQ PUB Sink**: This…"
     },
     {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8728,
+     "item": "In GNU Radio 3.10, take the FFT Filter block (`fft_filter_xxx`) set to Type Float->Float (Real Taps), Decimation 1, Taps [2.0, 0.0, 1.0], Sample Delay 0, Num.…",
+     "item_id": "bq_af46529d76824fca",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "In GNU Radio, use the `filter.fir_filter_*` family with the `decimation` parameter set to 5. The middle character denotes input type, the last denotes output type, and taps are always float. **Python API** ```python from gnuradio import fi…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8717,
+     "item": "In GNU Radio 3.10, take the FFT Filter block (`fft_filter_xxx`) set to Type Float->Float (Real Taps), Decimation 1, Taps [0.25, 0.5, 0.25], Sample Delay 0, Num…",
+     "item_id": "bq_10b787f8b13212b7",
+     "ngram_shared": 0,
+     "tfidf": 0.2531,
+     "training": "In GNU Radio, use the `filter.fir_filter_*` family with the `decimation` parameter set to 5. The middle character denotes input type, the last denotes output type, and taps are always float. **Python API** ```python from gnuradio import fi…"
+    },
+    {
      "doc_id": "gemma4-31b/q_466b87ae853397fe",
      "doc_ref": "q_466b87ae853397fe",
      "embed": 0.87,
@@ -283,6 +476,36 @@
      "ngram_shared": 0,
      "tfidf": null,
      "training": "Integrating a custom C++ block into GNU Radio involves creating a module, implementing the DSP logic in C++, and defining a YAML file that tells the GNU Radio Companion (GRC) how to represent that block in the GUI. ### 1. Module and Block…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8633,
+     "item": "In GNU Radio 3.10, take the FFT Filter block (`fft_filter_xxx`) set to Type Float->Float (Real Taps), Decimation 1, Taps [1.0, -1.0], Sample Delay 0, Num. Thre…",
+     "item_id": "bq_5c9548ce3b0510ed",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "In GNU Radio, use the `filter.fir_filter_*` family with the `decimation` parameter set to 5. The middle character denotes input type, the last denotes output type, and taps are always float. **Python API** ```python from gnuradio import fi…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8607,
+     "item": "In GNU Radio 3.10, take the IIR Filter block (`iir_filter_xxx`) set to Type Float->Float (Double Taps), Feed-forward Taps [0.5, 0.5], Feedback Taps [1.0, 0.5],…",
+     "item_id": "bq_5efd90983f6c5b8c",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "In GNU Radio, use the `filter.fir_filter_*` family with the `decimation` parameter set to 5. The middle character denotes input type, the last denotes output type, and taps are always float. **Python API** ```python from gnuradio import fi…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_52653002b49fef4c",
+     "doc_ref": "q_52653002b49fef4c",
+     "embed": 0.8601,
+     "item": "In GNU Radio 3.10, take the IIR Filter block (`iir_filter_xxx`) set to Type Float->Float (Double Taps), Feed-forward Taps [0.5, 0.5], Feedback Taps [1.0, -0.5]…",
+     "item_id": "bq_1cb16932674f0428",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "In GNU Radio, use the `filter.fir_filter_*` family with the `decimation` parameter set to 5. The middle character denotes input type, the last denotes output type, and taps are always float. **Python API** ```python from gnuradio import fi…"
     },
     {
      "doc_id": "laguna-s21/q_757965c9a466fe61",
@@ -303,63 +526,13 @@
      "ngram_shared": 0,
      "tfidf": 0.3698,
      "training": "Calculation** The thermal noise **spectral density** at room temperature is: \\[ kT_0 = (1.38 \\times 10^{-23}) \\times 290 \\approx 4 \\times 10^{-21} \\text{ W/Hz} \\approx -174 \\text{ dBm/Hz} \\] For a measurement bandwidth of \\( B = 1 \\) MHz,…"
-    },
-    {
-     "doc_id": "laguna-s21/q_8e715848825bfea8",
-     "doc_ref": "q_8e715848825bfea8",
-     "embed": 0.8565,
-     "item": "A continuous-time signal x(t) has Fourier transform X(ω). If the signal is time-shifted to create y(t) = x(t - t0), what is Y(ω)?",
-     "item_id": "q_66b264c8786f2018",
-     "ngram_shared": 0,
-     "tfidf": 0.3952,
-     "training": "Fourier Transforms: Continuous-Time vs Discrete-Time Signal Processing ## Fundamental Definitions ### Continuous-Time Fourier Transform (CTFT) The CTFT operates on continuous-time signals x(t): $$X(\\omega) = \\int_{-\\infty}^{\\infty} x(t)e^{…"
-    },
-    {
-     "doc_id": "laguna-s21/q_757965c9a466fe61",
-     "doc_ref": "q_757965c9a466fe61",
-     "embed": 0.8527,
-     "item": "Design a GNU Radio flowgraph that computes the DFT of a finite-length signal. What blocks would you use?",
-     "item_id": "q_0612c25f3cb028b4",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "Here's a GNU Radio flowgraph design to compute and plot the Fourier Transform of a sine wave: ``` [GNU Radio Flowgraph: Sine Wave FFT Analysis] Blocks: 1. Block: Signal Source - Waveform: Sine - Sample Rate: 44100 Hz - Frequency: 1000 Hz -…"
-    },
-    {
-     "doc_id": "devstral-small2-24b/q_675db4f5383a2ae7",
-     "doc_ref": "q_675db4f5383a2ae7",
-     "embed": 0.8502,
-     "item": "Design a GNU Radio flowgraph that computes and displays the PSD of a signal. What blocks would you use?",
-     "item_id": "q_fa9d9fc746d70de8",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "To design a GNU Radio flowgraph that estimates the Signal-to-Noise Ratio (SNR) of a received signal, you would typically use the following blocks: 1. **Source Block**: This could be a file source, signal source, or a hardware source (e.g.,…"
-    },
-    {
-     "doc_id": "devstral-small2-24b/q_675db4f5383a2ae7",
-     "doc_ref": "q_675db4f5383a2ae7",
-     "embed": 0.8486,
-     "item": "Design a GNU Radio flowgraph that injects AWGN noise into a signal and measures the resulting BER. What blocks would you use?",
-     "item_id": "q_a30cd9eea6b2d765",
-     "ngram_shared": 0,
-     "tfidf": 0.2848,
-     "training": "To design a GNU Radio flowgraph that estimates the Signal-to-Noise Ratio (SNR) of a received signal, you would typically use the following blocks: 1. **Source Block**: This could be a file source, signal source, or a hardware source (e.g.,…"
-    },
-    {
-     "doc_id": "devstral-small2-24b/q_6d193d99d3d80b32",
-     "doc_ref": "q_6d193d99d3d80b32",
-     "embed": 0.8484,
-     "item": "A real-valued signal has a DFT with Hermitian symmetry. Explain what this means and how it can be exploited to reduce computation and storage.",
-     "item_id": "q_c2a697017227cabd",
-     "ngram_shared": 0,
-     "tfidf": 0.3733,
-     "training": "A real-valued signal's FFT can be computed using a complex FFT algorithm by leveraging the symmetry properties of the FFT of real signals. Here's how it works and the optimizations it enables: ### Key Idea: Hermitian Symmetry The FFT of a…"
     }
    ]
   },
   "sft_sessions": {
    "any_signal": {
-    "items_flagged": 0,
-    "rate": 0.0
+    "items_flagged": 6,
+    "rate": 0.0211
    },
    "description": "SFT sessions and quarantine (grc-agent-sft-v0.1.0), all message text",
    "embedding": {
@@ -367,15 +540,15 @@
     "max_cosine_quantiles": {
      "max": 0.8669,
      "min": 0.6459,
-     "p10": 0.6869,
-     "p25": 0.7186,
-     "p50": 0.7455,
-     "p75": 0.7714,
-     "p90": 0.7866,
-     "p95": 0.806,
-     "p99": 0.8305
+     "p10": 0.686,
+     "p25": 0.7212,
+     "p50": 0.7615,
+     "p75": 0.8058,
+     "p90": 0.8269,
+     "p95": 0.8367,
+     "p99": 0.844
     },
-    "passages_embedded": 580,
+    "passages_embedded": 526,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -386,8 +559,8 @@
    "n_passages": 60828,
    "ngram": {
     "items_coverage_ge_50pct": 0,
-    "items_with_twin": 0,
-    "rate": 0.0,
+    "items_with_twin": 6,
+    "rate": 0.0211,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -414,13 +587,13 @@
     "max_cosine_quantiles": {
      "max": 0.4753,
      "min": 0.1052,
-     "p10": 0.1606,
-     "p25": 0.1939,
-     "p50": 0.2319,
-     "p75": 0.2775,
-     "p90": 0.3213,
-     "p95": 0.3664,
-     "p99": 0.4409
+     "p10": 0.1636,
+     "p25": 0.2069,
+     "p50": 0.2415,
+     "p75": 0.2819,
+     "p90": 0.3127,
+     "p95": 0.3386,
+     "p99": 0.4124
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -438,6 +611,26 @@
      "training": "a low-pass FIR filter. The normalized width of the transition band is what sets the number of taps required. Narrow --> more taps. Window type determines maximum attenuation and passband ripple.\\n\\n| Parameter | Type | Default Value | Desc…"
     },
     {
+     "doc_id": "sft_train/05/session-18",
+     "doc_ref": "t24_dial_tone_notes",
+     "embed": 0.8452,
+     "item": "In GNU Radio 3.10, take the Vector to Streams block (`blocks_vector_to_streams`) set to IO Type float, Num Streams 2, with its other parameters at their defaul…",
+     "item_id": "bq_08d39c038b34ff5c",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "the length of the FIR tap vector on passed-through samples.\\n\\n\\nThe block takes one or two float stream and outputs a stream composed of pairs of floats. (In GNU Radio, pairs of floats are identical to complex numbers, where the real and…"
+    },
+    {
+     "doc_id": "quarantine/04/session-10",
+     "doc_ref": "t05_qam_debug",
+     "embed": 0.845,
+     "item": "In GNU Radio 3.10, take the Patterned Interleaver block (`blocks_patterned_interleaver`) set to IO Type float, Pattern [0, 0, 1, 2], with its other parameters…",
+     "item_id": "bq_fce34b31c398f934",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "I and Q each take values 0..3 (2 bits each). After int_to_float with scale k-1 = 3, we get 0..1? Wait int_to_float scale: output = input * scale. Hmm actually blocks_int_to_float: output = input * scale. So 0..3 * 3 = 0..9? Hmm. Actually w…"
+    },
+    {
      "doc_id": "quarantine/15/session-8",
      "doc_ref": "t17_wbfm_tune_repair",
      "embed": 0.8438,
@@ -448,84 +641,64 @@
      "training": "n digital frequency specifications into analog frequencies.\\n\\n w_a = (2/T)tan(wT/2)\\n\\n 2. Use an analog filter design technique to design the filter.\\n\\n 3. Use the bilinear transformation to convert the analog filter design to a\\n digit…"
     },
     {
-     "doc_id": "quarantine/11/session-1",
-     "doc_ref": "t03_fm_receiver_repair",
+     "doc_id": "quarantine/04/session-10",
+     "doc_ref": "t05_qam_debug",
+     "embed": 0.8429,
+     "item": "In GNU Radio 3.10, take the Max block (`blocks_max_xx`) set to IO Type float, Num Inputs 3, Input Vector Length 1, Output Vector Length 1. Its input 0 receives…",
+     "item_id": "bq_605f52972a8ec1b4",
+     "ngram_shared": 0,
+     "tfidf": 0.298,
+     "training": "I and Q each take values 0..3 (2 bits each). After int_to_float with scale k-1 = 3, we get 0..1? Wait int_to_float scale: output = input * scale. Hmm actually blocks_int_to_float: output = input * scale. So 0..3 * 3 = 0..9? Hmm. Actually w…"
+    },
+    {
+     "doc_id": "quarantine/04/session-10",
+     "doc_ref": "t05_qam_debug",
+     "embed": 0.8424,
+     "item": "In GNU Radio 3.10, take the Patterned Interleaver block (`blocks_patterned_interleaver`) set to IO Type float, Pattern [0, 1, 0, 2], with its other parameters…",
+     "item_id": "bq_3bc799d1943b9cc1",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "I and Q each take values 0..3 (2 bits each). After int_to_float with scale k-1 = 3, we get 0..1? Wait int_to_float scale: output = input * scale. Hmm actually blocks_int_to_float: output = input * scale. So 0..3 * 3 = 0..9? Hmm. Actually w…"
+    },
+    {
+     "doc_id": "quarantine/01/session-4",
+     "doc_ref": "t02_qpsk_ber_chain",
+     "embed": 0.8418,
+     "item": "In GNU Radio 3.10, take the Unpacked to Packed block (`blocks_unpacked_to_packed_xx`) set to Type byte, Bits per Chunk 1, Endianness LSB, with its other parame…",
+     "item_id": "bq_6518824686c47736",
+     "ngram_shared": 0,
+     "tfidf": 0.2757,
+     "training": "is a byte stream... For QPSK with differential, the hier block internally unpacks? The docs: \"The input is a byte stream (unsigned char)\". In GRC examples (e.g., \"digital/qpsk_ber\" tutorial), they use vector source of unpacked bits then...…"
+    },
+    {
+     "doc_id": "quarantine/04/session-10",
+     "doc_ref": "t05_qam_debug",
+     "embed": 0.8416,
+     "item": "In GNU Radio 3.10, take the Multiply by Matrix block (`blocks_multiply_matrix_xx`) set to IO Type float, Matrix A ((3, 0), (0, 2)), TPP All to All. Its input 0…",
+     "item_id": "bq_44327ce5aec97d17",
+     "ngram_shared": 0,
+     "tfidf": 0.2827,
+     "training": "I and Q each take values 0..3 (2 bits each). After int_to_float with scale k-1 = 3, we get 0..1? Wait int_to_float scale: output = input * scale. Hmm actually blocks_int_to_float: output = input * scale. So 0..3 * 3 = 0..9? Hmm. Actually w…"
+    },
+    {
+     "doc_id": "quarantine/04/session-10",
+     "doc_ref": "t05_qam_debug",
      "embed": 0.8413,
-     "item": "In GNU Radio 3.10, the Frequency Xlating FIR Filter block (`freq_xlating_fir_filter_xxx`) is set to Type Float->Complex (Real Taps), Decimation 6, Taps [1.0/16…",
-     "item_id": "bq_f4fb4779c74c4023",
-     "ngram_shared": 0,
-     "tfidf": 0.2259,
-     "training": "the computer which has a sample rate of 48 kHz. That data is fed to a [Frequency Xlating FIR Filter](https://wiki.gnuradio.org/index.php?title=Frequency_Xlating_FIR_Filter \\\"Frequency Xlating FIR Filter\\\") which shifts the tones above and…"
-    },
-    {
-     "doc_id": "sft_train/09/session-5",
-     "doc_ref": "t09_knowledge_concepts",
-     "embed": 0.8284,
-     "item": "A system uses BPSK modulation. The received constellation shows the points are shifted away from the real axis (y-axis offset). Is this more likely a carrier f…",
-     "item_id": "q_f24ec3d0baf3d549",
-     "ngram_shared": 0,
-     "tfidf": 0.2905,
-     "training": "offset and observe the spectrum shift\\n * Select the Xlating filter frequency offset to demodulate the BPSK (25kHz) and observe how it is uneasy or impossible to get a correct constellation.\\n * You should get approximately 2 set of points…"
-    },
-    {
-     "doc_id": "quarantine/11/session-1",
-     "doc_ref": "t03_fm_receiver_repair",
-     "embed": 0.8197,
-     "item": "In GNU Radio 3.10, the FFT Filter block (`fft_filter_xxx`) is set to Type Float->Float (Real Taps), Decimation 4, Taps [0.25]*16, with its other parameters at…",
-     "item_id": "bq_dafea381efb9d084",
-     "ngram_shared": 0,
-     "tfidf": 0.2219,
-     "training": "the computer which has a sample rate of 48 kHz. That data is fed to a [Frequency Xlating FIR Filter](https://wiki.gnuradio.org/index.php?title=Frequency_Xlating_FIR_Filter \\\"Frequency Xlating FIR Filter\\\") which shifts the tones above and…"
-    },
-    {
-     "doc_id": "sft_train/02/session-14",
-     "doc_ref": "t08_run_verify_probe",
-     "embed": 0.817,
-     "item": "How can you use PMTs to pass structured data (e.g., a dictionary) between blocks in GNU Radio?",
-     "item_id": "q_0d72d56446a67ac4",
-     "ngram_shared": 0,
-     "tfidf": 0.3355,
-     "training": "dictionary and a uniform vector. PMTs are used to pass complete segments of data accompanied by metadata describing that data as a single object. The dictionary can contain any key/value pairs useful to describe the data, though there are…"
-    },
-    {
-     "doc_id": "quarantine/15/session-8",
-     "doc_ref": "t17_wbfm_tune_repair",
-     "embed": 0.8159,
-     "item": "Design a continuous-time filter with a specified frequency response using Fourier transform techniques, and explain the steps involved.",
-     "item_id": "q_dcef738e6bd37d86",
+     "item": "In GNU Radio 3.10, take the Patterned Interleaver block (`blocks_patterned_interleaver`) set to IO Type float, Pattern [1, 0, 2, 0], with its other parameters…",
+     "item_id": "bq_997e4204e748f034",
      "ngram_shared": 0,
      "tfidf": null,
-     "training": "n digital frequency specifications into analog frequencies.\\n\\n w_a = (2/T)tan(wT/2)\\n\\n 2. Use an analog filter design technique to design the filter.\\n\\n 3. Use the bilinear transformation to convert the analog filter design to a\\n digit…"
+     "training": "I and Q each take values 0..3 (2 bits each). After int_to_float with scale k-1 = 3, we get 0..1? Wait int_to_float scale: output = input * scale. Hmm actually blocks_int_to_float: output = input * scale. So 0..3 * 3 = 0..9? Hmm. Actually w…"
     },
     {
-     "doc_id": "sft_train/04/session-17",
-     "doc_ref": "t11_vector_sink_extend",
-     "embed": 0.8147,
-     "item": "In GNU Radio Companion 3.10, take the QT GUI Fast Auto-Correlator Sink block (`qtgui_auto_correlator_sink`). What item type does its input stream take?",
-     "item_id": "bq_83f7afb36da1b5dd",
-     "ngram_shared": 0,
-     "tfidf": 0.3256,
-     "training": "float\", \"domain\": \"stream\"}], \"outputs\": [], \"doc\": \"\"}, {\"block_id\": \"qtgui_auto_correlator_sink\", \"label\": \"QT GUI Fast Auto-Correlator Sink\", \"category\": \"Core > GUI Widgets > QT\", \"params\": {\"sampRate\": \"[float]=samp_rate\", \"fac_size\":…"
-    },
-    {
-     "doc_id": "quarantine/11/session-1",
-     "doc_ref": "t03_fm_receiver_repair",
-     "embed": 0.8126,
-     "item": "Implement a multirate flowgraph in GNU Radio to process a signal at different rates.",
-     "item_id": "q_69a48b877ded2153",
+     "doc_id": "sft_train/05/session-18",
+     "doc_ref": "t24_dial_tone_notes",
+     "embed": 0.8408,
+     "item": "In GNU Radio 3.10, take the Vector to Streams block (`blocks_vector_to_streams`) set to IO Type float, Num Streams 4, with its other parameters at their defaul…",
+     "item_id": "bq_1aa4a94aff6d15e8",
      "ngram_shared": 0,
      "tfidf": null,
-     "training": "png\\\")\\nGNU Radio is a framework to develop these processing blocks and create flowgraphs, which comprise radio processing applications.\\nAs a GNU Radio user, you can combine existing blocks into a high-level flowgraph that does something…"
-    },
-    {
-     "doc_id": "quarantine/11/session-1",
-     "doc_ref": "t03_fm_receiver_repair",
-     "embed": 0.8119,
-     "item": "In GNU Radio 3.10, the Band Reject Filter block (`band_reject_filter`) is set to FIR Type Float->Float (Real Taps) (Decim), Decimation 3, Sample Rate 96000, Lo…",
-     "item_id": "bq_18247c426ec13480",
-     "ngram_shared": 0,
-     "tfidf": 0.2952,
-     "training": "the computer which has a sample rate of 48 kHz. That data is fed to a [Frequency Xlating FIR Filter](https://wiki.gnuradio.org/index.php?title=Frequency_Xlating_FIR_Filter \\\"Frequency Xlating FIR Filter\\\") which shifts the tones above and…"
+     "training": "the length of the FIR tap vector on passed-through samples.\\n\\n\\nThe block takes one or two float stream and outputs a stream composed of pairs of floats. (In GNU Radio, pairs of floats are identical to complex numbers, where the real and…"
     }
    ]
   },
@@ -538,15 +711,15 @@
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.79,
+     "max": 0.7989,
      "min": 0.5744,
      "p10": 0.6233,
-     "p25": 0.6472,
-     "p50": 0.6729,
-     "p75": 0.6992,
-     "p90": 0.7229,
-     "p95": 0.7387,
-     "p99": 0.7804
+     "p25": 0.6521,
+     "p50": 0.7015,
+     "p75": 0.7551,
+     "p90": 0.7797,
+     "p95": 0.7871,
+     "p99": 0.7969
     },
     "passages_embedded": 75,
     "rate": 0.0,
@@ -581,15 +754,15 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.3337,
+     "max": 0.3437,
      "min": 0.066,
      "p10": 0.0935,
      "p25": 0.1203,
-     "p50": 0.1485,
-     "p75": 0.1644,
-     "p90": 0.2057,
-     "p95": 0.2327,
-     "p99": 0.2724
+     "p50": 0.1589,
+     "p75": 0.2088,
+     "p90": 0.2402,
+     "p95": 0.248,
+     "p99": 0.2855
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -597,111 +770,111 @@
    },
    "top_pairs": [
     {
-     "doc_id": "sft_quarantined_session/t17_wbfm_tune_repair",
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
      "doc_ref": "",
-     "embed": 0.79,
-     "item": "If an FM receiver suffers from poor audio quality, what could be the cause?",
-     "item_id": "q_8b8dcec4e1aad62a",
+     "embed": 0.7989,
+     "item": "In GNU Radio 3.10, take the Add block (`blocks_add_xx`) set to IO Type float, Num Inputs 3, with its other parameters at their defaults. Its input 0 receives e…",
+     "item_id": "bq_e03914cc45170ef8",
      "ngram_shared": 0,
-     "tfidf": 0.1393,
-     "training": "Hey, my wideband FM receiver graph is spitting sample-rate mismatch errors and the audio sounds all wrong. Can you sort the rates and the filter out?"
-    },
-    {
-     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
-     "doc_ref": "",
-     "embed": 0.7811,
-     "item": "In GNU Radio 3.10, the Frequency Xlating FIR Filter block (`freq_xlating_fir_filter_xxx`) is set to Type Float->Complex (Real Taps), Decimation 6, Taps [1.0/16…",
-     "item_id": "bq_f4fb4779c74c4023",
-     "ngram_shared": 0,
-     "tfidf": 0.2638,
-     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
-    },
-    {
-     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
-     "doc_ref": "",
-     "embed": 0.7807,
-     "item": "In GNU Radio 3.10, the FFT Filter block (`fft_filter_xxx`) is set to Type Float->Float (Real Taps), Decimation 4, Taps [0.25]*16, with its other parameters at…",
-     "item_id": "bq_dafea381efb9d084",
-     "ngram_shared": 0,
-     "tfidf": 0.2603,
-     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
-    },
-    {
-     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
-     "doc_ref": "",
-     "embed": 0.7804,
-     "item": "In GNU Radio 3.10, the Band Reject Filter block (`band_reject_filter`) is set to FIR Type Float->Float (Real Taps) (Decim), Decimation 3, Sample Rate 96000, Lo…",
-     "item_id": "bq_18247c426ec13480",
-     "ngram_shared": 0,
-     "tfidf": 0.2772,
-     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
-    },
-    {
-     "doc_id": "sft_quarantined_session/t17_wbfm_tune_repair",
-     "doc_ref": "",
-     "embed": 0.773,
-     "item": "Your FM demodulator output has significant high-frequency noise that was not present in the original audio. What filtering should be applied and where?",
-     "item_id": "q_7824bfdf272ebe84",
-     "ngram_shared": 0,
-     "tfidf": 0.0866,
-     "training": "Hey, my wideband FM receiver graph is spitting sample-rate mismatch errors and the audio sounds all wrong. Can you sort the rates and the filter out?"
+     "tfidf": 0.1876,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
     },
     {
      "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
      "doc_ref": "",
-     "embed": 0.7622,
-     "item": "In GNU Radio Companion 3.10, take the FEC Tagged Encoder block (`fec_tagged_encoder`) with its Input Type parameter set to float. What item type does its outpu…",
-     "item_id": "bq_f8ee395b5e6d0ddf",
+     "embed": 0.7988,
+     "item": "In GNU Radio 3.10, take the Vector to Streams block (`blocks_vector_to_streams`) set to IO Type float, Num Streams 3, with its other parameters at their defaul…",
+     "item_id": "bq_4fb479b4b85eadb7",
      "ngram_shared": 0,
-     "tfidf": 0.1987,
+     "tfidf": 0.211,
      "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
-    },
-    {
-     "doc_id": "grc_agent_scenario/11_scoped_inspect_and_update",
-     "doc_ref": "",
-     "embed": 0.7592,
-     "item": "You are designing a GNU Radio block that performs real-time spectral monitoring using overlapping FFTs (STFT). The block must output power spectral density est…",
-     "item_id": "q_defaba63a48b0201",
-     "ngram_shared": 0,
-     "tfidf": 0.165,
-     "training": "This flowgraph has several blocks in it. Using inspect_graph's targets option, look at just the sample rate variable and the 350 Hz tone source — don't pull the whole overview. Then change the sample rate to 96000. Check just those same tw…"
-    },
-    {
-     "doc_id": "grc_agent_scenario/09_docs_stream_tags_concept",
-     "doc_ref": "",
-     "embed": 0.7591,
-     "item": "Explain the difference between stream tags and message passing in GNU Radio. When would you use each?",
-     "item_id": "q_ee4db2dd9d01fe15",
-     "ngram_shared": 0,
-     "tfidf": 0.3123,
-     "training": "I'm learning GNU Radio. Use `query_knowledge` with the **docs** domain to explain what a 'stream tag' is and how tags move through a flowgraph. Summarize what the documentation says. Don't change the graph."
-    },
-    {
-     "doc_id": "grc_agent_scenario/06_query_knowledge_multiply",
-     "doc_ref": "",
-     "embed": 0.759,
-     "item": "Design a GNU Radio flowgraph that computes and displays the PSD of a signal. What blocks would you use?",
-     "item_id": "q_fa9d9fc746d70de8",
-     "ngram_shared": 0,
-     "tfidf": 0.1595,
-     "training": "Inspect the flowgraph. I want to multiply the two sine wave tones together instead of adding them. Look up the right GNU Radio block for a signal multiplier using query_knowledge (catalog domain) — don't guess the block id. Add it, call it…"
     },
     {
      "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
      "doc_ref": "",
-     "embed": 0.7583,
-     "item": "Design a low-pass FIR filter with a specific transition bandwidth and number of taps.",
-     "item_id": "q_5b2311bc18e2921a",
+     "embed": 0.7983,
+     "item": "In GNU Radio 3.10, take the Frequency Xlating FIR Filter block (`freq_xlating_fir_filter_xxx`) set to Type Float->Complex (Real Taps), Decimation 4, Taps [0.12…",
+     "item_id": "bq_b0a865a29c928e82",
      "ngram_shared": 0,
-     "tfidf": 0.2525,
-     "training": "Upgrade this FM Receiver flowgraph to add a band-limiting filter and a noise squelch: 1. Search the catalog for a standard low pass filter block. 2. Add it to the flowgraph, call it `channel_filter`. Set its type parameter to `fir_filter_c…"
+     "tfidf": 0.295,
+     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7966,
+     "item": "In GNU Radio 3.10, take the Vector to Streams block (`blocks_vector_to_streams`) set to IO Type float, Num Streams 2, with its other parameters at their defaul…",
+     "item_id": "bq_08d39c038b34ff5c",
+     "ngram_shared": 0,
+     "tfidf": 0.1997,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
+     "doc_ref": "",
+     "embed": 0.7959,
+     "item": "In GNU Radio 3.10, take the Band Reject Filter block (`band_reject_filter`) set to FIR Type Float->Float (Real Taps) (Decim), Decimation 2, Gain 1, Sample Rate…",
+     "item_id": "bq_b4daee94b5eaa22f",
+     "ngram_shared": 0,
+     "tfidf": 0.2582,
+     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7941,
+     "item": "In GNU Radio 3.10, take the Vector to Streams block (`blocks_vector_to_streams`) set to IO Type float, Num Streams 4, with its other parameters at their defaul…",
+     "item_id": "bq_1aa4a94aff6d15e8",
+     "ngram_shared": 0,
+     "tfidf": 0.1965,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7929,
+     "item": "In GNU Radio 3.10, take the Multiply by Matrix block (`blocks_multiply_matrix_xx`) set to IO Type float, Matrix A ((2, -1), (2, 3)), TPP All to All. Its input…",
+     "item_id": "bq_73bf64a4501d0db8",
+     "ngram_shared": 0,
+     "tfidf": 0.2387,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7924,
+     "item": "In GNU Radio 3.10, take the Multiply by Matrix block (`blocks_multiply_matrix_xx`) set to IO Type float, Matrix A ((3, 1), (0, 0)), TPP All to All. Its input 0…",
+     "item_id": "bq_1b19f97689e04d35",
+     "ngram_shared": 0,
+     "tfidf": 0.248,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7913,
+     "item": "In GNU Radio 3.10, take the Multiply by Matrix block (`blocks_multiply_matrix_xx`) set to IO Type float, Matrix A ((3, 0), (0, 2)), TPP All to All. Its input 0…",
+     "item_id": "bq_44327ce5aec97d17",
+     "ngram_shared": 0,
+     "tfidf": 0.2327,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7906,
+     "item": "In GNU Radio 3.10, take the Single Pole IIR Filter block (`single_pole_iir_filter_xx`) set to Type float, Alpha 0.75, with its other parameters at their defaul…",
+     "item_id": "bq_fe17f8472b0303c2",
+     "ngram_shared": 0,
+     "tfidf": 0.2129,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
     }
    ]
   },
   "teacher_answers": {
    "any_signal": {
-    "items_flagged": 41,
-    "rate": 0.1439
+    "items_flagged": 60,
+    "rate": 0.2105
    },
    "description": "teacher answers and rationales (05_answers)",
    "embedding": {
@@ -709,15 +882,15 @@
     "max_cosine_quantiles": {
      "max": 0.9426,
      "min": 0.7168,
-     "p10": 0.7607,
-     "p25": 0.7846,
-     "p50": 0.8048,
-     "p75": 0.8236,
-     "p90": 0.8548,
+     "p10": 0.7588,
+     "p25": 0.7844,
+     "p50": 0.8077,
+     "p75": 0.8264,
+     "p90": 0.8546,
      "p95": 0.8728,
      "p99": 0.905
     },
-    "passages_embedded": 638,
+    "passages_embedded": 615,
     "rate": 0.0351,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -728,8 +901,8 @@
    "n_passages": 267068,
    "ngram": {
     "items_coverage_ge_50pct": 0,
-    "items_with_twin": 30,
-    "rate": 0.1053,
+    "items_with_twin": 49,
+    "rate": 0.1719,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -778,10 +951,10 @@
     "items_flagged": 17,
     "max_cosine_quantiles": {
      "max": 0.7521,
-     "min": 0.1777,
-     "p10": 0.2343,
-     "p25": 0.2652,
-     "p50": 0.3365,
+     "min": 0.1991,
+     "p10": 0.258,
+     "p25": 0.2893,
+     "p50": 0.3477,
      "p75": 0.4297,
      "p90": 0.515,
      "p95": 0.5647,
@@ -896,8 +1069,8 @@
   },
   "train_questions": {
    "any_signal": {
-    "items_flagged": 66,
-    "rate": 0.2316
+    "items_flagged": 67,
+    "rate": 0.2351
    },
    "description": "frozen training questions minus the dev split",
    "embedding": {
@@ -905,9 +1078,9 @@
     "max_cosine_quantiles": {
      "max": 0.9865,
      "min": 0.7211,
-     "p10": 0.7721,
-     "p25": 0.7848,
-     "p50": 0.8071,
+     "p10": 0.7665,
+     "p25": 0.7769,
+     "p50": 0.8055,
      "p75": 0.8488,
      "p90": 0.8956,
      "p95": 0.9195,
@@ -924,8 +1097,8 @@
    "n_passages": 1468,
    "ngram": {
     "items_coverage_ge_50pct": 0,
-    "items_with_twin": 26,
-    "rate": 0.0912,
+    "items_with_twin": 27,
+    "rate": 0.0947,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -947,10 +1120,10 @@
     "items_flagged": 43,
     "max_cosine_quantiles": {
      "max": 0.9205,
-     "min": 0.1787,
-     "p10": 0.2266,
-     "p25": 0.2433,
-     "p50": 0.3145,
+     "min": 0.1401,
+     "p10": 0.2239,
+     "p25": 0.2768,
+     "p50": 0.344,
      "p75": 0.4588,
      "p90": 0.5956,
      "p95": 0.7028,
@@ -1067,6 +1240,113 @@
  "description": "185 frozen test questions (04_eval_frozen) plus items/tier_k/test records",
  "embedding_status": "done",
  "flagged_items": {
+  "bq_08d39c038b34ff5c": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_0b288ff1852109f5": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_13990ca8fea3fcda": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_1aa4a94aff6d15e8": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_1cb16932674f0428": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram",
+   "sft_sessions:ngram",
+   "agent_traces:ngram"
+  ],
+  "bq_2149bdf2659425de": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_3e820c6d6394fda3": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_4fb479b4b85eadb7": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_5c9548ce3b0510ed": [
+   "teacher_answers:ngram"
+  ],
+  "bq_5efd90983f6c5b8c": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram",
+   "sft_sessions:ngram",
+   "agent_traces:ngram"
+  ],
+  "bq_6518824686c47736": [
+   "sft_sessions:ngram"
+  ],
+  "bq_771f9513a35c1471": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_84ebebd96401c90f": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram",
+   "sft_sessions:ngram",
+   "agent_traces:ngram"
+  ],
+  "bq_97e965174fc3c356": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_a7793095ebce45ed": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram",
+   "sft_sessions:ngram",
+   "agent_traces:ngram"
+  ],
+  "bq_c2324d0c9212c67e": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_c6a123f54123c04e": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_c97722e7a8327a37": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_e2a1f05fe2f4165c": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "bq_fe17f8472b0303c2": [
+   "train_questions:ngram",
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram",
+   "sft_sessions:ngram",
+   "agent_traces:ngram"
+  ],
   "q_03750d1cc5e2dfb2": [
    "train_questions:tfidf",
    "train_questions:embed"
@@ -1393,11 +1673,11 @@
   },
   {
    "path": "grc-bench/items/tier_k/test/block_answers.jsonl",
-   "sha256": "ac9da6e4b0fb1e654b8e9879cc995327219d5554a6f02b2c53a626709270ac69"
+   "sha256": "f6155182d4cc35b957e508943007013192a03439bef5acf0921bc9fb196d3ffc"
   },
   {
    "path": "grc-bench/items/tier_k/test/block_questions.jsonl",
-   "sha256": "3b6e853b22c1ada265fd51e6291cdad109349a6fcb86459c4b41c4f48ccde2ad"
+   "sha256": "30bfd51feba6f73afffec85bb4b9b1221991037034dea7ad4c6fd4f0fb6308e8"
   },
   {
    "path": "grc-bench/items/tier_k/test/calc_answers.jsonl",
@@ -1406,6 +1686,10 @@
   {
    "path": "grc-bench/items/tier_k/test/frozen_questions.jsonl",
    "sha256": "325c076bd75c764421d1e15cc579df17ef21cc4dcbfe46865bac41fb126083cc"
+  },
+  {
+   "path": "grc-bench/items/tier_k/test/rubrics.jsonl",
+   "sha256": "2d8488a21fcd816c5affa1ce3fda6642d673748270ff5b10316837a8a7ea2610"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",

@@ -540,9 +540,10 @@ def handoff_md(doc: dict) -> str:
         "",
         "## What this is",
         "",
-        f"GRC-Bench will ask about {c['test']} GNU Radio blocks (the *test* blocks) in its "
-        "script-generated block questions (evaluation plan §4.2: \"Training questions of this kind come "
-        "from a different set of blocks\"). To keep the benchmark clean, every GNU Radio block in "
+        f"GRC-Bench asks about {c['test']} GNU Radio blocks (the *test* blocks) in its "
+        "script-generated GNU Radio questions, which ask what a block does to a stated input (evaluation "
+        "plan §4.2: \"Training questions of this kind come from a different set of blocks\"). To keep the "
+        "benchmark clean, every GNU Radio block in "
         f"GNU Radio {doc['gnuradio_version']} is marked `test`, `train` or excluded in "
         "`splits/block_partition.json` (field `split`; `null` means excluded).",
         "",
@@ -558,9 +559,10 @@ def handoff_md(doc: dict) -> str:
         "`blocks_multiply_const_xx` and `blocks_multiply_const_vxx`) are always on the same side.",
         "4. **Different wording.** Write your own question wording and templates. Do not copy or imitate "
         "GRC-Bench's. You will not receive benchmark questions or answers; only this partition is shared.",
-        "5. **Scope.** This partition is for block-property Q&A (types, ports, parameters, rates, "
-        "constraints). Flowgraph and agent training data follow their own split files, handed off "
-        "separately.",
+        "5. **Scope.** This partition is for generated block Q&A: block properties (types, ports, "
+        "parameters, rates, constraints) and block behaviour (what a block outputs for a given input). "
+        "Flowgraph and agent training data follow their own split files, handed off separately; "
+        "Qoherent's agent traces of 15-18 October are used in full (see START_HERE.md).",
         "",
         "## How to check a generated set",
         "",

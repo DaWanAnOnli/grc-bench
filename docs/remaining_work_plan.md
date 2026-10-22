@@ -58,6 +58,13 @@ drafts are in `handoff/` (details in `../HANDOVER.md`, "22 Oct"):
 
 Left: step 11 (ask Joel before the first commit), then the team's reviews and G2 decisions.
 
+**23 Oct.**
+- The first commit was made.
+- Qoherent's agent traces (`new_data/`) were audited (`./gb traces`) and all go to training.
+- Tier K's 100 GNU Radio questions were regenerated as execution-derived questions (`./gb blockq`).
+- The closed-book Tier-K question prompt is pinned (`tier_k/answer_prompt.py`).
+- Details in `../HANDOVER.md`, "23 Oct".
+
 **Rough schedule** (moved on 21 Oct; nothing ran on 19–20 Oct):
 - 21–22 Oct: steps 1–3.
 - 23 Oct: steps 4–5.

@@ -4,7 +4,7 @@ From the GRC-Bench evaluation team. Drafted by Claude (Anthropic) with `./gb blo
 
 ## What this is
 
-GRC-Bench will ask about 125 GNU Radio blocks (the *test* blocks) in its script-generated block questions (evaluation plan §4.2: "Training questions of this kind come from a different set of blocks"). To keep the benchmark clean, every GNU Radio block in GNU Radio 3.10.12.0 is marked `test`, `train` or excluded in `splits/block_partition.json` (field `split`; `null` means excluded).
+GRC-Bench asks about 125 GNU Radio blocks (the *test* blocks) in its script-generated GNU Radio questions, which ask what a block does to a stated input (evaluation plan §4.2: "Training questions of this kind come from a different set of blocks"). To keep the benchmark clean, every GNU Radio block in GNU Radio 3.10.12.0 is marked `test`, `train` or excluded in `splits/block_partition.json` (field `split`; `null` means excluded).
 
 ## Rules for GNU Radio question expansion in training
 
@@ -12,7 +12,7 @@ GRC-Bench will ask about 125 GNU Radio blocks (the *test* blocks) in its script-
 2. **Excluded blocks** (`split` is `null`: GRC entries such as variables, deprecated blocks, and the uhd, soapy, iio, zeromq, network and audio modules) are outside the partition. Do not use them for the expansion unless the GRC-Bench team agrees.
 3. **Whole families.** Blocks that differ only in type or version (field `family`, for example `blocks_multiply_const_xx` and `blocks_multiply_const_vxx`) are always on the same side.
 4. **Different wording.** Write your own question wording and templates. Do not copy or imitate GRC-Bench's. You will not receive benchmark questions or answers; only this partition is shared.
-5. **Scope.** This partition is for block-property Q&A (types, ports, parameters, rates, constraints). Flowgraph and agent training data follow their own split files, handed off separately.
+5. **Scope.** This partition is for generated block Q&A: block properties (types, ports, parameters, rates, constraints) and block behaviour (what a block outputs for a given input). Flowgraph and agent training data follow their own split files, handed off separately; Qoherent's agent traces of 15-18 October are used in full (see START_HERE.md).
 
 ## How to check a generated set
 

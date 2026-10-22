@@ -19,7 +19,7 @@ reading is correct (exceptions: P4 and P8 below). On rule-only checks (dev-split
 eval plan §4.1 and §10.3, "scored by rules only") a judge result scores 0 (rule_only_credit) and the
 deferral rate is reported with the score (P10).
 
-Reference forms (a rubric's numeric field, or a target for block-catalog and choice questions):
+Reference forms (a rubric's numeric field, or a target for block and choice questions):
   {"value": 2.5, "unit": "MS/s", "tolerance": 0.01}   numeric. A rubric {"numeric": {...} | [...]}
       also works; a rubric whose numeric is null or absent (an open-ended item) goes to the judge.
       tolerance: relative (default DEFAULT_TOLERANCE). abs_tolerance: absolute, in the reference unit

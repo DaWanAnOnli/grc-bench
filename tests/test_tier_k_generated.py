@@ -39,9 +39,12 @@ def test_block_questions_are_test_side_valid_and_about_100():
         assert part[q["source"]["block_id"]]["split"] == "test"          # training uses other blocks
         assert q["cluster_id"] == f"block_family:{part[q['source']['block_id']]['family']}"
         assert q["item_kind"] == "block_question" and q["review"]["status"] == "pending-team-review"
+        assert q["block_question_kind"] in ("output_value", "output_count")   # behaviour, never catalog facts
+        assert q["source"]["kind"] == "gnuradio_run"
         assert CANARY_GUID not in q["question"]
-    pairs = Counter((q["source"]["block_id"], q["block_question_kind"]) for q in QUESTIONS)
-    assert max(pairs.values()) == 1                                          # one per block and kind
+    per_block = Counter(q["source"]["block_id"] for q in QUESTIONS)
+    assert max(per_block.values()) <= blockgen.MAX_PER_BLOCK
+    assert len({q["question"] for q in QUESTIONS}) == len(QUESTIONS)        # no repeated question
 
 
 def test_block_question_records_hold_no_answers_and_the_key_scores_them():
@@ -50,22 +53,24 @@ def test_block_question_records_hold_no_answers_and_the_key_scores_them():
     for q in QUESTIONS:
         assert "answer" not in q and "reference" not in q
         key = by_id[q["id"]]
-        right, wrong = blockgen._answer_text({"kind": key["kind"], "answer": key["answer"]})
-        assert rules.score(right, key["reference"])["credit"] == 1.0, q["id"]
-        r0 = rules.score(wrong, key["reference"])
-        assert r0["method"] == "judge" or r0["credit"] < 1.0, q["id"]
+        integer = key["reference"]["tolerance"] < 1e-6
+        problem = blockgen._rules_check({"answer": key["answer"], "integer": integer,
+                                         "tolerance": {k: key["reference"][k] for k in ("tolerance", "abs_tolerance")}})
+        assert problem is None, (q["id"], problem)
+        assert "GNU Radio 3.10.12 run" in key["evidence"]
 
 
-def test_type_questions_never_give_the_answer_away():
-    by_id = {a["question_id"]: a for a in ANSWERS}
-    for q in QUESTIONS:
-        if q["block_question_kind"] in blockgen.TYPE_KINDS:
-            assert not blockgen._gives_away(by_id[q["id"]]["answer"], q["question"].split("(`")[0]), q["question"]
+def test_no_question_on_a_block_a_training_trace_ran():
+    executed = blockgen._executed_blocks()
+    assert executed, "splits/agent_traces.json (./gb traces) lists the blocks built in trace code"
+    assert not {q["source"]["block_id"] for q in QUESTIONS} & executed
 
 
-def test_output_rates_were_confirmed_by_a_run():
-    rates = [a for a in ANSWERS if a["kind"] == "output_rate"]
-    assert rates and all("confirmed by running the flowgraph" in a["evidence"] for a in rates)
+def test_reference_models_match_known_values():
+    assert blockgen.linear2ulaw(0) == 0xFF and blockgen.linear2alaw(0) == 0xD5      # ITU-T G.711 silence codes
+    assert blockgen._c_div(-7, 2) == -3 and blockgen._c_div(7, -2) == -3
+    assert blockgen._iir([1.0], [1.0, 0.5], [1.0, 0.0, 0.0], True) == [1.0, 0.5, 0.25]
+    assert blockgen._iir([1.0], [1.0, 0.5], [1.0, 0.0, 0.0], False) == [1.0, -0.5, 0.25]
 
 
 # ---------------------------------------------------------------- rubric templates

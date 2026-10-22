@@ -18,6 +18,179 @@
   }
  },
  "corpora": {
+  "agent_traces": {
+   "any_signal": {
+    "items_flagged": 0,
+    "rate": 0.0
+   },
+   "description": "Qoherent's agent traces of 15-18 Oct (new_data/), all message text",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8304,
+     "min": 0.74,
+     "p10": 0.7794,
+     "p25": 0.7878,
+     "p50": 0.8003,
+     "p75": 0.8081,
+     "p90": 0.8196,
+     "p95": 0.8226,
+     "p99": 0.8288
+    },
+    "passages_embedded": 44,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 1854,
+   "n_passages": 171347,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 0,
+    "rate": 0.0,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "1853 traces (1253 tier1 + 600 tier2); the shared system prompt is one document"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "new_data/GRC-Agent_tier1_dataset_v1_toolcalls/tier1_sft_trajectories.jsonl",
+     "sha256": "77d9404ac6c57bf810a2472ad42765ad4f89adbb606ec7e50ccf7cfa7e66d357"
+    },
+    {
+     "path": "new_data/GRC-Agent_tier2_dataset_v1/tier2_sft_trajectories.jsonl",
+     "sha256": "834fd66cf30c3210c16838c4c7d08fff5dcfb7f638cd2e4479dceb243add0a51"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.3191,
+     "min": 0.1728,
+     "p10": 0.188,
+     "p25": 0.1935,
+     "p50": 0.2142,
+     "p75": 0.2323,
+     "p90": 0.2434,
+     "p95": 0.2634,
+     "p99": 0.308
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.8304,
+     "item": "This flowgraph runs at a sample rate of 48 kHz and simulates a receiver recording with weak and strong bursts: a complex Signal Source makes a 1.2 kHz tone wit…",
+     "item_id": "gbf-test-11",
+     "ngram_shared": 0,
+     "tfidf": 0.1868,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier2/t2_query_analog_wfm_rcv",
+     "doc_ref": "t2_query_analog_wfm_rcv",
+     "embed": 0.8222,
+     "item": "This flowgraph sends a test tone through a Channel Model at a sample rate of 48 kHz: a Signal Source makes a complex tone at +3 kHz with amplitude 0.5, which i…",
+     "item_id": "gbf-test-12",
+     "ngram_shared": 0,
+     "tfidf": 0.2248,
+     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
+    },
+    {
+     "doc_id": "tier2/t2_query_analog_wfm_rcv",
+     "doc_ref": "t2_query_analog_wfm_rcv",
+     "embed": 0.8193,
+     "item": "I want to see what a full-wave rectifier does to a mains-like waveform. In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to generate a 50 Hz…",
+     "item_id": "gbf-test-01",
+     "ngram_shared": 0,
+     "tfidf": 0.1841,
+     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
+    },
+    {
+     "doc_id": "tier2/t2_query_analog_wfm_rcv",
+     "doc_ref": "t2_query_analog_wfm_rcv",
+     "embed": 0.8186,
+     "item": "This flowgraph runs at a sample rate of 48 kHz and writes a complex tone to a File Sink that stores complex samples in the file qtgui_time_sink_x_0_0.dat. When…",
+     "item_id": "gbf-test-06",
+     "ngram_shared": 0,
+     "tfidf": 0.2576,
+     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
+    },
+    {
+     "doc_id": "tier1/t1_topo_digital_ofdm_carrier_allocator_cvc_disable",
+     "doc_ref": "t1_topo_digital_ofdm_carrier_allocator_cvc_disable",
+     "embed": 0.8097,
+     "item": "This flowgraph simulates a QPSK link to demonstrate symbol timing recovery. It runs at a sample rate of 48 kHz. The transmitter takes random QPSK symbols (GNU…",
+     "item_id": "gbf-test-17",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "QPSK TX RX 2.grc\\\\\\\").\\\\nThis flowgraph\\\\n * generate a single signal composed of:\\\\n * our QPSK signal at _F 0_\\\\n * the BPSK signal at _F 0_+25 kHz\\\\n * simulate a channel frequency offset\\\\n * use a Xlating filter to shift the received…"
+    },
+    {
+     "doc_id": "tier2/t2_query_analog_wfm_rcv",
+     "doc_ref": "t2_query_analog_wfm_rcv",
+     "embed": 0.8076,
+     "item": "This flowgraph generates a GMSK test signal from random bytes and passes it through the HW Impairments block, which is set so that it changes nothing (phase no…",
+     "item_id": "gbf-test-19",
+     "ngram_shared": 0,
+     "tfidf": 0.2069,
+     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
+    },
+    {
+     "doc_id": "tier2/t2_query_analog_wfm_rcv",
+     "doc_ref": "t2_query_analog_wfm_rcv",
+     "embed": 0.8068,
+     "item": "This flowgraph is a receiver for a CW (Morse) beacon. Its input is a simulated complex baseband recording at a sample rate of 96 kHz. It holds the beacon's car…",
+     "item_id": "gbf-test-18",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.8056,
+     "item": "This flowgraph runs at a sample rate of 48 kHz. A float Signal Source makes a 1.5 kHz cosine with amplitude 0.8. The cosine goes straight to a File Sink that w…",
+     "item_id": "gbf-test-07",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
+    {
+     "doc_id": "tier2/t2_query_analog_wfm_rcv",
+     "doc_ref": "t2_query_analog_wfm_rcv",
+     "embed": 0.8054,
+     "item": "In this empty flowgraph, build a loopback test for a narrowband FM voice link: frequency-modulate a test tone and then demodulate it again. Set samp_rate to 40…",
+     "item_id": "gbf-test-14",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
+    },
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.8003,
+     "item": "This flowgraph runs at a sample rate of 48 kHz. It adds four complex tones (1.2 kHz with amplitude 0.8, 13.92 kHz with amplitude 0.5, 23.04 kHz with amplitude…",
+     "item_id": "gbf-test-16",
+     "ngram_shared": 0,
+     "tfidf": 0.2093,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    }
+   ]
+  },
   "repaired": {
    "any_signal": {
     "items_flagged": 2,

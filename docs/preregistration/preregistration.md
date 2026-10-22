@@ -14,7 +14,7 @@ in the 7 December report.
   - `docs/preregistration/run_list.yaml`: the declared test-split run list (eval plan Table 6);
   - the analysis code, package `grcbench.stats` of the `grc-bench` repository, at the commit named at
     sign-off (Appendix A lists its open choices);
-  - the judge prompt snapshot (Appendix B).
+  - the Tier-K question prompt and the judge prompt snapshot (Appendix B).
 
 ## 1. What this document fixes in advance
 
@@ -34,7 +34,7 @@ assistant inside GNU Radio Companion. It has four tiers.
 
 | Tier | What it measures | Dev split (for every choice) | Test split v1.0 (frozen 13 Nov) | Built by G2 |
 |---|---|---|---|---|
-| K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 200 questions held back from the 1,668 training questions | 285: the 185 frozen questions and 100 questions generated from the GNU Radio block catalog | all 285 test and 200 dev questions; rubric templates (prose written by the team) |
+| K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 200 questions held back from the 1,668 training questions | 285: the 185 frozen questions and 100 GNU Radio behaviour questions, each answered by running GNU Radio | all 285 test and 200 dev questions; rubric templates (prose written by the team) |
 | F: flowgraphs | Making a correct flowgraph edit for a stated goal: one documentation lookup and one edit inside GRC-Agent, judged by running the result | 45 tasks | 150 tasks (60 L1, 60 L2, 30 L3) | a first set of 30 (20 test, 10 dev), all gates passed, pending team review |
 | A: agent | Completing a realistic multi-step task with GRC-Agent's tools (8–20 tool calls), judged by the end state | 12 tasks | 30 tasks | 10 test and 12 dev tasks built, all gates passed; 20 test tasks drafted as specifications |
 | E: speed and memory | Prompt and generation speed, time to first token and peak memory on the target hardware | — | — | the llama-bench protocol, tested on a small model |
@@ -56,6 +56,15 @@ assistant inside GNU Radio Companion. It has four tiers.
   any training flowgraph with a reserved signature.
 - Every item record carries the canary string; the canary never appears in anything a model sees.
 - Benchmark items are never sent to a model that creates training data.
+- **Agent traces used for training.** Qoherent's 1,853 agent traces of 15–18 October (DeepSeek-V4.1-Flash
+  in GRC-Agent's harness) are used in full for training. `./gb traces` checks them against the
+  benchmark (`reports/agent_traces.md`):
+  - no trace has the goal or the start graph of a Tier-F or Tier-A task (the task-level check of eval
+    plan §6);
+  - their text is a corpus of the contamination audit;
+  - they show the catalog entries of almost every block (port types, parameter options, port counts)
+    but never ran a flowgraph. So Tier K's GNU Radio questions ask what a block does on a stated input,
+    which only execution reveals, and none is about a block a trace built in GNU Radio code.
 
 ## 3. Research questions, hypotheses and decision rules
 
@@ -90,14 +99,27 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 - **Who wrote what** (eval plan Table 5). The rules of Table 5 apply: Mistral models are not scored on
   Tier K; the judge's family and the family that drafts rubrics are not scored on Tier K; a teacher's
   Tier-K score is also reported without the questions its family wrote. Claude (Anthropic) drafted the
-  Tier-F and Tier-A tasks, their reference solutions and oracles, and the block-question generator;
-  the team reviews and decides every item. Claude does not draft rubric prose. Anthropic models are not
+  Tier-F and Tier-A tasks, their reference solutions and oracles, and the settings and wording of the
+  GNU Radio behaviour questions, whose answers come from GNU Radio runs; the team reviews and decides
+  every item. Claude does not draft rubric prose. Anthropic models are not
   on the panel.
 
 ## 5. Scoring and metrics
 
 ### 5.1 Tier K
 
+- **How a question is posed.** Tier K is closed-book. A model under test gets one message: a fixed
+  instruction and the question, with no GRC-Agent system prompt and no tools
+  (`grcbench.tier_k.answer_prompt`, version and hash in Appendix B). The instruction asks for a closing
+  line "Final answer: …". A reply is limited to 4,096 tokens, reasoning included. B1 places the
+  retrieved documentation before the same message.
+- **GNU Radio behaviour questions.** Each of the 100 asks for one number: the k-th output of a block set
+  as stated on a stated finite input, or how many items it produces. The key is GNU Radio's own output.
+  The generator runs the block twice in the sandbox and reads the recording, and keeps a question only
+  when the runs agree, an independent model of the block's documented behaviour gives the same number,
+  and the rule cascade scores the key 1 and a wrong value less (`./gb blockq`;
+  `reports/tier_k_block_questions.md`). Floats are accepted within 1 % (with an absolute margin that
+  shrinks near zero), integers and counts exactly.
 - **Rule cascade first, judge second.** Every answer is parsed by the rule cascade (`grcbench.tier_k.rules`):
   numbers with units and tolerances, option letters, block identifiers and symbols. Numeric answers
   earn tiered credit by relative error, and a wrong unit or order of magnitude earns 0. Only answers
@@ -229,7 +251,10 @@ default settings on 10 tasks.
 - **Error analysis.** Two annotators label failures with the set list of error types
   (`docs/guidelines/error_analysis.md`); their κ is reported.
 - **Exploratory analyses.** Anything not listed here, and any run outside `run_list.yaml`, is
-  labelled exploratory and kept out of the main claims.
+  labelled exploratory and kept out of the main claims. One is planned: Tier-A success of the trained
+  models by category, split by whether the training traces cover the category's tool pattern. The
+  traces never save a block to the library or write files, and they never ran a flowgraph
+  (`reports/agent_traces.md`).
 
 ## 8. Decisions the team takes before signing
 
@@ -261,8 +286,8 @@ Each item states what has to be decided and the option this draft proposes.
     twice; if it fails a third time it is scored as a failure and listed.
 11. **Tier-A refusal tasks:** whether an unsafe request (gba-test-29) belongs in Tier A beside the
     hardware, network and impossible-request tasks.
-12. **The code version:** the first commit of the `grc-bench` repository, so that this document can
-    cite the exact commit of the analysis code.
+12. **The code version:** the commit of the `grc-bench` repository made at sign-off, which this
+    document cites for the analysis code.
 
 ## 9. Fixed at the freeze (13 November)
 
@@ -282,8 +307,14 @@ Each item states what has to be decided and the option this draft proposes.
 - **Who drafted the tasks.** Data Summary §11 names other authors for three kinds of item. Tier-F
   instructions (§11 A, DeepSeek-V4.1-Flash) and Tier-A tasks (§11 D, team members with no AI
   involved) were drafted by Claude, and the team reviews and decides every one; this is raised with
-  Qoherent. The 100 GNU Radio test questions (§11 C, an AI model) are generated by a script with
-  answers read from the block files, as the evaluation plan specifies.
+  Qoherent. The 100 GNU Radio test questions (§11 C, an AI model) are generated by a script, with
+  answers from GNU Radio runs.
+- **GNU Radio questions answered by execution.** Eval plan §4.2 reads the answers of the generated
+  GNU Radio questions from the block catalog. The agent traces used for training show those catalog
+  entries, so the questions ask instead what a block does on a stated input, and the key comes from
+  running it (§5.1).
+- **Agent traces** were collected on GNU Radio 3.10.9.2, where flowgraph execution was not available.
+  The benchmark runs on 3.10.12 with execution.
 - **Web tools** return a fixed "offline" message in Tier A.
 - **L3 tasks** of Tier F are added after G2 (week 5), and Tier F and Tier A scale from their first
   sets only after the team's decision on them.
@@ -403,19 +434,23 @@ Proposals for G2 (deviation = changes a stated definition; extension = decides a
 - Evidence: exploratory only; nothing is kept or dropped because of it.
 <!-- END stats-proposals -->
 
-## Appendix B: judge prompt
+## Appendix B: Tier-K question prompt and judge prompt
 
-Generated by `python -m grcbench.tier_k.judge_prompt --out docs/preregistration/judge_prompt_snapshot.json`.
+Generated by `./gb prereg` from `grcbench.tier_k.answer_prompt` and `grcbench.tier_k.judge_prompt`
+(the judge's full snapshot: `docs/preregistration/judge_prompt_snapshot.json`).
 
 <!-- BEGIN judge-prompt (generated; do not edit by hand) -->
 | Item | Value |
 |---|---|
-| Prompt version | `tier-k-judge-v2` |
-| Prompt SHA-256 | `0c462ae7b577601e4c4fef248d66c0a5bfb7af146bcef1ba758f0d549141a6d5` |
+| Tier-K question prompt version | `tier-k-answer-v1` |
+| Tier-K question prompt SHA-256 | `16891eff0f9f05392c48e461148daef38e5b8b502e8c5c5b52296c57378f0d65` |
+| Tier-K answer limit | 4,096 tokens, reasoning included |
+| Judge prompt version | `tier-k-judge-v2` |
+| Judge prompt SHA-256 | `0c462ae7b577601e4c4fef248d66c0a5bfb7af146bcef1ba758f0d549141a6d5` |
 | Judges | MiniMax-M3 (fallback: Kimi K2.6) |
 | Rule cascade | `tier-k-rules 0.4 (proposal; fixed at G2)` |
 | Entity index | 187,802 names, SHA-256 `7e30ea3dbb8ea15d4620991029eb917f7faf58d67803a8b5da180260842b32a5` |
 | Probe requests in the hash | 6 toy items x 10 answers |
 
-The fallback judge uses this same template unchanged, so both judges share one version and one hash. The full template, rubric rendering, verdict schema and aggregation rules are in `docs/preregistration/judge_prompt_snapshot.json`.
+Tier K is closed-book: a model under test gets one message, the question prompt's instruction and the question (`grcbench.tier_k.answer_prompt`); B1 places the retrieved documentation before it. The fallback judge uses the judge template unchanged, so both judges share one version and one hash. The full template, rubric rendering, verdict schema and aggregation rules are in `docs/preregistration/judge_prompt_snapshot.json`.
 <!-- END judge-prompt -->

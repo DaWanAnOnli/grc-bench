@@ -4,8 +4,9 @@ docs/preregistration/preregistration.md is written by hand, except two appendice
 code exactly, each kept between BEGIN/END markers:
 
   stats-proposals   the analysis proposals and approved definitions (stats.proposals.as_markdown)
-  judge-prompt      the judge prompt version and hash, the rule-cascade version and the entity
-                    index hash (tier_k.judge_prompt.snapshot, also written in full to
+  judge-prompt      the Tier-K question prompt's version and hash (tier_k.answer_prompt), then the
+                    judge prompt version and hash, the rule-cascade version and the entity index hash
+                    (tier_k.judge_prompt.snapshot, also written in full to
                     docs/preregistration/judge_prompt_snapshot.json)
 
     ./gb prereg            rewrite both appendices and the snapshot
@@ -36,22 +37,29 @@ def proposals_block() -> str:
     return "\n".join(lines).strip("\n")
 
 
-def judge_block(snap: dict) -> str:
+def judge_block(snap: dict, answer: dict | None = None) -> str:
     agg = snap["aggregation"]
     ent = snap["entity_check"]
     judges = snap["judges"]
     judges = (f"{judges['primary']} (fallback: {judges['fallback']})" if isinstance(judges, dict)
               else ", ".join(judges))
+    rows = []
+    if answer:
+        rows = [f"| Tier-K question prompt version | `{answer['prompt_version']}` |",
+                f"| Tier-K question prompt SHA-256 | `{answer['prompt_sha256']}` |",
+                f"| Tier-K answer limit | {answer['max_answer_tokens']:,} tokens, reasoning included |"]
     return "\n".join([
-        "| Item | Value |", "|---|---|",
-        f"| Prompt version | `{snap['prompt_version']}` |",
-        f"| Prompt SHA-256 | `{snap['prompt_sha256']}` |",
+        "| Item | Value |", "|---|---|", *rows,
+        f"| Judge prompt version | `{snap['prompt_version']}` |",
+        f"| Judge prompt SHA-256 | `{snap['prompt_sha256']}` |",
         f"| Judges | {judges} |",
         f"| Rule cascade | `{agg['rules_version']}` |",
         f"| Entity index | {ent['index_names']:,} names, SHA-256 `{ent['index_sha256']}` |",
         f"| Probe requests in the hash | {snap['probes']['items']} toy items x {snap['probes']['answers']} answers |",
         "",
-        "The fallback judge uses this same template unchanged, so both judges share one version and one "
+        "Tier K is closed-book: a model under test gets one message, the question prompt's instruction and "
+        "the question (`grcbench.tier_k.answer_prompt`); B1 places the retrieved documentation before it. "
+        "The fallback judge uses the judge template unchanged, so both judges share one version and one "
         "hash. The full template, rubric rendering, verdict schema and aggregation rules are in "
         f"`{SNAPSHOT.relative_to(DOCS.parent).as_posix()}`."])
 
@@ -64,18 +72,19 @@ def _replace(text: str, name: str, body: str) -> str:
     return pattern.sub(lambda _: f"{begin}\n{body}\n{end}", text, count=1)
 
 
-def render(text: str, snap: dict) -> str:
-    return _replace(_replace(text, "stats-proposals", proposals_block()), "judge-prompt", judge_block(snap))
+def render(text: str, snap: dict, answer: dict | None = None) -> str:
+    return _replace(_replace(text, "stats-proposals", proposals_block()), "judge-prompt", judge_block(snap, answer))
 
 
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="gb prereg", description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="only report whether the appendices are current")
     args = ap.parse_args(argv)
+    from ..tier_k import answer_prompt
     from ..tier_k.judge_prompt import snapshot
     snap = snapshot()
     text = PREREG.read_text(encoding="utf-8")
-    new = render(text, snap)
+    new = render(text, snap, answer_prompt.snapshot())
     if args.check:
         current = new == text
         print(f"{PREREG.name}: generated appendices {'current' if current else 'OUT OF DATE (run ./gb prereg)'}")

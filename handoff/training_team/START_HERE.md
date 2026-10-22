@@ -17,6 +17,36 @@ folder covers one kind of data. Start with the table, then read the file for the
 | `flowgraph_seed_split.md` | flowgraph and agent tasks built from GNU Radio example files | Never use a test or dev seed file, also not edited or with a fault planted in it. |
 | `flowgraph_composed_chains.md` and `flowgraph_reserved_signatures.txt` | flowgraphs written by hand or by a script | Emit a graph only if its signature hashes to train and its digest is not on the reserved list. |
 | this file, below | tool outputs inside training sessions | Cut long tool outputs with the same 4K-token function as the benchmark. |
+| this file, below | Qoherent's agent traces of 15-18 October (`new_data/`) | Use all 1,853 traces; they were checked against the benchmark. Render each student's own chat template. |
+
+## Qoherent's agent traces (15-18 October)
+
+`project/new_data/` holds 1,253 one-shot (Tier 1) and 600 two-turn (Tier 2) traces, made by
+DeepSeek-V4.1-Flash in GRC-Agent's harness. All of them may be used for training. `./gb traces`
+checked them against the benchmark (`reports/agent_traces.md`):
+
+- **Same harness.** Their system prompt and tools match the evaluation harness, apart from the file
+  path and two cosmetic schema details.
+- **No task-level overlap.** No trace has the goal or the start graph of a benchmark task. 38 traces
+  end in a one-block graph whose signature cell is reserved (a lone tone or vector source wired to
+  null sinks). For agent traces, the task-level check is the rule, and they pass it.
+- **No change on your side.** The GNU Radio test questions ask what a block does to a stated input.
+  The traces show the block catalog but never ran a flowgraph, so they do not contain those answers.
+
+Notes on the data (for your judgement; GRC-Bench does not change training data):
+
+- All 37 `run_flowgraph` calls in the traces got "Flowgraph execution is not wired up in this
+  environment". A model trained on them may learn that runs are unavailable. In the benchmark,
+  `run_flowgraph` works.
+- 53 `run_command` calls read Qoherent's own collection folder (other traces' outputs). The collection
+  harness had no sandbox; the benchmark's has one.
+- The traces never call `save_block`, `write_file`, `create_directory` or `get_run_log`.
+- `new_data/export_unsloth.py` audits and converts the traces, but it wraps reasoning in Qwen3
+  `<think>` tags. For Nanbeige4.2-3B and North-Mini-Code, render each model's own chat template from
+  the master `tier1_sft_trajectories.jsonl` and `tier2_sft_trajectories.jsonl`, which keep the
+  reasoning in a separate field. The script's paths point to Qoherent's `output/` folder, so it does
+  not run as-is on this copy.
+- Cut long tool outputs with the benchmark's 4K-token function (next section), as for any session.
 
 ## Tool outputs: use the benchmark's 4K-token cut
 

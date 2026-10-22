@@ -266,12 +266,15 @@ The files are in `handoff/review_sheets/`, written by `./gb calc`:
    "Decibel units" above). Add required points only if the question asks for more than the number
    ("calculate ... and explain ...").
 
-## Block-catalog questions
+## GNU Radio behaviour questions
 
-The ~100 script-generated GNU Radio questions take their answers directly from the block YAML
-files. They are scored by rules (exact names, sets of options, numbers), not by a rubric. For these
-questions, the two team members check **the wording only** (eval plan Table 7, about 13 hours): is
-the question clear, and does it ask about one property of one block setting?
+The 100 script-generated GNU Radio questions ask for one number each: a block's k-th output for a
+stated input, or how many items it produces. Their answers come from running GNU Radio
+(`./gb blockq`). They are scored by rules (numbers), not by a rubric. For these questions, the two
+team members check **the wording only** (eval plan Table 7, about 13 hours):
+
+- Is the question clear?
+- Does it state everything the answer depends on?
 
 ## Checking a rubric
 

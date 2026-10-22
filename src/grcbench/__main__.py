@@ -24,9 +24,10 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "labels": ("grcbench.labels.task_types:main", "map raw task-type spellings to the 6 canonical types"),
     "tier-k-items": ("grcbench.tier_k.items:main", "write Tier-K test/dev item records"),
     "contamination": ("grcbench.contamination.audit:main", "8-gram, TF-IDF and embedding overlap audit"),
+    "traces": ("grcbench.contamination.agent_traces:main", "audit Qoherent's agent traces against the benchmark"),
     # Tier K
     "blocks": ("grcbench.tier_k.catalog:main", "load the GNU Radio block catalog; test/train block partition"),
-    "blockq": ("grcbench.tier_k.blockgen:main", "generate the block-catalog test questions"),
+    "blockq": ("grcbench.tier_k.blockgen:main", "generate the GNU Radio behaviour test questions"),
     "calc": ("grcbench.tier_k.calc:main", "compute calculation-question answers by script"),
     "rubrics": ("grcbench.tier_k.rubrics:main", "write rubric templates and review sheets"),
     "score-k": ("grcbench.tier_k.rules:main", "rule-cascade scorer for Tier-K answers"),

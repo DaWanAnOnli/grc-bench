@@ -16,6 +16,9 @@ DATA = PROJECT / "data"
 DATASET = DATA / "GRC_dataset_20261007" / "dataset"
 SFT_RELEASE = DATA / "grc-agent-sft-v0.1.0" / "grc-agent-sft-v0.1.0"
 FROZEN = DATASET / "04_eval_frozen"
+NEW_DATA = PROJECT / "new_data"                      # Qoherent's agent traces of 15-18 Oct (read-only)
+AGENT_TRACES = {"tier1": NEW_DATA / "GRC-Agent_tier1_dataset_v1_toolcalls" / "tier1_sft_trajectories.jsonl",
+                "tier2": NEW_DATA / "GRC-Agent_tier2_dataset_v1" / "tier2_sft_trajectories.jsonl"}
 
 ITEMS = REPO / "items"
 SPLITS = REPO / "splits"

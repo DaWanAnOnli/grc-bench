@@ -459,8 +459,8 @@ def render_report(ctx: dict[str, Any]) -> str:
             + ", ".join(f"`{k}` {v:.3f}" for k, v in sorted(sims[g].items(), key=lambda kv: -kv[1]))
             + ".")
         if g == "gnuradio_usage":
-            add("- **Alternative A (no merge):** Tier K v1.0 adds about 100 block-catalog questions (eval plan "
-                "§4.2; WS3b), all about GNU Radio blocks, ports, types and rates, which is the "
+            add("- **Alternative A (no merge):** Tier K v1.0 adds 100 GNU Radio behaviour questions (eval plan "
+                "§4.2; WS3b), all about what GNU Radio blocks do to a stream, which is the "
                 "gnuradio_usage definition. If the group rule is applied to Tier K as a whole (285 items) "
                 f"rather than to the {n_eval} frozen questions, `gnuradio_usage` has about "
                 f"{ctx['test_counts'][g] + 100} items and needs no merge. GRC-Agent needs this skill most "
@@ -488,15 +488,15 @@ def render_report(ctx: dict[str, Any]) -> str:
         "models such as Nanbeige4.2 may trade recall for reasoning [14]. Proposed mapping, "
         "**for team decision; to be fixed in the G2 pre-registration before any test run**:")
     add("")
-    add(f"- **Recall:** `factual` ({fam['recall']} test items), plus the WS3b block-catalog questions, whose "
-        "answers are block properties read from the YAML (pure recall).")
+    add(f"- **Recall:** `factual` ({fam['recall']} test items).")
     add(f"- **Reasoning:** `reasoning`, `calculation`, `design` and `diagnosis` ({fam['reasoning']} test "
-        "items).")
+        "items), plus the WS3b GNU Radio behaviour questions, whose answers combine knowing what a block does "
+        "with a short computation on the stated input.")
     add(f"- **`gnuradio_usage` ({fam['usage']} frozen test items):** put them in the reasoning family, in "
         "line with the merge into `design` proposed above (they ask how to implement or configure "
         "something). The alternative is to leave them out of the two-way split.")
-    add("- The split goes by item, not only by task type: a block-catalog question counts as recall even "
-        "if its task_type is `gnuradio_usage`.")
+    add("- The split goes by item, not only by task type: a behaviour question counts as reasoning whatever "
+        "its task_type.")
     add(f"- The recall group is much smaller than the reasoning group ({fam['recall']} vs "
         f"{fam['reasoning'] + fam['usage']} frozen items), so its intervals are wider. Print the MDE beside "
         "it (eval plan §9).")

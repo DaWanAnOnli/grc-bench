@@ -12,7 +12,7 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
    |---|---|---|
    | `tier_f_first_set.csv` | 30 tasks | `docs/checklists/tier_f_task_review.md` (about 10 minutes per task per reviewer) |
    | `tier_a_first_set.csv` | 22 tasks + 20 specs | `docs/checklists/tier_a_task_review.md` (about 20 minutes per task per reviewer) |
-   | `tier_k_block_questions.csv` | 100 questions | wording review of the generated block questions |
+   | `tier_k_block_questions.csv` | 100 questions | wording review of the GNU Radio behaviour questions: is everything the answer depends on stated? (`docs/guidelines/rubric_writing.md`) |
    | `rubric_sheet_test.csv`, `rubric_sheet_dev.csv` | 185 + 200 | `docs/guidelines/rubric_writing.md` (rubric prose and its two checks; Claude does not draft rubric prose) |
    | `task_type_ambiguous_test.csv` | 11 questions | `task_type_instructions.md` (two labels each; κ is reported) |
    | `task_type_spotcheck_train.csv` | 170 rows | `task_type_instructions.md` (10 % spot check) |
