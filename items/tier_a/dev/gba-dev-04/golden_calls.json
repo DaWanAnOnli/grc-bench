@@ -1,0 +1,71 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "mf",
+     "mf_out"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "file sink input type"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "moving average output type"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "reason": "Make the mf.dat File Sink take float samples, like the Moving Average.",
+    "update_params": [
+     {
+      "instance_name": "mf_out",
+      "params": {
+       "type": "float"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "The File Sink for mf.dat expected complex samples while the Moving Average outputs float. I set the sink to float; the pattern, the filter and the file names are unchanged, and the flowgraph is saved."
+}

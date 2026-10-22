@@ -1,0 +1,61 @@
+{
+ "task": "gbf-test-10",
+ "action": "fix",
+ "rethemed": false,
+ "resolved_by": "Claude (Anthropic), fixer group G3 (gbf-dev-04, gbf-test-05, gbf-test-10), 18 Oct 2026; pending team review",
+ "accepted": [
+  {
+   "id": "item-quality:F1",
+   "change": "Every stated requirement is now checked. (a) Keep the tone source: an edge observation point 'src' on block tone (no extra block) with p2p checks mean 0.75 (tol 0.0375), rms 0.80156 (5 %) and peak_freq 1200 Hz at fs 32 kHz, plus a p2p graph check block_present analog_sig_source_x with freq 1200, amp 0.4, offset 0.75. (b) Keep the sample rate: a samp_rate change alone moves the source's peak to 800 Hz (edge check); the reviewer's consistent rescaling (48 kHz + 1800 Hz tone, identical samples) is caught only by the parameter check. (c) Filter requirement: the instruction now says the DC offset must be removed by a filter block, not by subtracting a fixed value; f2p graph check path analog_sig_source_x -> any filter block id (high/low/band-pass, band-reject, FIR/FFT/interp FIR, IIR, DC blocker, single-pole IIR, moving average) -> blocks_file_sink. (d) The 300 Hz / 200 Hz design is reworded as context (not measurable without a hum source, which the plan forbids). Probes through ladder.check: p1 bypass+offset 0 fails (src mean 0.0002, path, block_present), Add Const -0.75 fails (path), 48 kHz+1800 Hz fails (block_present), cutoff 1000 / cutoff 1150 width 100 pass (context only, as intended), x - moving_average(x) passes. sample_rate 'checked_by' text corrected."
+  },
+  {
+   "id": "item-quality:F2",
+   "change": "Tolerances and the window are stated: after the first 1024 output samples, mean within 0.05 of zero, peak 1.0 within 5 % (RMS 0.707 within 5 %), tone at 1.2 kHz within 1 %. The Rectangular-window High Pass Filter is still rejected, now for a stated reason (DC gain 5.2 %: mean -0.0969, peak 1.066); recorded in review.notes and used as a near-miss mutant."
+  },
+  {
+   "id": "item-quality:F3",
+   "change": "Groups follow fix-plan rule R8: the start fails at V2, so p2p = properties of the parts the fault does not touch (the tone source: edge checks + source-parameter graph check) and every output check (mean, max_abs, rms, peak_freq) plus the filter-path check is f2p. Proved on the start with the faulted block parked (hpf removed): p2p passes, f2p fails (mean 1.875, rms 2.004, no filter path)."
+  },
+  {
+   "id": "item-quality:F4",
+   "change": "Took the reviewer's second option: the realistic wrong id (the catalog file name) is kept and the item is tagged in review.notes as an easy L1 control for the analysis. The instruction no longer quotes the GRC error with the bad id (symptom-only wording shared with gbf-dev-04); the id remains visible in the start graph, as it would be to a user."
+  },
+  {
+   "id": "item-quality:F5",
+   "change": "Scoring-stage item (tooling T9, not Tier-F tooling): review.notes now states that the inherited unknown id 'filter_high_pass_filter' (task.json fault.wrong_id) must not count in the hallucinated-block rate when an answer keeps it, and should be counted as 'fault not repaired'."
+  },
+  {
+   "id": "compliance:gbf-test-10-C1",
+   "change": "Same fix as item-quality:F1. The source is named in the instruction ('the Signal Source block tone'); edge point {'name': 'src', 'edge': {'block': 'tone', 'port': '0'}} with p2p checks; mutant 'tone offset 0' added (single op; the two-op 'bypass hpf + offset 0' cannot be expressed as one mutation, so it is a probe and fails). Non-filter fixes (Add Const -0.75) are rejected by the stated filter requirement and the path graph check."
+  },
+  {
+   "id": "compliance:gbf-test-10-C2",
+   "change": "Cutoff and width are context only: the instruction says 'designed for a 300 Hz cutoff and a 200 Hz transition width' as a description of the original filter, and spec_properties has a 'context_only' entry saying they are not graded. Any filter block that blocks DC and passes the tone within the stated tolerances is accepted."
+  },
+  {
+   "id": "compliance:gbf-test-10-C3",
+   "change": "Resolved by signature v2: the reference and all 7 variants (taps-variable FIR, DC blocker, gain in filter, scale then band-pass, FFT filter, Kaiser + absolute path, first-order IIR) share the cell filter|tone, which hashes to test; build.py asserts this for every variant and the signatures are listed in task.json notes and disjointness."
+  },
+  {
+   "id": "compliance:gbf-test-10-C4",
+   "change": "peak_amplitude and tone_amplitude merged into one f2p property 'output_tone' (max_abs, rms, peak_freq at the output; the kept gain of 2.5 is observable only there); dc_removed stays f2p; the p2p group now holds the untouched tone source."
+  }
+ ],
+ "rejected": [],
+ "variants_added": [
+  "v5_fft_filter (reviewer answer b_fft_filter)",
+  "v6_kaiser_abs_path (reviewer answers h_kaiser, k_abs_path)",
+  "v7_iir_first_order (reviewer answer m_iir_1st_order; y = x - x1 + 0.98 y1, gain 1.006 at 1.2 kHz)"
+ ],
+ "mutants": "11 mutants, each verified to fail a check carrying its 'breaks' property: bypass hpf; output rewired to the raw source; near miss Rectangular window (mean -0.097); cutoff 2500; near miss hpf gain 1.06; gain 2.0; near miss tone 1224 Hz; tone offset 0 (output unchanged, caught at the source); tone amp 0.5; samp_rate 48000; output file renamed.",
+ "notes": "No hum source added (fix plan: it would move the v2 cell to combine|filter|tone = train). cluster_id chain:filter|tone (v2); version 2. build.py regenerates every file byte-identically and removes stale variant files. Two observation points; gated with the T7 worker (non-blocking taps).",
+ "gates": "PASSED (18 Oct 2026, re-run after the round-2 rebuild): solvability 10/10, size 229 tokens, variants 7/7 reach V6, start fails at V2 as expected, mutation 11/11 valid mutants, kill rate 1.0",
+ "round2": {
+  "resolved_by": "Claude (Anthropic), fixer group G3, 18 Oct 2026 (review round 2); pending team review",
+  "reviewer_findings": [],
+  "accepted": [],
+  "rejected": [],
+  "notes": "No round-2 finding for this task; no change (version 2 kept). Checked: (1) build.py regenerates every file byte-identically (md5 before and after); (2) the reviewer's probe test10_dc_blocker_long (DC Blocker, long form) passes against the current task.json, as a valid alternative should; (3) the two round-2 issue classes of the group do not apply. test-10 has no band_fraction check (its frequency check is peak_freq, which uses a Hann window), so the off-grid leakage of G3-dev04 cannot occur. Its filter-path via set holds only filter blocks, and the analogous pass-through limit (an all-pass filter plus a subtracted constant) is already recorded in review.notes limit (1); (4) the L1 repair conventions shared with gbf-dev-04 are unchanged (symptom-only wording, R8 p2p semantics, edge observation of the kept source). Gates re-run alongside the round-2 rebuilds of gbf-dev-04 and gbf-test-05.",
+  "gates": "PASSED (18 Oct 2026, re-run after the round-2 rebuild): solvability 10/10, size 229 tokens, variants 7/7 reach V6, start fails at V2 as expected, mutation 11/11 valid mutants, kill rate 1.0"
+ }
+}

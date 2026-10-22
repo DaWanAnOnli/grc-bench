@@ -1,0 +1,34 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_file_sink",
+  "domain": "catalog",
+  "k": 5
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "src",
+    "params": {
+     "type": "float",
+     "samp_rate": "samp_rate",
+     "waveform": "analog.GR_COS_WAVE",
+     "freq": "2000",
+     "amp": "1"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "float",
+     "file": "output.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "src:0->out:0"
+  ]
+ }
+}

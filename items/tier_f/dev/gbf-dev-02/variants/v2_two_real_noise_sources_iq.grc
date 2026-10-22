@@ -1,0 +1,31 @@
+options:
+  parameters: {id: fading_iq, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: noise_i
+  id: analog_noise_source_x
+  parameters: {type: float, amp: 0.8 / 2**0.5, seed: '1', noise_type: analog.GR_GAUSSIAN}
+- name: noise_q
+  id: analog_noise_source_x
+  parameters: {type: float, amp: 0.8 / 2**0.5, seed: '2', noise_type: analog.GR_GAUSSIAN}
+- name: iq
+  id: blocks_float_to_complex
+  parameters: {}
+- name: mag
+  id: blocks_complex_to_mag
+  parameters: {}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: snk
+  id: blocks_file_sink
+  parameters: {type: float, file: envelope.dat}
+connections:
+- [noise_i, '0', iq, '0']
+- [noise_q, '0', iq, '1']
+- [iq, '0', mag, '0']
+- [mag, '0', thr, '0']
+- [thr, '0', snk, '0']
+metadata: {file_format: 1}

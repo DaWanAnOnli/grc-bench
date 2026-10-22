@@ -1,0 +1,148 @@
+options:
+  parameters:
+    id: filter_taps
+    generate_options: no_gui
+    output_language: python
+blocks:
+- name: bp_high
+  id: variable
+  parameters:
+    value: '7250'
+- name: bp_low
+  id: variable
+  parameters:
+    value: '3750'
+- name: bp_taps
+  id: variable_band_pass_filter_taps
+  parameters:
+    high_cutoff_freq: bp_high
+    low_cutoff_freq: bp_low
+    type: band_pass
+    width: transition
+    win: window.WIN_BLACKMAN
+- name: br_taps
+  id: variable_band_reject_filter_taps
+  parameters:
+    high_cutoff_freq: bp_high
+    low_cutoff_freq: bp_low
+    type: band_reject
+    width: transition
+    win: window.WIN_BLACKMAN
+- name: cutoff_high
+  id: variable
+  parameters:
+    value: '3750'
+- name: cutoff_low
+  id: variable
+  parameters:
+    value: '7250'
+- name: hp_taps
+  id: variable_high_pass_filter_taps
+  parameters:
+    cutoff_freq: cutoff_low
+    width: transition
+    win: window.WIN_BLACKMAN
+- name: len_taps
+  id: variable
+  parameters:
+    value: len(lp_taps)
+- name: lp_taps
+  id: variable_low_pass_filter_taps
+  parameters:
+    cutoff_freq: cutoff_high
+    width: transition
+    win: window.WIN_BLACKMAN
+- name: rrc_taps
+  id: variable_rrc_filter_taps
+  parameters:
+    sym_rate: sym_rate
+    alpha: '0.25'
+- name: samp_rate
+  id: variable
+  parameters:
+    value: '48000'
+- name: sps
+  id: variable
+  parameters:
+    value: '4'
+- name: sym_rate
+  id: variable
+  parameters:
+    value: samp_rate/sps
+- name: transition
+  id: variable
+  parameters:
+    value: '100'
+- name: analog_fastnoise_source_x_0
+  id: analog_fastnoise_source_x
+  parameters:
+    type: float
+    samples: '65536'
+- name: bp_filter
+  id: fir_filter_xxx
+  parameters:
+    comment: Band-pass filter
+    taps: bp_taps
+    type: fff
+- name: br_filter
+  id: fir_filter_xxx
+  parameters:
+    comment: Band-reject filter
+    taps: br_taps
+    type: fff
+- name: hp_filter
+  id: fir_filter_xxx
+  parameters:
+    comment: High-pass filter
+    taps: hp_taps
+    type: fff
+- name: lp_filter
+  id: fir_filter_xxx
+  parameters:
+    comment: Low-pass filter
+    taps: lp_taps
+    type: fff
+- name: lowpass_sink
+  id: blocks_file_sink
+  parameters:
+    file: lowpass.dat
+    type: float
+- name: highpass_sink
+  id: blocks_file_sink
+  parameters:
+    file: highpass.dat
+    type: float
+- name: bandpass_sink
+  id: blocks_file_sink
+  parameters:
+    file: bandpass.dat
+    type: float
+- name: bandreject_sink
+  id: blocks_file_sink
+  parameters:
+    file: bandreject.dat
+    type: float
+- name: rrc_sink
+  id: blocks_file_sink
+  parameters:
+    file: rrc.dat
+    type: float
+- name: rrc_filter
+  id: fir_filter_xxx
+  parameters:
+    comment: RRC filter
+    taps: rrc_taps
+    type: fff
+connections:
+- [analog_fastnoise_source_x_0, '0', bp_filter, '0']
+- [analog_fastnoise_source_x_0, '0', br_filter, '0']
+- [analog_fastnoise_source_x_0, '0', hp_filter, '0']
+- [analog_fastnoise_source_x_0, '0', lp_filter, '0']
+- [analog_fastnoise_source_x_0, '0', rrc_filter, '0']
+- [bp_filter, '0', bandpass_sink, '0']
+- [br_filter, '0', bandreject_sink, '0']
+- [hp_filter, '0', highpass_sink, '0']
+- [lp_filter, '0', lowpass_sink, '0']
+- [rrc_filter, '0', rrc_sink, '0']
+metadata:
+  file_format: 1

@@ -1,0 +1,60 @@
+{
+ "task": "gbf-dev-05",
+ "action": "retheme",
+ "rethemed": true,
+ "relabel": {},
+ "resolved_by": "Claude (Anthropic), fixer group G2, 18 Oct 2026 (pending team review)",
+ "new_theme": "Parameter-tune L1 (dev): a Gaussian noise limiter (amplifier saturation model). Start graph at 48 kHz: Noise Source (float, Gaussian, amp 0.5) -> Throttle -> Rail (+-1.5) -> File Sink limited.dat. The limiter's input is tapped to File Sink noise_in.dat. Target: noise standard deviation 0.4 (measured within 2 %), and symmetric clip levels at the 2.5 % / 97.5 % quantiles of Gaussian noise with standard deviation exactly 0.4 (5 % clipped), each within 1 %. Values only: no blocks added, removed or rewired, no variables added, removed or renamed. The model must derive 1.96 x 0.4 = 0.784. v2 signature noise|nonlinear -> dev, cluster_id chain:noise|nonlinear. No other item holds the cell. Distinct from gbf-dev-02 (build, complex-noise envelope) and gbf-test-03 (build, band-limited noise).",
+ "deviation_from_plan": "(1) Oracle: the plan proposed max_abs, a min or mean check, and an analytic clipped-RMS check. Implemented instead: max and min of limited.dat (tooling T4), each within 1 % of +-0.783986. A Rail outputs exactly its limits, and about 1600 samples clip at each end, so the extremes equal the clip levels on every seed (verified on 100 seeds). The noise standard deviation is measured directly as the RMS of a second observation point, noise_in.dat, within 2 %. This is stronger than inferring it from the clipped RMS. Measured spread over 100 seeds: -0.88..+0.54 %. (2) The plan's 'clip levels computed for sigma 0.5' is the single-edit mutant hi 0.98; the symmetric version is probe symmetric_old_sigma. (3) The instruction ties each clip level to standard deviation exactly 0.4 (see C4 below).",
+ "accepted": [
+  {
+   "id": "item-quality/F1-band-fraction-dc-double-count",
+   "change": "Moot after the re-theme: the new oracle uses no band_fraction. The oracle itself was fixed by the 18 Oct tooling change (Parseval weighting)."
+  },
+  {
+   "id": "item-quality/F2-threshold-on-natural-design",
+   "change": "Moot in substance; the lesson is applied. Every tolerance has a margin around the natural answers: sigma 2 % against a measured sd of 0.28 % (7 sigma), and the clip levels are measured without estimation error. 0.784, 0.78 and 1.959964 x 0.4 pass (variants v1-v4). The 2-sigma rule of thumb (0.8, +2 %) fails, and the instruction excludes it explicitly by stating the 1 % tolerance (mutant hi 0.8, probe symmetric_2sigma)."
+  },
+  {
+   "id": "item-quality/F3-dev-test-template-twin",
+   "change": "Resolved by the re-theme. The noise-limiter theme (noise|nonlinear, dev) shares no template with gbf-test-12 or any other test item: no clock, no filter retune, no harmonic."
+  },
+  {
+   "id": "item-quality/F4-unchecked-structural-constraint",
+   "change": "Applies, and fixed with tooling T1 in group p2p: same_blocks_as_start (variables value_only) and same_connections_as_start (isomorphic). The instruction says 'do not add, remove or rewire any blocks, and do not add, remove or rename variables', matching value_only exactly. Mutants bypass limiter and rewire sink_in are killed. Probes: rewired_same_blocks, helper_variable and renamed_variable fail; renamed_blocks and variant v4 (renamed instances) pass."
+  },
+  {
+   "id": "item-quality/F5-harmonic-hint",
+   "change": "Moot; the lesson is applied. The new instruction states the target as a quantile ('the level Gaussian noise with a standard deviation of exactly 0.4 exceeds 2.5 % of the time') and gives neither 1.96 nor 0.784, so the model must derive the clip level."
+  },
+  {
+   "id": "compliance/C1-scope-sentence-uncheckable-with-current-graph-checks",
+   "change": "Fixed with T1 (see F4). The reviewer's cx_added_variable case is now forbidden by the wording and fails (probe helper_variable). The cx_rewired case fails same_connections_as_start (probe rewired_same_blocks). T6: './gb ladder --task' sets _dir (ladder.load_task_file), so the *_as_start checks work from the CLI."
+  },
+  {
+   "id": "compliance/C2-sample-rate-and-square-wave-unchecked",
+   "change": "The lesson is applied: the new instruction states no sample rate (it is free and unobservable in white noise), so nothing is left unchecked. The source's shape is a stated requirement ('must stay Gaussian'). A Laplacian scaled to sd 0.4 meets both measured numbers while clipping 6.3 % (probe laplacian_scaled), so P4 checks noise_type == GR_GAUSSIAN as a p2p graph check. Mutant uniform is killed."
+  },
+  {
+   "id": "compliance/C3-records-and-variants-stale-after-band-fraction-fix",
+   "change": "Moot after the re-theme. Every number in the new docstring, spec_properties and review.notes comes from my GNU Radio calibration (scratch d05_calib.py / d05_clip.py). Every valid alternative found is a variant (expressions, rounded levels, 7-digit quantile, renamed instances)."
+  },
+  {
+   "id": "compliance/C4-clock-tolerance-illusory",
+   "change": "The lesson is applied. The earlier draft of this theme said 'standard deviation 0.4 (within 2 %)' and 'within 1 % of the value that gives exactly this'. Under that wording, a model using amp 0.405 and its own exact clip level (0.794) would have met the words but failed the oracle. The instruction now ties each clip level to standard deviation exactly 0.4, and states the 2 % as a measurement on noise_in.dat. Both tolerances are real: clip +-1 % gives 4.77-5.22 % clipped, and the sigma window is 7 sigma wide."
+  },
+  {
+   "id": "compliance/C5-split-only-nominal-train-twins",
+   "change": "Set level (signature v2); nothing left at item level. A values-only task has no structural alternatives, and the reference, the start graph and all 4 variants are noise|nonlinear (dev)."
+  }
+ ],
+ "rejected": [],
+ "other_changes": [
+  "Mutations: 10 valid and distinct, all killed: hi 0.658 (10 % level), lo -1.030 (1 % level), hi 0.8 (2 sigma near miss), hi 0.98 (old-sigma level), lo -1.5 (asymmetric), amp 0.5 (sigma not retuned), amp 0.42 (+5 %), bypass limiter, uniform noise, sink_in rewired to the limiter.",
+  "Probes (build.py --probes): 8/8 verdicts as expected.",
+  "Instruction per R3/R6 (refers to 'this flowgraph' and the Rail block; values-only sentence). R5 run sentence; P7 records liveness at both files. Observation points match file name and type (R9). Gated after tooling T7 (taps no longer back-pressure a shared upstream block).",
+  "build.py: --probes mode, and variant v4. Stale variant files are removed only after a successful save. Two consecutive builds are byte-identical. The canary is in task.json only."
+ ],
+ "variant_signatures_v2": "start, reference and v1-v4: noise|nonlinear (dev)",
+ "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 263 tokens, variants 4/4 reach V6, start fails at V6 (f2p false, p2p true), mutation 10 valid with kill rate 1.0; build.py --probes 8/8 verdicts as expected"
+}

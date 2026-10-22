@@ -1,0 +1,85 @@
+{
+ "part": "rules",
+ "lens": "correctness",
+ "reviewer": "Claude (Anthropic), review agent, 18 Oct 2026",
+ "verdict": "REFUTED: WS6 is not yet correct. On disk it is at version 0.3 (the builder's report says 0.2): `./gb test tests/test_tier_k_rules.py` passes 222 tests and `./gb score-k --selftest` passes 73/73. 32,000 random fuzz cases produced no crash, no NaN or invalid JSON, no credit outside [0,1] and no nondeterminism. Unit conversions match hand calculations: kT at 290 K = -173.975 dBm/Hz, dBuV, dBV, dBm to mW, MiB, °F to K and Mbaud all score 1.0. The lone \"<value> <unit>\" invariant that judge_prompt.grade_value relies on holds for 57 units x 6 values x 9 factors. However, the probes found 11 demonstrated problems, all with hand-made answers. In most of them the rules decide a wrong credit instead of deferring to the judge. Worst: (1) an answer stated first and followed by a derived value of the same dimension is scored on the derived value, even right after \"Final answer:\" or inside \\boxed{}; (2) a later prose \"answer is\" overrides an explicit \"Final answer:\". Both give 0 to correct answers and 1.0 to the wrong value. Multi-part answers of one dimension can be scored with their parts swapped. Unknown unit words such as msec, usec, nsec and Kbit, and the LaTeX \"~\" before a unit, make the number bare, so correct answers score 0 as order-of-magnitude errors. Block-id and option-letter checks have false 0s and false 1s. Scratch scripts are in ~/grc-bench-work/review/rules (probe1-5.py, fuzz.py, perf.py, batch_in.jsonl, batch_out.jsonl). No repo files were edited.",
+ "findings": [
+  {
+   "id": "R1",
+   "severity": "high",
+   "claim": "The several-numbers rule ('a value followed by a conclusion word before the candidate is a step') scores an answer stated first on a derived value of the same dimension. This happens even inside the first clause after an explicit 'Final answer:' marker and inside \\boxed{}. Correct answers get a decided 0, and the wrong (derived) value gets a decided 1.0.",
+   "evidence": "probe4.py (src/grcbench/tier_k/rules.py, _explained lines 1290-1303; candidate = last compatible, line 1339). Each scored against {value 30, unit kHz}:\n- 'Final answer: 30 kHz, giving a Nyquist frequency of 15 kHz.' -> numeric 0.0, candidate '15 kHz'\n- 'Final answer: 30 kHz, so the Nyquist frequency is 15 kHz.' -> numeric 0.0\n- '**Answer:** fs = 30 kHz, so the usable bandwidth is 15 kHz.' -> numeric 0.0\n- '\\boxed{f_s = 30\\text{ kHz}, \\text{ so } f_N = 15\\text{ kHz}}' -> numeric 0.0\n- 'The minimum sample rate is 30 kHz, which gives a Nyquist frequency of 15 kHz.' -> numeric 0.0\nAgainst {value 12, unit kHz}: 'The output rate is 12 kHz, so the anti-alias filter must cut off below 6 kHz.' -> 0.0.\nControl: the same 'Final answer: 30 kHz, giving ... 15 kHz.' scores numeric 1.0 against {value 15, unit kHz}.",
+   "suggested_fix": "Treat a conclusion word as making the earlier value a step only when the earlier value is an operand of the expression that produces the candidate (an '=' or operator chain ending at the candidate). Otherwise a same-dimension value on either side of 'so', 'giving' or 'which gives' is a rival and the answer goes to the judge. Also, in a marker or boxed region, never let a later value override the first compatible quantity of the core or clause without sending the answer to the judge. Add these phrasings as tests in both directions."
+  },
+  {
+   "id": "R2",
+   "severity": "high",
+   "claim": "_MARKER treats any prose 'answer is' as a final-answer marker equal to 'Final answer:', and the last marker wins. A note after an explicit 'Final answer: X' that contains 'this answer is ...' or 'the answer is the same ...' therefore replaces the stated answer with whatever number the note contains. The result is a decided wrong score, not a deferral.",
+   "evidence": "probe2.py, each against {value 12, unit kHz}:\n- 'Final answer: 12 kHz\\n\\nNote: this answer is for a 48 kHz input; for 44.1 kHz it would be 11.025 kHz.' -> numeric 0.0, rule=marker, candidate '48 kHz'\n- 'Final answer: 12 kHz. The answer is valid for the 48 kHz input only.' -> numeric 0.0, candidate '48 kHz'\n- '**Final Answer:** 12 kHz\\n\\nThe answer is the same for a 96 kHz input decimated by 8.' -> numeric 0.0, candidate '96 kHz'\nThe \\boxed form of the same answer scores 1.0, so only the marker path is affected. Cause: _final_answers uses markers[-1] (rules.py line 810), and _MARKER (line 659) includes '\\banswer\\s+is\\b'.",
+   "suggested_fix": "Rank the markers: use the last \\boxed{}, else the last explicit 'final answer' marker, and only then a generic 'answer is' or 'answer:'. Alternatively, skip a marker whose first clause holds no quantity or option, or begins with a preposition or adjective ('for', 'valid', 'the same', 'independent'). When two markers disagree, defer to the judge."
+  },
+  {
+   "id": "R3",
+   "severity": "medium",
+   "claim": "In multi-part references whose parts share a dimension, when the label scoping fails (both labels in one sentence, written value-first), each part falls back to the whole-answer candidate rule. The 'explained' logic then assigns the other part's value. A correct answer gets 0.5, and a fully swapped answer also gets 0.5, with one part credited for the wrong value. This contradicts the module's own statement that unlabelled parts of one unit cannot be told apart and go to the judge.",
+   "evidence": "probe3.py and probe4.py, reference = [{value 3, unit MS/s, label [input rate, input]}, {value 0.75, unit MS/s, label [output rate, output]}]:\n- Correct answer 'Decimating the 3 MS/s input by 4 gives an output rate of 0.75 MS/s.' -> numeric 0.5. Parts: input reads '0.75 MS/s' (0.0), output reads '0.75 MS/s' (1.0). rule_only_credit = 0.5.\n- Swapped answer 'Interpolating the 0.75 MS/s input by 4 gives an output rate of 3 MS/s.' -> numeric 0.5. The input part reads '3 MS/s', the value the answer calls the output, and gets 1.0. rule_only_credit = 0.5.",
+   "suggested_fix": "In _score_numeric for a part, when other parts share this part's dimension and neither _label_scope nor _label_anchor found the value, return the judge result ('part_unassigned') instead of using the base region. At the least, never let a same-dimension value that sits next to another part's label serve as this part's candidate."
+  },
+  {
+   "id": "R4",
+   "severity": "medium",
+   "claim": "A unit word the parser does not know, written after a number with no '/' or 'per' after it (msec, usec, nsec, microsec, Kbit, Msamp, Mcps), is silently dropped. The number becomes bare and is read in the reference unit, so correct answers get a decided 0 (order_of_magnitude). The docstring promises that 'an unknown unit after it' goes to the judge, but _UNPARSED only catches the slash and 'per' forms.",
+   "evidence": "probe1.py:\n- 'The symbol period is 1 msec.' vs {value 0.001, unit s} -> numeric 0.0 order_of_magnitude, candidate '1'\n- the same answer vs {value 1000, unit us} -> 0.0\n- 'Answer: 400 nsec' vs {value 0.4, unit us} -> 0.0\n- 'Answer: 20 usec' vs {value 2e-05, unit s} -> 0.0\n- 'Answer: 125 microsec' vs {value 0.000125, unit s} -> 0.0\n- 'Answer: 64 Kbit' vs {value 64000, unit bit} -> 0.0\n- 'Answer: 3.84 Mcps' vs {value 3.84e6, unit Hz} -> 0.0\nextract_quantities('1 msec') returns a bare Quantity(value=1.0, unit=''). By contrast, 'Answer: 3.84 Mchips/s' -> judge unit_unparsed.",
+   "suggested_fix": "In extract_quantities, when no unit parses, mark any alphabetic word directly after the number as unparsed, unless it is a known non-unit word (a stop-list such as 'of', 'and', 'input', 'taps', ...); the candidate then goes to the judge. Also add sec-family forms with prefixes (msec, usec, μsec, nsec, millisecond(s) already exists) and 'Kbit'/'Kbits' to the unit tables."
+  },
+  {
+   "id": "R5",
+   "severity": "medium",
+   "claim": "normalize() does not turn the LaTeX non-breaking space '~' into a space, so in '30~\\text{kHz}' the unit is lost. The number is read in the reference unit and gets a decided 0 whenever the reference unit differs.",
+   "evidence": "probe2.py:\n- '$f_s = 30~\\text{kHz}$' vs {value 30000, unit Hz} -> numeric 0.0 order_of_magnitude, candidate '30'\n- '$T_s = 400~\\mathrm{ns}$' vs {value 0.4, unit us} -> numeric 0.0\nControl: '$T_s = 400\\,\\mathrm{ns}$' vs the same reference -> numeric 1.0, candidate '400 ns'. _LATEX_SUB (rules.py lines 439-443) has no entry for '~'.",
+   "suggested_fix": "Map '~' between a digit and a letter (or every '~' inside $...$) to a space in normalize(), keeping '~' as an approximation sign only when it comes before a number. Add a test with ~ and \\mathrm/\\text units."
+  },
+  {
+   "id": "R6",
+   "severity": "medium",
+   "claim": "For an exact block-id target, an answer that names the right block in words ('Throttle block') and puts only parameter names in code or snake_case gets a decided 0 (wrong_identifier). _score_exact counts every snake_case or code-span token as a candidate block id.",
+   "evidence": "probe2.py, reference 'blocks_throttle':\n- 'Add a Throttle block and set its `samples_per_second` to `samp_rate`.' -> symbolic 0.0 wrong_identifier\n- 'Use the Throttle block with sample_rate = samp_rate.' -> symbolic 0.0\n- 'Insert a Throttle block (`samp_rate` as its rate).' -> symbolic 0.0\nThe relevant code is rules.py lines 1533-1535 (others and not hits and not named -> 0.0).",
+   "suggested_fix": "Decide wrong_identifier only when the other identifiers are block ids: they are in the reference's universe or the block catalog (catalog.py), or at least have a '<module>_<name>' block-id shape and are not known parameter names. If the target's display name (an alias such as 'Throttle') appears, defer to the judge."
+  },
+  {
+   "id": "R7",
+   "severity": "medium",
+   "claim": "The option-letter path reads a sentence-initial article 'A' as option A. With a letter universe, 'Final answer: A <noun phrase> ... option C' is decided as {A}, giving a false 0 for the true option and a false 1.0 for A.",
+   "evidence": "probe1.py:\n- 'Final answer: A rational resampler with interpolation 3 and decimation 2 (option C).' vs {set [C], universe ABCD} -> symbolic 0.0 missing_options\n- 'Final answer: A low-pass filter before decimation, i.e. option C.' vs set [C] -> symbolic 0.0; vs set [A] -> symbolic 1.0 set_match\n- 'Answer: A Throttle block is needed (C).' vs {exact C, universe ABCD} -> symbolic 0.0\nCause: _LETTER '[A-Z](?![\\w])' in _LEADING_LETTERS (rules.py lines 1459-1461) accepts 'A' followed by a space and a word.",
+   "suggested_fix": "Accept a bare capital letter only when it is followed by the end of the clause, punctuation (, . ; : ) ]), '&', '+' or 'and' plus another letter, i.e. never by a lowercase word; or require the parenthesised form. Defer to the judge otherwise. Add the article cases to the tests."
+  },
+  {
+   "id": "R8",
+   "severity": "low",
+   "claim": "An unevaluated expression given as the final answer is scored on its operand and decided (0 for a correct answer). The docstring says the candidate must not itself be an operand, but that check only applies when rivals exist.",
+   "evidence": "probe5.py:\n- 'Final answer: 48 kHz / 4' vs {value 12, unit kHz} -> numeric 0.0, candidate '48 kHz'\n- 'Final answer: 2 × 15 kHz' vs {value 30, unit kHz} -> numeric 0.0, candidate '15 kHz'\n- 'Final answer: twice the 15 kHz bandwidth' vs {value 30, unit kHz} -> numeric 0.0\n- 'Final answer: half of 48 kHz' vs {value 24, unit kHz} -> numeric 0.0\nIn _decide_numeric, q_operand only feeds _explained (rules.py lines 1358-1362).",
+   "suggested_fix": "If _is_operand(s, q) holds for the candidate and no later value with a relation such as '=' follows it, return the judge result ('expression_answer') instead of deciding."
+  },
+  {
+   "id": "R9",
+   "severity": "low",
+   "claim": "Relative-dB families each have their own pseudo-dimension, so a plain 'dB' answer against a dBc, dBi or dBc/Hz reference gets a decided 0 (unit_mismatch), even when the text says 'relative to the carrier'. This is not the dB-vs-dBm (relative vs absolute) error that the proposal zeroes; dBi only works if each rubric remembers accept_units.",
+   "evidence": "probe3.py:\n- 'The spur is at -40 dB relative to the carrier.' vs {value -40, unit dBc} -> numeric 0.0 unit_mismatch\n- 'Final answer: -40 dB' vs {value -40, unit dBc} -> 0.0\n- 'Final answer: 11 dB' vs {value 11, unit dBi} -> 0.0\n- 'Final answer: -100 dB/Hz' vs {value -100, unit dBc/Hz} -> 0.0",
+   "suggested_fix": "For a plain 'dB' (or dB/Hz) answer against a relative-dB reference of another family, send the answer to the judge ('unit_reading_unclear', with literal_credit 0 and alt_credit taken from reading it in the reference unit) instead of zeroing it. Keep zero credit for relative vs absolute (dB vs dBm/dBW). Pre-register the choice."
+  },
+  {
+   "id": "R10",
+   "severity": "low",
+   "claim": "Vpp, Vpk, Vp and Vrms all have scale 1 V, so a correct value in another voltage convention gets a decided 0 (outside_tolerance) instead of a conversion or the judge.",
+   "evidence": "probe1.py:\n- 'Answer: 1 Vpk' vs {value 2, unit Vpp} -> numeric 0.0 (1 Vpk = 2 Vpp)\n- 'Answer: 0.707 Vrms' vs {value 1, unit Vpk} -> 0.0 (sine)\n- 'Answer: 2 Vpp' vs {value 1, unit Vp} -> 0.0\nThe table is in rules.py lines 237-238.",
+   "suggested_fix": "Give each convention its own pseudo-dimension tag, or go to the judge ('voltage_convention') when the answer's convention differs from the reference's. Convert Vpp and Vpk (factor 2) exactly, and leave Vrms to the judge because its factor depends on the waveform."
+  },
+  {
+   "id": "R11",
+   "severity": "low",
+   "claim": "For multi-part references, score() and the --batch output rows report the raw mean as 'credit', even when a part has a unit or order-of-magnitude error that policy P9 says zeroes the whole answer. The batch file's credit column (0.5) therefore disagrees with the batch summary line (0.0), and anyone averaging the file gets numbers that break P9.",
+   "evidence": "./gb score-k --batch ~/grc-bench-work/review/rules/batch_in.jsonl: rows p1 ('B = 1.25 kHz, P = 27 dB' vs B kHz / P dBm) and p2 ('B = 12.5 kHz and Ts = 1 ms') are both written with credit 0.5, while stderr says 'rule-only mean credit 0.0000'. In probe1.py, rule_only_credit for p1 = 0.0.",
+   "suggested_fix": "Either apply P9 in _score_parts so that score()'s credit is 0 when _part_zero(parts) holds (keeping the mean in details as 'mean_credit'), or add a 'rule_only_credit' field to every batch row and document that 'credit' is not the policy score."
+  }
+ ]
+}

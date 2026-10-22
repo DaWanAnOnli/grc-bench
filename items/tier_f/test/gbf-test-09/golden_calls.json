@@ -1,0 +1,27 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_peak_detector2_fb blocks_char_to_float blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "blocks_peak_detector2_fb_0:0->blocks_short_to_float_0:0",
+   "blocks_short_to_float_0:0->blocks_file_sink_0:0"
+  ],
+  "remove_blocks": [
+   "blocks_short_to_float_0"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "blocks_char_to_float",
+    "instance_name": "blocks_char_to_float_0"
+   }
+  ],
+  "add_connections": [
+   "blocks_peak_detector2_fb_0:0->blocks_char_to_float_0:0",
+   "blocks_char_to_float_0:0->blocks_file_sink_0:0"
+  ]
+ }
+}

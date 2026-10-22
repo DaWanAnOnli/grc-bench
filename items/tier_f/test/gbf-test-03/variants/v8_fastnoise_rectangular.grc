@@ -1,0 +1,20 @@
+options:
+  parameters: {id: noise_fast_rect, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '40000'}
+- name: fns
+  id: analog_fastnoise_source_x
+  parameters: {type: float, amp: '2.0', noise_type: analog.GR_GAUSSIAN}
+- name: bp
+  id: band_pass_filter
+  parameters: {type: fir_filter_fff, low_cutoff_freq: '6000', high_cutoff_freq: '9000', width: '500',
+    win: window.WIN_RECTANGULAR}
+- name: fsink
+  id: blocks_file_sink
+  parameters: {type: float, file: bandnoise.dat}
+connections:
+- [fns, '0', bp, '0']
+- [bp, '0', fsink, '0']
+metadata: {file_format: 1}

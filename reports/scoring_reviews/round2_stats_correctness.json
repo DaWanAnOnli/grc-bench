@@ -1,0 +1,50 @@
+{
+ "part": "stats",
+ "lens": "correctness",
+ "reviewer": "Claude (Anthropic), review agent, 18 Oct 2026",
+ "verdict": "The core numbers are correct but the workstream is not complete: I found 3 medium and 3 low problems, listed most severe first.\n\nWhat checks out. `./gb test tests/test_stats.py` passes: 59 tests, also with -W error. `./gb stats selfcheck` passes 31/31 and `./gb stats mde` reproduces Table 8 exactly (K 7.42/9.09 -> 7-9, F 10.23/12.53 -> 10-13, A 22.87/28.02 -> 23-28). My own scripts (in ~/grc-bench-work/review/stats) found no numeric errors in:\n- pass@k and pass^k against brute force over subsets;\n- the exact sign-flip p-value against full 2^G enumeration (300 random cases);\n- wilcoxon_clustered and wilcoxon_signed_rank against brute force (ties, zeros, one-sided) and against scipy;\n- CR1 clustered SE against a hand-built sandwich estimator;\n- Holm adjustment and step-down rejection;\n- Cohen's kappa and Scott's pi against the definitions;\n- Krippendorff's alpha against an independent pairwise implementation (60 random datasets with missing values, all 4 levels);\n- the MDE formula;\n- the matched odds-ratio Clopper-Pearson interval against beta quantiles;\n- the Rasch joint-ML fit against my own Newton-Raphson fit (largest difference 6e-7);\n- point-biserial discrimination with missing values.\n\nDefault runtimes at panel scale (21 models, 285 items, n = 5) are fine, about 200 s for H1c with clusters.\n\nWhat is wrong:\n1. **H1c cannot run on the declared panel.** The panel mixes n = 5, 3 and 1, and the H1c helpers refuse it.\n2. **The judge-calibration pass rule tests only one of two conditions.** `judge_calibration()['passes']` checks the rubric-line kappa only, while the repo's guideline requires both the rubric-line kappa and a linear-weighted kappa on answer score bands. The code's docstring wrongly claims it computes the guideline's rule.\n3. **One effect-size interval ignores clustering.** In clustered mode, the odds-ratio interval in the primary result assumes independent items. Under a clustered null it excludes 1 in 21% of replicates, against 3% rejection by the clustered test.\n\nLow:\n- A single cluster gives a zero-width bootstrap interval, which `judge_passes` accepts.\n- Weighted kappa on string labels silently uses alphabetical category order.\n- The mde CLI shows a raw traceback on invalid `--n` / `--pd`.\n\nThe builder's report is out of date (it says 41 tests and 24/24 checks; the code now has 59 and 31/31). No repo files were edited.",
+ "findings": [
+  {
+   "id": "WS7-C1",
+   "severity": "medium",
+   "claim": "The H1c helpers (separation, size_matched_separation) cannot run on the panel the plan declares, because that panel mixes sample counts (n = 5, 3 and 1). Neither workaround works: one is refused and the other changes the spread estimand.",
+   "evidence": "Eval plan Table 6 / §7.3 / §10: configurations, Qwen3-30B and B4 use n=5; the small open models, teachers, seeds and arms use n=3; the closed frontier model uses n=1. Running ~/grc-bench-work/review/stats/p2.py on a 21-model panel with n = 5x8, 3x12, 1x1 gives: `size_matched_separation(K, F)` -> ValueError 'models have different numbers of samples per item ({m00: 5, ..., m08: 3, ...})'. The error message points to split_half_panel / items.matrix_from_samples, but neither can feed separation(), which needs a models x items x samples array. Workaround 1, per-item pass@1 passed as n=1, is refused: 'McNemar needs pass/fail samples (0/1)'. Workaround 2, majority-reduced items passed as n=1, runs but computes the spread on majority shares: SD 0.2650 against the pass@1 SD of 0.1809 on the same data. H1c is the proposal's headline hypothesis, so as delivered it can only be run after an ad-hoc reduction that was never pre-registered, such as truncating to n=3 and dropping the frontier model.",
+   "suggested_fix": "Let separation/size_matched_separation accept model -> item -> samples with each model's own n, as split_half_panel already does: majority-reduce per model for McNemar and take pass@1 or the mean score per model for the spread and for Wilcoxon. Alternatively, pre-register an explicit reduction and implement it."
+  },
+  {
+   "id": "WS7-C2",
+   "severity": "medium",
+   "claim": "judge_calibration()['passes'], and h1a_decision's judge part, test only one condition: the unweighted kappa on rubric lines. The repo's own guideline docs/guidelines/judge_calibration.md ('Analysis and pass rule') says the judge passes only if two conditions hold: (1) unweighted kappa on rubric lines, and (2) linear-weighted kappa on the 4 answer-score bands. The agreement.py docstring still claims 'judge_calibration computes exactly that'.",
+   "evidence": "p4.py: the judge agrees on every rubric line but wrongly zeroes 40% of answers through a false D flag. Condition 1 gives kappa 1.0, lo 1.0, passes True. Condition 2 (cohen_kappa_ci on bands 0-3, linear weights) gives kappa 0.273, lo 0.193, passes False. Even so, judge_calibration(...)['passes'] = True, while the guideline rule (both conditions) gives False, and h1a_decision(..., c['gate'])['parts']['judge']['holds'] = True. judge_calibration has no input for answer scores or bands, so it cannot apply the documented gate. This is exactly the failure mode the guideline says condition 2 exists to catch.",
+   "suggested_fix": "Add the answer-level judge and human scores to judge_calibration: map them to bands 0-3, run cohen_kappa_ci(weights='linear', categories=[0,1,2,3]) with one item per answer, and set 'passes' = both conditions. Let h1a_decision take both gates. Or, if the single-kappa gate is the intended one, reconcile the guideline and fix the docstring."
+  },
+  {
+   "id": "WS7-C3",
+   "severity": "medium",
+   "claim": "In clustered mode, compare_paired's primary effect size uses an odds-ratio interval that assumes independent items: it is an item-level Clopper-Pearson interval on a_only/b_only. Next to the clustered p-value this interval is anti-conservative and can contradict the test.",
+   "evidence": "p5.py, 30 clusters of 5 items, models exchangeable within cluster (H0 true), 400 replicates: the clustered McNemar rejects in 3.0% of replicates, but primary['odds_ratio'] excludes 1 in 21.0% of them. In the same output, primary['difference'] carries properly clustered intervals (t CI +-0.259, bootstrap +-0.233). Only the OR interval ignores the clusters, even though the module docstring says the effect sizes under 'primary' go with its p-value and eval plan §9 calls for clustered uncertainty. The selfcheck case shows the same contradiction: clustered p = 0.0625 while OR = 0 and the CI excludes 1.",
+   "suggested_fix": "When clusters are given, compute the OR interval by cluster bootstrap of (a_only, b_only), or by inverting the sign-flip test. Otherwise label the OR interval 'items independent' and move it out of 'primary'."
+  },
+  {
+   "id": "WS7-C4",
+   "severity": "low",
+   "claim": "With a single cluster, the bootstrap intervals collapse to zero width at the point estimate, and judge_passes accepts such an interval. clustered_mean_ci, by contrast, correctly returns NaN when G < 2.",
+   "evidence": "p3.py with all items in one cluster: cluster_bootstrap_ci gives lo = hi = mean (0.5146); paired_difference gives boot_lo = boot_hi = diff while t_lo/t_hi are NaN; cohen_kappa_ci(..., clusters=['c']*20) gives kappa = lo = hi = 0.8 and judge_passes(...) -> True. This can be reached through by_group per-task-type calibration when a group's rows come from a single answer.",
+   "suggested_fix": "Return NaN bounds (or raise) in cluster_bootstrap_ci and cohen_kappa_ci when the number of clusters is below 2, so judge_passes then fails, matching clustered_mean_ci."
+  },
+  {
+   "id": "WS7-C5",
+   "severity": "low",
+   "claim": "Weighted Cohen's kappa on string labels without explicit categories silently orders the categories alphabetically, which gives a wrong weighted kappa for the rubric labels this project uses.",
+   "evidence": "p3.py: confusion() puts the labels in the order ['met', 'not_met', 'partially_met']. cohen_kappa(r1, r2, weights='linear') returns 0.2, but with categories=['not_met','partially_met','met'] it returns 0.4074. No warning or error is raised.",
+   "suggested_fix": "When weights is not None and the labels are not all numeric, require categories to be passed (raise ValueError otherwise)."
+  },
+  {
+   "id": "WS7-C6",
+   "severity": "low",
+   "claim": "`./gb stats mde` ends in a raw Python traceback on out-of-range arguments instead of a clean argparse error.",
+   "evidence": "`./gb stats mde --n 0` prints a traceback ending in 'ValueError: n_items must be >= 1'. `./gb stats mde --n 120 --pd 1.5` ends in 'ValueError: p_discordant must be in (0, 1]'. By contrast, `--pd` without `--n` gives a proper 'gb stats: error: --n is required with --pd'.",
+   "suggested_fix": "Catch ValueError in main() and pass it to ap.error(...), or validate --n and --pd in argparse."
+  }
+ ]
+}

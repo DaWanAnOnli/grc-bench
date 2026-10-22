@@ -1,0 +1,70 @@
+options:
+  parameters: {id: cw_beacon_rx, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '96000'}
+- name: decim
+  id: variable
+  parameters: {value: '8'}
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate, freq: '21000', amp: '0.5'}
+- name: analog_sig_source_x_5
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: samp_rate, waveform: analog.GR_SQR_WAVE, freq: '5'}
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters: {}
+- name: blocks_multiply_xx_2
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: analog_sig_source_x_1
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate, freq: '25000', amp: '1.0'}
+- name: analog_sig_source_x_2
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate, freq: '-17000', amp: '1.0'}
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters: {type: complex, num_inputs: '3'}
+- name: analog_sig_source_x_3
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate, freq: '-19500'}
+- name: blocks_multiply_xx_0
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: low_pass_filter_0
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, decim: decim, samp_rate: samp_rate, cutoff_freq: '3000', width: '1000'}
+- name: blocks_file_sink_0
+  id: blocks_file_sink
+  parameters: {file: channel.dat, type: complex}
+- name: analog_sig_source_x_4
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: '12000', freq: '-800', amp: '1.6'}
+- name: blocks_multiply_xx_1
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: blocks_complex_to_real_0
+  id: blocks_complex_to_real
+  parameters: {}
+- name: blocks_file_sink_1
+  id: blocks_file_sink
+  parameters: {file: audio.dat, type: float}
+connections:
+- [analog_sig_source_x_0, '0', blocks_multiply_xx_2, '0']
+- [analog_sig_source_x_5, '0', blocks_float_to_complex_0, '0']
+- [blocks_float_to_complex_0, '0', blocks_multiply_xx_2, '1']
+- [blocks_multiply_xx_2, '0', blocks_add_xx_0, '0']
+- [analog_sig_source_x_1, '0', blocks_add_xx_0, '1']
+- [analog_sig_source_x_2, '0', blocks_add_xx_0, '2']
+- [blocks_add_xx_0, '0', blocks_multiply_xx_0, '0']
+- [analog_sig_source_x_3, '0', blocks_multiply_xx_0, '1']
+- [blocks_multiply_xx_0, '0', low_pass_filter_0, '0']
+- [low_pass_filter_0, '0', blocks_file_sink_0, '0']
+- [low_pass_filter_0, '0', blocks_multiply_xx_1, '0']
+- [analog_sig_source_x_4, '0', blocks_multiply_xx_1, '1']
+- [blocks_multiply_xx_1, '0', blocks_complex_to_real_0, '0']
+- [blocks_complex_to_real_0, '0', blocks_file_sink_1, '0']
+metadata: {file_format: 1}

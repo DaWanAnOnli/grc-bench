@@ -1,0 +1,36 @@
+options:
+  parameters: {id: burst_agc, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '1200', amp: '0.5'}
+- name: envelope
+  id: blocks_vector_source_x
+  parameters: {type: complex, vector: '[0.1] * 4000 + [3.0] * 4000'}
+- name: bursts
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: rms
+  id: blocks_rms_xx
+  parameters: {type: complex, alpha: '0.05'}
+- name: to_c
+  id: blocks_float_to_complex
+  parameters: {}
+- name: norm
+  id: blocks_divide_xx
+  parameters: {type: complex}
+- name: rx_sink
+  id: blocks_file_sink
+  parameters: {type: complex, file: rx.dat}
+connections:
+- [tone, '0', bursts, '0']
+- [envelope, '0', bursts, '1']
+- [bursts, '0', rms, '0']
+- [rms, '0', to_c, '0']
+- [bursts, '0', norm, '0']
+- [to_c, '0', norm, '1']
+- [norm, '0', rx_sink, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,19 @@
+options:
+  parameters: {id: fading_fast, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: 48e3}
+- name: fading
+  id: analog_fastnoise_source_x
+  parameters: {type: complex, amp: '0.8', noise_type: analog.GR_GAUSSIAN}
+- name: envelope
+  id: blocks_complex_to_mag
+  parameters: {}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: envelope.dat}
+connections:
+- [fading, '0', envelope, '0']
+- [envelope, '0', out, '0']
+metadata: {file_format: 1}

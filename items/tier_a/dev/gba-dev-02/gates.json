@@ -1,0 +1,46 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: the final graph is missing",
+    "blocks_present[0]: the final graph is missing"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V6: clean mean = 0.501148; clean rms = 0.539525; graph check path: no such path",
+      "blocks_present[0]: 0 matching block(s) []"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "45444adcf229116db2a4422f0bd1fbd77c3236967fbdf97fd89c23f917deeebb",
+ "passed": true,
+ "task": "gba-dev-02"
+}

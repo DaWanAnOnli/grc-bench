@@ -1,0 +1,71 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "out",
+     "gain"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "file sink input type"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "port type mismatch float complex"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "reason": "Make the File Sink take float samples, matching its input.",
+    "update_params": [
+     {
+      "instance_name": "out",
+      "params": {
+       "type": "float"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "The File Sink was set to complex while the Multiply Const feeding it outputs float, so GRC reported a type mismatch. I set the File Sink type to float; the tone, gain and output file are unchanged and the flowgraph is saved."
+}

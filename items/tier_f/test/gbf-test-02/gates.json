@@ -1,0 +1,54 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 16
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 279
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "note": "build task: no starting flowgraph",
+   "passed": true
+  },
+  "variants": {
+   "n": 5,
+   "passed": true,
+   "results": {
+    "v1_noise_source_adder.grc": [
+     "V6",
+     null
+    ],
+    "v2_fastnoise_throttle_narrow_loop.grc": [
+     "V6",
+     null
+    ],
+    "v3_bandpass_prefilter.grc": [
+     "V6",
+     null
+    ],
+    "v4_wide_loop.grc": [
+     "V6",
+     null
+    ],
+    "v5_freqdet_nco.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-test-02"
+}

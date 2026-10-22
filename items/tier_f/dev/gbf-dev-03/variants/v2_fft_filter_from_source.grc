@@ -1,0 +1,34 @@
+options:
+  parameters: {id: nrz_test_pattern, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: sps
+  id: variable
+  parameters: {value: '8'}
+- name: symbols
+  id: variable
+  parameters: {value: '(1, -1, -1, 1, 1, 1, -1, 1, -1, -1, -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1,
+      1)'}
+- name: src
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '[s for s in symbols for _ in range(sps)]'}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: nrz_out
+  id: blocks_file_sink
+  parameters: {type: float, file: nrz.dat}
+- name: mf_fft
+  id: fft_filter_xxx
+  parameters: {type: fff, taps: '[1.0/sps]*sps'}
+- name: mf_file
+  id: blocks_file_sink
+  parameters: {type: float, file: mf.dat}
+connections:
+- [src, '0', thr, '0']
+- [thr, '0', nrz_out, '0']
+- [src, '0', mf_fft, '0']
+- [mf_fft, '0', mf_file, '0']
+metadata: {file_format: 1}

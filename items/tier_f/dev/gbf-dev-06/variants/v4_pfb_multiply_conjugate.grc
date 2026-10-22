@@ -1,0 +1,58 @@
+options:
+  parameters: {id: ssb_pfb_conj, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: 48e3}
+- name: audio_rate
+  id: variable
+  parameters: {value: 8e3}
+- name: s700
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: audio_rate, freq: '700', amp: '0.4'}
+- name: s2400
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: audio_rate, freq: '2400', amp: '0.25'}
+- name: sum2
+  id: blocks_add_xx
+  parameters: {type: float}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float, samples_per_second: audio_rate}
+- name: out_audio
+  id: blocks_file_sink
+  parameters: {type: float, file: /tmp/audio.dat}
+- name: arb
+  id: pfb_arb_resampler_xxx
+  parameters: {type: fff, rrate: samp_rate/audio_rate}
+- name: ht
+  id: hilbert_fc
+  parameters: {num_taps: '401', win: window.WIN_KAISER, beta: '8'}
+- name: lo_neg
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-10000'}
+- name: conj_mix
+  id: blocks_multiply_conjugate_cc
+  parameters: {}
+- name: c2f
+  id: blocks_complex_to_float
+  parameters: {}
+- name: imag_park
+  id: blocks_null_sink
+  parameters: {type: float}
+- name: out_ssb
+  id: blocks_file_sink
+  parameters: {type: float, file: /tmp/ssb.dat}
+connections:
+- [s700, '0', sum2, '0']
+- [s2400, '0', sum2, '1']
+- [sum2, '0', thr, '0']
+- [thr, '0', out_audio, '0']
+- [thr, '0', arb, '0']
+- [arb, '0', ht, '0']
+- [ht, '0', conj_mix, '0']
+- [lo_neg, '0', conj_mix, '1']
+- [conj_mix, '0', c2f, '0']
+- [c2f, '0', out_ssb, '0']
+- [c2f, '1', imag_park, '0']
+metadata: {file_format: 1}

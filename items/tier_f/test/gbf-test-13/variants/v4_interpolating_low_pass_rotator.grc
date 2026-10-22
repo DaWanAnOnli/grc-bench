@@ -1,0 +1,33 @@
+options:
+  parameters: {id: if_tx_v4, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: symbols
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '(-1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1,
+      -1, -1, 1, 1, -1, 1, 1, 1, -1, 1, -1, 1, -1)'}
+- name: pulse_shaping
+  id: low_pass_filter
+  parameters: {type: interp_fir_filter_fff, interp: '8', gain: '8', cutoff_freq: '2400', width: '1200',
+    win: window.WIN_BLACKMAN}
+- name: to_complex
+  id: blocks_float_to_complex
+  parameters: {}
+- name: upconvert
+  id: blocks_rotator_cc
+  parameters: {phase_inc: 3.141592653589793/2}
+- name: if_sink
+  id: blocks_file_sink
+  parameters: {type: complex, file: if.dat}
+- name: symbol_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: symbols.dat}
+connections:
+- [symbols, '0', pulse_shaping, '0']
+- [pulse_shaping, '0', to_complex, '0']
+- [to_complex, '0', upconvert, '0']
+- [upconvert, '0', if_sink, '0']
+- [symbols, '0', symbol_sink, '0']
+metadata: {file_format: 1}

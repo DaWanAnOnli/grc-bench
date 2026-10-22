@@ -1,0 +1,1131 @@
+{
+ "all_corpora": {
+  "any": {
+   "items_flagged": 1,
+   "rate": 0.1
+  },
+  "embed": {
+   "items_flagged": 0,
+   "rate": 0.0
+  },
+  "ngram": {
+   "items_flagged": 1,
+   "rate": 0.1
+  },
+  "tfidf": {
+   "items_flagged": 0,
+   "rate": 0.0
+  }
+ },
+ "corpora": {
+  "repaired": {
+   "any_signal": {
+    "items_flagged": 1,
+    "rate": 0.1
+   },
+   "description": "repaired answers (10_repaired)",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8373,
+     "min": 0.7575,
+     "p10": 0.7742,
+     "p25": 0.7878,
+     "p50": 0.7933,
+     "p75": 0.8135,
+     "p90": 0.8242,
+     "p95": 0.8307,
+     "p99": 0.836
+    },
+    "passages_embedded": 27,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 3042,
+   "n_passages": 40896,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 1,
+    "rate": 0.1,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "3042 repaired answers; 423 rows for dev questions dropped"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "data/GRC_dataset_20261007/dataset/10_repaired/repaired_answers.jsonl",
+     "sha256": "3805f11f270e2ddc956d21bec3e4ebbcd23f2306e1bb62f904f797531c4dc2ca"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.4054,
+     "min": 0.21,
+     "p10": 0.2174,
+     "p25": 0.2306,
+     "p50": 0.2634,
+     "p75": 0.2677,
+     "p90": 0.2853,
+     "p95": 0.3454,
+     "p99": 0.3934
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "gpt-oss-120b/q_537d718ca5273cc9",
+     "doc_ref": "q_537d718ca5273cc9",
+     "embed": 0.8373,
+     "item": "In this empty flowgraph, build a test bench for a single-sideband (SSB) transmitter that uses the phasing method. Set samp_rate to 48 kHz; this is the sample r…",
+     "item_id": "gbf-dev-06",
+     "ngram_shared": 0,
+     "tfidf": 0.2653,
+     "training": "a(t)\\) = audio baseband (–1…+1), \\(m\\) = modulation index (0…+1, typically ≤ 0.5 for clean AM), \\(f_c\\) = RF carrier. Generate the carrier with a sinusoid, bias the audio to keep the envelope ≥ 0, then multiply. This works for a USRP sink…"
+    },
+    {
+     "doc_id": "nemotron3-super-120b/q_0ed028a9be934926",
+     "doc_ref": "q_0ed028a9be934926",
+     "embed": 0.8227,
+     "item": "This flowgraph simulates a burst BPSK link and its receiver. A Vector Source repeats one packet of bytes: the 8-byte preamble 0x2E 0xA4 0xAF 0x33 0x1F 0x22 0xF…",
+     "item_id": "gbf-dev-10",
+     "ngram_shared": 0,
+     "tfidf": 0.2276,
+     "training": "bytes), repeat as needed | | 2 - Bit-to-symbol | `chunks_to_symbols_bc` (symbol map [-1,+1]) **OR** `digital constellation_modulator_cb` with BPSK | **One mapping stage only** - converts bits to +/-1 BPSK symbols (real-only). Do not chain…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8138,
+     "item": "This flowgraph plays a repeating NRZ test pattern: a Vector Source sends +1/-1 symbols as rectangular pulses, 8 samples per symbol (4 kBd at 32 kHz), through a…",
+     "item_id": "gbf-dev-03",
+     "ngram_shared": 0,
+     "tfidf": 0.2563,
+     "training": "to the output file. ### Example Flowgraph (With Processing): - **File Source** → **Throttle** (rate control) → **Multiply Const** (amplification) → **File Sink**. ### Key Considerations: - **Sample Type**: Ensure the file source and sink u…"
+    },
+    {
+     "doc_id": "gpt-oss-120b/q_537d718ca5273cc9",
+     "doc_ref": "q_537d718ca5273cc9",
+     "embed": 0.8127,
+     "item": "This flowgraph is a heterodyne mixer that converts a radio-frequency (RF) test carrier down to an intermediate frequency (IF). It runs at a sample rate of 48 k…",
+     "item_id": "gbf-dev-04",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "a(t)\\) = audio baseband (–1…+1), \\(m\\) = modulation index (0…+1, typically ≤ 0.5 for clean AM), \\(f_c\\) = RF carrier. Generate the carrier with a sinusoid, bias the audio to keep the envelope ≥ 0, then multiply. This works for a USRP sink…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.7933,
+     "item": "This flowgraph demonstrates time-division multiplexing of two streams of real 32-bit float samples. Two repeating Vector Sources produce stream A (1, 2, 3, 4,…",
+     "item_id": "gbf-dev-07",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "to the output file. ### Example Flowgraph (With Processing): - **File Source** → **Throttle** (rate control) → **Multiply Const** (amplification) → **File Sink**. ### Key Considerations: - **Sample Type**: Ensure the file source and sink u…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_75b8a77c84e964d3",
+     "doc_ref": "q_75b8a77c84e964d3",
+     "embed": 0.7932,
+     "item": "This flowgraph is a filter test bench. It runs at a sample rate of 48 kHz with real (float) samples throughout. A Fast Noise Source generates Gaussian white no…",
+     "item_id": "gbf-dev-09",
+     "ngram_shared": 0,
+     "tfidf": 0.2068,
+     "training": "Source` (if using an SDR like RTL-SDR or HackRF) or `File Source` for a recording. Set the sample rate to a value that is a multiple of 48 kHz (e.g., 2.4 MS/s). 2. **Low-Pass / Channel Filter:** a `Low Pass Filter` (or `Frequency Xlating F…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_996b58a52e7032c1",
+     "doc_ref": "q_996b58a52e7032c1",
+     "embed": 0.7882,
+     "item": "This flowgraph demonstrates the effect of quantization. It runs at a sample rate of 48 kHz. A Noise Source produces noise with a standard deviation of 0.1 (-20…",
+     "item_id": "gbf-dev-08",
+     "ngram_shared": 0,
+     "tfidf": 0.2212,
+     "training": "Filter** and **Moving Average** to get noise power. 4. **SNR Calculation**: - **Divide** the signal power by the noise power (linear scale). - **Log10** block to convert to dB. - **Multiply by 10** to get \\( 10 \\log_{10}(\\text{SNR}) \\). 5.…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_dafdb0d3b587bf61",
+     "doc_ref": "q_dafdb0d3b587bf61",
+     "embed": 0.7877,
+     "item": "In this flowgraph, simulate the amplitude of a Rayleigh flat-fading channel at a sample rate of 48 kHz. Generate complex Gaussian noise with an RMS magnitude o…",
+     "item_id": "gbf-dev-02",
+     "ngram_shared": 0,
+     "tfidf": 0.2158,
+     "training": "AM envelope). 4. **Signal Source (carrier)** - `analog.sig_source_f(fs, GR_COS_WAVE, 100000, 1.0, 0)` (float cosine at 100 kHz). 5. **Multiply** (float x float -> float) - carrier times the baseband envelope: `s(t) = (1 + m*audio(t)) * cos…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.776,
+     "item": "This flowgraph models an amplifier that saturates: Gaussian noise goes through a limiter (the Rail block), and two File Sinks record the noise entering the lim…",
+     "item_id": "gbf-dev-05",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "to the output file. ### Example Flowgraph (With Processing): - **File Source** → **Throttle** (rate control) → **Multiply Const** (amplification) → **File Sink**. ### Key Considerations: - **Sample Type**: Ensure the file source and sink u…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_0ed028a9be934926",
+     "doc_ref": "q_0ed028a9be934926",
+     "embed": 0.7575,
+     "item": "In this empty flowgraph, build a sync-word detector for a test bit stream. Use a repeating Vector Source to play this 64-bit pattern, one sample per bit, leftm…",
+     "item_id": "gbf-dev-01",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Here's a concise GNU Radio flowgraph design for transmitting a BPSK-modulated signal: ### Key Blocks: 1. **Random Source** (or Vector Source for deterministic bits): produces a bit stream (0/1). Output Type: Byte, Repeats as needed. 2. **P…"
+    }
+   ]
+  },
+  "repaired_glm": {
+   "any_signal": {
+    "items_flagged": 1,
+    "rate": 0.1
+   },
+   "description": "repaired answers (10_repaired_glm)",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8291,
+     "min": 0.7467,
+     "p10": 0.7484,
+     "p25": 0.7767,
+     "p50": 0.7931,
+     "p75": 0.8146,
+     "p90": 0.8215,
+     "p95": 0.8253,
+     "p99": 0.8283
+    },
+    "passages_embedded": 29,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 3042,
+   "n_passages": 55753,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 1,
+    "rate": 0.1,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "3042 repaired answers; 423 rows for dev questions dropped"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "data/GRC_dataset_20261007/dataset/10_repaired_glm/repaired_answers.jsonl",
+     "sha256": "1bc492ba0320c608ce8c864a77de9a0930cefbfaec7b2c70fba5224f6234e632"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.3999,
+     "min": 0.2293,
+     "p10": 0.23,
+     "p25": 0.2309,
+     "p50": 0.2354,
+     "p75": 0.2781,
+     "p90": 0.2967,
+     "p95": 0.3483,
+     "p99": 0.3896
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "nemotron3-super-120b/q_ccd5fdb0f963d520",
+     "doc_ref": "q_ccd5fdb0f963d520",
+     "embed": 0.8291,
+     "item": "In this empty flowgraph, build a test bench for a single-sideband (SSB) transmitter that uses the phasing method. Set samp_rate to 48 kHz; this is the sample r…",
+     "item_id": "gbf-dev-06",
+     "ngram_shared": 0,
+     "tfidf": 0.2546,
+     "training": "1 kHz test tone; real audio would come from a File/Audio Source, but the requirement here is a Signal Source) <br>• Sample rate: `Fs_audio` (e.g., 48 kHz) <br>• Frequency: `f_mod` (e.g., 1 kHz for a tone) <br>• Amplitude: `A_mod` (≤ 1.0, n…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_cecf08e95ebefd25",
+     "doc_ref": "q_cecf08e95ebefd25",
+     "embed": 0.8206,
+     "item": "This flowgraph simulates a burst BPSK link and its receiver. A Vector Source repeats one packet of bytes: the 8-byte preamble 0x2E 0xA4 0xAF 0x33 0x1F 0x22 0xF…",
+     "item_id": "gbf-dev-10",
+     "ngram_shared": 0,
+     "tfidf": 0.2253,
+     "training": "Here is a concise design for a GNU Radio QPSK transmitter flowgraph: 1. **Vector Source** - Generate a stream of complex QPSK symbols (e.g., `[1+1j, -1+1j, -1-1j, 1-1j]` or use a `Constellation Modulator`'s mapping). For real payloads, fee…"
+    },
+    {
+     "doc_id": "nemotron3-super-120b/q_ccd5fdb0f963d520",
+     "doc_ref": "q_ccd5fdb0f963d520",
+     "embed": 0.8186,
+     "item": "This flowgraph is a heterodyne mixer that converts a radio-frequency (RF) test carrier down to an intermediate frequency (IF). It runs at a sample rate of 48 k…",
+     "item_id": "gbf-dev-04",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "1 kHz test tone; real audio would come from a File/Audio Source, but the requirement here is a Signal Source) <br>• Sample rate: `Fs_audio` (e.g., 48 kHz) <br>• Frequency: `f_mod` (e.g., 1 kHz for a tone) <br>• Amplitude: `A_mod` (≤ 1.0, n…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_2b6ef86ac7ebdd14",
+     "doc_ref": "q_2b6ef86ac7ebdd14",
+     "embed": 0.8026,
+     "item": "This flowgraph demonstrates the effect of quantization. It runs at a sample rate of 48 kHz. A Noise Source produces noise with a standard deviation of 0.1 (-20…",
+     "item_id": "gbf-dev-08",
+     "ngram_shared": 0,
+     "tfidf": 0.2247,
+     "training": "Source → QT GUI Frequency Sink`. Set identical sample rate on both. Check that the sink shows noise floor + any strong signals. - If signal appears in `hackrf_transfer` but not in GNU Radio, the issue is in the flowgraph (type mismatch, di…"
+    },
+    {
+     "doc_id": "nemotron3-super-120b/q_d1385352582b057f",
+     "doc_ref": "q_d1385352582b057f",
+     "embed": 0.8024,
+     "item": "This flowgraph is a filter test bench. It runs at a sample rate of 48 kHz with real (float) samples throughout. A Fast Noise Source generates Gaussian white no…",
+     "item_id": "gbf-dev-09",
+     "ngram_shared": 0,
+     "tfidf": 0.2293,
+     "training": "8\\). 2. Anti‑alias low‑pass: passband ≤ 1.2 kHz, stopband ≥1.8 kHz (transition ≈0.6 kHz). 3. FIR length ≈291 taps for ≥60 dB stopband (Kaiser formula). 4. Filter at 48 kHz, then keep every 8th sample — or use GNU Radio's decimating Low Pas…"
+    },
+    {
+     "doc_id": "nemotron3-super-120b/q_1bef55548f25bed9",
+     "doc_ref": "q_1bef55548f25bed9",
+     "embed": 0.7837,
+     "item": "This flowgraph plays a repeating NRZ test pattern: a Vector Source sends +1/-1 symbols as rectangular pulses, 8 samples per symbol (4 kBd at 32 kHz), through a…",
+     "item_id": "gbf-dev-03",
+     "ngram_shared": 0,
+     "tfidf": 0.2496,
+     "training": "applies a Gaussian filter (BT = 0.35 default); the explicit chain with `Repeat` gives rectangular pulses — add an RRC or Gaussian filter if spectrum occupancy matters. 3. **Simulation vs hardware**: keep a `Throttle` in file-based simulati…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_bfaa61a6e2a3df83",
+     "doc_ref": "q_bfaa61a6e2a3df83",
+     "embed": 0.7835,
+     "item": "In this flowgraph, simulate the amplitude of a Rayleigh flat-fading channel at a sample rate of 48 kHz. Generate complex Gaussian noise with an RMS magnitude o…",
+     "item_id": "gbf-dev-02",
+     "ngram_shared": 0,
+     "tfidf": 0.2372,
+     "training": "Distributions Because the bandpass noise is Gaussian with total noise power \\( N = N_0 B \\) in the RF bandwidth \\( B \\), the envelope \\( r \\) at the sampling instant is: - Given '0' (noise only): \\( r \\) is **Rayleigh** distributed, and th…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_087fe90a62eb07a3",
+     "doc_ref": "q_087fe90a62eb07a3",
+     "embed": 0.7745,
+     "item": "This flowgraph models an amplifier that saturates: Gaussian noise goes through a limiter (the Rail block), and two File Sinks record the noise entering the lim…",
+     "item_id": "gbf-dev-05",
+     "ngram_shared": 0,
+     "tfidf": 0.1792,
+     "training": "1. **Add the Noise Source Block**: - In GNU Radio Companion (GRC), search for the **`Noise Source`** block. - Set its parameters: - **Type**: `float` or `complex` (depending on your signal type). - **Noise Type / Distribution**: `Gaussian`…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_cecf08e95ebefd25",
+     "doc_ref": "q_cecf08e95ebefd25",
+     "embed": 0.7486,
+     "item": "This flowgraph demonstrates time-division multiplexing of two streams of real 32-bit float samples. Two repeating Vector Sources produce stream A (1, 2, 3, 4,…",
+     "item_id": "gbf-dev-07",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Here is a concise design for a GNU Radio QPSK transmitter flowgraph: 1. **Vector Source** - Generate a stream of complex QPSK symbols (e.g., `[1+1j, -1+1j, -1-1j, 1-1j]` or use a `Constellation Modulator`'s mapping). For real payloads, fee…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_0947855117aad3c7",
+     "doc_ref": "q_0947855117aad3c7",
+     "embed": 0.7467,
+     "item": "In this empty flowgraph, build a sync-word detector for a test bit stream. Use a repeating Vector Source to play this 64-bit pattern, one sample per bit, leftm…",
+     "item_id": "gbf-dev-01",
+     "ngram_shared": 0,
+     "tfidf": 0.3999,
+     "training": "0000 | 0000 | **0** | | 1 | 0001 | 1000 | **8** | | 2 | 0010 | 0100 | **4** | | 3 | 0011 | 1100 | **12** | | 4 | 0100 | 0010 | **2** | | 5 | 0101 | 1010 | **10** | | 6 | 0110 | 0110 | **6** | | 7 | 0111 | 1110 | **14** | | 8 | 1000 | 0001…"
+    }
+   ]
+  },
+  "sft_sessions": {
+   "any_signal": {
+    "items_flagged": 0,
+    "rate": 0.0
+   },
+   "description": "SFT sessions and quarantine (grc-agent-sft-v0.1.0), all message text",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8183,
+     "min": 0.728,
+     "p10": 0.753,
+     "p25": 0.7692,
+     "p50": 0.791,
+     "p75": 0.7957,
+     "p90": 0.8069,
+     "p95": 0.8126,
+     "p99": 0.8172
+    },
+    "passages_embedded": 26,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 32,
+   "n_passages": 60828,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 0,
+    "rate": 0.0,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "32 sessions (12 sft_train + 20 quarantine); system prompt included"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "data/grc-agent-sft-v0.1.0/grc-agent-sft-v0.1.0/sft_train.jsonl",
+     "sha256": "786849e056a7aa0efcf33738284a654190466a9019246cccf03a9c71d832d1a8"
+    },
+    {
+     "path": "data/grc-agent-sft-v0.1.0/grc-agent-sft-v0.1.0/quarantine.jsonl",
+     "sha256": "57080b78798d6fd5991deee9f2aff9876ae50acb26fd0f64945906c60a40ad00"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.2748,
+     "min": 0.1979,
+     "p10": 0.1985,
+     "p25": 0.2128,
+     "p50": 0.2429,
+     "p75": 0.2669,
+     "p90": 0.2719,
+     "p95": 0.2734,
+     "p99": 0.2745
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.8183,
+     "item": "In this flowgraph, simulate the amplitude of a Rayleigh flat-fading channel at a sample rate of 48 kHz. Generate complex Gaussian noise with an RMS magnitude o…",
+     "item_id": "gbf-dev-02",
+     "ngram_shared": 0,
+     "tfidf": 0.2232,
+     "training": "1/sqrt(2)). Let me plan the verification to be self-contained: - Generate /path/dummy.dat = FM-modulated 1 kHz tone, 400 kHz, 75 kHz deviation, ~2 s, with a little noise, amplitude ~0.8. - Run the flowgraph with a probe (probe_rate or a te…"
+    },
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.8056,
+     "item": "In this empty flowgraph, build a test bench for a single-sideband (SSB) transmitter that uses the phasing method. Set samp_rate to 48 kHz; this is the sample r…",
+     "item_id": "gbf-dev-06",
+     "ngram_shared": 0,
+     "tfidf": 0.2716,
+     "training": "1/sqrt(2)). Let me plan the verification to be self-contained: - Generate /path/dummy.dat = FM-modulated 1 kHz tone, 400 kHz, 75 kHz deviation, ~2 s, with a little noise, amplitude ~0.8. - Run the flowgraph with a probe (probe_rate or a te…"
+    },
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.7964,
+     "item": "This flowgraph demonstrates the effect of quantization. It runs at a sample rate of 48 kHz. A Noise Source produces noise with a standard deviation of 0.1 (-20…",
+     "item_id": "gbf-dev-08",
+     "ngram_shared": 0,
+     "tfidf": 0.2704,
+     "training": "1/sqrt(2)). Let me plan the verification to be self-contained: - Generate /path/dummy.dat = FM-modulated 1 kHz tone, 400 kHz, 75 kHz deviation, ~2 s, with a little noise, amplitude ~0.8. - Run the flowgraph with a probe (probe_rate or a te…"
+    },
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.7937,
+     "item": "This flowgraph is a heterodyne mixer that converts a radio-frequency (RF) test carrier down to an intermediate frequency (IF). It runs at a sample rate of 48 k…",
+     "item_id": "gbf-dev-04",
+     "ngram_shared": 0,
+     "tfidf": 0.239,
+     "training": "DC gain). dummy.dat was missing so the graph could not run at all; I generated a 2 s, 400 kHz complex64, 75 kHz-deviation FM test signal (1 kHz tone) at that path. Verification with a temporary head+file-sink probe on the audio output: 0 s…"
+    },
+    {
+     "doc_id": "quarantine/01/session-4",
+     "doc_ref": "t02_qpsk_ber_chain",
+     "embed": 0.7923,
+     "item": "This flowgraph simulates a burst BPSK link and its receiver. A Vector Source repeats one packet of bytes: the 8-byte preamble 0x2E 0xA4 0xAF 0x33 0x1F 0x22 0xF…",
+     "item_id": "gbf-dev-10",
+     "ngram_shared": 0,
+     "tfidf": 0.2205,
+     "training": "4, differential=True, samples_per_symbol=4, excess_bw=0.35, freq_bw/timing_bw/phase_bw = 2*pi/100 defaults. Output: bytes, one bit per byte, MSB first? doc says \"output is a stream of bytes, each representing a recovered bit. The most sign…"
+    },
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.7897,
+     "item": "This flowgraph models an amplifier that saturates: Gaussian noise goes through a limiter (the Rail block), and two File Sinks record the noise entering the lim…",
+     "item_id": "gbf-dev-05",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "1/sqrt(2)). Let me plan the verification to be self-contained: - Generate /path/dummy.dat = FM-modulated 1 kHz tone, 400 kHz, 75 kHz deviation, ~2 s, with a little noise, amplitude ~0.8. - Run the flowgraph with a probe (probe_rate or a te…"
+    },
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.7763,
+     "item": "This flowgraph plays a repeating NRZ test pattern: a Vector Source sends +1/-1 symbols as rectangular pulses, 8 samples per symbol (4 kBd at 32 kHz), through a…",
+     "item_id": "gbf-dev-03",
+     "ngram_shared": 0,
+     "tfidf": 0.2371,
+     "training": "1/sqrt(2)). Let me plan the verification to be self-contained: - Generate /path/dummy.dat = FM-modulated 1 kHz tone, 400 kHz, 75 kHz deviation, ~2 s, with a little noise, amplitude ~0.8. - Run the flowgraph with a probe (probe_rate or a te…"
+    },
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.7669,
+     "item": "This flowgraph is a filter test bench. It runs at a sample rate of 48 kHz with real (float) samples throughout. A Fast Noise Source generates Gaussian white no…",
+     "item_id": "gbf-dev-09",
+     "ngram_shared": 0,
+     "tfidf": 0.2047,
+     "training": "1/sqrt(2)). Let me plan the verification to be self-contained: - Generate /path/dummy.dat = FM-modulated 1 kHz tone, 400 kHz, 75 kHz deviation, ~2 s, with a little noise, amplitude ~0.8. - Run the flowgraph with a probe (probe_rate or a te…"
+    },
+    {
+     "doc_id": "quarantine/01/session-4",
+     "doc_ref": "t02_qpsk_ber_chain",
+     "embed": 0.7558,
+     "item": "In this empty flowgraph, build a sync-word detector for a test bit stream. Use a repeating Vector Source to play this 64-bit pattern, one sample per bit, leftm…",
+     "item_id": "gbf-dev-01",
+     "ngram_shared": 0,
+     "tfidf": 0.1964,
+     "training": "4, differential=True, samples_per_symbol=4, excess_bw=0.35, freq_bw/timing_bw/phase_bw = 2*pi/100 defaults. Output: bytes, one bit per byte, MSB first? doc says \"output is a stream of bytes, each representing a recovered bit. The most sign…"
+    },
+    {
+     "doc_id": "quarantine/01/session-4",
+     "doc_ref": "t02_qpsk_ber_chain",
+     "embed": 0.728,
+     "item": "This flowgraph demonstrates time-division multiplexing of two streams of real 32-bit float samples. Two repeating Vector Sources produce stream A (1, 2, 3, 4,…",
+     "item_id": "gbf-dev-07",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "4, differential=True, samples_per_symbol=4, excess_bw=0.35, freq_bw/timing_bw/phase_bw = 2*pi/100 defaults. Output: bytes, one bit per byte, MSB first? doc says \"output is a stream of bytes, each representing a recovered bit. The most sign…"
+    }
+   ]
+  },
+  "task_specs": {
+   "any_signal": {
+    "items_flagged": 0,
+    "rate": 0.0
+   },
+   "description": "training-side agent task specs (Qoherent tasks, GRC-Agent scenarios, SFT tasks)",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.7909,
+     "min": 0.7259,
+     "p10": 0.7555,
+     "p25": 0.7606,
+     "p50": 0.7739,
+     "p75": 0.784,
+     "p90": 0.7887,
+     "p95": 0.7898,
+     "p99": 0.7907
+    },
+    "passages_embedded": 75,
+    "rate": 0.0,
+    "scope": "every passage",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 62,
+   "n_passages": 75,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 0,
+    "rate": 0.0,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "62 goals; grc_agent_scenario 15, qoherent_collection_task 15, sft_quarantined_session 20, sft_trainable_session 12"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "grc-bench/reports/reference/training_task_specs.json",
+     "sha256": "c386714a44f37e8f991a7d138db8faf003b97e392f6b72d36cadca7912225286"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.245,
+     "min": 0.1557,
+     "p10": 0.1635,
+     "p25": 0.1777,
+     "p50": 0.1884,
+     "p75": 0.1926,
+     "p90": 0.2021,
+     "p95": 0.2235,
+     "p99": 0.2407
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "grc_agent_scenario/14_build_chain_from_scratch",
+     "doc_ref": "",
+     "embed": 0.7909,
+     "item": "In this empty flowgraph, build a sync-word detector for a test bit stream. Use a repeating Vector Source to play this 64-bit pattern, one sample per bit, leftm…",
+     "item_id": "gbf-dev-01",
+     "ngram_shared": 0,
+     "tfidf": 0.1584,
+     "training": "Inspect the flowgraph — right now it's empty except for the samp_rate variable. Build a minimal signal chain: a signal source called `sig` (type float, freq 1000, amp 0.5, using samp_rate), a throttle called `throttle` (type float, samples…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
+     "doc_ref": "",
+     "embed": 0.7885,
+     "item": "This flowgraph is a filter test bench. It runs at a sample rate of 48 kHz with real (float) samples throughout. A Fast Noise Source generates Gaussian white no…",
+     "item_id": "gbf-dev-09",
+     "ngram_shared": 0,
+     "tfidf": 0.1492,
+     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/06_query_knowledge_multiply",
+     "doc_ref": "",
+     "embed": 0.7843,
+     "item": "This flowgraph is a heterodyne mixer that converts a radio-frequency (RF) test carrier down to an intermediate frequency (IF). It runs at a sample rate of 48 k…",
+     "item_id": "gbf-dev-04",
+     "ngram_shared": 0,
+     "tfidf": 0.1611,
+     "training": "Inspect the flowgraph. I want to multiply the two sine wave tones together instead of adding them. Look up the right GNU Radio block for a signal multiplier using query_knowledge (catalog domain) — don't guess the block id. Add it, call it…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/14_build_chain_from_scratch",
+     "doc_ref": "",
+     "embed": 0.783,
+     "item": "In this empty flowgraph, build a test bench for a single-sideband (SSB) transmitter that uses the phasing method. Set samp_rate to 48 kHz; this is the sample r…",
+     "item_id": "gbf-dev-06",
+     "ngram_shared": 0,
+     "tfidf": 0.141,
+     "training": "Inspect the flowgraph — right now it's empty except for the samp_rate variable. Build a minimal signal chain: a signal source called `sig` (type float, freq 1000, amp 0.5, using samp_rate), a throttle called `throttle` (type float, samples…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7794,
+     "item": "This flowgraph plays a repeating NRZ test pattern: a Vector Source sends +1/-1 symbols as rectangular pulses, 8 samples per symbol (4 kBd at 32 kHz), through a…",
+     "item_id": "gbf-dev-03",
+     "ngram_shared": 0,
+     "tfidf": 0.1883,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
+     "doc_ref": "",
+     "embed": 0.7685,
+     "item": "This flowgraph models an amplifier that saturates: Gaussian noise goes through a limiter (the Rail block), and two File Sinks record the noise entering the lim…",
+     "item_id": "gbf-dev-05",
+     "ngram_shared": 0,
+     "tfidf": 0.1614,
+     "training": "Upgrade this FM Receiver flowgraph to add a band-limiting filter and a noise squelch: 1. Search the catalog for a standard low pass filter block. 2. Add it to the flowgraph, call it `channel_filter`. Set its type parameter to `fir_filter_c…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7612,
+     "item": "In this flowgraph, simulate the amplitude of a Rayleigh flat-fading channel at a sample rate of 48 kHz. Generate complex Gaussian noise with an RMS magnitude o…",
+     "item_id": "gbf-dev-02",
+     "ngram_shared": 0,
+     "tfidf": 0.12,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.7604,
+     "item": "This flowgraph demonstrates time-division multiplexing of two streams of real 32-bit float samples. Two repeating Vector Sources produce stream A (1, 2, 3, 4,…",
+     "item_id": "gbf-dev-07",
+     "ngram_shared": 0,
+     "tfidf": 0.1526,
+     "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
+     "doc_ref": "",
+     "embed": 0.7588,
+     "item": "This flowgraph demonstrates the effect of quantization. It runs at a sample rate of 48 kHz. A Noise Source produces noise with a standard deviation of 0.1 (-20…",
+     "item_id": "gbf-dev-08",
+     "ngram_shared": 0,
+     "tfidf": 0.1928,
+     "training": "Upgrade this FM Receiver flowgraph to add a band-limiting filter and a noise squelch: 1. Search the catalog for a standard low pass filter block. 2. Add it to the flowgraph, call it `channel_filter`. Set its type parameter to `fir_filter_c…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/14_build_chain_from_scratch",
+     "doc_ref": "",
+     "embed": 0.7259,
+     "item": "This flowgraph simulates a burst BPSK link and its receiver. A Vector Source repeats one packet of bytes: the 8-byte preamble 0x2E 0xA4 0xAF 0x33 0x1F 0x22 0xF…",
+     "item_id": "gbf-dev-10",
+     "ngram_shared": 0,
+     "tfidf": 0.1343,
+     "training": "Inspect the flowgraph — right now it's empty except for the samp_rate variable. Build a minimal signal chain: a signal source called `sig` (type float, freq 1000, amp 0.5, using samp_rate), a throttle called `throttle` (type float, samples…"
+    }
+   ]
+  },
+  "teacher_answers": {
+   "any_signal": {
+    "items_flagged": 1,
+    "rate": 0.1
+   },
+   "description": "teacher answers and rationales (05_answers)",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8216,
+     "min": 0.7745,
+     "p10": 0.7781,
+     "p25": 0.7887,
+     "p50": 0.8051,
+     "p75": 0.8089,
+     "p90": 0.8114,
+     "p95": 0.8165,
+     "p99": 0.8206
+    },
+    "passages_embedded": 27,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 10262,
+   "n_passages": 267068,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 1,
+    "rate": 0.1,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "7 teachers; 10262 (question_id, model) answers",
+    "104 duplicate (question_id, model) rows replaced by the later row (laguna-s21 re-runs)",
+    "1415 rows for dev questions dropped",
+    "0 rows with no text skipped"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/devstral-small2-24b/answers.jsonl",
+     "sha256": "0e460de250ae80ec3405d1f5f6758ddb1d42f181e0001a1e3ff5738a69d92c0f"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/gemma4-31b/answers.jsonl",
+     "sha256": "0e936f72b859640df9f6349aec169ef9970a39ac12025668a9e887d92ca6efd3"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/gpt-oss-120b/answers.jsonl",
+     "sha256": "97c22228532eae6737644696aa561c610c6dcebade2f26f69058046cce034014"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/laguna-s21/answers.jsonl",
+     "sha256": "bf02502e41c4249c1fe8f2cf9c9c7dad9fd6ad6c2b732b71cc857c744d6fded5"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/muse-glimmer-30b/answers.jsonl",
+     "sha256": "46bbded25448b47866f6b8c7440fd77ad820907544e9dfca5225ecd8490534a1"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/nemotron3-super-120b/answers.jsonl",
+     "sha256": "8d4c04280f9dba4b392472e6f6e0832a253170280f987b1fe892692240a4cc0e"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/qwen36-27b/answers.jsonl",
+     "sha256": "6cc79a4afa742b85d11b70e063c7668e9058ea5828cd5efd5c6b4fbbcd5402d6"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.3783,
+     "min": 0.2257,
+     "p10": 0.2288,
+     "p25": 0.2393,
+     "p50": 0.2683,
+     "p75": 0.279,
+     "p90": 0.3036,
+     "p95": 0.3409,
+     "p99": 0.3708
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "devstral-small2-24b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8216,
+     "item": "This flowgraph plays a repeating NRZ test pattern: a Vector Source sends +1/-1 symbols as rectangular pulses, 8 samples per symbol (4 kBd at 32 kHz), through a…",
+     "item_id": "gbf-dev-03",
+     "ngram_shared": 0,
+     "tfidf": 0.2953,
+     "training": "Ensure the input/output types match (e.g., complex or float). 3. **File Sink (gr_file_sink)**: - Writes processed samples to a file. - Parameters: - File: Path to the output file. - Samples per item: Must match the input type (e.g., 1 for…"
+    },
+    {
+     "doc_id": "nemotron3-super-120b/q_a773926ab032fefe",
+     "doc_ref": "q_a773926ab032fefe",
+     "embed": 0.8103,
+     "item": "This flowgraph is a heterodyne mixer that converts a radio-frequency (RF) test carrier down to an intermediate frequency (IF). It runs at a sample rate of 48 k…",
+     "item_id": "gbf-dev-04",
+     "ngram_shared": 0,
+     "tfidf": 0.2715,
+     "training": "RF with a carrier). 5. **Optional: Up‑convert to RF** Multiply the real baseband signal by a cosine at the desired IF/RF frequency (using a *Multiply Const* block or a *Signal Source* + *Multiply*), then pass through a band‑pass RF filter…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_2476d40a9f028d2c",
+     "doc_ref": "q_2476d40a9f028d2c",
+     "embed": 0.809,
+     "item": "This flowgraph simulates a burst BPSK link and its receiver. A Vector Source repeats one packet of bytes: the 8-byte preamble 0x2E 0xA4 0xAF 0x33 0x1F 0x22 0xF…",
+     "item_id": "gbf-dev-10",
+     "ngram_shared": 0,
+     "tfidf": 0.2463,
+     "training": "Key parameters:** - Preamble length: 128 complex symbols (baseband/modulator input) - Modulator oversampling: 4 samples/symbol - Output sample rate: 10 MS/s (samples/sec) - Desired repetition rate: 1 preamble/second - **Question:** How to…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_609d652cf5167382",
+     "doc_ref": "q_609d652cf5167382",
+     "embed": 0.8087,
+     "item": "In this empty flowgraph, build a test bench for a single-sideband (SSB) transmitter that uses the phasing method. Set samp_rate to 48 kHz; this is the sample r…",
+     "item_id": "gbf-dev-06",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "but often necessary) Data type conversion or gain. * Sink: File output. * *Source:* `Audio Source` block. * Sample Rate: 44.1 kHz. * *Sink:* `File Sink` block. * Format: Binary file (raw samples). * Audio hardware usually provides floats.…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_609d652cf5167382",
+     "doc_ref": "q_609d652cf5167382",
+     "embed": 0.806,
+     "item": "This flowgraph demonstrates the effect of quantization. It runs at a sample rate of 48 kHz. A Noise Source produces noise with a standard deviation of 0.1 (-20…",
+     "item_id": "gbf-dev-08",
+     "ngram_shared": 0,
+     "tfidf": 0.256,
+     "training": "but often necessary) Data type conversion or gain. * Sink: File output. * *Source:* `Audio Source` block. * Sample Rate: 44.1 kHz. * *Sink:* `File Sink` block. * Format: Binary file (raw samples). * Audio hardware usually provides floats.…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_63a77f66350ca1f8",
+     "doc_ref": "q_63a77f66350ca1f8",
+     "embed": 0.8042,
+     "item": "This flowgraph is a filter test bench. It runs at a sample rate of 48 kHz with real (float) samples throughout. A Fast Noise Source generates Gaussian white no…",
+     "item_id": "gbf-dev-09",
+     "ngram_shared": 0,
+     "tfidf": 0.2276,
+     "training": "Block Design & Parameters:** - **Input:** `File Source` or `Null Source` (complex) - **Filtering:** `Filter -> FIR Filter` or `Low Pass Filter` to remove out-of-band noise/interference. Cutoff at $f_c < f_s/2$. Typically matched filter (ro…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.7892,
+     "item": "This flowgraph demonstrates time-division multiplexing of two streams of real 32-bit float samples. Two repeating Vector Sources produce stream A (1, 2, 3, 4,…",
+     "item_id": "gbf-dev-07",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Ensure the input/output types match (e.g., complex or float). 3. **File Sink (gr_file_sink)**: - Writes processed samples to a file. - Parameters: - File: Path to the output file. - Samples per item: Must match the input type (e.g., 1 for…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.7885,
+     "item": "In this flowgraph, simulate the amplitude of a Rayleigh flat-fading channel at a sample rate of 48 kHz. Generate complex Gaussian noise with an RMS magnitude o…",
+     "item_id": "gbf-dev-02",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Ensure the input/output types match (e.g., complex or float). 3. **File Sink (gr_file_sink)**: - Writes processed samples to a file. - Parameters: - File: Path to the output file. - Samples per item: Must match the input type (e.g., 1 for…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.7785,
+     "item": "In this empty flowgraph, build a sync-word detector for a test bit stream. Use a repeating Vector Source to play this 64-bit pattern, one sample per bit, leftm…",
+     "item_id": "gbf-dev-01",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Ensure the input/output types match (e.g., complex or float). 3. **File Sink (gr_file_sink)**: - Writes processed samples to a file. - Parameters: - File: Path to the output file. - Samples per item: Must match the input type (e.g., 1 for…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_63a77f66350ca1f8",
+     "doc_ref": "q_63a77f66350ca1f8",
+     "embed": 0.7745,
+     "item": "This flowgraph models an amplifier that saturates: Gaussian noise goes through a limiter (the Rail block), and two File Sinks record the noise entering the lim…",
+     "item_id": "gbf-dev-05",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Block Design & Parameters:** - **Input:** `File Source` or `Null Source` (complex) - **Filtering:** `Filter -> FIR Filter` or `Low Pass Filter` to remove out-of-band noise/interference. Cutoff at $f_c < f_s/2$. Typically matched filter (ro…"
+    }
+   ]
+  },
+  "train_questions": {
+   "any_signal": {
+    "items_flagged": 0,
+    "rate": 0.0
+   },
+   "description": "frozen training questions minus the dev split",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8249,
+     "min": 0.7648,
+     "p10": 0.766,
+     "p25": 0.7789,
+     "p50": 0.7913,
+     "p75": 0.8042,
+     "p90": 0.8102,
+     "p95": 0.8176,
+     "p99": 0.8234
+    },
+    "passages_embedded": 1468,
+    "rate": 0.0,
+    "scope": "every passage",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 1468,
+   "n_passages": 1468,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 0,
+    "rate": 0.0,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "1668 training questions; 200 dev questions removed"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "data/GRC_dataset_20261007/dataset/04_eval_frozen/train_questions.jsonl",
+     "sha256": "7e3df67853dd23dd010e5218fb946898ea4e263f8a8136f5cca67e5cc261e799"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.2777,
+     "min": 0.1726,
+     "p10": 0.1938,
+     "p25": 0.2006,
+     "p50": 0.2404,
+     "p75": 0.2532,
+     "p90": 0.257,
+     "p95": 0.2673,
+     "p99": 0.2756
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.8249,
+     "item": "This flowgraph is a heterodyne mixer that converts a radio-frequency (RF) test carrier down to an intermediate frequency (IF). It runs at a sample rate of 48 k…",
+     "item_id": "gbf-dev-04",
+     "ngram_shared": 0,
+     "tfidf": 0.2547,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.8086,
+     "item": "In this empty flowgraph, build a test bench for a single-sideband (SSB) transmitter that uses the phasing method. Set samp_rate to 48 kHz; this is the sample r…",
+     "item_id": "gbf-dev-06",
+     "ngram_shared": 0,
+     "tfidf": 0.2537,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.8081,
+     "item": "This flowgraph demonstrates the effect of quantization. It runs at a sample rate of 48 kHz. A Noise Source produces noise with a standard deviation of 0.1 (-20…",
+     "item_id": "gbf-dev-08",
+     "ngram_shared": 0,
+     "tfidf": 0.211,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_2476d40a9f028d2c",
+     "doc_ref": "",
+     "embed": 0.7925,
+     "item": "This flowgraph simulates a burst BPSK link and its receiver. A Vector Source repeats one packet of bytes: the 8-byte preamble 0x2E 0xA4 0xAF 0x33 0x1F 0x22 0xF…",
+     "item_id": "gbf-dev-10",
+     "ngram_shared": 0,
+     "tfidf": 0.2777,
+     "training": "A GNU Radio flowgraph uses a vector source to generate a known preamble sequence, followed by a stream-to-tagged-stream block, then a modulator, then a USRP sink. The preamble is 128 complex samples. The modulator uses 4 samples/symbol. Th…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.7919,
+     "item": "This flowgraph plays a repeating NRZ test pattern: a Vector Source sends +1/-1 symbols as rectangular pulses, 8 samples per symbol (4 kBd at 32 kHz), through a…",
+     "item_id": "gbf-dev-03",
+     "ngram_shared": 0,
+     "tfidf": 0.2518,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.7907,
+     "item": "In this flowgraph, simulate the amplitude of a Rayleigh flat-fading channel at a sample rate of 48 kHz. Generate complex Gaussian noise with an RMS magnitude o…",
+     "item_id": "gbf-dev-02",
+     "ngram_shared": 0,
+     "tfidf": 0.242,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.7898,
+     "item": "This flowgraph is a filter test bench. It runs at a sample rate of 48 kHz with real (float) samples throughout. A Fast Noise Source generates Gaussian white no…",
+     "item_id": "gbf-dev-09",
+     "ngram_shared": 0,
+     "tfidf": 0.1877,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_2476d40a9f028d2c",
+     "doc_ref": "",
+     "embed": 0.7753,
+     "item": "This flowgraph demonstrates time-division multiplexing of two streams of real 32-bit float samples. Two repeating Vector Sources produce stream A (1, 2, 3, 4,…",
+     "item_id": "gbf-dev-07",
+     "ngram_shared": 0,
+     "tfidf": 0.1825,
+     "training": "A GNU Radio flowgraph uses a vector source to generate a known preamble sequence, followed by a stream-to-tagged-stream block, then a modulator, then a USRP sink. The preamble is 128 complex samples. The modulator uses 4 samples/symbol. Th…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.7661,
+     "item": "In this empty flowgraph, build a sync-word detector for a test bit stream. Use a repeating Vector Source to play this 64-bit pattern, one sample per bit, leftm…",
+     "item_id": "gbf-dev-01",
+     "ngram_shared": 0,
+     "tfidf": 0.1752,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.7648,
+     "item": "This flowgraph models an amplifier that saturates: Gaussian noise goes through a limiter (the Rail block), and two File Sinks record the noise entering the lim…",
+     "item_id": "gbf-dev-05",
+     "ngram_shared": 0,
+     "tfidf": 0.1215,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    }
+   ]
+  }
+ },
+ "description": "instructions of items/tier_f/dev/**/task.json",
+ "embedding_status": "done",
+ "flagged_items": {
+  "gbf-dev-09": [
+   "teacher_answers:ngram",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ]
+ },
+ "implements": [
+  "eval plan §6: contamination audit, a contamination rate for each tier",
+  "proposal §4.5: 8-gram decontamination; embedding near-duplicates"
+ ],
+ "n_items": 10,
+ "sources": [
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-01/task.json",
+   "sha256": "fbc5937d9906152616f30187c27ea30a4cee0f37b64afcd0797586e7ff2dee52"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-02/task.json",
+   "sha256": "0c11a33bae88be1ebf0f9a07881d559928b12ae2032af9823e33888a55263d92"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-03/task.json",
+   "sha256": "5e96102f8f5567c8b264827cd339252361b3205f848fcf88aa348887e9b48b5a"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-04/task.json",
+   "sha256": "5f8055a60eb2d9cdd273968d35a80610f60e1a167105d4d67ac6b5857df2368d"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-05/task.json",
+   "sha256": "095cab752df6518a4421b249a44a6c3876fbc35638676b27372a2c9130293960"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-06/task.json",
+   "sha256": "93660de223e757ffbdfc4d958806e541348b3ac4f7c5f4b64eb7babf18d27c14"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-07/task.json",
+   "sha256": "a2713e15c05d101a7941280ce225853fe852ff6f4c419bf05c8137cb4de65e8d"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-08/task.json",
+   "sha256": "0fd275393603a345dc985ea5aee5844d829907b69861885aea39eba2d4b566bf"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-09/task.json",
+   "sha256": "9fb5cdf7aa2e175fb56c690ceb11909c5f125b8323f14f6cdbd2fc9535c38dc3"
+  },
+  {
+   "path": "grc-bench/items/tier_f/dev/gbf-dev-10/task.json",
+   "sha256": "b75b1ed012db9f601da5431b92cfa95887ab35740d593a563481fd7db90cddb2"
+  }
+ ],
+ "status": "flags are candidates for team review; nothing is removed",
+ "thresholds": {
+  "embed": 0.88,
+  "ngram_high_coverage": 0.5,
+  "ngram_n": 8,
+  "tfidf": 0.55
+ },
+ "tier": "tier_f_dev"
+}

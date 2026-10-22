@@ -1,0 +1,4 @@
+{"observation": {"points": [{"name": "out", "sink": {"block_id": "blocks_file_sink", "params": {"file": "output.dat"}}}],
+                 "run": {"n_items": 8192, "timeout_s": 10}},
+ "oracle": {"checks": [{"point": "out", "feature": "peak_freq", "fs": 32000, "expect": 1000, "tol": 20},
+                       {"point": "out", "feature": "rms", "expect": 0.7071, "rel_tol": 0.05}]}}

@@ -1,0 +1,23 @@
+options:
+  parameters: {id: channel_test, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '3000', amp: '0.5'}
+- name: channels_channel_model_0
+  id: channels_channel_model
+  parameters: {noise_voltage: '0.05', freq_offset: '0.0125', epsilon: '1.0', taps: '1.0', seed: '42'}
+- name: blocks_file_sink_0
+  id: blocks_file_sink
+  parameters: {type: complex, file: tx.dat}
+- name: blocks_file_sink_1
+  id: blocks_file_sink
+  parameters: {type: complex, file: rx.dat}
+connections:
+- [analog_sig_source_x_0, '0', channels_channel_model_0, '0']
+- [analog_sig_source_x_0, '0', blocks_file_sink_0, '0']
+- [channels_channel_model_0, '0', blocks_file_sink_1, '0']
+metadata: {file_format: 1}

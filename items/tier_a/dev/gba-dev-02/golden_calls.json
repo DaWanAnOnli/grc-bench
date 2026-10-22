@@ -1,0 +1,126 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "dc blocker length"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "add constant offset"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "reason": "Set the sample rate to 48000 samples per second.",
+    "update_params": [
+     {
+      "instance_name": "samp_rate",
+      "params": {
+       "value": "48000"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "analog_noise_source_x",
+      "instance_name": "noise",
+      "params": {
+       "amp": "0.2",
+       "noise_type": "analog.GR_GAUSSIAN",
+       "type": "float"
+      }
+     },
+     {
+      "block_id": "blocks_add_const_vxx",
+      "instance_name": "offset",
+      "params": {
+       "const": "0.5",
+       "type": "float"
+      }
+     },
+     {
+      "block_id": "blocks_throttle2",
+      "instance_name": "throttle",
+      "params": {
+       "samples_per_second": "samp_rate",
+       "type": "float"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "raw_sink",
+      "params": {
+       "file": "raw.dat",
+       "type": "float"
+      }
+     },
+     {
+      "block_id": "dc_blocker_xx",
+      "instance_name": "dc_block",
+      "params": {
+       "length": "64",
+       "type": "ff"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "clean_sink",
+      "params": {
+       "file": "clean.dat",
+       "type": "float"
+      }
+     }
+    ],
+    "add_connections": [
+     "noise:0->offset:0",
+     "offset:0->throttle:0",
+     "throttle:0->raw_sink:0",
+     "throttle:0->dc_block:0",
+     "dc_block:0->clean_sink:0"
+    ],
+    "reason": "Build the DC-removal test bench."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I built and saved the flowgraph at 48 kHz: Gaussian noise (amplitude 0.2) plus an offset of 0.5 goes through a Throttle to raw.dat, and through a DC Blocker (length 64) to clean.dat."
+}

@@ -1,0 +1,54 @@
+{
+ "task": "gbf-test-07",
+ "action": "retheme",
+ "rethemed": true,
+ "new_theme": "MODIFY L1 (test): group-delay compensation. A 1.5 kHz float cosine (amplitude 0.8, 48 kHz) feeds a 41-tap linear-phase FIR (taps in the variable lpf_taps) -> out.dat and directly -> ref.dat; the user asks to delay the ref.dat stream by exactly the filter's group delay so the files line up sample for sample, leaving out.dat unchanged. Reference: Delay of (41-1)/2 = 20 samples on the ref.dat branch. v2 signatures: start filter|tone (test), reference delay|filter|tone (test); cluster_id chain:delay|filter|tone.",
+ "accepted": [
+  {
+   "id": "compliance/F1-near-duplicate-theme",
+   "change": "Resolved by the re-theme: the item no longer turns a square wave into a sine (old cell hashed to train under v2); the new function (delay alignment) is unique in the set, cluster chain:delay|filter|tone."
+  },
+  {
+   "id": "item-quality/F3-near-duplicate-in-test-split",
+   "change": "Resolved by the re-theme (as compliance/F1)."
+  },
+  {
+   "id": "compliance/F2-stopband-spec-text-overstates",
+   "change": "Moot for the old stopband claim; the lesson is applied: every spec_properties entry now states exactly what its check measures (each check carries a 'requires' text)."
+  },
+  {
+   "id": "compliance/F3-hidden-tolerance-ripple",
+   "change": "Lesson applied: the instruction states every tolerance the oracle uses (zero samples within 1e-6, levels within 1 %, an exact whole-sample delay)."
+  },
+  {
+   "id": "item-quality/F4-passband-tolerance-unstated",
+   "change": "Lesson applied (as compliance/F3): no unstated tolerance remains."
+  },
+  {
+   "id": "compliance/F4-design-numbers-loosely-enforced",
+   "change": "Lesson applied: the one number the edit is about (the delay) is pinned exactly; near-miss mutants 19, 21, 41 (N instead of (N-1)/2) and 52 (one period later, same phase) are all killed (signed lag-0 correlation <= 0.981 or zeros check)."
+  },
+  {
+   "id": "item-quality/F1-stopband-40dB-not-enforced",
+   "change": "Moot (no stopband requirement in the new item); the enforce-what-is-stated lesson is applied as in compliance/F4."
+  },
+  {
+   "id": "item-quality/F2-cutoff-width-unchecked",
+   "change": "Moot (the model no longer designs a filter); the filter must stay unchanged and that is checked on out.dat (signed lag-0 correlation with the start graph's FIR output incl. its transient, RMS within 1 %; mutant with other taps killed)."
+  }
+ ],
+ "rejected": [
+  {
+   "id": "item-quality/F5-level-boundary",
+   "reason": "Kept L1: under the proposed level rule R7 (pending team) a single filtering stage does not by itself make an item L2, and in the new item the filter is part of the start graph; the edit is a Delay insertion. 5 functional blocks (source, FIR, delay, 2 sinks), one sample rate, no modulation."
+  }
+ ],
+ "notes": "Oracle is tolerance-based on purpose (corr_ref signed, max_lag 0, >= 0.9999; zeros <= 1e-6; levels within 1 %): an FFT-filter delay (~1e-7 rounding) is valid and passes, and FIR outputs are not bit-identical across VOLK machines. Variants: Delay with (len(lpf_taps) - 1) // 2; a second FIR with pure-delay taps [0.0]*20 + [1.0]; an FFT Filter with the same taps (both filter|tone, gbf-test-10's cell, test split, listed in task notes for the reserved set). 10 mutants incl. delay before the split (p2p out.dat), ref.dat fed a filtered copy (zeros check: transient 0.35), changed taps, changed source, source level +5 % (the correlations are scale-free, the level checks catch it).",
+ "gates": "PASS (18 Oct): solvability 10/10, 514 tokens, variants 3/3, start fails at V6 (f2p fails, p2p passes), mutation 10/10 valid, kill rate 1.0",
+ "round2": {
+  "accepted": [],
+  "rejected": [],
+  "notes": "No round-2 finding for this task. The round-2 reviewer's probes (delay_len_floordiv2, interp_fir_delay, throttle_plus_delay) all pass V6. Checked for the G5 problem: their v2 signatures are delay|filter|tone or filter|tone, both test and both already reserved through the reference and the variants, so no accepted alternative found so far hashes to train.",
+  "gates": "PASS (re-run 18 Oct): solvability 10/10, 514 tokens, variants 3/3, start fails at V6 (f2p fails, p2p passes), mutation 10/10 valid, kill rate 1.0; build.py regenerates every file byte-identically"
+ }
+}

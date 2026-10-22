@@ -1,0 +1,46 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "answer[0]: sample rate: expects 48000",
+    "answer[1]: number of channels: expects 4",
+    "answer[2]: strongest tone: expects 1200"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "graph_unchanged: pfb_channelizer_hier_ccf_0.nchans: '4' != '3'; connection pfb_channelizer_hier_ccf_0:3->ch3_sink:0 only in the first graph"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "988c03a4b0e649034554aa151e74702e5847cd6e66db27744ccbb1a0e42969dc",
+ "passed": true,
+ "task": "gba-test-06"
+}

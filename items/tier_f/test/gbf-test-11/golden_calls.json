@@ -1,0 +1,27 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_vector_source_x blocks_multiply_xx analog_agc_xx blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "bursts:0->rx_sink:0"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "analog_agc_xx",
+    "instance_name": "agc",
+    "params": {
+     "type": "complex",
+     "rate": "0.3"
+    }
+   }
+  ],
+  "add_connections": [
+   "bursts:0->agc:0",
+   "agc:0->rx_sink:0"
+  ]
+ }
+}

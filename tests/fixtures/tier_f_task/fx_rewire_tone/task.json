@@ -1,0 +1,73 @@
+{
+ "id": "fx-rewire-tone",
+ "tier": "F",
+ "split": "dev",
+ "version": 1,
+ "license": "CC-BY-4.0 (test fixture)",
+ "source": {
+  "kind": "test_fixture",
+  "ref": "tests/fixtures/tier_f_task/make_edit_fixtures.py"
+ },
+ "cluster_id": "fixture",
+ "provenance": {
+  "drafted_by": "Claude (Anthropic)",
+  "generator": "tests"
+ },
+ "review": {
+  "status": "not-required",
+  "notes": "unit-test fixture for tier_f.golden (every change_graph operation), not a benchmark item"
+ },
+ "family": "modify",
+ "level": "L1",
+ "instruction": "Remove the throttle so that the signal source feeds the multiplier directly, replace the multiplier by a Multiply Const block whose constant is 1, and let the file sink buffer its writes. Enable the disabled Null Sink and feed it from the multiplier too. Keep writing float samples to output.dat.",
+ "start_grc": "start.grc",
+ "reference_grc": "reference.grc",
+ "observation": {
+  "points": [
+   {
+    "name": "out",
+    "sink": {
+     "block_id": "blocks_file_sink",
+     "params": {
+      "file": "output.dat"
+     }
+    }
+   }
+  ],
+  "run": {
+   "n_items": 8192,
+   "min_items": 8192,
+   "timeout_s": 10
+  },
+  "contract": "samples written to output.dat"
+ },
+ "oracle": {
+  "checks": [
+   {
+    "point": "out",
+    "feature": "peak_freq",
+    "fs": 32000,
+    "expect": 1000,
+    "tol": 20,
+    "group": "p2p"
+   },
+   {
+    "point": "out",
+    "feature": "rms",
+    "expect": 0.3536,
+    "rel_tol": 0.05,
+    "group": "f2p"
+   }
+  ],
+  "graph_checks": [
+   {
+    "kind": "block_absent",
+    "ids": [
+     "blocks_throttle",
+     "blocks_throttle2"
+    ],
+    "group": "f2p"
+   }
+  ]
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V3: Connection (\n\tBlock - if_filter - Low Pass Filter(low_pass_filter)\n\t\tSource - out(0)\n\tBlock - if_sink - File Sink(blocks_file_sink)\n\t\tSink - in(0)\n):\n\tSource IO type \"complex\" does not match sink IO type \"float\".; Connection (\n\tBlock - if_filter - Low Pass Filter(low_pass_filter)\n\t\tSource - out(0)\n\tBlock - if_sink - File Sink(blocks_file_sink)\n\t\tSink - in(0)\n):\n\tSource IO size \"8\" does not match sink IO size \"4\".; Connection (\n\tBlock - mixer - Multiply(blocks_multiply_xx)\n\t\tSource - out(0)\n\tBloc"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V6: if rms = 0.011814",
+      "blocks_present[0]: 0 matching block(s) []; candidates: [\"if_filter (enabled): cutoff_freq='1500' (1500) vs 4000\"]"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "6b7c3bfd9d88aa0320dd7f02fae4a54419cf6915e05cf56d9114d67b05899bc7",
+ "passed": true,
+ "task": "gba-dev-03"
+}

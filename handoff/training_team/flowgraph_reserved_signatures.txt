@@ -1,0 +1,67 @@
+# GRC-Bench reserved flowgraph signatures, signature v2 (seed grc-bench-l1-signatures-v2-2026-10-18, class map 2026-10-22); 61 entries.
+# One opaque digest per line: grcbench.tier_f.compose.signature_digest(compose.signature(graph)).
+# Every reference and variant cell of a GRC-Bench test or dev task in Tier F, and every start and
+# golden end-state cell of a Tier-A task (written by `./gb tier-f reserved`). A training-side
+# flowgraph whose digest is listed here is a functional
+# twin of such a task: do not emit it, whatever its signature_split. See flowgraph_composed_chains.md.
+08306b23c811d34c3634
+086024d941505ac006d6
+11298d0348da9a4ef93b
+1ac302bfc20c5b87f4e0
+24cda44950c4bfba447f
+26a8c9bf36ae96a82413
+27d038f88cbdd861b839
+27ef5712d227d8a68cbb
+27ef5b2d38ad51048836
+29a13630a4ab383919d0
+2ad645b19924e3c894df
+2d11eaa9178802fd2b79
+2d4f9815ea866d38085e
+365c23abd78d9ca53ecb
+369ce381d0ac60077a46
+393fecf0036883a2f1f6
+4299d25469d9028a4004
+4aad37218a679439aac4
+4bd354e34b6b293e661f
+4d216cad21e1d0e2815e
+54e7ad897cf7eb00f499
+5600140c6766fd0ae06b
+5b655d062796b020ccec
+5f1432dab34dc0cda143
+5f80a56e12bacfecaea3
+6479a87c44ec30d75f68
+663083d4b4f108c10cf3
+7a4a19c041653c6d21d4
+7b88dd2cb277ef5099ba
+7bed20560ffaf7d331db
+7c151186326f75717daa
+8e84af33045b3f80e882
+8ed06d09de24c7017081
+90953dfcf0ec96a7642c
+90a4177f6e762aadbe50
+97fcaae167efa82a4095
+9b55415c6d5fa976a88e
+a27921e97d54ada8925f
+ab2911cca4836ee2b9ef
+ac2309c635ea67cd1dcd
+ad277308370b454bff8f
+b5ea903eaf766370fe35
+b81b0cc41960851e7c70
+baaaf6581cef560a67a4
+bace214e8be22d5ba665
+bfbcaf8175194f541790
+c1602bbd26e787cc1362
+d10c13614d6a9c101429
+d7b54f2bb77e9220b6cc
+d9fc4990db4ec1dbbd02
+da7f62534b2a5bd91e11
+de17f08cc093a90fcaf5
+de61a6087570369264c4
+eeb4f129c4fc36baa58f
+f0494e3d094f9dbe1784
+f3e37fe7d2646b3588a8
+f5ba88ff47331e529222
+f64b85a0beb52000c064
+f77b92c4dfed7b580069
+fd138bddb17aee775806
+fd19b849478687a9f70d

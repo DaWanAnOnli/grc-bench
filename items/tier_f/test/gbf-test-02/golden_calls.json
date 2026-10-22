@@ -1,0 +1,59 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x channels_channel_model analog_pll_refout_cc blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "carrier",
+    "params": {
+     "type": "complex",
+     "freq": "2400",
+     "amp": "1.0"
+    }
+   },
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel",
+    "params": {
+     "noise_voltage": "0.7"
+    }
+   },
+   {
+    "block_id": "analog_pll_refout_cc",
+    "instance_name": "pll",
+    "params": {
+     "w": "0.02",
+     "max_freq": "6.283185307179586*4000/samp_rate",
+     "min_freq": "-6.283185307179586*4000/samp_rate"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "received_sink",
+    "params": {
+     "type": "complex",
+     "file": "received.dat"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "carrier_sink",
+    "params": {
+     "type": "complex",
+     "file": "carrier.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "carrier:0->channel:0",
+   "channel:0->received_sink:0",
+   "channel:0->pll:0",
+   "pll:0->carrier_sink:0"
+  ]
+ }
+}

@@ -1,0 +1,73 @@
+{
+ "task": "gbf-dev-03",
+ "action": "retheme",
+ "rethemed": true,
+ "relabel": {},
+ "resolved_by": "Claude (Anthropic), fixer group G1, 18 Oct 2026 (pending team review)",
+ "new_theme": "Modify L1 (dev): add a rectangular-pulse matched filter to an NRZ test pattern. The start graph is a Vector Source of 24 +-1 symbols at 8 samples per symbol (32 kHz) -> Throttle -> File Sink nrz.dat. The task asks for a new File Sink mf.dat (float) that holds, for every input sample, the average of that sample and the 7 before it. There is one output per input sample with no extra delay, each value must be within 0.001, and nrz.dat must stay unchanged. The reference adds a Moving Average (length 8, scale 1/8). v2 cells: the start is data_source (train), which does not matter for a modify start; the reference and every variant are data_source|filter -> dev. cluster_id: chain:data_source|filter. compose.audit_items finds no other item in this cell.",
+ "deviation_from_plan": "The brief proposed f2p equal_prefix on mf.dat if Moving Average and FIR [1/8]*8 are bit-identical, and otherwise corr_ref >= 0.9999 plus max_abs. Moving Average and FIR are exact. But an FFT filter, which the brief's graph check accepts, is correct and is not bit-identical, so exact equality would reject a valid answer. corr_ref + max_abs alone would not pin the stated 0.001 tolerance. So the oracle combines four checks: signed corr_ref with no lag >= 0.99999 over samples 7-390, rms within 0.1 % over the same window, max_int_dev with scale 8 <= 0.008 (tooling T3), and min/max = -1/+1 within 0.001 over the whole capture. Together they imply that every value in the corr window is within 0.001 of the ideal; the derivation is in the build.py docstring. The variant v2 (FFT filter) passes. The first 7 outputs are excluded: there, 'the 7 samples before it' do not exist. Two of the brief's mutants cannot be written as single-edit mutants of the reference: the decimating integrate-and-dump and a filter fed from a delayed branch. They are probes instead (integrate_and_dump, fir_one_sample_late), and both fail as expected.",
+ "accepted": [
+  {
+   "id": "item-quality/F1-family-is-parameter-tune",
+   "change": "Applies, and the re-theme resolves it. The new task is a structural modify (R6): a filter block and a File Sink are added, so the family label 'modify' is now correct. No value-only edit can produce mf.dat."
+  },
+  {
+   "id": "item-quality/F2-sample-rate-unchecked",
+   "change": "Moot in substance. The new instruction mentions 32 kHz only to describe the start graph ('4 kBd at 32 kHz') and sets no sample-rate requirement for the change. It asks for 'one output sample per input sample', which the no-lag corr_ref enforces: probe integrate_and_dump fails. spec_properties claims nothing about samp_rate."
+  },
+  {
+   "id": "item-quality/F3-waveform-check-mislabelled-and-weak",
+   "change": "Moot after the re-theme (there is no RMS 'waveform' check). The lesson is applied: each check's property and group match what it tests. The rms check is the f2p scale check over the corr window, and the nrz.dat check is p2p. The gate confirms that the start fails f2p and passes p2p."
+  },
+  {
+   "id": "item-quality/F4-dev-test-template-twin",
+   "change": "Applies, and the re-theme resolves it. The new cell data_source|filter (dev) shares nothing with gbf-test-04's {tone}. build.py asserts that every shipped variant stays in the dev cell. review.notes records the concept relations to gbf-test-13 (transmit-side shaping) and gbf-dev-01."
+  },
+  {
+   "id": "compliance/F1-sample-rate-not-enforced",
+   "change": "Same as item-quality F2. The new instruction states no sample-rate requirement for the edit, and no mutant targets samp_rate, since such a mutant would be equivalent."
+  },
+  {
+   "id": "compliance/F2-continuous-run-not-enforced",
+   "change": "Applies to the new content. The item uses the R5 run sentence. spec_properties records the requirement as V5 liveness only (4096 items at mf.dat and at nrz.dat), and review.notes records the limit."
+  },
+  {
+   "id": "compliance/F3-variant-v3-test-signature-and-structure",
+   "change": "Applies, and is resolved. All shipped variants hash to dev, which build.py asserts. Each keeps every block of the start graph and adds only the filter path. The correct delay-line + Add design (combine|data_source|delay, train hash) is kept as a passing probe and is not shipped."
+  },
+  {
+   "id": "compliance/F4-amplitude-tolerance-looser-than-stated",
+   "change": "Applies to the new content. The stated tolerance (each value within 0.001) is exactly what the check combination enforces over the corr window, and the lattice and +-1 checks cover the whole capture. This stage added a tight near-miss mutant, scale 0.1248 (full symbols reach +-0.9984, 0.0016 off): it is killed by max_int_dev, rms, min and max. It also added a passing probe, scale 0.1249 (every value within 0.0008, inside the tolerance), to show the oracle is not stricter than the spec."
+  },
+  {
+   "id": "compliance/F5-duplicate-mutants",
+   "change": "Applies. There are 10 behaviourally distinct mutants: length 7, 9 and 16; scale 1, 0.12 and 0.1248; filter bypassed; nrz.dat fed from the filter; one pattern symbol inverted; 4 samples per symbol. The rewire mutant targets the 'keep nrz.dat' clause and is not a duplicate of the bypass. Each mutant is killed by the check named in its 'breaks' label; this was verified mutant by mutant."
+  },
+  {
+   "id": "compliance/F6-waveform-check-group-label",
+   "change": "Applies. Every mf.dat check is f2p (mf.dat is absent from the start) and the nrz.dat check is p2p (it holds in the start). The start_fails gate confirms this: first_failed V6, with f2p false and p2p true."
+  }
+ ],
+ "rejected": [],
+ "other_changes": [
+  "Graph check (f2p): a path from the Vector Source through a filter block to a File Sink. The accepted blocks are those that can realise the rectangular matched filter exactly: Moving Average, FIR, FFT, interpolating FIR, IIR, Rational Resampler, Add (delay line) and Embedded Python. Probe hardcoded_output fails the check; probes iir_as_fir, interp_fir_unity and delay_line_adder pass. review.notes now says that Add is accepted for delay-line designs, and that a deliberate cheat through a one-tap filter or an Add would pass.",
+  "This stage: the instruction now says the first 7 output samples 'do not matter' rather than 'are not checked', so it reads as a user's request and not as a description of the grading.",
+  "Observation points mf.dat and nrz.dat are matched with params.type = float, and the instruction names both (R9).",
+  "Level L1: 5 functional blocks (Vector Source, Throttle, two File Sinks, filter), single rate. Family modify. Version 2. build.py regenerates every file deterministically: two consecutive builds gave byte-identical output."
+ ],
+ "gates": "passed (18 Oct, after this stage's edits; multi-point task re-gated after tooling T7): solvability 10/10, size 365 tokens, variants 3/3 reach V6, start fails at V6 (f2p false, p2p true), mutation 10 valid with kill rate 1.0; build.py --probes gives 7/7 verdicts as expected",
+ "round2": {
+  "reviewer_findings": [
+   "G1-dev03-train-hash-alternative-not-reserved"
+  ],
+  "accepted": [
+   {
+    "id": "G1-dev03-train-hash-alternative-not-reserved",
+    "change": "The delay-line adder (7 Delay blocks + 8-input Add + Multiply Const 1/8, cell combine|data_source|delay, train) is shipped as variant v4, so compose.audit_items reserves its cell; review.notes lists the variant signatures for the reserved-signature step. build.py --probes: 7/7 as expected. Version 3."
+   }
+  ],
+  "rejected": [],
+  "resolved_by": "Claude (Anthropic), inline, 22 Oct 2026 (pending team review)",
+  "gates": "ALL PASS (22 Oct): mutation ok, size ok, solvability ok, start_fails ok, variants ok"
+ }
+}

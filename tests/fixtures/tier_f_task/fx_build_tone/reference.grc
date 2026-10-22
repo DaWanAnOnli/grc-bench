@@ -1,0 +1,27 @@
+options:
+  parameters:
+    id: build_tone
+    generate_options: no_gui
+    output_language: python
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    value: '48000'
+- name: src
+  id: analog_sig_source_x
+  parameters:
+    type: float
+    samp_rate: samp_rate
+    waveform: analog.GR_COS_WAVE
+    freq: '2000'
+    amp: '1'
+- name: out
+  id: blocks_file_sink
+  parameters:
+    type: float
+    file: output.dat
+connections:
+- [src, '0', out, '0']
+metadata:
+  file_format: 1

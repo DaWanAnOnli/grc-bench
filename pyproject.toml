@@ -1,0 +1,16 @@
+[project]
+name = "grcbench"
+version = "0.1.0"
+description = "GRC-Bench: execution-grounded benchmark for language models on GNU Radio (Team JJJP x Qoherent)"
+requires-python = ">=3.12"
+# Runs on GRC-Agent's pinned virtual environment (see ./gb); no extra dependencies are installed.
+dependencies = ["numpy", "scipy", "pyyaml", "jsonschema", "tiktoken", "pydantic-ai"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-p no:cacheprovider"
+markers = [
+    "gnuradio: needs the GNU Radio install in WSL",
+    "slow: takes more than a few seconds",
+]

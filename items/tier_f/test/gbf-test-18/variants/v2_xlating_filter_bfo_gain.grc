@@ -1,0 +1,59 @@
+options:
+  parameters: {id: cw_rx_xlating, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '96000'}
+- name: tx_beacon
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '21000', amp: '0.5'}
+- name: tx_key
+  id: analog_sig_source_x
+  parameters: {type: float, waveform: analog.GR_SQR_WAVE, freq: '5'}
+- name: tx_key_c
+  id: blocks_float_to_complex
+  parameters: {}
+- name: tx_keyer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: tx_adj1
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '25000', amp: '1.0'}
+- name: tx_adj2
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-17000', amp: '1.0'}
+- name: antenna
+  id: blocks_add_xx
+  parameters: {type: complex, num_inputs: '3'}
+- name: ddc
+  id: freq_xlating_fir_filter_xxx
+  parameters: {type: ccf, decim: '8', taps: 'firdes.low_pass(1.0, samp_rate, 3000, 1000)', center_freq: '19500'}
+- name: ch_file
+  id: blocks_file_sink
+  parameters: {type: complex, file: /tmp/channel.dat}
+- name: beat_osc
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: '12000', freq: '-800', amp: '1.6'}
+- name: product
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: re
+  id: blocks_complex_to_real
+  parameters: {}
+- name: au_file
+  id: blocks_file_sink
+  parameters: {type: float, file: /tmp/audio.dat}
+connections:
+- [tx_beacon, '0', tx_keyer, '0']
+- [tx_key, '0', tx_key_c, '0']
+- [tx_key_c, '0', tx_keyer, '1']
+- [tx_keyer, '0', antenna, '0']
+- [tx_adj1, '0', antenna, '1']
+- [tx_adj2, '0', antenna, '2']
+- [antenna, '0', ddc, '0']
+- [ddc, '0', ch_file, '0']
+- [ddc, '0', product, '0']
+- [beat_osc, '0', product, '1']
+- [product, '0', re, '0']
+- [re, '0', au_file, '0']
+metadata: {file_format: 1}

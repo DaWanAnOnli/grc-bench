@@ -1,0 +1,55 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 10
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 365
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "expected": null,
+   "first_failed": "V6",
+   "passed": true,
+   "v6_groups": {
+    "f2p": false,
+    "p2p": true
+   }
+  },
+  "variants": {
+   "n": 4,
+   "passed": true,
+   "results": {
+    "v1_fir_eighth_taps.grc": [
+     "V6",
+     null
+    ],
+    "v2_fft_filter_from_source.grc": [
+     "V6",
+     null
+    ],
+    "v3_moving_sum_then_scale.grc": [
+     "V6",
+     null
+    ],
+    "v4_delay_line_adder.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-dev-03"
+}

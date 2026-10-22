@@ -1,0 +1,75 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 13
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 578
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "expected": null,
+   "first_failed": "V6",
+   "passed": true,
+   "v6_groups": {
+    "f2p": false,
+    "p2p": true
+   }
+  },
+  "variants": {
+   "n": 9,
+   "passed": true,
+   "results": {
+    "v1_cascaded_muxes.grc": [
+     "V6",
+     null
+    ],
+    "v2_patterned_interleaver.grc": [
+     "V6",
+     null
+    ],
+    "v3_constant_sources.grc": [
+     "V6",
+     null
+    ],
+    "v4_variables.grc": [
+     "V6",
+     null
+    ],
+    "v5_vector_insert.grc": [
+     "V6",
+     null
+    ],
+    "v6_vector_insert_after_throttle.grc": [
+     "V6",
+     null
+    ],
+    "v7_tagged_stream_mux.grc": [
+     "V6",
+     null
+    ],
+    "v8_header_mux_after_throttle.grc": [
+     "V6",
+     null
+    ],
+    "v9_vector_insert_on_stream_a.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-dev-07"
+}

@@ -1,0 +1,2968 @@
+{
+ "algorithm": {
+  "capacity_rounds": {
+   "anchor": [],
+   "ci": [],
+   "dev": []
+  },
+  "capacity_rule": "A stratum whose quota exceeds its eligible count takes all eligible members and is fixed; the remaining slots are re-apportioned by the same largest-remainder rule over the unfixed strata (still weighted by training-pool sizes), repeated until no quota exceeds capacity.",
+  "description": "Largest-remainder proportional allocation over exact raw (origin, task_type, difficulty) strata (ties: ascending stratum tuple, exact fractions); within a stratum ids ranked by ascending sha256(seed + NUL + id).hexdigest(); ids listed in training-file order.",
+  "dev_quota_population": "the full training pool (1,668 questions), before exclusions",
+  "name": "stratified-largest-remainder-sha256-v1",
+  "subsets": "anchor and ci: the same algorithm over the 200 dev questions (quotas from dev)"
+ },
+ "all_reject_ids": [
+  "q_5818de942b87f9f4",
+  "q_71ffa89a25fcc43f",
+  "q_8b4c510b3c16aa6e",
+  "q_a3aa1e5914f63e70",
+  "q_b6382f1f2154fdf4",
+  "q_c366f166eab88502",
+  "q_d2c030559ba6e44c",
+  "q_e33ab32fa3e3a5bb"
+ ],
+ "anchor_ids": [
+  "q_47f491cae4e1da0a",
+  "q_1682079f3d91e2b9",
+  "q_1f28f576c339e422",
+  "q_bd2cd19f1c9c0777",
+  "q_f0b8101b4b99e556",
+  "q_775c2cab527a3d13",
+  "q_a027cb67c811f17e",
+  "q_4ce7ba4013ed2639",
+  "q_e0900e4f6f19e23a",
+  "q_9a1048a5aeb68aac",
+  "q_cebf27dd1dab9f46",
+  "q_7fa82f967d24849a",
+  "q_c0114d756aa807a5",
+  "q_f389f99d38b35b53",
+  "q_b26a9b17d821a179",
+  "q_936159d19ff10b41",
+  "q_7a5cd9c9da34fe27",
+  "q_6156f8b42795f190",
+  "q_16acdaae7778bffb",
+  "q_793fc7e9213e3eb5",
+  "q_407885f3b62266d6",
+  "q_c7de3daf14a6fb53",
+  "q_25a523cef15bb814",
+  "q_4a6b0caaa7476a55",
+  "q_eec2797c94e34488",
+  "q_ef0cfaceaff76bfb",
+  "q_21a5bf62d9d7abca",
+  "q_2db3850b72ae164f",
+  "q_385ec9e6b80a8a3c",
+  "q_5d1f475e16c3e9b6",
+  "q_5ad6ae2cc249fac3",
+  "q_a54ec7e0cc8f22c2",
+  "q_6e0faea656cd822d",
+  "q_69a11f5e4ce23cca",
+  "q_140b8b2dd724019a",
+  "q_5125508d56d86860",
+  "q_497060c918e9c34d",
+  "q_dec1c8260d326299",
+  "q_d58a760a53c68a34",
+  "q_88c9f74dbc367254",
+  "q_fb08c10cad1536f5",
+  "q_292c9dc64b7b4a10",
+  "q_e09e162725c299cb",
+  "q_3974e9ec71be79c4",
+  "q_2ba0f2db32d89582",
+  "q_31b48bde3847601b",
+  "q_01c92d4daa33db99",
+  "q_47b0126b54cd96bc",
+  "q_569f32d110d90fda",
+  "q_5175a846aed015fe",
+  "q_5d64b6349e4bb979",
+  "q_e841ff387b9abd7c",
+  "q_4ebc360fc9cf60b2",
+  "q_e65418c19d53dcdc",
+  "q_ba80c8c4474307ea",
+  "q_94e5e4c679671419",
+  "q_41689c675839146b",
+  "q_b0710c247c6ce19d",
+  "q_91ebcee77ca63c08",
+  "q_c664844da70111e4"
+ ],
+ "ci_ids": [
+  "q_1f28f576c339e422",
+  "q_ff76dbaa8871cc9c",
+  "q_a027cb67c811f17e",
+  "q_eae7a33869b5e045",
+  "q_c30285f7e190c2a3",
+  "q_16acdaae7778bffb",
+  "q_793fc7e9213e3eb5",
+  "q_407885f3b62266d6",
+  "q_33929f38d1d2b99f",
+  "q_4a6b0caaa7476a55",
+  "q_504dc17896c644cb",
+  "q_1ef7659dc3055ad3",
+  "q_5125508d56d86860",
+  "q_130ff752c081684f",
+  "q_2ba0f2db32d89582",
+  "q_8ed8a2e1c91d301f",
+  "q_22f33d8018caa787",
+  "q_e20c91caae63ed54",
+  "q_94e5e4c679671419",
+  "q_7cd86ab25ead4711"
+ ],
+ "ci_note": "The CI smoke subset is these 20 Tier-K dev questions plus 10 Tier-F dev tasks added after Phase 3.",
+ "composition": {
+  "fields": {
+   "difficulty": [
+    {
+     "anchor": 29,
+     "anchor_pct": 48.3,
+     "ci": 10,
+     "ci_pct": 50.0,
+     "dev": 94,
+     "dev_pct": 47.0,
+     "test": 86,
+     "test_pct": 46.5,
+     "training_pool": 769,
+     "training_pool_pct": 46.1,
+     "value": "intermediate"
+    },
+    {
+     "anchor": 19,
+     "anchor_pct": 31.7,
+     "ci": 7,
+     "ci_pct": 35.0,
+     "dev": 65,
+     "dev_pct": 32.5,
+     "test": 60,
+     "test_pct": 32.4,
+     "training_pool": 543,
+     "training_pool_pct": 32.6,
+     "value": "advanced"
+    },
+    {
+     "anchor": 12,
+     "anchor_pct": 20.0,
+     "ci": 3,
+     "ci_pct": 15.0,
+     "dev": 41,
+     "dev_pct": 20.5,
+     "test": 39,
+     "test_pct": 21.1,
+     "training_pool": 356,
+     "training_pool_pct": 21.3,
+     "value": "basic"
+    }
+   ],
+   "origin": [
+    {
+     "anchor": 37,
+     "anchor_pct": 61.7,
+     "ci": 13,
+     "ci_pct": 65.0,
+     "dev": 120,
+     "dev_pct": 60.0,
+     "test": 110,
+     "test_pct": 59.5,
+     "training_pool": 1000,
+     "training_pool_pct": 60.0,
+     "value": "source"
+    },
+    {
+     "anchor": 23,
+     "anchor_pct": 38.3,
+     "ci": 7,
+     "ci_pct": 35.0,
+     "dev": 80,
+     "dev_pct": 40.0,
+     "test": 75,
+     "test_pct": 40.5,
+     "training_pool": 668,
+     "training_pool_pct": 40.0,
+     "value": "blind"
+    }
+   ],
+   "task_type": [
+    {
+     "anchor": 19,
+     "anchor_pct": 31.7,
+     "ci": 7,
+     "ci_pct": 35.0,
+     "dev": 64,
+     "dev_pct": 32.0,
+     "test": 59,
+     "test_pct": 31.9,
+     "training_pool": 533,
+     "training_pool_pct": 32.0,
+     "value": "reasoning"
+    },
+    {
+     "anchor": 8,
+     "anchor_pct": 13.3,
+     "ci": 3,
+     "ci_pct": 15.0,
+     "dev": 28,
+     "dev_pct": 14.0,
+     "test": 27,
+     "test_pct": 14.6,
+     "training_pool": 234,
+     "training_pool_pct": 14.0,
+     "value": "design"
+    },
+    {
+     "anchor": 9,
+     "anchor_pct": 15.0,
+     "ci": 3,
+     "ci_pct": 15.0,
+     "dev": 25,
+     "dev_pct": 12.5,
+     "test": 23,
+     "test_pct": 12.4,
+     "training_pool": 208,
+     "training_pool_pct": 12.5,
+     "value": "calculation"
+    },
+    {
+     "anchor": 5,
+     "anchor_pct": 8.3,
+     "ci": 2,
+     "ci_pct": 10.0,
+     "dev": 18,
+     "dev_pct": 9.0,
+     "test": 17,
+     "test_pct": 9.2,
+     "training_pool": 154,
+     "training_pool_pct": 9.2,
+     "value": "factual"
+    },
+    {
+     "anchor": 3,
+     "anchor_pct": 5.0,
+     "ci": 1,
+     "ci_pct": 5.0,
+     "dev": 12,
+     "dev_pct": 6.0,
+     "test": 11,
+     "test_pct": 5.9,
+     "training_pool": 99,
+     "training_pool_pct": 5.9,
+     "value": "diagnosis"
+    },
+    {
+     "anchor": 3,
+     "anchor_pct": 5.0,
+     "ci": 1,
+     "ci_pct": 5.0,
+     "dev": 10,
+     "dev_pct": 5.0,
+     "test": 10,
+     "test_pct": 5.4,
+     "training_pool": 71,
+     "training_pool_pct": 4.3,
+     "value": "gnuradio_usage"
+    },
+    {
+     "anchor": 3,
+     "anchor_pct": 5.0,
+     "ci": 1,
+     "ci_pct": 5.0,
+     "dev": 9,
+     "dev_pct": 4.5,
+     "test": 7,
+     "test_pct": 3.8,
+     "training_pool": 69,
+     "training_pool_pct": 4.1,
+     "value": "conceptual"
+    },
+    {
+     "anchor": 2,
+     "anchor_pct": 3.3,
+     "ci": 1,
+     "ci_pct": 5.0,
+     "dev": 6,
+     "dev_pct": 3.0,
+     "test": 6,
+     "test_pct": 3.2,
+     "training_pool": 49,
+     "training_pool_pct": 2.9,
+     "value": "debugging"
+    },
+    {
+     "anchor": 1,
+     "anchor_pct": 1.7,
+     "ci": 1,
+     "ci_pct": 5.0,
+     "dev": 5,
+     "dev_pct": 2.5,
+     "test": 5,
+     "test_pct": 2.7,
+     "training_pool": 40,
+     "training_pool_pct": 2.4,
+     "value": "system_design"
+    },
+    {
+     "anchor": 2,
+     "anchor_pct": 3.3,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 5,
+     "dev_pct": 2.5,
+     "test": 4,
+     "test_pct": 2.2,
+     "training_pool": 39,
+     "training_pool_pct": 2.3,
+     "value": "system design"
+    },
+    {
+     "anchor": 2,
+     "anchor_pct": 3.3,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 4,
+     "dev_pct": 2.0,
+     "test": 4,
+     "test_pct": 2.2,
+     "training_pool": 38,
+     "training_pool_pct": 2.3,
+     "value": "factual knowledge"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 3,
+     "dev_pct": 1.5,
+     "test": 3,
+     "test_pct": 1.6,
+     "training_pool": 24,
+     "training_pool_pct": 1.4,
+     "value": "factual_knowledge"
+    },
+    {
+     "anchor": 1,
+     "anchor_pct": 1.7,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 3,
+     "dev_pct": 1.5,
+     "test": 2,
+     "test_pct": 1.1,
+     "training_pool": 20,
+     "training_pool_pct": 1.2,
+     "value": "compare/choose"
+    },
+    {
+     "anchor": 1,
+     "anchor_pct": 1.7,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 3,
+     "dev_pct": 1.5,
+     "test": 2,
+     "test_pct": 1.1,
+     "training_pool": 19,
+     "training_pool_pct": 1.1,
+     "value": "calculations"
+    },
+    {
+     "anchor": 1,
+     "anchor_pct": 1.7,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 2,
+     "dev_pct": 1.0,
+     "test": 2,
+     "test_pct": 1.1,
+     "training_pool": 18,
+     "training_pool_pct": 1.1,
+     "value": "compare_choose"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 2,
+     "dev_pct": 1.0,
+     "test": 2,
+     "test_pct": 1.1,
+     "training_pool": 16,
+     "training_pool_pct": 1.0,
+     "value": "diagnosis from symptoms"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 0,
+     "dev_pct": 0.0,
+     "test": 1,
+     "test_pct": 0.5,
+     "training_pool": 9,
+     "training_pool_pct": 0.5,
+     "value": "diagnosis_from_symptoms"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 0,
+     "dev_pct": 0.0,
+     "test": 0,
+     "test_pct": 0.0,
+     "training_pool": 7,
+     "training_pool_pct": 0.4,
+     "value": "compare"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 1,
+     "dev_pct": 0.5,
+     "test": 0,
+     "test_pct": 0.0,
+     "training_pool": 6,
+     "training_pool_pct": 0.4,
+     "value": "GNU Radio usage"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 0,
+     "dev_pct": 0.0,
+     "test": 0,
+     "test_pct": 0.0,
+     "training_pool": 6,
+     "training_pool_pct": 0.4,
+     "value": "gnu_radio_usage"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 0,
+     "dev_pct": 0.0,
+     "test": 0,
+     "test_pct": 0.0,
+     "training_pool": 5,
+     "training_pool_pct": 0.3,
+     "value": "ask_for_info"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 0,
+     "dev_pct": 0.0,
+     "test": 0,
+     "test_pct": 0.0,
+     "training_pool": 3,
+     "training_pool_pct": 0.2,
+     "value": "information_gathering"
+    },
+    {
+     "anchor": 0,
+     "anchor_pct": 0.0,
+     "ci": 0,
+     "ci_pct": 0.0,
+     "dev": 0,
+     "dev_pct": 0.0,
+     "test": 0,
+     "test_pct": 0.0,
+     "training_pool": 1,
+     "training_pool_pct": 0.1,
+     "value": "asking for missing information"
+    }
+   ]
+  },
+  "max_abs_share_difference_pp_dev_vs_test": {
+   "difficulty": 0.6,
+   "origin": 0.5,
+   "task_type": 0.7
+  },
+  "pools": {
+   "anchor": 60,
+   "ci": 20,
+   "dev": 200,
+   "test": 185,
+   "training_pool": 1668
+  }
+ },
+ "counts": {
+  "anchor": 60,
+  "ci_tier_k": 20,
+  "dev": 200,
+  "eligible": 1191,
+  "excluded": 477,
+  "test": 185,
+  "training_pool": 1668
+ },
+ "date": "2026-10-14",
+ "dev_ids": [
+  "q_47f491cae4e1da0a",
+  "q_f065d09bc95ff23c",
+  "q_354c71ec6abad70b",
+  "q_897890d7902cc37c",
+  "q_c17ba67c21f98a2b",
+  "q_9d6c61f39da0288b",
+  "q_0f2aecdf27fd9a65",
+  "q_9ac62847f315bd8d",
+  "q_1682079f3d91e2b9",
+  "q_c0ab2418a30954f9",
+  "q_1f28f576c339e422",
+  "q_bd2cd19f1c9c0777",
+  "q_66c68646f5e46860",
+  "q_f0b8101b4b99e556",
+  "q_f242b981fce660f7",
+  "q_dc9bdb72685105b8",
+  "q_775c2cab527a3d13",
+  "q_b85799656f5b6ecc",
+  "q_60f2aa4d160e3325",
+  "q_6c561e33fc95d458",
+  "q_cf512f7e0932fd35",
+  "q_516b0f255b00ed4f",
+  "q_ff76dbaa8871cc9c",
+  "q_db6a8e28e878a0f2",
+  "q_a027cb67c811f17e",
+  "q_4ce7ba4013ed2639",
+  "q_e0900e4f6f19e23a",
+  "q_9a1048a5aeb68aac",
+  "q_cebf27dd1dab9f46",
+  "q_eae7a33869b5e045",
+  "q_e3422dcf2cd7d038",
+  "q_9054f689ab807006",
+  "q_7fa82f967d24849a",
+  "q_c0114d756aa807a5",
+  "q_078a9f004986f6f3",
+  "q_55c711d3f2e62b90",
+  "q_f389f99d38b35b53",
+  "q_b26a9b17d821a179",
+  "q_09cf207478a1781a",
+  "q_c30285f7e190c2a3",
+  "q_f70edd8d024d189d",
+  "q_1d3b016b916435ac",
+  "q_f636812c8714ba12",
+  "q_936159d19ff10b41",
+  "q_55c286dfe52a8076",
+  "q_7a5cd9c9da34fe27",
+  "q_f738313144adfa19",
+  "q_aa4ff1d463218af6",
+  "q_cd0db28086c4e0a5",
+  "q_6156f8b42795f190",
+  "q_5ad87c425438e447",
+  "q_16acdaae7778bffb",
+  "q_791a5d356b2f460d",
+  "q_793fc7e9213e3eb5",
+  "q_ba48c177be40e51c",
+  "q_e8bc12c1ec2deaa5",
+  "q_af806656fdeb9e08",
+  "q_3d49198e54b91982",
+  "q_407885f3b62266d6",
+  "q_4f07427af303cba1",
+  "q_33929f38d1d2b99f",
+  "q_e996ec808cb845de",
+  "q_02ba17335385d91d",
+  "q_4af3d4be8c06a2df",
+  "q_753974515301171a",
+  "q_ccec5274c2b2811b",
+  "q_9dc67f2f4f223903",
+  "q_e78fbd9108d7e44a",
+  "q_98f4ca1b328ed5f5",
+  "q_1137ebea8d573983",
+  "q_2c1ae390992c5478",
+  "q_c7de3daf14a6fb53",
+  "q_1d340d991f1abe23",
+  "q_8c156a5bca2d6d7e",
+  "q_aad207d6421ca0e4",
+  "q_b1cb1d15fbcaac2d",
+  "q_d6cdf5527c53463e",
+  "q_25a523cef15bb814",
+  "q_1ffb96be62557e5f",
+  "q_044b2683661c10a5",
+  "q_4a6b0caaa7476a55",
+  "q_eec2797c94e34488",
+  "q_b528805fb8b16fc4",
+  "q_ef0cfaceaff76bfb",
+  "q_c40e76aa23d9cea3",
+  "q_ce76fa99b23b3ed7",
+  "q_21a5bf62d9d7abca",
+  "q_8c9b8bb7a2fa6c35",
+  "q_2db3850b72ae164f",
+  "q_6f0e3e2a262e2553",
+  "q_858d2aed0cc74cb5",
+  "q_7d4bd9fd79b4d042",
+  "q_385ec9e6b80a8a3c",
+  "q_504dc17896c644cb",
+  "q_a455b9643511a945",
+  "q_050622f54f631756",
+  "q_ae1f683b769c69cd",
+  "q_2fb3ad48a14e7b4d",
+  "q_5d1f475e16c3e9b6",
+  "q_5ad6ae2cc249fac3",
+  "q_80a7399b75fa118d",
+  "q_a54ec7e0cc8f22c2",
+  "q_5eccd2117d13363d",
+  "q_bc56ec8d21073830",
+  "q_6e0faea656cd822d",
+  "q_6cae9c9baf171155",
+  "q_0473f7fc3c48850a",
+  "q_da889f46850bdb94",
+  "q_ad26c39020601477",
+  "q_69a11f5e4ce23cca",
+  "q_1ef7659dc3055ad3",
+  "q_8a85a884de1f5695",
+  "q_9057eaf6ba9e3448",
+  "q_dc253e5f193f1fde",
+  "q_140b8b2dd724019a",
+  "q_5125508d56d86860",
+  "q_d6c3a9fbe4e67ed4",
+  "q_497060c918e9c34d",
+  "q_9eaf4014db5dfa3d",
+  "q_ef5010f831b3d6c0",
+  "q_7c7f39d54ab1496c",
+  "q_dec1c8260d326299",
+  "q_96e1458d91dcbeaf",
+  "q_d58a760a53c68a34",
+  "q_88c9f74dbc367254",
+  "q_219ddf4f2201b757",
+  "q_bc8b5164aeae5e82",
+  "q_0f0bcc41631edebc",
+  "q_fb08c10cad1536f5",
+  "q_130ff752c081684f",
+  "q_a6d0a1f19cd8449d",
+  "q_8f32f1520e72ed90",
+  "q_292c9dc64b7b4a10",
+  "q_ccf862af584a0836",
+  "q_65e03809926c3a16",
+  "q_e09e162725c299cb",
+  "q_010a353e37454e8e",
+  "q_3974e9ec71be79c4",
+  "q_8561d5c88b7d0cfe",
+  "q_2ba0f2db32d89582",
+  "q_c2e82225534fd521",
+  "q_4b2d7058cb6b83d1",
+  "q_531ced5e3e02fb50",
+  "q_289f6bad71920d2e",
+  "q_8ecdc62911af2d64",
+  "q_e4e404a75317a135",
+  "q_8ed8a2e1c91d301f",
+  "q_7f57bf03e2e8d33f",
+  "q_31b48bde3847601b",
+  "q_01c92d4daa33db99",
+  "q_6e789d93fa84b2cd",
+  "q_47b0126b54cd96bc",
+  "q_22f33d8018caa787",
+  "q_880bbc197ff76afa",
+  "q_569f32d110d90fda",
+  "q_5175a846aed015fe",
+  "q_5d64b6349e4bb979",
+  "q_03b0b6f8e5df8349",
+  "q_e81af10c644852f3",
+  "q_e841ff387b9abd7c",
+  "q_ea6b04b2cf26afa9",
+  "q_34fb3c5aef70cda6",
+  "q_a126878f6ae889f1",
+  "q_4ebc360fc9cf60b2",
+  "q_7f2eb85b452f974a",
+  "q_e20c91caae63ed54",
+  "q_e65418c19d53dcdc",
+  "q_731b86253e297a06",
+  "q_25958e1b72c0e063",
+  "q_ec464b469dd90cf8",
+  "q_363068b2554043c2",
+  "q_34897b9488bf29b6",
+  "q_111fed98501d7b95",
+  "q_655973d97166d575",
+  "q_e9df1c77a1af5bc9",
+  "q_ba80c8c4474307ea",
+  "q_94e5e4c679671419",
+  "q_1919228c66842728",
+  "q_a1a1326338d0696a",
+  "q_b1989525d9f0e774",
+  "q_d09c99323d8b6c19",
+  "q_be516ad3e91eb0f8",
+  "q_adfde2cdc14ab397",
+  "q_41689c675839146b",
+  "q_bc6ddbf4adbec95d",
+  "q_90e98b01787b056c",
+  "q_9ce93a861965f692",
+  "q_b0710c247c6ce19d",
+  "q_4d26e37932b263e7",
+  "q_91ebcee77ca63c08",
+  "q_38847cfce5b96da7",
+  "q_7cd86ab25ead4711",
+  "q_eb8fbf4de8008f9e",
+  "q_51dad29c21f0617c",
+  "q_667e5a1cf03729ed",
+  "q_c664844da70111e4",
+  "q_02f933786de465f7",
+  "q_0b589b6ee93f284a",
+  "q_a56c8c040b651365",
+  "q_aaf11c0ef899fb58"
+ ],
+ "exclusions": {
+  "by_reason": {
+   "all_reject": 8,
+   "test_neighbour_keep_both": 1,
+   "test_neighbour_lexical": 21,
+   "test_neighbour_semantic": 20,
+   "test_twin_8gram": 59,
+   "twin_group_member": 439
+  },
+  "rule": "dev candidates exclude every training question with at least one of these reasons",
+  "unique_questions": 477
+ },
+ "frozen_split_check": {
+  "algorithm": "stratified-largest-remainder-sha256-v1",
+  "algorithm_matches": true,
+  "eval_file_matches": true,
+  "ids_match_in_order": true,
+  "manifest_ids": 185,
+  "reproduced_ids": 185,
+  "seed": "grc-agent-eval-v1-2026-08-13",
+  "source_sha256": "a0729933710ea39dacd05b644f34fb6c0b43cd4106e57c228fa281f0fa7f918a",
+  "source_sha256_matches": true,
+  "train_file_is_complement": true
+ },
+ "generated_by": "grcbench.splits.dev (./gb split-dev)",
+ "implements": [
+  "eval plan §4.1 Table 4: 200 dev questions held back from the 1,668 training questions",
+  "eval plan §4.1: the anchor subset and the CI gate use the dev split",
+  "eval plan §6: near-twins of test questions"
+ ],
+ "name": "GRC-Bench Tier-K dev split",
+ "seeds": {
+  "anchor": "grc-bench-anchor-v1-2026-10-14",
+  "ci": "grc-bench-ci-v1-2026-10-14",
+  "dev": "grc-bench-dev-v1-2026-10-14",
+  "frozen_test": "grc-agent-eval-v1-2026-08-13"
+ },
+ "sources": [
+  {
+   "path": "GRC_dataset_20261007/dataset/02_questions_blind/normalized/blind_semantic_dedupe_decisions.jsonl",
+   "sha256": "51a443dddd68f7f2b3ec3e30ab7795c1f323953538bee13882654c7dd77a37dd"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/02_questions_blind/normalized/blind_semantic_duplicate_clusters.jsonl",
+   "sha256": "35291f447cfa76d5c8b8b32b8c50fd3f87f351f3d85235ba55e75d3a730a056e"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/03_questions_merged/cross_bank_semantic_dedupe_decisions.jsonl",
+   "sha256": "a584197c712168aade017b4f6573fd4e794d6f36933474336d05b9cb15a91ffe"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/03_questions_merged/cross_bank_semantic_duplicate_clusters.jsonl",
+   "sha256": "fea6cdb0494e6f31fd8ac56343e64b5b5ea098c936e70c05691bf0dfe61623b9"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/03_questions_merged/questions_canonical.jsonl",
+   "sha256": "a0729933710ea39dacd05b644f34fb6c0b43cd4106e57c228fa281f0fa7f918a"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/03_questions_merged/semantic_dedupe_decisions.jsonl",
+   "sha256": "71de46942143daf29101d52613e440a7b97de8132eae01b2e4e8c4aa0d437d42"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/03_questions_merged/semantic_duplicate_candidates.jsonl",
+   "sha256": "d42188a7ce805396f25bb001a313528284d6edc7686a68e1a483e2fd50007441"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/03_questions_merged/semantic_duplicate_clusters.jsonl",
+   "sha256": "a2f3843118e4067e6d4d0f58ab704078d36089eea18a281c4f99dccc7728077a"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/04_eval_frozen/eval_manifest.json",
+   "sha256": "eca148a98c5c24a6ea22f787a5fa52a74138a1b77ba799358480c61616f7459b"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/04_eval_frozen/eval_questions.jsonl",
+   "sha256": "db4cc52ea49a14075a78ecb01f342fe2e82f670382f98cb53ab16eb9a8acaf55"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/04_eval_frozen/train_questions.jsonl",
+   "sha256": "7e3df67853dd23dd010e5218fb946898ea4e263f8a8136f5cca67e5cc261e799"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/08_judging/judgments.jsonl",
+   "sha256": "5bed561589ab2cd6ee297ec6174a5bb96627f94022a7d6dc0f9623bad8248f21"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/10_repaired/repaired_answers.jsonl",
+   "sha256": "3805f11f270e2ddc956d21bec3e4ebbcd23f2306e1bb62f904f797531c4dc2ca"
+  },
+  {
+   "path": "GRC_dataset_20261007/dataset/10_repaired_glm/repaired_answers.jsonl",
+   "sha256": "1bc492ba0320c608ce8c864a77de9a0930cefbfaec7b2c70fba5224f6234e632"
+  }
+ ],
+ "status": "draft: twin thresholds are Claude's reading, pending team review",
+ "strata": [
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 0,
+   "stratum": [
+    "blind",
+    "GNU Radio usage",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.479616,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "GNU Radio usage",
+    "intermediate"
+   ],
+   "test": 0,
+   "training_pool": 4
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "ask_for_info",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 3,
+   "stratum": [
+    "blind",
+    "ask_for_info",
+    "intermediate"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.119904,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "asking for missing information",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 1
+  },
+  {
+   "anchor": 2,
+   "ci": 1,
+   "dev": 5,
+   "dev_proportional_quota": 5.395683,
+   "eligible": 39,
+   "stratum": [
+    "blind",
+    "calculation",
+    "advanced"
+   ],
+   "test": 5,
+   "training_pool": 45
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 1.678657,
+   "eligible": 11,
+   "stratum": [
+    "blind",
+    "calculation",
+    "basic"
+   ],
+   "test": 2,
+   "training_pool": 14
+  },
+  {
+   "anchor": 2,
+   "ci": 1,
+   "dev": 6,
+   "dev_proportional_quota": 5.8753,
+   "eligible": 34,
+   "stratum": [
+    "blind",
+    "calculation",
+    "intermediate"
+   ],
+   "test": 6,
+   "training_pool": 49
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.119904,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "calculations",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 1
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.59952,
+   "eligible": 3,
+   "stratum": [
+    "blind",
+    "calculations",
+    "basic"
+   ],
+   "test": 1,
+   "training_pool": 5
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 1.558753,
+   "eligible": 10,
+   "stratum": [
+    "blind",
+    "calculations",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 13
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "compare",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.119904,
+   "eligible": 0,
+   "stratum": [
+    "blind",
+    "compare",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 1
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 3,
+   "stratum": [
+    "blind",
+    "compare",
+    "intermediate"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.479616,
+   "eligible": 4,
+   "stratum": [
+    "blind",
+    "compare/choose",
+    "advanced"
+   ],
+   "test": 1,
+   "training_pool": 4
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "compare/choose",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 1.558753,
+   "eligible": 9,
+   "stratum": [
+    "blind",
+    "compare/choose",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 13
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.119904,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "compare_choose",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 1
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "compare_choose",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 1.798561,
+   "eligible": 13,
+   "stratum": [
+    "blind",
+    "compare_choose",
+    "intermediate"
+   ],
+   "test": 2,
+   "training_pool": 15
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 1.678657,
+   "eligible": 10,
+   "stratum": [
+    "blind",
+    "debugging",
+    "advanced"
+   ],
+   "test": 2,
+   "training_pool": 14
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "debugging",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 1,
+   "ci": 1,
+   "dev": 4,
+   "dev_proportional_quota": 3.83693,
+   "eligible": 28,
+   "stratum": [
+    "blind",
+    "debugging",
+    "intermediate"
+   ],
+   "test": 4,
+   "training_pool": 32
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.59952,
+   "eligible": 5,
+   "stratum": [
+    "blind",
+    "design",
+    "advanced"
+   ],
+   "test": 1,
+   "training_pool": 5
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.59952,
+   "eligible": 5,
+   "stratum": [
+    "blind",
+    "design",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 5
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 2.158273,
+   "eligible": 17,
+   "stratum": [
+    "blind",
+    "diagnosis",
+    "advanced"
+   ],
+   "test": 2,
+   "training_pool": 18
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "diagnosis",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.59952,
+   "eligible": 5,
+   "stratum": [
+    "blind",
+    "diagnosis",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 5
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 1.079137,
+   "eligible": 9,
+   "stratum": [
+    "blind",
+    "diagnosis from symptoms",
+    "advanced"
+   ],
+   "test": 1,
+   "training_pool": 9
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "diagnosis from symptoms",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.59952,
+   "eligible": 5,
+   "stratum": [
+    "blind",
+    "diagnosis from symptoms",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 5
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "diagnosis_from_symptoms",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 3,
+   "stratum": [
+    "blind",
+    "diagnosis_from_symptoms",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.479616,
+   "eligible": 4,
+   "stratum": [
+    "blind",
+    "diagnosis_from_symptoms",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 4
+  },
+  {
+   "anchor": 3,
+   "ci": 1,
+   "dev": 11,
+   "dev_proportional_quota": 10.551559,
+   "eligible": 60,
+   "stratum": [
+    "blind",
+    "factual",
+    "basic"
+   ],
+   "test": 10,
+   "training_pool": 88
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "factual",
+    "intermediate"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 3,
+   "stratum": [
+    "blind",
+    "factual knowledge",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 2.038369,
+   "eligible": 10,
+   "stratum": [
+    "blind",
+    "factual knowledge",
+    "basic"
+   ],
+   "test": 2,
+   "training_pool": 17
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 2.158273,
+   "eligible": 10,
+   "stratum": [
+    "blind",
+    "factual knowledge",
+    "intermediate"
+   ],
+   "test": 2,
+   "training_pool": 18
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.719424,
+   "eligible": 5,
+   "stratum": [
+    "blind",
+    "factual_knowledge",
+    "advanced"
+   ],
+   "test": 1,
+   "training_pool": 6
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.719424,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "factual_knowledge",
+    "basic"
+   ],
+   "test": 1,
+   "training_pool": 6
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 1.438849,
+   "eligible": 9,
+   "stratum": [
+    "blind",
+    "factual_knowledge",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 12
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.119904,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "gnu_radio_usage",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 1
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "gnu_radio_usage",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 3,
+   "stratum": [
+    "blind",
+    "gnu_radio_usage",
+    "intermediate"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.59952,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "gnuradio_usage",
+    "advanced"
+   ],
+   "test": 1,
+   "training_pool": 5
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.59952,
+   "eligible": 4,
+   "stratum": [
+    "blind",
+    "gnuradio_usage",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 5
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.119904,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "information_gathering",
+    "advanced"
+   ],
+   "test": 0,
+   "training_pool": 1
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.239808,
+   "eligible": 2,
+   "stratum": [
+    "blind",
+    "information_gathering",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 2
+  },
+  {
+   "anchor": 1,
+   "ci": 1,
+   "dev": 4,
+   "dev_proportional_quota": 4.196643,
+   "eligible": 34,
+   "stratum": [
+    "blind",
+    "reasoning",
+    "advanced"
+   ],
+   "test": 4,
+   "training_pool": 35
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 1.199041,
+   "eligible": 9,
+   "stratum": [
+    "blind",
+    "reasoning",
+    "basic"
+   ],
+   "test": 1,
+   "training_pool": 10
+  },
+  {
+   "anchor": 3,
+   "ci": 1,
+   "dev": 10,
+   "dev_proportional_quota": 9.592326,
+   "eligible": 70,
+   "stratum": [
+    "blind",
+    "reasoning",
+    "intermediate"
+   ],
+   "test": 9,
+   "training_pool": 80
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 3,
+   "dev_proportional_quota": 2.63789,
+   "eligible": 19,
+   "stratum": [
+    "blind",
+    "system design",
+    "advanced"
+   ],
+   "test": 2,
+   "training_pool": 22
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.119904,
+   "eligible": 1,
+   "stratum": [
+    "blind",
+    "system design",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 1
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 1.918465,
+   "eligible": 10,
+   "stratum": [
+    "blind",
+    "system design",
+    "intermediate"
+   ],
+   "test": 2,
+   "training_pool": 16
+  },
+  {
+   "anchor": 1,
+   "ci": 1,
+   "dev": 4,
+   "dev_proportional_quota": 3.717026,
+   "eligible": 23,
+   "stratum": [
+    "blind",
+    "system_design",
+    "advanced"
+   ],
+   "test": 4,
+   "training_pool": 31
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 1.079137,
+   "eligible": 5,
+   "stratum": [
+    "blind",
+    "system_design",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 9
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 3,
+   "dev_proportional_quota": 2.63789,
+   "eligible": 10,
+   "stratum": [
+    "source",
+    "calculation",
+    "advanced"
+   ],
+   "test": 2,
+   "training_pool": 22
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 3,
+   "dev_proportional_quota": 3.357314,
+   "eligible": 18,
+   "stratum": [
+    "source",
+    "calculation",
+    "basic"
+   ],
+   "test": 3,
+   "training_pool": 28
+  },
+  {
+   "anchor": 2,
+   "ci": 1,
+   "dev": 6,
+   "dev_proportional_quota": 5.995204,
+   "eligible": 29,
+   "stratum": [
+    "source",
+    "calculation",
+    "intermediate"
+   ],
+   "test": 5,
+   "training_pool": 50
+  },
+  {
+   "anchor": 2,
+   "ci": 1,
+   "dev": 7,
+   "dev_proportional_quota": 6.714628,
+   "eligible": 24,
+   "stratum": [
+    "source",
+    "conceptual",
+    "basic"
+   ],
+   "test": 6,
+   "training_pool": 56
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 1.558753,
+   "eligible": 9,
+   "stratum": [
+    "source",
+    "conceptual",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 13
+  },
+  {
+   "anchor": 6,
+   "ci": 2,
+   "dev": 18,
+   "dev_proportional_quota": 18.465228,
+   "eligible": 115,
+   "stratum": [
+    "source",
+    "design",
+    "advanced"
+   ],
+   "test": 17,
+   "training_pool": 154
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.119904,
+   "eligible": 1,
+   "stratum": [
+    "source",
+    "design",
+    "basic"
+   ],
+   "test": 0,
+   "training_pool": 1
+  },
+  {
+   "anchor": 2,
+   "ci": 1,
+   "dev": 8,
+   "dev_proportional_quota": 8.273381,
+   "eligible": 29,
+   "stratum": [
+    "source",
+    "design",
+    "intermediate"
+   ],
+   "test": 8,
+   "training_pool": 69
+  },
+  {
+   "anchor": 2,
+   "ci": 1,
+   "dev": 8,
+   "dev_proportional_quota": 7.793765,
+   "eligible": 31,
+   "stratum": [
+    "source",
+    "diagnosis",
+    "advanced"
+   ],
+   "test": 7,
+   "training_pool": 65
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 1.079137,
+   "eligible": 7,
+   "stratum": [
+    "source",
+    "diagnosis",
+    "intermediate"
+   ],
+   "test": 1,
+   "training_pool": 9
+  },
+  {
+   "anchor": 2,
+   "ci": 1,
+   "dev": 7,
+   "dev_proportional_quota": 7.314149,
+   "eligible": 48,
+   "stratum": [
+    "source",
+    "factual",
+    "basic"
+   ],
+   "test": 7,
+   "training_pool": 61
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 0,
+   "dev_proportional_quota": 0.359712,
+   "eligible": 3,
+   "stratum": [
+    "source",
+    "factual",
+    "intermediate"
+   ],
+   "test": 0,
+   "training_pool": 3
+  },
+  {
+   "anchor": 0,
+   "ci": 0,
+   "dev": 1,
+   "dev_proportional_quota": 0.719424,
+   "eligible": 6,
+   "stratum": [
+    "source",
+    "gnuradio_usage",
+    "advanced"
+   ],
+   "test": 1,
+   "training_pool": 6
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 2,
+   "dev_proportional_quota": 1.798561,
+   "eligible": 10,
+   "stratum": [
+    "source",
+    "gnuradio_usage",
+    "basic"
+   ],
+   "test": 2,
+   "training_pool": 15
+  },
+  {
+   "anchor": 2,
+   "ci": 1,
+   "dev": 5,
+   "dev_proportional_quota": 4.796163,
+   "eligible": 21,
+   "stratum": [
+    "source",
+    "gnuradio_usage",
+    "intermediate"
+   ],
+   "test": 5,
+   "training_pool": 40
+  },
+  {
+   "anchor": 3,
+   "ci": 1,
+   "dev": 10,
+   "dev_proportional_quota": 10.191847,
+   "eligible": 59,
+   "stratum": [
+    "source",
+    "reasoning",
+    "advanced"
+   ],
+   "test": 9,
+   "training_pool": 85
+  },
+  {
+   "anchor": 1,
+   "ci": 0,
+   "dev": 4,
+   "dev_proportional_quota": 4.076739,
+   "eligible": 28,
+   "stratum": [
+    "source",
+    "reasoning",
+    "basic"
+   ],
+   "test": 4,
+   "training_pool": 34
+  },
+  {
+   "anchor": 11,
+   "ci": 4,
+   "dev": 35,
+   "dev_proportional_quota": 34.652278,
+   "eligible": 219,
+   "stratum": [
+    "source",
+    "reasoning",
+    "intermediate"
+   ],
+   "test": 32,
+   "training_pool": 289
+  }
+ ],
+ "test_neighbours": {
+  "also_test_twins": 2,
+  "by_training_id": {
+   "q_0536cf34afb54c14": {
+    "q_3d7679664c47a821": [
+     "lexical:0.7724"
+    ]
+   },
+   "q_094365aa30db93cd": {
+    "q_d894b271f89b9bae": [
+     "lexical:0.5775"
+    ]
+   },
+   "q_0a9db73dc51037c8": {
+    "q_693ffc952e4828ed": [
+     "lexical:0.6355"
+    ]
+   },
+   "q_1647afc3e634818e": {
+    "q_2e833b0ea86738a9": [
+     "semantic:0.9488"
+    ]
+   },
+   "q_1abd02848f9b4159": {
+    "q_b7115688b916ac20": [
+     "semantic:0.9542"
+    ]
+   },
+   "q_252c48a47b9f0199": {
+    "q_31ded1d7b089f836": [
+     "semantic:0.9486"
+    ]
+   },
+   "q_2a77d21b8813c329": {
+    "q_a99b0d73cc717286": [
+     "semantic:0.9499"
+    ]
+   },
+   "q_2d09198900c35631": {
+    "q_136c02cbaa6f93f2": [
+     "lexical:0.5689"
+    ]
+   },
+   "q_3100e65f7d43266e": {
+    "q_14d479a6ae393d63": [
+     "lexical:0.6327"
+    ]
+   },
+   "q_35280143259efd36": {
+    "q_94ce4907a535b5c3": [
+     "semantic:0.9601"
+    ]
+   },
+   "q_36ae89fff78771c6": {
+    "q_94ce4907a535b5c3": [
+     "lexical:0.6558"
+    ]
+   },
+   "q_443daf9047672106": {
+    "q_75980861b0e8d95d": [
+     "semantic:0.9360"
+    ]
+   },
+   "q_5c5bf9ddedf1c9b6": {
+    "q_2e833b0ea86738a9": [
+     "semantic:0.9646"
+    ]
+   },
+   "q_5d98eadd9b6d2c84": {
+    "q_ac873512e0eba4c0": [
+     "keep_both:cbsc_0002",
+     "lexical:0.5995"
+    ]
+   },
+   "q_609d652cf5167382": {
+    "q_9a3fc7c80619bf14": [
+     "semantic:0.9232"
+    ]
+   },
+   "q_62017f925f288e5f": {
+    "q_5f4031f20f0afcd9": [
+     "semantic:0.9691"
+    ]
+   },
+   "q_626ce64bc72f91b8": {
+    "q_ae04c5efce9d1445": [
+     "lexical:0.5666"
+    ]
+   },
+   "q_65cdf39285b5ba86": {
+    "q_072c5b5c4eb8bcc9": [
+     "lexical:0.7115"
+    ]
+   },
+   "q_675db4f5383a2ae7": {
+    "q_a30cd9eea6b2d765": [
+     "semantic:0.9260"
+    ]
+   },
+   "q_677422359dfba4b9": {
+    "q_cf3b51242f06d949": [
+     "lexical:0.5541"
+    ]
+   },
+   "q_758c8cd86dddfb73": {
+    "q_5b2311bc18e2921a": [
+     "lexical:0.5557"
+    ]
+   },
+   "q_7a86c733115a55f6": {
+    "q_49955101180915ca": [
+     "semantic:0.9260"
+    ]
+   },
+   "q_8a62794b5639100c": {
+    "q_a30cd9eea6b2d765": [
+     "semantic:0.9458"
+    ]
+   },
+   "q_8b4c510b3c16aa6e": {
+    "q_7e2092c7abc30138": [
+     "lexical:0.5505"
+    ]
+   },
+   "q_940a28924a06ee27": {
+    "q_976f44ddd3de3998": [
+     "lexical:0.7057"
+    ]
+   },
+   "q_a7419655d539da42": {
+    "q_ec6ec1882a00fd79": [
+     "semantic:0.9486"
+    ]
+   },
+   "q_aa7abdcc85cb70c4": {
+    "q_fa9d9fc746d70de8": [
+     "semantic:0.9460"
+    ]
+   },
+   "q_ae2ccf27dcfa50fb": {
+    "q_49955101180915ca": [
+     "semantic:0.9327"
+    ]
+   },
+   "q_b313da8c43485ab8": {
+    "q_d4dbc1a65cd6572c": [
+     "lexical:0.5924"
+    ]
+   },
+   "q_b561cca722631bb9": {
+    "q_a66b411d85a3b372": [
+     "semantic:0.9449"
+    ]
+   },
+   "q_b656b3ba8bb9cdb7": {
+    "q_a30cd9eea6b2d765": [
+     "semantic:0.9214"
+    ]
+   },
+   "q_bd45cd5d197806d7": {
+    "q_d894b271f89b9bae": [
+     "lexical:0.7695"
+    ]
+   },
+   "q_c0657bbd07f86dd1": {
+    "q_03750d1cc5e2dfb2": [
+     "lexical:0.5744"
+    ]
+   },
+   "q_c0e92a1a294aab1e": {
+    "q_eabcdb1b438a5afb": [
+     "lexical:0.6033"
+    ]
+   },
+   "q_cd2015aad00d3376": {
+    "q_f44970ad93cdb091": [
+     "lexical:0.5574"
+    ]
+   },
+   "q_d30da8a6d4148268": {
+    "q_14d479a6ae393d63": [
+     "lexical:0.5881"
+    ],
+    "q_ae04c5efce9d1445": [
+     "lexical:0.6357"
+    ]
+   },
+   "q_d87be8858b3f4755": {
+    "q_50ca8a72629fd711": [
+     "lexical:0.7042"
+    ]
+   },
+   "q_ed2bcabcbb2a4959": {
+    "q_80499991a9187431": [
+     "semantic:0.9252"
+    ]
+   },
+   "q_ed73a9db32abc24a": {
+    "q_2e833b0ea86738a9": [
+     "semantic:0.9282"
+    ]
+   },
+   "q_ef42e0124c45893c": {
+    "q_03750d1cc5e2dfb2": [
+     "lexical:0.5642"
+    ],
+    "q_7a9d03a0cf69815d": [
+     "lexical:0.5565"
+    ]
+   },
+   "q_fd12f8b1f8e929d6": {
+    "q_eb7dcee57b3bea84": [
+     "semantic:0.9589"
+    ]
+   }
+  },
+  "definition": "training questions linked by semantic, lexical or keep_both evidence (thresholds above) to a frozen test question they share no 8-gram with; flagged, not counted in eval plan §6",
+  "training_questions": 41
+ },
+ "test_twins": {
+  "by_training_id": {
+   "q_0e67656610aff70f": [
+    "q_63f558e028ba13d5"
+   ],
+   "q_161735a463c96318": [
+    "q_b63bf715bc88d29f"
+   ],
+   "q_16f75e072b7fec51": [
+    "q_8f76cb52cedbed69"
+   ],
+   "q_1be24b39d70aedac": [
+    "q_cf42443d85802560"
+   ],
+   "q_1d98e0cb89a61557": [
+    "q_c9b703b452e0d9ea"
+   ],
+   "q_1f11d99126b24669": [
+    "q_5f089729e7f9c44c"
+   ],
+   "q_2212bc2b1cd9586b": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_2a05fb05befec8d3": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_2b6ef86ac7ebdd14": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_2f7853ebd42d0fff": [
+    "q_5b2311bc18e2921a"
+   ],
+   "q_30914edff42ffc6d": [
+    "q_49955101180915ca"
+   ],
+   "q_3099cb2f5266d3b8": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_33bbefdf1c66d77a": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_39525b9226b681da": [
+    "q_a63c7f10e2d1e463"
+   ],
+   "q_39df1009ce3e1baa": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_3edefce830fedc46": [
+    "q_9ffdfc820537ff5d"
+   ],
+   "q_41201b2fefb521d1": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_42b7e29ce0619958": [
+    "q_7acc67b2a3b45407"
+   ],
+   "q_45f5ad026a30dce7": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_477383117a00957b": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_47d9ea1e02eba559": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_492b06285ac432d5": [
+    "q_63f558e028ba13d5"
+   ],
+   "q_4db69fa026836228": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_506f0af36b67be63": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_53beff9d19b78449": [
+    "q_5b2311bc18e2921a"
+   ],
+   "q_5675ea42a0b29349": [
+    "q_fa9d9fc746d70de8"
+   ],
+   "q_666de99cb825f9ae": [
+    "q_340f4a600c288a50"
+   ],
+   "q_6fa6856e217869d3": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_734b65ebd60f51fc": [
+    "q_7acc67b2a3b45407"
+   ],
+   "q_761f3d80302851b1": [
+    "q_e4bb5711e4334dc6"
+   ],
+   "q_778aa3f7cf9553b3": [
+    "q_829a93d76518b69e"
+   ],
+   "q_7ad6641d9fb52c32": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_7b084d292e87599f": [
+    "q_2fbc2fc38245e2d6"
+   ],
+   "q_85e669b5286826ff": [
+    "q_6c149fe89f8046cc"
+   ],
+   "q_935c26a6d7804641": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_996b13729be18496": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_9a0777691039b6cf": [
+    "q_8f76cb52cedbed69"
+   ],
+   "q_9c8fdbd177165d61": [
+    "q_a63c7f10e2d1e463"
+   ],
+   "q_a12aaf693a804505": [
+    "q_a63c7f10e2d1e463"
+   ],
+   "q_a38c413d7faebec2": [
+    "q_5f089729e7f9c44c"
+   ],
+   "q_a3c25ecc9c9c7676": [
+    "q_5b2311bc18e2921a"
+   ],
+   "q_a3d9cd59517cca87": [
+    "q_ee4db2dd9d01fe15"
+   ],
+   "q_a8ad903d9a9a5865": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_b0347720e5cb440e": [
+    "q_13e464a732e6773c"
+   ],
+   "q_b4ba5434400d07d3": [
+    "q_0bcfed4dee1a45e3"
+   ],
+   "q_b717aa7223052823": [
+    "q_487f23bc5c3635f0"
+   ],
+   "q_c1ac0de40d63434d": [
+    "q_7acc67b2a3b45407"
+   ],
+   "q_c554d4ada9e537af": [
+    "q_6c149fe89f8046cc"
+   ],
+   "q_d3e6ea213044e6cf": [
+    "q_c2a697017227cabd"
+   ],
+   "q_e093da0db583292e": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_e102d93f83a502ca": [
+    "q_90ea1e7c7eadbe00"
+   ],
+   "q_e3cc95acebdf83a0": [
+    "q_31ded1d7b089f836",
+    "q_91f6f121d2fda8c0"
+   ],
+   "q_e620af6545825719": [
+    "q_8f76cb52cedbed69"
+   ],
+   "q_ebc5f728745ab25f": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_ed73a9db32abc24a": [
+    "q_fa9d9fc746d70de8"
+   ],
+   "q_f5b67405ccd63d04": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_f696d5b20b82045f": [
+    "q_8f76cb52cedbed69"
+   ],
+   "q_fd12f8b1f8e929d6": [
+    "q_1c20ceec246aeae6"
+   ],
+   "q_ffc2b8a9ba0932f9": [
+    "q_1c20ceec246aeae6"
+   ]
+  },
+  "definition": "training questions sharing a word 8-gram with a frozen test question (eval plan §6)",
+  "test_questions_with_training_twin": 26,
+  "tokenizer": "lowercase; every non-word character (regex \\W) to a space; split on whitespace; n = 8",
+  "training_questions": 59
+ },
+ "training_artifacts_affected": {
+  "dev": {
+   "by_status": {
+    "PASS": 918,
+    "REJECT": 58,
+    "REPAIR": 423
+   },
+   "judged_teacher_answers": 1399,
+   "questions": 200,
+   "repaired_answer_rows": {
+    "GRC_dataset_20261007/dataset/10_repaired/repaired_answers.jsonl": 423,
+    "GRC_dataset_20261007/dataset/10_repaired_glm/repaired_answers.jsonl": 423
+   }
+  },
+  "test_neighbours_not_test_twins": {
+   "by_status": {
+    "PASS": 193,
+    "REJECT": 13,
+    "REPAIR": 67
+   },
+   "judged_teacher_answers": 273,
+   "questions": 39,
+   "repaired_answer_rows": {
+    "GRC_dataset_20261007/dataset/10_repaired/repaired_answers.jsonl": 67,
+    "GRC_dataset_20261007/dataset/10_repaired_glm/repaired_answers.jsonl": 67
+   }
+  },
+  "test_twins": {
+   "by_status": {
+    "PASS": 268,
+    "REJECT": 11,
+    "REPAIR": 134
+   },
+   "judged_teacher_answers": 413,
+   "questions": 59,
+   "repaired_answer_rows": {
+    "GRC_dataset_20261007/dataset/10_repaired/repaired_answers.jsonl": 134,
+    "GRC_dataset_20261007/dataset/10_repaired_glm/repaired_answers.jsonl": 134
+   }
+  }
+ },
+ "twin_groups": {
+  "band_reading": {
+   "lexical": [
+    {
+     "band": [
+      0.7,
+      1.01
+     ],
+     "pairs": 11,
+     "pairs_now": 11,
+     "twin_share": 1.0,
+     "twins": 11
+    },
+    {
+     "band": [
+      0.6,
+      0.7
+     ],
+     "pairs": 32,
+     "pairs_now": 32,
+     "twin_share": 0.781,
+     "twins": 25
+    },
+    {
+     "band": [
+      0.55,
+      0.6
+     ],
+     "pairs": 34,
+     "pairs_now": 34,
+     "twin_share": 0.706,
+     "twins": 24
+    },
+    {
+     "band": [
+      0.5,
+      0.55
+     ],
+     "pairs": 70,
+     "pairs_now": 70,
+     "twin_share": 0.429,
+     "twins": 30
+    }
+   ],
+   "semantic": [
+    {
+     "band": [
+      0.94,
+      0.95
+     ],
+     "pairs": 9,
+     "pairs_now": 9,
+     "twin_share": 0.889,
+     "twins": 8
+    },
+    {
+     "band": [
+      0.93,
+      0.94
+     ],
+     "pairs": 13,
+     "pairs_now": 13,
+     "twin_share": 0.692,
+     "twins": 9
+    },
+    {
+     "band": [
+      0.92,
+      0.93
+     ],
+     "pairs": 26,
+     "pairs_now": 26,
+     "twin_share": 0.538,
+     "twins": 14
+    },
+    {
+     "band": [
+      0.91,
+      0.92
+     ],
+     "pairs": 40,
+     "pairs_now": 40,
+     "twin_share": 0.3,
+     "twins": 12
+    }
+   ]
+  },
+  "coverage_note": "semantic_duplicate_candidates.jsonl scores only source-lane questions (floor 0.82); pairs with a blind-lane question are covered by the lexical TF-IDF check, 8-grams and adjudicated KEEP_BOTH decisions.",
+  "edges_by_kind": {
+   "8gram": 447,
+   "keep_both": 8,
+   "lexical": 89,
+   "semantic": 100
+  },
+  "file": "splits/tier_k_twin_groups.json",
+  "group_size_histogram": {
+   "16": 2,
+   "2": 98,
+   "28": 2,
+   "3": 19,
+   "4": 10,
+   "5": 5,
+   "6": 4,
+   "9": 1
+  },
+  "groups": 141,
+  "keep_both_decisions": [
+   {
+    "decisions": {
+     "KEEP_BOTH": 2
+    },
+    "file": "dataset/02_questions_blind/normalized/blind_semantic_dedupe_decisions.jsonl"
+   },
+   {
+    "decisions": {
+     "DUPLICATE": 1,
+     "KEEP_BOTH": 1
+    },
+    "file": "dataset/03_questions_merged/cross_bank_semantic_dedupe_decisions.jsonl"
+   },
+   {
+    "decisions": {
+     "DUPLICATE": 6,
+     "KEEP_BOTH": 7
+    },
+    "file": "dataset/03_questions_merged/semantic_dedupe_decisions.jsonl"
+   }
+  ],
+  "lexical_threshold": 0.55,
+  "members": 439,
+  "semantic_candidates_mapping": {
+   "dropped_endpoint_removed_by_adjudicated_dedupe": 143,
+   "dropped_same_canonical_question": 194,
+   "mapped": 5383,
+   "max_similarity_in_file": 1.0,
+   "min_similarity_in_file": 0.82,
+   "rows": 5720,
+   "unique_canonical_pairs": 3303
+  },
+  "semantic_threshold": 0.92,
+  "sensitivity": [
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8
+    },
+    "eligible": 1370,
+    "excluded": 298,
+    "group_members": 277,
+    "largest_groups": [
+     26,
+     14,
+     7
+    ],
+    "lexical_threshold": null,
+    "redraw_overlap": 168,
+    "redraw_rejected_by_chosen": 32,
+    "semantic_threshold": null,
+    "strata_short": 0,
+    "test_neighbours": 1,
+    "twin_groups": 96
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "semantic": 100
+    },
+    "eligible": 1292,
+    "excluded": 376,
+    "group_members": 345,
+    "largest_groups": [
+     28,
+     28,
+     14
+    ],
+    "lexical_threshold": null,
+    "redraw_overlap": 180,
+    "redraw_rejected_by_chosen": 20,
+    "semantic_threshold": 0.92,
+    "strata_short": 0,
+    "test_neighbours": 21,
+    "twin_groups": 114
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 7
+    },
+    "eligible": 1265,
+    "excluded": 403,
+    "group_members": 374,
+    "largest_groups": [
+     26,
+     16,
+     8
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 187,
+    "redraw_rejected_by_chosen": 13,
+    "semantic_threshold": 0.97,
+    "strata_short": 0,
+    "test_neighbours": 21,
+    "twin_groups": 126
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 21
+    },
+    "eligible": 1258,
+    "excluded": 410,
+    "group_members": 380,
+    "largest_groups": [
+     27,
+     16,
+     8
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 188,
+    "redraw_rejected_by_chosen": 12,
+    "semantic_threshold": 0.96,
+    "strata_short": 0,
+    "test_neighbours": 24,
+    "twin_groups": 127
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 32
+    },
+    "eligible": 1248,
+    "excluded": 420,
+    "group_members": 390,
+    "largest_groups": [
+     28,
+     16,
+     8
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 191,
+    "redraw_rejected_by_chosen": 9,
+    "semantic_threshold": 0.95,
+    "strata_short": 0,
+    "test_neighbours": 26,
+    "twin_groups": 130
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 49
+    },
+    "eligible": 1231,
+    "excluded": 437,
+    "group_members": 401,
+    "largest_groups": [
+     28,
+     16,
+     11
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 193,
+    "redraw_rejected_by_chosen": 7,
+    "semantic_threshold": 0.94,
+    "strata_short": 0,
+    "test_neighbours": 33,
+    "twin_groups": 132
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 70
+    },
+    "eligible": 1218,
+    "excluded": 450,
+    "group_members": 413,
+    "largest_groups": [
+     28,
+     16,
+     13
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 196,
+    "redraw_rejected_by_chosen": 4,
+    "semantic_threshold": 0.93,
+    "strata_short": 0,
+    "test_neighbours": 35,
+    "twin_groups": 136
+   },
+   {
+    "chosen": true,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 100
+    },
+    "eligible": 1191,
+    "excluded": 477,
+    "group_members": 439,
+    "largest_groups": [
+     28,
+     28,
+     16
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 200,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.92,
+    "strata_short": 0,
+    "test_neighbours": 41,
+    "twin_groups": 141
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 4,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 143
+    },
+    "eligible": 1169,
+    "excluded": 499,
+    "group_members": 458,
+    "largest_groups": [
+     56,
+     28,
+     16
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 196,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.91,
+    "strata_short": 0,
+    "test_neighbours": 47,
+    "twin_groups": 142
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 10,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 213
+    },
+    "eligible": 1143,
+    "excluded": 525,
+    "group_members": 483,
+    "largest_groups": [
+     61,
+     35,
+     16
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 190,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.9,
+    "strata_short": 0,
+    "test_neighbours": 57,
+    "twin_groups": 144
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 22,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 486
+    },
+    "eligible": 1066,
+    "excluded": 602,
+    "group_members": 561,
+    "largest_groups": [
+     90,
+     53,
+     10
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 178,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.88,
+    "strata_short": 0,
+    "test_neighbours": 95,
+    "twin_groups": 147
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 38,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 947
+    },
+    "eligible": 951,
+    "excluded": 717,
+    "group_members": 675,
+    "largest_groups": [
+     233,
+     13,
+     11
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 162,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.86,
+    "strata_short": 0,
+    "test_neighbours": 128,
+    "twin_groups": 149
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 55,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 1625
+    },
+    "eligible": 842,
+    "excluded": 826,
+    "group_members": 786,
+    "largest_groups": [
+     387,
+     23,
+     21
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 145,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.84,
+    "strata_short": 2,
+    "test_neighbours": 176,
+    "twin_groups": 115
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 76,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 89,
+     "semantic": 2606
+    },
+    "eligible": 729,
+    "excluded": 939,
+    "group_members": 897,
+    "largest_groups": [
+     654,
+     9,
+     9
+    ],
+    "lexical_threshold": 0.55,
+    "redraw_overlap": 124,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.82,
+    "strata_short": 3,
+    "test_neighbours": 256,
+    "twin_groups": 84
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 6,
+     "semantic": 100
+    },
+    "eligible": 1284,
+    "excluded": 384,
+    "group_members": 353,
+    "largest_groups": [
+     28,
+     28,
+     14
+    ],
+    "lexical_threshold": 0.8,
+    "redraw_overlap": 180,
+    "redraw_rejected_by_chosen": 20,
+    "semantic_threshold": 0.92,
+    "strata_short": 0,
+    "test_neighbours": 21,
+    "twin_groups": 118
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 14,
+     "semantic": 100
+    },
+    "eligible": 1272,
+    "excluded": 396,
+    "group_members": 361,
+    "largest_groups": [
+     28,
+     28,
+     14
+    ],
+    "lexical_threshold": 0.7,
+    "redraw_overlap": 181,
+    "redraw_rejected_by_chosen": 19,
+    "semantic_threshold": 0.92,
+    "strata_short": 0,
+    "test_neighbours": 26,
+    "twin_groups": 121
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 29,
+     "semantic": 100
+    },
+    "eligible": 1257,
+    "excluded": 411,
+    "group_members": 378,
+    "largest_groups": [
+     28,
+     28,
+     14
+    ],
+    "lexical_threshold": 0.65,
+    "redraw_overlap": 182,
+    "redraw_rejected_by_chosen": 18,
+    "semantic_threshold": 0.92,
+    "strata_short": 0,
+    "test_neighbours": 27,
+    "twin_groups": 126
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 0,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 50,
+     "semantic": 100
+    },
+    "eligible": 1232,
+    "excluded": 436,
+    "group_members": 401,
+    "largest_groups": [
+     28,
+     28,
+     14
+    ],
+    "lexical_threshold": 0.6,
+    "redraw_overlap": 187,
+    "redraw_rejected_by_chosen": 13,
+    "semantic_threshold": 0.92,
+    "strata_short": 0,
+    "test_neighbours": 31,
+    "twin_groups": 135
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 11,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 159,
+     "semantic": 100
+    },
+    "eligible": 1123,
+    "excluded": 545,
+    "group_members": 506,
+    "largest_groups": [
+     28,
+     28,
+     17
+    ],
+    "lexical_threshold": 0.5,
+    "redraw_overlap": 189,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.92,
+    "strata_short": 1,
+    "test_neighbours": 56,
+    "twin_groups": 152
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 34,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 283,
+     "semantic": 100
+    },
+    "eligible": 1017,
+    "excluded": 651,
+    "group_members": 608,
+    "largest_groups": [
+     63,
+     52,
+     28
+    ],
+    "lexical_threshold": 0.45,
+    "redraw_overlap": 166,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.92,
+    "strata_short": 1,
+    "test_neighbours": 82,
+    "twin_groups": 162
+   },
+   {
+    "chosen": false,
+    "chosen_dev_excluded": 57,
+    "edges": {
+     "8gram": 447,
+     "keep_both": 8,
+     "lexical": 507,
+     "semantic": 100
+    },
+    "eligible": 902,
+    "excluded": 766,
+    "group_members": 722,
+    "largest_groups": [
+     303,
+     15,
+     14
+    ],
+    "lexical_threshold": 0.4,
+    "redraw_overlap": 143,
+    "redraw_rejected_by_chosen": 0,
+    "semantic_threshold": 0.92,
+    "strata_short": 4,
+    "test_neighbours": 126,
+    "twin_groups": 139
+   }
+  ],
+  "threshold_rule": "lower edge of the lowest score band in which at least half of the training pairs Claude read (no shared 8-gram) were twins; checked against union-find chaining"
+ },
+ "version": 1
+}

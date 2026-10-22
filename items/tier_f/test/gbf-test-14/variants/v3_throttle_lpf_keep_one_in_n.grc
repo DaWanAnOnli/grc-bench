@@ -1,0 +1,52 @@
+options:
+  parameters: {id: fm_loop_v3, generate_options: no_gui}
+blocks:
+- name: fs_audio
+  id: variable
+  parameters: {value: '8000'}
+- name: samp_rate
+  id: variable
+  parameters: {value: fs_audio*5}
+- name: k_mod
+  id: variable
+  parameters: {value: 2*3.141592653589793*2500/samp_rate}
+- name: k_rx
+  id: variable
+  parameters: {value: 2*3.141592653589793*1000/samp_rate}
+- name: osc
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: fs_audio, freq: '1200'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: float, samples_per_second: fs_audio}
+- name: up5
+  id: rational_resampler_xxx
+  parameters: {type: fff, interp: '5'}
+- name: fmod
+  id: analog_frequency_modulator_fc
+  parameters: {sensitivity: k_mod}
+- name: save_iq
+  id: blocks_file_sink
+  parameters: {type: complex, file: fm_iq.dat}
+- name: qdemod
+  id: analog_quadrature_demod_cf
+  parameters: {gain: 1.0/k_rx}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_fff, cutoff_freq: '2500', width: '1500', win: window.WIN_BLACKMAN}
+- name: keep
+  id: blocks_keep_one_in_n
+  parameters: {type: float, n: '5'}
+- name: save_audio
+  id: blocks_file_sink
+  parameters: {type: float, file: recovered.dat}
+connections:
+- [osc, '0', throttle, '0']
+- [throttle, '0', up5, '0']
+- [up5, '0', fmod, '0']
+- [fmod, '0', save_iq, '0']
+- [fmod, '0', qdemod, '0']
+- [qdemod, '0', lpf, '0']
+- [lpf, '0', keep, '0']
+- [keep, '0', save_audio, '0']
+metadata: {file_format: 1}

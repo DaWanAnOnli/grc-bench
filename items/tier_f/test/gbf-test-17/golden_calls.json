@@ -1,0 +1,19 @@
+{
+ "query_knowledge": {
+  "query": "analog_random_source_x blocks_throttle2 channels_channel_model digital_chunks_to_symbols_xx digital_pfb_clock_sync_xxx pfb_arb_resampler_xxx blocks_file_sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "variable",
+    "instance_name": "spb",
+    "params": {
+     "value": "samp_rate/sym_rate"
+    }
+   }
+  ]
+ }
+}

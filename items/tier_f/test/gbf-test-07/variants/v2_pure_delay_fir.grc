@@ -1,0 +1,34 @@
+options:
+  parameters: {id: fir_delay_alignment, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: lpf_taps
+  id: variable
+  parameters: {value: '[-0.001103, -0.000718, 0.0, 0.001219, 0.002893, 0.004558, 0.00531, 0.004055, 0.0,
+      -0.006774, -0.014889, -0.021649, -0.023511, -0.01703, 0.0, 0.027549, 0.062877, 0.100808, 0.134761,
+      0.158291, 0.166706, 0.158291, 0.134761, 0.100808, 0.062877, 0.027549, 0.0, -0.01703, -0.023511,
+      -0.021649, -0.014889, -0.006774, 0.0, 0.004055, 0.00531, 0.004558, 0.002893, 0.001219, 0.0, -0.000718,
+      -0.001103]'}
+- name: src
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '1500', amp: '0.8'}
+- name: lpf
+  id: fir_filter_xxx
+  parameters: {type: fff, taps: lpf_taps}
+- name: delay_fir
+  id: fir_filter_xxx
+  parameters: {type: fff, taps: '[0.0] * 20 + [1.0]'}
+- name: out_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: out.dat}
+- name: ref_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: ref.dat}
+connections:
+- [src, '0', lpf, '0']
+- [lpf, '0', out_sink, '0']
+- [src, '0', delay_fir, '0']
+- [delay_fir, '0', ref_sink, '0']
+metadata: {file_format: 1}

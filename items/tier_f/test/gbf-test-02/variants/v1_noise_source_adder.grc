@@ -1,0 +1,37 @@
+options:
+  parameters: {id: pll_noise_adder, generate_options: no_gui, output_language: python}
+blocks:
+- name: imp_math
+  id: import
+  parameters: {imports: import math}
+- name: samp_rate
+  id: variable
+  parameters: {value: 32e3}
+- name: f_c
+  id: variable
+  parameters: {value: 2.4e3}
+- name: tone
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: f_c}
+- name: noise
+  id: analog_noise_source_x
+  parameters: {type: complex, amp: '0.7'}
+- name: rx
+  id: blocks_add_xx
+  parameters: {type: complex}
+- name: loop
+  id: analog_pll_refout_cc
+  parameters: {w: 2*math.pi/100, max_freq: 2*math.pi*4e3/samp_rate, min_freq: -2*math.pi*4e3/samp_rate}
+- name: rx_file
+  id: blocks_file_sink
+  parameters: {type: complex, file: received.dat}
+- name: ref_file
+  id: blocks_file_sink
+  parameters: {type: complex, file: carrier.dat}
+connections:
+- [tone, '0', rx, '0']
+- [noise, '0', rx, '1']
+- [rx, '0', rx_file, '0']
+- [rx, '0', loop, '0']
+- [loop, '0', ref_file, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,110 @@
+{
+ "task": "gbf-test-12",
+ "round": 1,
+ "note": "Adversarial review findings (item-quality and compliance lenses) from the 15-17 Oct review round, recovered from the workflow transcripts after the device move. Not yet acted on.",
+ "lenses": {
+  "item-quality": {
+   "reviewed_at_utc": "2026-10-15T06:47:32.788Z",
+   "verdict": "The item is mostly sound but should be revised before the freeze. I found nothing that blocks it. The start graph behaves as described: its 1 kHz output passes a 1 kHz version of the oracle with purity 1.0 and RMS 0.3538. It fails at V6 on the f2p checks only. The instruction states every number the oracle uses and does not give away the solution, which is to retune the filter. The reference and 16 plausible alternative answers pass the ladder, among them the start-scaled design with width 500, cutoffs 2500/4000/5000, a Kaiser window, a band-pass filter, an FFT filter, a sine source, and an added Throttle. Cutoff 5500/width 1000 fails, correctly, because its harmonics are only 36.6 dB down. Every mutant is killed. Two issues are medium. First, the item is a near-twin of gbf-test-08 and gbf-test-01 (same square-to-sine low-pass design, same 0.7854 gain or same 0.5-peak target), and their distinct cluster_ids hide the overlap. Second, the purity check is stricter than the stated tolerances. It rejects pure tones only 0.05 % off 2 kHz, and outputs with a DC above 0.0025 that the instruction allows. The low issues are: no 'keep running / do not limit samples' sentence, although the oracle needs 16384 samples; inconsistent parameter-tune semantics, since the structural variants v2/v3 count here while gbf-dev-05 forbids structural changes; one mutation labelled with the wrong property; and an L1/L2 label the proposal's wording leaves ambiguous. Task: C:\\Users\\Lenovo\\Documents\\!MScAC\\2701\\ml_ops_project\\project\\grc-bench\\items\\tier_f\\test\\gbf-test-12. My test scripts and candidate .grc files are in WSL at ~/grc-bench-work/review/gbf-test-12/ (alts.py, muts.py).",
+   "findings": [
+    {
+     "id": "F1",
+     "severity": "medium",
+     "claim": "This item is a near-twin of two other test items, gbf-test-08 and gbf-test-01, and is close to gbf-test-07. All of them test one skill: low-pass filter a square wave into a clean sine and scale it. Because the cluster_ids differ only in block order, a clustered analysis would count these items as independent.",
+     "evidence": "The gbf-test-12 reference is a GR_SQR_WAVE Signal Source (offset -0.5) -> low_pass_filter (cutoff 1.5f, width 0.5f) -> Multiply Const 0.7854 -> File Sink, with the target '0.5 peak, RMS 0.354 within 5 %, no DC, harmonics down'. The gbf-test-08 reference ('turn a square wave into a clean sine wave') is Square -> Add Const -1 -> low_pass_filter (cutoff 2f, width f) -> Multiply Const 0.7854 -> File Sink. That is the same design and the same pi/4 gain constant. The gbf-test-01 instruction ('makes a clean sine tone from a square wave', 'peak amplitude of 0.5 (an RMS level of about 0.354), within 5 %') has the same amplitude target and a reference of square -> x0.3927 -> low_pass_filter -> File Sink. gbf-test-07 adds a low-pass to a square wave to get a smooth sine. So 3-4 of the 19 test items share this concept. Their cluster_ids are chain:analog_sig_source_x|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink, chain:analog_sig_source_x|blocks_multiply_const_vxx|low_pass_filter|blocks_file_sink and chain:...|blocks_add_const_vxx|low_pass_filter|blocks_multiply_const_vxx|..., all distinct. A model that can solve one of these items can solve the others, so the item outcomes are correlated.",
+     "suggested_fix": "Re-theme this slot. Options: the brief's compass seed with a meaningful twist, or a composed tune task on a different concept, such as retuning a high-pass/DC-removal cutoff, a notch/band-stop, a decimating filter, or AGC/level targets. Alternatively, keep it and give the square-to-sine items a shared concept cluster (for example 'concept:square-to-sine-lpf') so that the clustered statistics and the item-pruning review treat them as one family."
+    },
+    {
+     "id": "F2",
+     "severity": "medium",
+     "claim": "The purity check (band_fraction: one-sided rfft with no window) is stricter than the stated spec. It rejects outputs that meet every stated requirement. It silently demands that the tone sit within about 0.15 Hz of 2000 Hz, although the instruction says 'within 1 %'. It also demands |mean| <= 0.0025, although the instruction says 'within 0.005'.",
+     "evidence": "I ran ./gb ladder with task.json (scripts in ~/grc-bench-work/review/gbf-test-12/alts.py). Pure 0.5-peak sine sources at 2001 Hz, 2010 Hz and 1990 Hz all fail V6 on purity (0.995888, 0.992216, 0.992272 against min 0.9999). A reference-filter square at 2002 Hz also fails (0.990069). The frequency check passes for all of them. Calling oracles.band_fraction directly gives 0.999949 at 2000.1 Hz, 0.999796 at 2000.2 Hz and 0.998873 at 2020 Hz (exactly 1 % off), while a Hann-windowed band power is 1.0 at every one of these frequencies. For DC, a 2 kHz 0.5-peak sine plus a DC of 0.003 has a true in-band power fraction of 0.999928: the DC is 41.4 dB below the tone and the mean is within the stated 0.005. The oracle measures 0.999856 and fails it, because the one-sided rfft counts DC twice relative to the tone. DC 0.004 gives 0.999744 and also fails. So the stated 'mean within 0.005' and 'within 1 %' tolerances are never the binding constraints. Practical risk is low, because natural answers produce exactly 2000 Hz with zero DC (16 plausible answers, including the start-scaled reference, pass with purity 1.0).",
+     "suggested_fix": "Harness option: make band_fraction remove nothing, apply a window (Hann/Blackman-Harris) and use two-sided or properly doubled power, then re-run the gates of every item that uses band_fraction. Item-only option: make the instruction match what the oracle enforces. State the tone frequency as exactly 2 kHz (drop 'within 1 %', or keep the peak_freq check only as a coarse guard), and either tighten the stated DC limit to 0.002 or say that DC counts toward the 0.01 % out-of-band power."
+    },
+    {
+     "id": "F3",
+     "severity": "low",
+     "claim": "Hidden run-length requirement: the oracle needs at least 16384 output samples (observation.run min_items), but the instruction never says the flowgraph must run unbounded. Sibling items state this explicitly.",
+     "evidence": "I added a Head block of 12288 items before the File Sink in the reference. That is enough for the stated 'after the first 4096 samples' plus the 8192-sample window. The answer fails at V5 with \"liveness: an observation point received too few items {'sine': 12288}\". gbf-dev-01, gbf-dev-02 and gbf-test-02 say 'keep running until it is stopped; do not limit the number of samples', and gbf-dev-03, gbf-dev-07 and gbf-test-07 say 'keep running until it is stopped'. The gbf-test-12 instruction has no such sentence.",
+     "suggested_fix": "Append the standard sentence to the instruction: 'The flowgraph should keep running until it is stopped; do not limit the number of samples.'"
+    },
+    {
+     "id": "F4",
+     "severity": "low",
+     "claim": "The parameter-tune family is used inconsistently. This item accepts structural rewrites, and two of its three variants are not tunes. The sibling tune item gbf-dev-05 explicitly forbids structural changes.",
+     "evidence": "v2_cosine_source_no_filter deletes the Low Pass Filter block. v3_add_const_dc_and_filter_gain adds an Add Const block and deletes Multiply Const. Only v1 changes parameter values alone. gbf-dev-05 (parameter-tune) says 'make the change by retuning parameter values only: keep the existing blocks and their connections'. gbf-test-12 says only 'Tune the flowgraph', so the family's grading contract differs between items. Parameter-only alternatives do exist and pass V6: cutoff 2500 / width 500, cutoff 4000 / width 1000, cutoff 5000 / width 1000, cutoff 2200 / width 400, Kaiser window, and the original width 500 with cutoff 3000.",
+     "suggested_fix": "Decide team-wide whether tune tasks allow structural edits, and state that decision in the instruction. If the answer is parameter-only, replace v2/v3 with parameter-only variants, for example cutoff 5000 / width 1000, or a Kaiser window with cutoff 2500 / width 500."
+    },
+    {
+     "id": "F5",
+     "severity": "low",
+     "claim": "One mutation has the wrong 'breaks' label: the lpf width x4 mutant breaks amplitude, not purity.",
+     "evidence": "Running each mutant through the ladder (~/grc-bench-work/review/gbf-test-12/muts.py) gives these values for scale_param lpf.width x4 (breaks='purity'): purity 0.999998 (passes) and RMS 0.279838 (amplitude fails). All the other labels match a check that fails.",
+     "suggested_fix": "Change that mutation's 'breaks' to 'amplitude' in build.py. Optionally add a mutant that really breaks purity alone, for example cutoff 5500 / width 1000: purity 0.999783 with RMS still in tolerance (0.3553)."
+    },
+    {
+     "id": "F6",
+     "severity": "low",
+     "claim": "The level is debatable under the proposal's wording. L1 is '<= 5 blocks, single-rate chain' and L2 lists 'filtering'. This item has 4 functional blocks, but its whole difficulty is FIR filter design.",
+     "evidence": "Proposal section 5.2: 'L1 (<= 5 blocks, single-rate chain), L2 (6-15 blocks, rate changes, modulation/demodulation, filtering)'. To solve the item, the model must place 2 kHz in the passband and push the 6 kHz third harmonic at least 40 dB down. Cutoff 5500 / width 1000 fails purity (0.999783) and cutoff 2000 halves the tone. The L1 label matches the compose.py L1 builders (low_pass) and gbf-test-01/07/08, so this is a team decision, not an authoring error.",
+     "suggested_fix": "Record a team-level rule: either block count alone decides L1/L2, or a chain whose task hinges on filter design counts as L2. Then label this item and its siblings consistently."
+    }
+   ]
+  },
+  "compliance": {
+   "reviewed_at_utc": "2026-10-15T06:51:03.825Z",
+   "verdict": "Mostly holds up; no blocking defect found. I re-ran ./gb tier-f gates and every gate passed, with a gates.json byte-identical to the author's: solvability 10/10, 238 tokens, 3/3 variants, start fails at V6 (f2p fails, p2p passes), 13 valid mutants with kill rate 1.0. build.py run on a scratch copy regenerated task.json, start.grc, reference.grc and all variants byte-identically. The record-level checks all pass: signature_split(signature(reference)) is 'test'; the licence, source, cluster_id, provenance, review, perturbation (false, composed) and disjointness fields are correct; the canary appears only in task.json and not in the rendered prompt. The level is L1 with 4 blocks at a single rate, and id, directory and split agree. Disjointness from the training specs holds. All 13 mutants break a stated requirement and none is equivalent. Plausible model answers pass: cutoffs from 2.2 to 5 kHz, very long filters, Kaiser windows. The naive edit that only changes the frequency fails (RMS 0.0002). What remains: the purity check is stricter than the stated tolerances (frequency and DC); one mutant has the wrong 'breaks' label and no mutant tests the purity check alone; and, outside this task's folder, the L1 signature split has not been handed to the training team. Besides the gate re-run rewriting gates.json with identical content, nothing in the task directory was changed; scratch work is in ~/grc-bench-work/review/gbf-test-12.",
+   "findings": [
+    {
+     "id": "F1",
+     "severity": "medium",
+     "claim": "The instruction allows the tone to be within 1 % of 2 kHz, but the purity check effectively requires about ±0.15 Hz. A clean sine that meets every stated requirement fails V6 if it is not exactly 2000 Hz.",
+     "evidence": "oracles.band_fraction uses a plain FFT with no window, so a tone that is not exactly on an FFT bin leaks power outside 1.9-2.1 kHz. Ladder runs on a clean 0.5-peak cosine: at 2001 Hz the frequency check reads 2000.0 and passes, but purity is 0.995877 and fails. At 2010 Hz purity is 0.99225 and fails. A numpy probe of the same check passes 2000.1 Hz (0.999949) and fails 2000.2 Hz (0.999796). In practice the risk is low, because natural answers set exactly 2000 Hz.",
+     "suggested_fix": "Task-level: say the tone must be exactly 2 kHz (the clock is exactly 2 kHz) and drop 'within 1 %' from the instruction and spec_properties; peak_freq can stay as a sanity check. Harness-level (affects every task using band_fraction, so all would need re-gating): apply a window such as Hann or Blackman-Harris inside band_fraction."
+    },
+    {
+     "id": "F2",
+     "severity": "low",
+     "claim": "The purity check counts DC twice as heavily as other frequencies. As a result, the stated DC tolerance (mean within 0.005) and the stated 99.99 % power criterion are not what the oracle enforces: in practice a mean above about 0.0025 fails.",
+     "evidence": "band_fraction sums squared one-sided FFT bins without doubling the non-DC bins, so DC is over-weighted 2x. Ladder run on a clean 2 kHz cosine (peak 0.5) plus 0.003 DC: the mean is 0.003 (passes the DC check) and the true in-band power share is 0.99993 (meets the stated 99.99 %). The oracle's purity value is 0.999856, so it fails. With 0.0045 DC, purity is 0.999675 and fails. The two stated tolerances also conflict with each other: a mean of 0.005 would itself push the true power share to 0.9998, so the mean check can never be the one that decides. Natural answers have exactly zero mean, so the impact is low.",
+     "suggested_fix": "Fix band_fraction so that real signals use a proper one-sided power spectrum (double every bin except DC and Nyquist). For this task, either tighten the stated mean tolerance to 0.0025 or say that DC counts as power outside the band."
+    },
+    {
+     "id": "F3",
+     "severity": "low",
+     "claim": "Mutation 7 (lpf width x4) has the wrong label: it is tagged 'purity', but purity is not broken. Also, no mutant is caught by the purity check alone, so the mutation set never shows that the purity check is needed.",
+     "evidence": "Per-mutant ladder probe. Mutation 7 gives purity 0.999998 (passes) and is caught only by amplitude (RMS 0.2798, 21 % low). Every mutant that fails purity also fails another check: mutations 0-2 fail frequency, mutations 5 and 6 fail amplitude (RMS 0.3766 and 0.3927), and mutation 11 also fails DC and amplitude. I verified two purity-only mutants. Cutoff 7000 with level x0.94 gives purity 0.8898 (fails) and RMS 0.35397 (passes). Bypassing the LPF with level x0.9 gives purity 0.8211 (fails) and RMS 0.35343 (passes).",
+     "suggested_fix": "Relabel mutation 7 as breaks 'amplitude'. Add a purity-only mutant, for example cutoff_freq 7000 combined with scaling level const by 0.94. This needs a two-step mutation; if edit.apply only takes one operation, make it a single set_param on level const = 0.7383 together with a cutoff mutant expressed in a supported way."
+    },
+    {
+     "id": "F4",
+     "severity": "medium",
+     "claim": "This item's split guarantee assumes the training side avoids test chain signatures. That rule has not been given to the training team, and adding one block (for example a Throttle) already moves the same chain to the training side.",
+     "evidence": "handoff/training_team/flowgraph_seed_split.md tells the training team to use '... or hand-written chains' and never mentions the L1 signature partition. splits/flowgraph_seed_split.json has no signature rule, and no .md, .json or .txt file outside items/ mentions signature_split. The requirement exists only in the src/grcbench/tier_f/compose.py docstring ('Training-side generators must check signature_split(sig) == \"train\"'). Two near-twin chains land on the training side: sig_source|throttle2|low_pass|multiply_const|file_sink and sig_source|low_pass|multiply_const|add_const|file_sink. So a 'square clock -> low-pass -> gain' retune task with one extra block is a permitted training item. This is a project-level gap, not caused by this task.",
+     "suggested_fix": "Outside this task: publish the L1 signature rule and SIGNATURE_SEED in splits/ and in the training handoff. Also add a concept-level exclusion for chains that convert a square clock to a sine with a low-pass filter (and the other concepts of composed test items), so that inserting a Throttle or adding a block does not re-admit them."
+    },
+    {
+     "id": "F5",
+     "severity": "low",
+     "claim": "The narrative says the flowgraph converts a square-wave clock, but nothing checks this. An answer that drops the converter and generates a cosine passes, and the author's own variant v2 does exactly that, so the filter-retuning skill can be bypassed.",
+     "evidence": "variants/v2_cosine_source_no_filter.grc removes the low-pass filter and swaps the square clock for a 2 kHz cosine, and it passes V6. The only observation point is clock_sine.dat. Unlike gbf-dev-05, which watches clock_in.dat, no check confirms the clock is still a square wave. The ladder probe 'cos_2000_exact' also passes.",
+     "suggested_fix": "The team should decide. Either accept it and remove 'turns a square-wave clock into a sine' from what the task claims to measure, or add a clock_in.dat File Sink to the start graph with p2p checks that the clock is still a ±0.5 square wave (RMS 0.5, mean 0, peak frequency 2 kHz). In the second case, replace v2 with a different valid filter design."
+    },
+    {
+     "id": "F6",
+     "severity": "low",
+     "claim": "Nothing checks the stated requirement 'Keep the sample rate at 32 kHz'.",
+     "evidence": "A ladder probe with samp_rate 64000, the source at 4000 Hz and the LPF at cutoff 6000 / width 2000 passes V6 with a frequency of 2000.0 and RMS 0.355495. The oracle assumes fs = 32000, and the output samples are identical, so the requirement cannot be measured. spec_properties does not list it as unchecked.",
+     "suggested_fix": "Note in spec_properties or the authoring notes that the sample-rate constraint cannot be checked. Alternatively, keep it in the instruction only as guidance; no oracle change is possible."
+    },
+    {
+     "id": "F7",
+     "severity": "low",
+     "claim": "Four test items share the same concept (square wave -> low-pass -> clean sine), yet each has its own cluster_id, so clustered error bars will count them as independent. gbf-dev-05 also uses the same 'clock is changing, retune' story.",
+     "evidence": "gbf-test-01 (build: square -> LPF -> 0.5-peak sine), gbf-test-07 (modify: add an LPF to make a sine), gbf-test-08 (repair: square -> clean sine) and gbf-test-12 have different cluster_ids. gbf-test-01's id is chain:sig|mult|lpf|sink and gbf-test-12's is chain:sig|lpf|mult|sink: the same blocks in a different order. gbf-dev-05 reads 'My clock is changing to 600 Hz ... retune'.",
+     "suggested_fix": "Add a concept-level cluster id (for example 'concept:square-to-sine-lpf') shared by gbf-test-01, 07, 08 and 12 and use it for clustering, or vary the concept of one or more of these items."
+    }
+   ]
+  }
+ }
+}

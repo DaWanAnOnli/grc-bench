@@ -1,0 +1,58 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 7
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 397
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "note": "build task: no starting flowgraph",
+   "passed": true
+  },
+  "variants": {
+   "n": 6,
+   "passed": true,
+   "results": {
+    "v1_pack_k_bits.grc": [
+     "V6",
+     null
+    ],
+    "v2_invert_packed_bytes.grc": [
+     "V6",
+     null
+    ],
+    "v3_threshold_uchar.grc": [
+     "V6",
+     null
+    ],
+    "v4_constellation_decoder.grc": [
+     "V6",
+     null
+    ],
+    "v5_map_inversion.grc": [
+     "V6",
+     null
+    ],
+    "v6_hard_limiter.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-test-05"
+}

@@ -1,0 +1,38 @@
+{
+ "query_knowledge": {
+  "query": "blocks_stream_mux blocks_throttle2 blocks_vector_source_x blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "blocks_vector_source_x_0:0->blocks_stream_mux_0:0",
+   "blocks_vector_source_x_0_0:0->blocks_stream_mux_0:1"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "blocks_vector_source_x",
+    "instance_name": "frame_header",
+    "params": {
+     "type": "float",
+     "vector": "(-1, -2)"
+    }
+   }
+  ],
+  "update_params": [
+   {
+    "instance_name": "blocks_stream_mux_0",
+    "params": {
+     "lengths": "[2, 4, 3]",
+     "num_inputs": "3"
+    }
+   }
+  ],
+  "add_connections": [
+   "frame_header:0->blocks_stream_mux_0:0",
+   "blocks_vector_source_x_0:0->blocks_stream_mux_0:1",
+   "blocks_vector_source_x_0_0:0->blocks_stream_mux_0:2"
+  ]
+ }
+}

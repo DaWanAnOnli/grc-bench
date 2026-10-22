@@ -1,0 +1,33 @@
+options:
+  parameters: {id: sync_detect_v3, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: bytes_src
+  id: blocks_vector_source_x
+  parameters: {type: byte, vector: '(0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0,
+      0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0,
+      0, 1, 1, 1, 0, 0, 0, 0, 1, 0)'}
+- name: to_float
+  id: blocks_uchar_to_float
+  parameters: {}
+- name: bits_file
+  id: blocks_file_sink
+  parameters: {type: float, file: bits.dat}
+- name: fir
+  id: fir_filter_xxx
+  parameters: {type: fff, taps: '[1, -1, -1, -1, -1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, 1]'}
+- name: thr
+  id: blocks_threshold_ff
+  parameters: {low: '7.5', high: '7.5'}
+- name: flags_file
+  id: blocks_file_sink
+  parameters: {type: float, file: flags.dat}
+connections:
+- [bytes_src, '0', to_float, '0']
+- [to_float, '0', bits_file, '0']
+- [to_float, '0', fir, '0']
+- [fir, '0', thr, '0']
+- [thr, '0', flags_file, '0']
+metadata: {file_format: 1}

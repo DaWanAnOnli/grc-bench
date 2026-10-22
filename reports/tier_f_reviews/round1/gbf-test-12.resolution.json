@@ -1,0 +1,87 @@
+{
+ "task": "gbf-test-12",
+ "action": "retheme",
+ "rethemed": true,
+ "new_theme": "PARAMETER-TUNE L1 Channel Model impairments: at 48 kHz a complex +3 kHz tone (amplitude 0.5) -> tx.dat and -> Channel Model -> rx.dat; the user wants a +600 Hz carrier offset and 20 dB SNR (tone power / total noise power over 48 kHz), channel gain and tx unchanged, parameter values only. Answer: freq_offset 0.0125, noise_voltage 0.05 (noise power = v^2, verified on GNU Radio 3.10.12). V6 f2p: rx peak_freq 3.6 kHz (6 Hz since round 2), band_fraction 3.5-3.7 kHz with Hann between 19 and 21 dB; p2p: rx RMS (amplitude 0.5 +-2 %), tx frequency and RMS, same_blocks_as_start (variables ignore) and same_connections_as_start (isomorphic). v2 signature channel_model|tone (test).",
+ "accepted": [
+  {
+   "id": "item-quality/F1",
+   "change": "Re-themed (fix plan G4): no square-to-sine content left; cluster_id chain:channel_model|tone."
+  },
+  {
+   "id": "item-quality/F2",
+   "change": "Lesson applied: the SNR measure is band_fraction on the complex rx.dat with a Hann window (tooling T5); the bounds come from the stated 1 dB tolerance (0.98761-0.99216 incl. the in-band noise share 201/48000). Probes: off-bin tones (offset 0.01245 -> 3597.6 Hz; epsilon 1.001 -> 3603 Hz) and SNR 19.2 / 20.8 dB all pass; a rectangular window would have cost 0.3 dB because the Channel Model drops a few samples. [Superseded in round 2: epsilon 1.001 is no longer accepted (the timing offset is now required to stay at 1.0, G4R-test12-F1), and the frequency tolerance is now 6 Hz on the measured tones (G4R-test12-F2); offset 0.01245 -> 3598 Hz still passes.]"
+  },
+  {
+   "id": "item-quality/F3",
+   "change": "Run sentence (R5) and the window ('one second (48,000 samples) after the first 2,000') stated."
+  },
+  {
+   "id": "item-quality/F4",
+   "change": "Value-only rule (R6) stated in the instruction ('change parameter values only ... adding helper variables is fine') and enforced by p2p graph checks same_blocks_as_start (variables 'ignore', import/note ignored) and same_connections_as_start (isomorphic, tooling T1). All 3 variants are value-only (build.py asserts the graph checks on them); a Rotator + Noise Source + Add rewrite fails both graph checks (probe)."
+  },
+  {
+   "id": "item-quality/F5",
+   "change": "All 16 mutants were run one by one; every 'breaks' label lists the properties whose checks fail (e.g. a wrong offset also empties the SNR band: 'P1/P2')."
+  },
+  {
+   "id": "item-quality/F6",
+   "change": "Resolved by the new content: 4 functional blocks, single rate (epsilon 1), no filter design, so L1 under any reading of the level rule."
+  },
+  {
+   "id": "compliance/F1",
+   "change": "Same resolution as item-quality/F2 (Hann window; off-bin tones within 1 % pass). [Round 2: off-bin tones now pass within 6 Hz, not 1 % (G4R-test12-F2).]"
+  },
+  {
+   "id": "compliance/F2",
+   "change": "The DC double-count was fixed in oracles.band_fraction on 18 Oct (tooling); the new SNR check is on a complex signal (two-sided spectrum, no DC requirement) and was calibrated with the corrected oracle (rule R12)."
+  },
+  {
+   "id": "compliance/F3",
+   "change": "Labels verified per mutant, and the set has SNR-only mutants killed by band_fraction alone (30 dB, 46 dB, 17 dB, 23 dB, 18.5 dB and 21.5 dB SNR)."
+  },
+  {
+   "id": "compliance/F4",
+   "change": "Item part: the v2 signature is plumbing-, order- and gain-invariant, so adding a Throttle no longer moves this function to train (channel_model|tone -> test for the reference and all variants). Set part (publishing the signature rule and the reserved list to the training team) is rule R2's final step, outside this stage's files."
+  },
+  {
+   "id": "compliance/F5",
+   "change": "The transmitted tone is a second observation point (tx.dat) with p2p checks (3 kHz, amplitude 0.5). Probe: moving the source to 3.6 kHz with no channel offset fails the tx check."
+  },
+  {
+   "id": "compliance/F6",
+   "change": "The new instruction does not ask to keep the sample rate; it only states it. Its effect is checked through the tones read at 48 kHz (mutant samp_rate 40000 is killed through tx and rx frequencies); the limit is recorded in review.notes."
+  },
+  {
+   "id": "compliance/F7",
+   "change": "Same resolution as item-quality/F1 (re-themed; v2 functional cluster_id)."
+  }
+ ],
+ "rejected": [],
+ "notes": [
+  "Old content (square-clock low-pass retune) is gone; every finding was a real problem of it and its general concern was re-checked on the new content (above).",
+  "Variants (3, all at V6, value-only): offset as 600/48000 with seed 7; helper variables offset_hz and snr_db; noise voltage from the noise power (+1 %) with seed 0 (a new seed every run). Extra probes passing: GRC export of the reference, renamed Channel Model, import block + math.sqrt expression, seed 1234.",
+  "Known limits in review.notes (updated in round 2): the timing offset is checked as a parameter value (epsilon numerically 1.0); the offset is checked through the two absolute tone frequencies (6 Hz each); the sample rate only through frequencies read at 48 kHz; the taps only through the received level."
+ ],
+ "gates": "ALL PASS (round 2, v3): solvability 10/10, reference 273 tokens, variants 3/3 at V6, start fails at V6, V6 groups {'f2p': False, 'p2p': True}, mutants 20 valid / kill rate 1.0 / 0 survivors / 0 invalid",
+ "round2": {
+  "reviewer_findings": [
+   "G4R-test12-F1-timing-offset-fakes-carrier-offset",
+   "G4R-test12-F2-offset-tolerance-looser-than-stated"
+  ],
+  "accepted": [
+   {
+    "id": "G4R-test12-F1-timing-offset-fakes-carrier-offset",
+    "change": "Reproduced: the reviewer's three probes (epsilon 1.2 with no carrier offset, epsilon '3600/3000', epsilon 1.1 plus 300 Hz) reached V6 on v2 (rx.peak_freq 3600.0, band_fraction 0.99011). A pure tone cannot tell a sample-clock offset from a carrier offset, so the requirement is now stated and checked as a value: the instruction adds 'Only the carrier is offset: the receiver's sample clock stays in step with the transmitter's, so keep the Channel Model's timing offset (Epsilon) at 1.0' (the fix plan's clause), and a p2p graph check block_present channels_channel_model params {epsilon: '1.0'} (P7; numeric comparison, so '1' and '1.00' pass) enforces it. New mutants: epsilon 1.2 (killed by P7, P1, P2) and the near miss epsilon 1.001 (rx at 3603 Hz, inside the frequency tolerance, killed by P7 alone). The two-parameter fakes cannot be single-edit mutants, so build.py's NEGATIVE_PROBES asserts that the three reviewer fakes fail exactly the timing check; re-run through ladder.check on v3 they now stop at V6 with only P7 failing. Epsilon 1.001 is removed from the accepted alternatives in the round-1 entries, and review.notes limit (1) is rewritten. Not adopted from the suggested fix: 'and its single tap'. The level requirement (P3) already covers the taps behaviourally, and a taps value check would reject equivalent spellings: the reviewer's own probe t12_expr_samp_rate_taps_list (taps '[1.0]') passes and must keep passing. Recorded as limit (5)."
+   },
+   {
+    "id": "G4R-test12-F2-offset-tolerance-looser-than-stated",
+    "change": "Reproduced: offsets of 576, 624, 564 and 636 Hz (probes t12_offset_rounded_0p012/0p013, t12_offset_1pct_low_3564, t12_offset_6pct_high_636) reached V6 with P1 at 3600 +- 36 Hz. Took option (a), with the wording of (b) so that the instruction and the oracle agree exactly. The instruction now says 'The tone frequencies measured in rx.dat and tx.dat must be within 6 Hz (1 % of the offset) of +3.6 kHz and +3 kHz respectively', and P1 (rx) and P4 (tx) use tol 6 Hz (peak_freq has 1 Hz bins over 48,000 samples and the comparison is inclusive, so offsets of about 593.5-606.5 Hz pass). All four probes now fail P1 alone. Mutants: 0.012 (576 Hz) and 0.013 (624 Hz), plus the near miss 0.01265 (607 Hz, +1.2 %), which replaces 0.0134 (643 Hz). Still passing: 0.01245 (598 Hz), 0.01262 (606 Hz), 0.01263 (606.2 Hz, rounds to the 3606 Hz bin). Residual, recorded as review.notes limit (2): the offset is checked through the two absolute tone frequencies, so it could be up to 12 Hz off only if the source were detuned within 6 Hz, which the instruction forbids ('tx.dat must stay as it is'). A direct rx-minus-tx check would need an oracle feature outside this stage's files."
+   }
+  ],
+  "rejected": [],
+  "other_changes": "Version 2 -> 3 (instruction and oracle changed). Mutation 'breaks' labels were re-verified one by one against the failing checks; the bypass mutant's label now includes P7, because edit.bypass deletes the Channel Model. The reference, start and variant .grc files are byte identical to v2; only build.py and task.json changed.",
+  "probes": "All 14 reviewer probes in ~/grc-bench-work/review/g4/probes/t12_* were re-run through ladder.check on v3. The 7 that the findings call invalid (3 epsilon fakes, 4 off-tolerance offsets) fail at V6. The 7 valid ones reach V6: expressions with taps '[1.0]', the two GRC full exports, offset in Hz over 48k with epsilon unchanged, seed -1, SNR 19.2 and 20.8 dB. Extra probes that also reach V6: epsilon spelled '1', and epsilon '1.00' with taps '[1.0]'.",
+  "gates": "ALL PASS: solvability 10/10, reference 273 tokens, variants 3/3 at V6, start fails at V6 (f2p False, p2p True), mutants 20 valid / kill rate 1.0 / 0 survivors / 0 invalid"
+ }
+}

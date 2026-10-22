@@ -1,0 +1,39 @@
+{
+ "group": "g3",
+ "tasks": [
+  "gbf-dev-04",
+  "gbf-test-05",
+  "gbf-test-10"
+ ],
+ "reviewer": "Claude (Anthropic), round-2 verify agent, 18 Oct 2026",
+ "verdict": "I found three medium problems (two in gbf-test-05, one in gbf-dev-04). gbf-test-10 had no high or medium problems left. I re-ran the gates myself on scratch copies (~/grc-bench-work/review/g3/gates_copy) so the task directories stayed untouched. All three tasks pass every gate, and the new gates.json files match the committed ones key for key. I ran every build.py in a mirrored scratch repo (~/grc-bench-work/review/g3/repo); they regenerate task.json, reference.grc, start.grc and every variant byte-identically, with LF line endings. The canary appears only in task.json. Split, cluster_id, licence, source, provenance, review and perturbation fields are consistent with the rest of the set. Disjointness from the training specs holds (nearest specs: 06_query_knowledge_multiply and t02_qpsk_ber_chain), and no other first-set task is a near-duplicate. dev-04's start graph fails at V3 because lo_freq is not defined, and test-10's at V2 because the block id filter_high_pass_filter is unknown. For test-10, every accepted round-1 finding is really fixed. I re-ran the round-1 shortcuts: bypassing the filter with the tone offset at 0 fails (src mean, path, block_present), Add Const -0.75 fails the path check, and 48 kHz with an 1800 Hz tone fails block_present. Cutoff 1000 and a 300-6000 Hz band-pass pass, as the context-only wording intends. No hum source was added. The fixer rejected no findings, so there were no rejections to challenge. For the two re-themed tasks, both lenses found the problems below. For test-05 I also confirmed the fixer's open item: in GNU Radio 3.10.12, Unpacked to Packed fails V3 (\"name 'gr' is not defined\") in real GRC behaviour. It is documented for the team, so I do not report it separately. Probe scripts and their results are in ~/grc-bench-work/review/g3/ (probe_g3.py, probe_g3_fix.py, probe_g3_t05fix.py, probe_g3_t10.py, probes/*.grc and *.json).",
+ "findings": [
+  {
+   "id": "G3-test05-precomputed-shortcut",
+   "task": "gbf-test-05",
+   "lens": "item-quality",
+   "severity": "medium",
+   "claim": "The instruction says 'do not store precomputed bits or bytes' (spec property decided_in_flowgraph), but the oracle does not enforce it. The decision-path graph check counts pure type converters (blocks_float_to_char, blocks_float_to_uchar, blocks_float_to_short, blocks_float_to_int) as decision blocks. So a float Vector Source holding the precomputed answer, followed by a converter, passes V6. The resolution's claim that the hard-coded shortcut is blocked holds only for a byte-typed source.",
+   "evidence": "I ran ladder.check with the task's own task.json (probe_g3.py; files in ~/grc-bench-work/review/g3/probes). (a) test05_shortcut_float_bytes_to_char.grc is a Vector Source (float) [-76, 46, -39, 99] -> Float To Char -> File Sink bits.dat (byte). Result: highest V6, first_failed None, both equal_prefix checks true, path check 'path found'. (b) test05_shortcut_float_bits_to_uchar_pack.grc is the 32 precomputed 0/1 bits as floats -> Float To UChar -> Pack K Bits(8) -> File Sink. Result: also V6 pass. Neither graph uses the soft values or makes any decision.",
+   "suggested_fix": "Remove the four blocks_float_to_* ids from the path check's via_ids, since a type conversion is not a decision. I checked this with probe_g3_t05fix.py: the reference and all 5 variants still pass (v3's path runs through blocks_threshold_ff), and both shortcuts fail the path check. Add the two shortcut graphs as build.py probes, correct the resolution and review.notes, and keep documenting the remaining limit (a real decision block plus hard-coded data)."
+  },
+  {
+   "id": "G3-test05-level",
+   "task": "gbf-test-05",
+   "lens": "item-quality",
+   "severity": "medium",
+   "claim": "The task is labelled L1, but the proposal's own definitions make it L2. Proposal 5.2 defines L1 as '<= 5 blocks, single-rate chain' and lists 'rate changes, modulation/demodulation' under L2. The reference packs bits 8:1 with Repack Bits (1 -> 8), a rate change, and the hard-decision BPSK demapper is a demodulation step. The fix plan's proposed rule R7 ('L2 = ... any rate change or modulation/demodulation') also gives L2. The fixer flagged this but kept L1 to follow the brief, so the coverage grid's 'test build L1' cell holds an item that is not L1 by any definition on record.",
+   "evidence": "Methodology_Proposal_to_7Dec.txt line 83: 'L1 (≤ 5 blocks, single-rate chain), L2 (6–15 blocks, rate changes, modulation/demodulation, filtering)'. The instruction itself says 32 soft values give 4 bytes (8:1). reference.grc uses blocks_repack_bits_bb, and variants v1, v2 and v3 use blocks_pack_k_bits_bb (k=8); both are decimating packers. task.json review.notes admits that under R7 'the 8:1 bit packing is a rate change and the slicer a demodulation step, which would make it L2'.",
+   "suggested_fix": "Relabel the task as L2. The test 'build L1' cell keeps gbf-test-01 to -04, and 'build L2' gains a third item. Alternatively, drop the packing (write one decision bit per byte: a 4-block single-rate chain) and get the team's R7 ruling on whether a slicer counts as demodulation. Dropping the packer would also remove the Unpacked-to-Packed V3 trap (probe test05_unpacked_to_packed_no_import fails at V3 with \"name 'gr' is not defined\")."
+  },
+  {
+   "id": "G3-dev04-band-fraction-tolerance",
+   "task": "gbf-dev-04",
+   "lens": "item-quality",
+   "severity": "medium",
+   "claim": "The instruction allows the IF to be '2 kHz (within 1 %)' and requires only that everything else be at least 40 dB below the IF tone. The sum_product_removed check (band_fraction 1.9-2.1 kHz >= 0.9999 over n = 9600 samples, no window) uses a rectangular window with 5 Hz bins. Any pure IF tone that is not on a multiple of 5 Hz leaks more than 1e-4 of its power outside ±100 Hz and fails. In practice the oracle requires the IF to sit on the 5 Hz grid, not within 1 %, and it reports the failure as a sum-product leak when the output has none.",
+   "evidence": "I ran ladder.check with the task.json on the reference with only lo_freq changed (probe_g3.py). lo_freq 8699 (IF 2001 Hz, 0.05 % off): band_fraction 0.996593, V6 fail. 8701: 0.99659, fail. 8697.5 (IF 2002.5 Hz): 0.990093, fail. On-grid 8690 and 8710 (IF 2010 and 1990 Hz): 1.0, pass. In every case peak_freq, rms and the rf checks pass. The oracles.py docstring itself recommends a window for tones that do not sit on an FFT bin. Natural answers (8.7 or 12.7 kHz) are on the grid, so few real answers are affected, but the stated tolerance is not what is graded.",
+   "suggested_fix": "Add \"window\": \"blackman\" (or \"hann\") to the band_fraction check. I checked this with probe_g3_fix.py: the reference, all 4 variants and the off-grid IFs (lo_freq 8699, 8697.5, 8680.3, 8720) give 1.0 and pass. The bypassed-LPF mutant (0.5) and the 18.8 kHz near-miss mutant (0.999783) still fail. Update spec_properties and the build.py calibration comment to match."
+  }
+ ]
+}

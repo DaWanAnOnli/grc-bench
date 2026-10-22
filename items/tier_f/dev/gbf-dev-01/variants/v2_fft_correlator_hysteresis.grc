@@ -1,0 +1,29 @@
+options:
+  parameters: {id: sync_detect_v2, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: v
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '[0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0,
+      0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0,
+      0, 1, 1, 1, 0, 0, 0, 0, 1, 0]'}
+- name: b
+  id: blocks_file_sink
+  parameters: {type: float, file: bits.dat}
+- name: xc
+  id: fft_filter_xxx
+  parameters: {type: fff, taps: '[1, -1, -1, -1, -1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, 1]'}
+- name: th
+  id: blocks_threshold_ff
+  parameters: {low: '7.2', high: '7.8'}
+- name: f
+  id: blocks_file_sink
+  parameters: {type: float, file: flags.dat}
+connections:
+- [v, '0', b, '0']
+- [v, '0', xc, '0']
+- [xc, '0', th, '0']
+- [th, '0', f, '0']
+metadata: {file_format: 1}

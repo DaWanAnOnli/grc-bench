@@ -1,0 +1,25 @@
+{
+ "query_knowledge": {
+  "query": "analog_random_source_x digital_gmsk_mod blocks_throttle2 channels_impairments analog_quadrature_demod_cf blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "digital_gmsk_mod_0",
+    "params": {
+     "samples_per_symbol": "12",
+     "bt": "0.3"
+    }
+   },
+   {
+    "instance_name": "analog_quadrature_demod_cf_0",
+    "params": {
+     "gain": "samp_rate/(2*math.pi*1000)"
+    }
+   }
+  ]
+ }
+}

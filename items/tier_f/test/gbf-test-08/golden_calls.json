@@ -1,0 +1,13 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_multiply_conjugate_cc blocks_complex_to_arg blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_connections": [
+   "analog_sig_source_x_0:0->blocks_multiply_conjugate_cc_0:1"
+  ]
+ }
+}

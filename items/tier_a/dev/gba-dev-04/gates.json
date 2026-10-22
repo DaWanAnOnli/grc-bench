@@ -1,0 +1,46 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V3: Connection (\n\tBlock - mf - Moving Average(blocks_moving_average_xx)\n\t\tSource - out(0)\n\tBlock - mf_out - File Sink(blocks_file_sink)\n\t\tSink - in(0)\n):\n\tSource IO type \"float\" does not match sink IO type \"complex\".; Connection (\n\tBlock - mf - Moving Average(blocks_moving_average_xx)\n\t\tSource - out(0)\n\tBlock - mf_out - File Sink(blocks_file_sink)\n\t\tSink - in(0)\n):\n\tSource IO size \"4\" does not match sink IO size \"8\".",
+    "blocks_present[1]: 0 matching block(s) []; candidates: [\"mf_out (enabled): type='complex'\", \"nrz_out (enabled): file='nrz.dat'\"]"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V6: mf rms = 1.63936; mf max = 2.0; mf min = -2.0",
+      "blocks_present[0]: 0 matching block(s) []; candidates: [\"mf (enabled): scale='0.25' (0.25) vs 0.125\"]"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "5087279d85e05332e8569fae76a3c650f730153084bbaa564cad00768b5d5455",
+ "passed": true,
+ "task": "gba-dev-04"
+}

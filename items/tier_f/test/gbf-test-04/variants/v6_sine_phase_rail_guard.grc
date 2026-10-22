@@ -1,0 +1,19 @@
+options:
+  parameters: {id: dac_test_v6, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: src
+  id: analog_sig_source_x
+  parameters: {type: float, waveform: analog.GR_SIN_WAVE, freq: '1250', amp: '0.4', offset: '0.55', phase: '0.7'}
+- name: clamp
+  id: analog_rail_ff
+  parameters: {lo: '0', hi: '1'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: dac_test.dat}
+connections:
+- [src, '0', clamp, '0']
+- [clamp, '0', out, '0']
+metadata: {file_format: 1}

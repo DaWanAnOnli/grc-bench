@@ -1,0 +1,89 @@
+{
+ "task": "gbf-test-13",
+ "round": 1,
+ "note": "Adversarial review findings (item-quality and compliance lenses) from the 15-17 Oct review round, recovered from the workflow transcripts after the device move. Not yet acted on.",
+ "lenses": {
+  "compliance": {
+   "reviewed_at_utc": "2026-10-15T07:07:54.439Z",
+   "verdict": "The item mostly holds up, but two fixes are needed before acceptance. I re-ran `./gb tier-f gates` and it reproduces the author's gates.json byte for byte: solvability 10/10, size 397 tokens, 3/3 variants reach V6, and 13/13 mutants reach V5 and all are killed. build.py regenerates task.json, reference.grc and all variants byte-identically in scratch. The schema validates and the canary appears only in task.json. Licence, source, cluster_id, provenance, review, perturbation (false, composed) and id/dir/split are all consistent. Disjointness from reports/reference/training_task_specs.json holds. All 13 mutants break the spec, and the tolerances follow the stated spec rather than run noise. Eleven correct alternative answers I tried pass V6: Hann, Blackman and Kaiser windows, fft_filter, low_pass_2 at 40 and 46 dB, multiplying before the filter, a Throttle in either branch, an extra 48 kHz sink, keep_m_in_n with offset 3, and samp_rate 48e3. Wrong answers such as no decimation, decimating before filtering, or the filter designed at 12 kHz all fail V6. Two things to fix: (1) the instruction does not tell the model to leave the run unbounded, so a correct answer bounded by a Head of 16000 samples fails V5 liveness; sibling items avoid this with an explicit 'do not limit the number of samples' sentence. (2) The test-split signature depends on connection order and covers only one branch: the other branch hashes to dev, and an equivalent solution's chain hashes to train. Minor points: composed L2 is a deviation from the plans for the team to record, the oracle accepts a 15 or 21 kHz interferer, and the tolerance notes and property labels are slightly off.",
+   "findings": [
+    {
+     "id": "F1",
+     "severity": "medium",
+     "claim": "The instruction never says how long the flowgraph must run or that the number of samples must not be limited. The oracle needs at least 4608 items in each file, which is about 18.5k samples of the 48 kHz mix (0.38 s). An otherwise correct answer that adds a Head to bound the run fails V5 liveness. Sibling build items guard against this explicitly; this one does not.",
+     "evidence": "Scratch test ~/grc-bench-work/review/gbf-test-13/alts/q_head_16000.grc is the reference plus blocks_head(num_items=16000) after the adder. Ladder result: highest_passed V4, first_failed V5, 'liveness: an observation point received too few items {aliased: 4000, clean: 4000}'. The same graph with Head 480000 passes V6. GRC's blocks_head default num_items is 1024. task.json observation.run has n_items/min_items 4608, but the instruction text has no duration, sample-count or 'keep running' sentence. Compare gbf-dev-01, gbf-dev-02, gbf-test-02 and gbf-test-04, which all say 'The flowgraph should keep running until it is stopped; do not limit the number of samples.' Eval plan §5.4 (two-person review) says everything needed to solve the task must be in the instruction.",
+     "suggested_fix": "Append the standard sentence to INSTRUCTION in build.py: 'The flowgraph should keep running until it is stopped; do not limit the number of samples.' Then rebuild and re-run the gates."
+    },
+    {
+     "id": "F2",
+     "severity": "medium",
+     "claim": "The split and cluster assignment is fragile for this branched graph. compose.signature only walks a linear chain and keeps the last outgoing connection of each block. The recorded test-split signature therefore depends on the order of the two 'mix' connections in the file and leaves out the keep-1-in-4 branch. That branch's signature, which you get by simply listing the connections the other way round, belongs to dev. An equivalent solution's chain signature belongs to train. So the training-side composer may legitimately generate a near-twin of this task's filtered branch.",
+     "evidence": "Run in WSL with grcbench.tier_f.compose. signature(reference) = (sig_source, add, low_pass_filter, multiply_const, file_sink) -> test. The same reference with the two mix->* connections reversed gives (sig_source, add, keep_one_in_n, file_sink) -> dev. Variant v1 (two tones, add, decimating fir_filter_xxx, file_sink) gives signature (analog_sig_source_x, blocks_add_xx, fir_filter_xxx, blocks_file_sink) -> train. The decimate-then-filter chain (sig, add, keep_one_in_n, low_pass_filter, multiply_const, file_sink) -> train. compose.py documents signatures for 'Programmatic L1 chains' ('Block ids along the chain from source to sink'), not for branched L2 graphs. build.py only asserts the split of the one path the walker happens to take.",
+     "suggested_fix": "Team decision. Define an order-independent signature for branched composed graphs, such as the sorted multiset of (src block id -> dst block id) edges or the set of all source-to-sink paths, and require none of them to fall in train. At minimum, record both branch signatures in task.json, assert in build.py that neither is train, and note in disjointness that a tone-plus-interferer decimating-FIR chain may be generated on the training side."
+    },
+    {
+     "id": "F3",
+     "severity": "low",
+     "claim": "A composed (hand-written) L2 item is outside the sources the plans declare. Eval plan §4.3 lists only GNU Radio examples, community flowgraphs and 'simple hand-written L1 chains'. The approved plan, Phase 3, says 'L2 (from converted examples)'. The slot brief asked for a composed L2, so this is a plan deviation for the team to record rather than an authoring error.",
+     "evidence": "p1_Benchmark_Evaluation_Plan_to_7Dec.txt line 110: 'Sources. The ~80 example flowgraphs ..., permissively licensed community flowgraphs, and simple hand-written L1 chains.' take-a-look-at-cozy-crescent.md line 172: 'Both L1 (from the deterministic composer of <= 5-block single-rate chains) and L2 (from converted examples).' task.json has source.kind 'composed_chain' and level 'L2'. gbf-dev-06, gbf-test-14, gbf-test-18 and gbf-test-20 do the same.",
+     "suggested_fix": "Have the team either amend the eval plan §4.3 source list and the approved plan to allow composed L2 graphs, or note the deviation in review.notes and the team review sheet."
+    },
+    {
+     "id": "F4",
+     "severity": "low",
+     "claim": "P1 ('a 9 kHz interferer') is checked only modulo the 12 kHz output rate. An answer with the interferer at 15 kHz or 21 kHz also folds to 3 kHz in aliased_12k.dat, lies in the filter stopband for clean_12k.dat, and passes every V6 check.",
+     "evidence": "Scratch tests alts/wrong_interferer_15k.grc and alts/wrong_interferer_21k.grc (the reference with interferer freq 15000 and 21000) both reach V6 and pass: aliased peak 3000.0, tone share 0.2, RMS 0.790569; clean peak 1500.0, RMS 0.564748, band_fraction 1.0. Mutant 12 (interferer 7 kHz) is killed only because 7 kHz folds to 5 kHz.",
+     "suggested_fix": "Low-probability error, so documenting it is probably enough. Add a note to spec_properties/review.notes that the interferer frequency is verified only as folding to 3 kHz. The single n_items per task prevents a 48 kHz tap without the starvation the author describes."
+    },
+    {
+     "id": "F5",
+     "severity": "low",
+     "claim": "Tolerance documentation and property labels are slightly off. build.py says the tone-share tolerance 0.2 +- 0.02 equals an amplitude ratio of 0.5 +- 5 %, but it actually allows about +6.2 %/-6.3 %. The instruction states no tolerances at all, unlike sibling items that say 'within 5 %'. The checks that enforce P2's 'no filter, no scaling' (aliased band_fraction and RMS) are labelled only 'P1'.",
+     "evidence": "band_fraction s = r^2/(1+r^2). s = 0.22 gives r = 0.531 (+6.2 %); s = 0.18 gives r = 0.4685 (-6.3 %). build.py design note: 'tone power share in the naive branch 0.2 +- 0.02 (= tone/interferer amplitude ratio 0.5 +- 5 %)'. task.json oracle: the aliased band_fraction and rms checks have property 'P1'; only the aliased peak_freq carries 'P1, P2'.",
+     "suggested_fix": "Either tighten the tone-share tolerance to about 0.017 or correct the note to read '+-6 %'. Optionally add 'within 1 %' / 'within 5 %' wording to the instruction as sibling items do. Label the aliased band_fraction and rms checks 'P1, P2'."
+    }
+   ]
+  },
+  "item-quality": {
+   "reviewed_at_utc": "2026-10-15T07:08:10.831Z",
+   "verdict": "Mostly sound, but two medium issues should be fixed before the team accepts it. What works: the instruction is clear and self-contained. Every number the oracle uses is stated (48 kHz, 1.5 kHz at 0.5, 9 kHz at 1.0, 12 kHz output, 3 kHz alias, ×1.6 giving 0.8, 40 dB). Both File Sinks are named with their item type. Level L2 (8 functional blocks, rate change and filtering) and family \"build\" are correct. The disjointness claim holds against reports/reference/training_task_specs.json. The reference signature hashes to test. I tried 12 plausible correct alternatives and all reach V6: FFT filter, firdes.low_pass_2 at 40 dB, Hann, Kaiser beta 3.4, default Kaiser, a two-stage 2x2 decimator, separate sources per branch, a Throttle, an extra 48 kHz sink, scaling before the filter, absolute file paths, and a 1 s Head. So no valid answer is wrongly rejected on behaviour. The problems: (1) the oracle never checks the stated filter design (3 kHz cutoff, 1 kHz transition, filtering before decimation). Cutoffs of 5, 6, 7, 7.5 and 8 kHz pass, and 6-8 kHz is at or above the 6 kHz Nyquist of the output. So does \"decimate first, then low-pass at 12 kHz\", the very mistake the task claims to demonstrate. (2) There is an unstated run-length requirement: a flowgraph capped at 4096 samples per file follows the instruction but fails V5 liveness. Minor issues: for one plausible wrong answer the rung at which it fails changes from run to run; variant v1 does not follow the instruction's stated structure; the split signature ignores the keep-1-in-4 branch. Scratch evidence: WSL ~/grc-bench-work/review/gbf-test-13/*.grc; scripts in C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\C--Users-Lenovo-Documents--MScAC-2701-ml-ops-project-project\\e3a3c780-e6be-4b4a-8abe-931944b53353\\scratchpad\\rev13_*.py. I did not edit the task.",
+   "findings": [
+    {
+     "id": "F1-unchecked-filter-design",
+     "severity": "medium",
+     "claim": "The instruction requires a specific anti-aliasing design: a low-pass FIR that decimates by 4, cutoff 3 kHz, transition width 1 kHz. The oracle checks none of this. It only checks that the 1.5 kHz tone passes at the right level and the single 9 kHz tone is 40 dB down. So it accepts filters with the wrong cutoff, including cutoffs at or above the 6 kHz Nyquist of the 12 kHz output (which are not anti-aliasing filters). It also accepts filtering after decimation, the exact mistake the task says it demonstrates, as long as the cutoff is also moved. The 13/13 mutation kill rate overstates the oracle: the only cutoff mutant is the gross 10 kHz one, and the near-miss mutants survive.",
+     "evidence": "I ran ./gb ladder via grcbench.tier_f.ladder.check with task.json on reference edits in ~/grc-bench-work/review/gbf-test-13. These all reach V6 and pass all 6 checks: w_cut5000, w_cut6000, w_cut7000, w_cut7500, w_cut8000 (lpf cutoff_freq changed; clean band_fraction 0.999995-1.0, clean rms 0.5653-0.5662). Also w_resamp_default_taps (rational_resampler_xxx with decim 4 and GRC default taps, ignoring both the cutoff and the width): band_fraction 1.0, rms 0.5657. Also w_filter_after_decim_cut2000 (mix -> Keep 1 in 4 -> non-decimating low_pass_filter at samp_rate/4 with cutoff 2000, width 1000 -> x1.6): rms 0.5384 (inside the 5% band), band_fraction 0.999966. Only these fail: w_cut1800 (rms 0.474), w_width4000 (rms 0.505), w_width5000_cut5500 (band_fraction 0.99984), and filter-after-decimation with the stated 3 kHz cutoff (w_filter_after_decim_cut3000: peak 3000 Hz). The 9 kHz interferer folds to 3 kHz, well clear of the 1.5 kHz tone, so filtering after decimation can also remove it.",
+     "suggested_fix": "Option (a): make the stated design observable. Add a weak probe tone that a 3 kHz / 1 kHz design rejects by at least 40 dB but a cutoff of 5 kHz or more passes, e.g. 4.5 kHz (an exact FFT bin at 12 kHz with n=4096). Add, or swap in, an interferer that folds right next to the wanted tone, e.g. 10.875 kHz -> 1.125 kHz (bin 384), so that only filtering before decimation can remove it. State both tones in the instruction, extend spec_properties and the checks, and add near-miss mutants: cutoff 6000 and 7000, keep-then-filter, and Rational Resampler with default taps. Option (b): drop the cutoff and width numbers from the instruction and state only the behavioural requirement, so the stated spec matches what is checked."
+    },
+    {
+     "id": "F2-hidden-run-length",
+     "severity": "medium",
+     "claim": "There is an unstated requirement: each output file must receive at least 4608 samples, i.e. the flowgraph must not be capped below about 18.5k input samples at 48 kHz. Nothing in the instruction says how long to run or forbids a Head block. A demo that caps its output files is a reasonable reading, yet it fails V5 liveness and gets recorded as a runtime failure.",
+     "evidence": "Reference plus a blocks_head after the adder. h_head_16384 (4096 items per file): first_failed V5, \"liveness: an observation point received too few items {'aliased': 4096, 'clean': 4096}\". h_head_0p25s (int(samp_rate*0.25)): V5, 3000 items each. h_head_1s_48000: V6 pass. The observation contract says 4608 items are read from each file, but that is not in the instruction. Sibling items gbf-dev-01/02/03/07 and gbf-test-02/04/07 all include 'The flowgraph should keep running until it is stopped; do not limit the number of samples.' This item does not.",
+     "suggested_fix": "Add the standard sentence to the instruction: 'The flowgraph should keep running until it is stopped; do not limit the number of samples.' Alternatively, state a minimum duration (e.g. at least 1 s of signal)."
+    },
+    {
+     "id": "F3-nondeterministic-failure-rung",
+     "severity": "low",
+     "claim": "For a plausible wrong answer (unfiltered branch written at 48 kHz without the keep-1-in-4), the rung at which it fails depends on thread timing. It fails at V6 or at V5 liveness from one run to the next. Pass/fail is stable (it always fails), but this item's V5 versus V6 statistics are noisy, and a flowgraph that runs is sometimes counted as 'does not run'. The design notes already acknowledge this.",
+     "evidence": "rev13_rate.py ran r_naive_48k 8 times at 8-way concurrency: V6 fail 5/8; V5 liveness fail 3/8 (clean got 2048 items twice and 4094 once). r_clean_48k (filter decim 1) failed at V6 in 8/8 runs.",
+     "suggested_fix": "Put the known nondeterminism in review.notes so analysts do not read this item's V5 count as runtime failures. Longer term, change the harness tap so that a finished observation point cannot back-pressure a shared upstream block (e.g. vector sinks without Head, stopping once all taps hold enough items). That is a harness change, not an item edit."
+    },
+    {
+     "id": "F4-variant-v1-contradicts-instruction",
+     "severity": "low",
+     "claim": "Variant v1 is presented as a correct solution but does not follow the instruction's explicit structure. Its filter has passband gain 1.6 and there is no x1.6 Multiply, whereas the instruction asks for 'a passband gain of 1' and to 'Multiply the filtered signal by 1.6'. The oracle can only see the product, so 'passband gain 1' is not independently checked (the gain-2 mutant is killed only because the product changes). Similarly, 'cosine' is stated but a sine tone passes.",
+     "evidence": "variants/v1_fir_taps_gain_in_filter.grc: aa_filter taps 'firdes.low_pass(1.6, samp_rate, 3e3, 1e3)', no multiply block; it reaches V6 per gates.json. Scratch w_sine_tone (tone waveform GR_SIN_WAVE) passes V6 with values identical to the reference. v2 and v3 still satisfy the 'at least 2 variants' gate on their own.",
+     "suggested_fix": "Either reword the scaling requirement in behavioural terms (e.g. 'the filtered branch has an overall gain of 1.6, so the wanted tone ends up with amplitude 0.8'), or keep the wording and describe v1 in build.py as a behaviour-equivalent but non-literal answer rather than a correct variant."
+    },
+    {
+     "id": "F5-signature-ignores-branch",
+     "severity": "low",
+     "claim": "The split and cluster_id come from compose.signature, which follows only one source-to-sink path. Which path it follows depends on the order of the YAML connections (the last connection listed out of 'mix' wins), so the keep-1-in-4 branch is invisible. Swapping the two 'mix' connections would give a dev signature for the same graph. Neither path hashes to train, so nothing leaks into training, but the split decision is an artefact of connection order.",
+     "evidence": "compose.signature(reference) = analog_sig_source_x|blocks_add_xx|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink -> test. The other path, analog_sig_source_x|blocks_add_xx|blocks_keep_one_in_n|blocks_file_sink, -> dev (computed with compose.signature_split). In compose.py, succ = {c[0]: c[2] for c in connections}, so for 'mix' the last listed connection, to 'lpf', is followed.",
+     "suggested_fix": "Note in review.notes that the second branch's path hashes to dev, not train. For branching composed graphs, the team could require every source-to-sink path signature to avoid train, or switch to an order-independent whole-graph signature. That is a tool-level decision."
+    }
+   ]
+  }
+ }
+}

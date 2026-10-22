@@ -1,0 +1,100 @@
+options:
+  parameters: {generate_options: no_gui, id: test_corr_est, output_language: python}
+blocks:
+- name: constel
+  id: variable_constellation
+  parameters: {const_points: '[1,-1]', rot_sym: '2', sym_map: '[0,1]', type: calcdist}
+- name: data
+  id: variable
+  parameters: {value: '[0]*4 + numpy.random.RandomState(7).randint(0, 256, payload_size).tolist()'}
+- name: eb
+  id: variable
+  parameters: {value: '0.4'}
+- name: freq_offset
+  id: variable
+  parameters: {value: '0.0005'}
+- name: gap
+  id: variable
+  parameters: {value: '4000'}
+- name: modulated_sync_word
+  id: variable_modulate_vector
+  parameters: {data: preamble, mod: rxmod, taps: '[1]'}
+- name: nfilts
+  id: variable
+  parameters: {value: '32'}
+- name: noise
+  id: variable
+  parameters: {}
+- name: payload_size
+  id: variable
+  parameters: {value: '120'}
+- name: preamble
+  id: variable
+  parameters: {value: '[0x2e, 0xa4, 0xaf, 0x33, 0x1f, 0x22, 0xf1, 0xf7]'}
+- name: rrc_taps
+  id: variable
+  parameters: {value: 'firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), eb, 5*sps*nfilts)'}
+- name: rxmod
+  id: variable
+  parameters: {value: 'digital.generic_mod(constel, False, sps, True, eb, False, False)'}
+- name: samp_rate
+  id: variable
+  parameters: {value: '250000'}
+- name: sps
+  id: variable
+  parameters: {value: '5'}
+- name: time_offset
+  id: variable
+  parameters: {value: '1'}
+- name: blocks_null_source_0_0
+  id: blocks_null_source
+  parameters: {type: complex}
+- name: blocks_stream_mux_0_0
+  id: blocks_stream_mux
+  parameters: {lengths: '((len(preamble)+len(data))*8*sps, gap)', type: complex}
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters: {limit: auto, type: complex}
+- name: blocks_vector_source_x_0_0
+  id: blocks_vector_source_x
+  parameters: {type: byte, vector: preamble+data}
+- name: channels_channel_model_0
+  id: channels_channel_model
+  parameters: {epsilon: time_offset, freq_offset: freq_offset, noise_voltage: noise}
+- name: digital_constellation_modulator_0
+  id: digital_constellation_modulator
+  parameters: {constellation: constel, differential: 'False', excess_bw: eb, samples_per_symbol: sps}
+- name: digital_corr_est_cc_0
+  id: digital_corr_est_cc
+  parameters: {mark_delay: '4', sps: sps, symbols: modulated_sync_word, threshold_method: digital.THRESHOLD_ABSOLUTE}
+- name: digital_costas_loop_cc_0
+  id: digital_costas_loop_cc
+  parameters: {order: '2', w: '0.03'}
+- name: import_0
+  id: import
+  parameters: {imports: import numpy}
+- name: matched_filter
+  id: fir_filter_xxx
+  parameters: {type: ccf, taps: 'firdes.root_raised_cosine(1.0, sps, 1.0, eb, 11*sps)'}
+- name: timing_recovery
+  id: digital_symbol_sync_xx
+  parameters: {type: cc, ted_type: digital.TED_GARDNER, constellation: constel, resamp_type: digital.IR_MMSE_8TAP}
+- name: symbols_sink
+  id: blocks_file_sink
+  parameters: {file: symbols.dat, type: complex}
+- name: freq_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: freq.dat}
+connections:
+- [blocks_null_source_0_0, '0', blocks_stream_mux_0_0, '1']
+- [blocks_stream_mux_0_0, '0', blocks_throttle2_0, '0']
+- [blocks_throttle2_0, '0', channels_channel_model_0, '0']
+- [blocks_vector_source_x_0_0, '0', digital_constellation_modulator_0, '0']
+- [channels_channel_model_0, '0', digital_corr_est_cc_0, '0']
+- [digital_constellation_modulator_0, '0', blocks_stream_mux_0_0, '0']
+- [digital_costas_loop_cc_0, '0', symbols_sink, '0']
+- [digital_costas_loop_cc_0, '1', freq_sink, '0']
+- [digital_corr_est_cc_0, '0', matched_filter, '0']
+- [matched_filter, '0', timing_recovery, '0']
+- [timing_recovery, '0', digital_costas_loop_cc_0, '0']
+metadata: {file_format: 1}

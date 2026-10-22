@@ -1,0 +1,44 @@
+{
+ "task": "gbf-dev-10",
+ "action": "fix",
+ "rethemed": false,
+ "relabel": {},
+ "resolved_by": "Claude (Anthropic), fixer group G8, 18 Oct 2026 (pending team review). Completes an earlier, interrupted G8 run: its build.py and generated files were consistent (byte-identical regeneration), but its gates.json listed a mutant that no longer existed. The changes marked fixer/ below were added in this run.",
+ "accepted": [
+  {
+   "id": "item-quality/F1-v5-tap-stall-misattributes-wrong-repair",
+   "change": "Fixed by tooling T7: observation taps keep the first n_items and then keep consuming, so a full tap no longer stalls a shared upstream block. Verified on this item: the reviewer's wrong repair (Costas loop ahead of a float clock sync, real part only, Float To Complex to symbols.dat) now reaches V6, with 8,192 items at both File Sinks, and fails the carrier checks there (freq.dat mean 0.003142 instead of 0.0157). Before T7 it failed V5 liveness. The item has three observation points and was re-gated after T7."
+  },
+  {
+   "id": "item-quality/F2-structural-wording-unchecked-shortcuts",
+   "change": "Added p2p graph checks: block_present digital_costas_loop_cc (with order 2, see fixer/costas-order-unchecked) and path channels_channel_model -> digital_costas_loop_cc -> blocks_file_sink. These reject the reviewer's full synthesis (Vector Source of symbols plus a Constant Source). The freq-constant shortcut (a Constant Source of 0.0157 into freq.dat, Costas port 1 parked) cannot be rejected by block-level graph checks, which have no port-specific edge check. That is the reviewer's option (b), recorded as known limit (1) in review.notes."
+  },
+  {
+   "id": "item-quality/F3-gap-frequency-tolerance-no-margin",
+   "change": "Option (b): the carrier estimate is measured while a burst is received, as the mean of freq.dat over symbols 300-1000 of bursts 1, 2 and 3, against 2*pi*0.0005*5 rad/symbol within 1 %. The instruction says so. Probes: Costas bandwidth 0.01, 0.25 (rejected under the old gap measurement) and 0.5 now pass, as do clock-sync loop_bw 0.01 and 0.2. The carrier mutants are still killed: no offset, twice the offset, the near miss 1.02x, w 0.0005 and the phase-output tap."
+  },
+  {
+   "id": "item-quality/F4-burst-packet-misalignment-description",
+   "change": "The instruction now describes the stream, not whole packets: the Stream Mux alternates 5,280 samples of the modulator's output with 4,000 zero samples, and each burst after the first starts with the last 27 symbols of one packet and then the first 1,029 of the next. The burst reference is that stream, so the reference scores 0.998 (it was 0.987 against whole packets). The thresholds are stated: correlation >= 0.95 over each burst and over its 64 preamble symbols, a constant rotation and a fixed delay are fine, and RMS below 0.01 over the middle 500 of the 800 silent symbol periods. The preamble is checked in bursts 1, 2 and 3, because the instruction says 'every burst'; before, only burst 2 was checked."
+  },
+  {
+   "id": "compliance/C1-related-test-item-same-faulted-block",
+   "change": "Plan preference applied (fix plan G8 and team_decisions 8): the fault moved from the Polyphase Clock Sync (type fff) to the Null Source that fills the gaps (type float instead of complex, feeding the complex Stream Mux input 1). Fault type type_mismatch and expected rung V3 are kept. The start fails at V3 with exactly the two messages the instruction quotes (verified). Valid repairs pass: Null Source complex (reference), a Float To Complex converter (v1), a Constant Source of complex zeros (v2), plus v3-v5 with other receiver details. The wrong repair 'Stream Mux to float' fails at V3 with four new mismatches. gbf-dev-10 and gbf-test-17 no longer repair the same block. The relation is recorded in review.notes and disjointness of both items; the team may move the fault back."
+  },
+  {
+   "id": "fixer/transmitter-keep-unchecked",
+   "change": "New finding (G8 fixer). The instruction says 'keep the transmitter' and states excess bandwidth 0.4 and bit 0 -> +1. Mutants eb 0.35 (the receiver's matched filter and the Correlation Estimator share eb) and an inverted mapping (constel sym_map [1,0]) passed V6, because the symbol checks are phase-invariant. Fix: an edge tap 'tx' on the Constellation Modulator's output, with a p2p signed corr_ref >= 0.99999 over 4,096 samples against the transmitted waveform. build.py computes the waveform in-process with the same GNU Radio blocks; it is bit-identical to the harness's capture (verified, max difference 0). Measured: eb 0.35 gives 0.99943, eb 0.45 0.99949, eb 0.39/0.41 0.99998, the inverted mapping -1, the reference 1.0. Both mutants were added and are killed. Limit: the edge tap uses the start graph's block name, so a repair that re-creates the modulator under another name fails that observation (review.notes 4)."
+  },
+  {
+   "id": "fixer/costas-order-unchecked",
+   "change": "New finding (G8 fixer): mutant Costas order 4 passed V6 (an order-4 loop still locks on this BPSK signal), although the instruction states an order-2 loop and asks to keep it. Fix: the block_present check carries params {order: 2}; order has no catalog default, so every answer carries it explicitly. The Costas bandwidth is not observable (0.01-0.5 all pass), so the keep sentence now reads 'keep the order-2 Costas loop in the receive chain' instead of keeping the whole loop 'as it is' (rule R4: every keep clause is checked or removed). The mutant was added and is killed."
+  }
+ ],
+ "rejected": [],
+ "notes": [
+  "Mutant list (21, all valid, all killed): wrong tap before the Costas loop; clock sync and modulator samples per symbol; differential coding; eb 0.35; inverted bit mapping; Costas order 4; another payload; the example's preamble; gap 3000; payload 100; sps 4 throughout; a Noise Source as gap source; channel noise 0.05; timing offset 1.002 (variable or literal); carrier offset 0, x2, x1.02; Costas w 0.0005; the phase-output tap. The earlier draft's mutant 'gap input fed from the modulator' is not valid (it crawls and fails V5 liveness), so it was replaced.",
+  "Stated-requirement coverage after the fix: framing, payload, preamble, symbol rate, silence, carrier offset, channel (behaviour plus string-level timing-offset check), transmitter (edge tap), order-2 Costas loop in the chain (graph checks), both File Sinks (observation contract with item types). Documented limits are in review.notes (1)-(5).",
+  "Probe script (scratch, not part of the item): probe_d10.py in the G8 scratchpad."
+ ],
+ "gates": "ALL PASS (18 Oct, after the final change; three observation points, after T7): solvability 10/10 at 8 workers; reference 1,181 tokens; variants 5/5 at V6; start fails at V3 = fault.expected_rung; mutation 21/21 valid, kill rate 1.0, no survivors."
+}

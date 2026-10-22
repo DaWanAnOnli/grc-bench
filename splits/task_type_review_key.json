@@ -1,0 +1,1300 @@
+{
+ "about": "Maps each task-type review-sheet row to the label Claude or the rule map gave it. Do not show to annotators before their labels are returned.",
+ "ambiguous_test": {
+  "n": 11,
+  "order_seed": "grc-bench-labels-blind-order-v1-2026-10-14",
+  "rows": [
+   {
+    "claude_label": "factual",
+    "id": "q_2b87a37b6959d609",
+    "raw": "conceptual",
+    "row": 1
+   },
+   {
+    "claude_label": "reasoning",
+    "id": "q_2c6eb86eb85de6ac",
+    "raw": "compare/choose",
+    "row": 2
+   },
+   {
+    "claude_label": "design",
+    "id": "q_136c02cbaa6f93f2",
+    "raw": "compare_choose",
+    "row": 3
+   },
+   {
+    "claude_label": "factual",
+    "id": "q_49955101180915ca",
+    "raw": "conceptual",
+    "row": 4
+   },
+   {
+    "claude_label": "design",
+    "id": "q_d894b271f89b9bae",
+    "raw": "compare_choose",
+    "row": 5
+   },
+   {
+    "claude_label": "design",
+    "id": "q_8777df476f7a0889",
+    "raw": "compare/choose",
+    "row": 6
+   },
+   {
+    "claude_label": "factual",
+    "id": "q_ec6ec1882a00fd79",
+    "raw": "conceptual",
+    "row": 7
+   },
+   {
+    "claude_label": "factual",
+    "id": "q_c9b703b452e0d9ea",
+    "raw": "conceptual",
+    "row": 8
+   },
+   {
+    "claude_label": "factual",
+    "id": "q_94ce4907a535b5c3",
+    "raw": "conceptual",
+    "row": 9
+   },
+   {
+    "claude_label": "gnuradio_usage",
+    "id": "q_b63bf715bc88d29f",
+    "raw": "conceptual",
+    "row": 10
+   },
+   {
+    "claude_label": "factual",
+    "id": "q_a99b0d73cc717286",
+    "raw": "conceptual",
+    "row": 11
+   }
+  ],
+  "sheet": "handoff/review_sheets/task_type_ambiguous_test.csv"
+ },
+ "spotcheck_train": {
+  "fraction": 0.1,
+  "n": 170,
+  "rows": [
+   {
+    "id": "q_e8ced04f4fd20887",
+    "label": "design",
+    "method": "rule",
+    "raw": "system design",
+    "row": 1
+   },
+   {
+    "id": "q_b528805fb8b16fc4",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 2
+   },
+   {
+    "id": "q_9faffb80191b0aa2",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis_from_symptoms",
+    "row": 3
+   },
+   {
+    "id": "q_79c12573bef15b46",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 4
+   },
+   {
+    "id": "q_8ce4fc09f9bc64a1",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual_knowledge",
+    "row": 5
+   },
+   {
+    "id": "q_41842e91abbc3030",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "debugging",
+    "row": 6
+   },
+   {
+    "id": "q_740ea357b839a67c",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 7
+   },
+   {
+    "id": "q_a7f849abea8ecd7b",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 8
+   },
+   {
+    "id": "q_a54ec7e0cc8f22c2",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 9
+   },
+   {
+    "id": "q_1f28f576c339e422",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "gnuradio_usage",
+    "row": 10
+   },
+   {
+    "id": "q_ae5af05f9341708c",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 11
+   },
+   {
+    "id": "q_87600b3b451f5f84",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "gnuradio_usage",
+    "row": 12
+   },
+   {
+    "id": "q_9878d9c7df18b08e",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 13
+   },
+   {
+    "id": "q_540cc34bca910bcb",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 14
+   },
+   {
+    "id": "q_1e0a2c55d6845368",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 15
+   },
+   {
+    "id": "q_52653002b49fef4c",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "gnuradio_usage",
+    "row": 16
+   },
+   {
+    "id": "q_a15ef1354abf2e6c",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 17
+   },
+   {
+    "id": "q_2c0f3c4544c90463",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 18
+   },
+   {
+    "id": "q_ec85f8886214b0d0",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 19
+   },
+   {
+    "id": "q_0bde0523f4bd352a",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 20
+   },
+   {
+    "id": "q_aed0844881bbadc0",
+    "label": "diagnosis",
+    "method": "classified",
+    "raw": "ask_for_info",
+    "row": 21
+   },
+   {
+    "id": "q_564cb829158240f1",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 22
+   },
+   {
+    "id": "q_6b8b4ff70e817df3",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 23
+   },
+   {
+    "id": "q_2ed78a710337c592",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 24
+   },
+   {
+    "id": "q_2a12c9cde751c06a",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 25
+   },
+   {
+    "id": "q_8a9b62f0a5276ade",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 26
+   },
+   {
+    "id": "q_f7793a7994b08d5f",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 27
+   },
+   {
+    "id": "q_0e87311456c8651b",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 28
+   },
+   {
+    "id": "q_d3e365fb50a6fb32",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 29
+   },
+   {
+    "id": "q_38b999dc3a09aed1",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 30
+   },
+   {
+    "id": "q_28b5c8e71bd7e01f",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 31
+   },
+   {
+    "id": "q_b93d1be0ffd18759",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 32
+   },
+   {
+    "id": "q_69a11f5e4ce23cca",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 33
+   },
+   {
+    "id": "q_159063226a706b5c",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 34
+   },
+   {
+    "id": "q_908025b666c7a0b5",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 35
+   },
+   {
+    "id": "q_4df2e19cdf334c1a",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis from symptoms",
+    "row": 36
+   },
+   {
+    "id": "q_52105719aec691d9",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 37
+   },
+   {
+    "id": "q_d1d48e3ebd919355",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "debugging",
+    "row": 38
+   },
+   {
+    "id": "q_6741edde2bc317e6",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual_knowledge",
+    "row": 39
+   },
+   {
+    "id": "q_d458a0cfbf5d30f2",
+    "label": "design",
+    "method": "rule",
+    "raw": "system design",
+    "row": 40
+   },
+   {
+    "id": "q_9dc67f2f4f223903",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 41
+   },
+   {
+    "id": "q_89392df60621427a",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 42
+   },
+   {
+    "id": "q_4b2d7058cb6b83d1",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 43
+   },
+   {
+    "id": "q_63650ef2fb85be91",
+    "label": "factual",
+    "method": "classified",
+    "raw": "conceptual",
+    "row": 44
+   },
+   {
+    "id": "q_d81d6109477d1216",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 45
+   },
+   {
+    "id": "q_d1c66fccfbc034b4",
+    "label": "design",
+    "method": "classified",
+    "raw": "compare_choose",
+    "row": 46
+   },
+   {
+    "id": "q_03153edc2c5f9abf",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 47
+   },
+   {
+    "id": "q_443946a8ec02123f",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculations",
+    "row": 48
+   },
+   {
+    "id": "q_eb8fbf4de8008f9e",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculations",
+    "row": 49
+   },
+   {
+    "id": "q_d1acc12907e9317a",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 50
+   },
+   {
+    "id": "q_224c019b853d534b",
+    "label": "factual",
+    "method": "classified",
+    "raw": "conceptual",
+    "row": 51
+   },
+   {
+    "id": "q_dc8074db4e4256f8",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 52
+   },
+   {
+    "id": "q_2d63477bad4ae437",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 53
+   },
+   {
+    "id": "q_1bef55548f25bed9",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 54
+   },
+   {
+    "id": "q_40960f3653be80f3",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 55
+   },
+   {
+    "id": "q_80981a404d79d377",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 56
+   },
+   {
+    "id": "q_1066c0867ff97049",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 57
+   },
+   {
+    "id": "q_e17233ee6195be2c",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 58
+   },
+   {
+    "id": "q_04973456169251f2",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 59
+   },
+   {
+    "id": "q_4627229d3eedaeec",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 60
+   },
+   {
+    "id": "q_140b8b2dd724019a",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 61
+   },
+   {
+    "id": "q_832dfa72b12e9557",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 62
+   },
+   {
+    "id": "q_6d0f7499e1e744be",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 63
+   },
+   {
+    "id": "q_adfde2cdc14ab397",
+    "label": "design",
+    "method": "rule",
+    "raw": "system design",
+    "row": 64
+   },
+   {
+    "id": "q_4d1bc1236a11c5a2",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 65
+   },
+   {
+    "id": "q_672bf055ba1b54fd",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 66
+   },
+   {
+    "id": "q_c347b18629748ee0",
+    "label": "design",
+    "method": "rule",
+    "raw": "system design",
+    "row": 67
+   },
+   {
+    "id": "q_5ea94a951999015a",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 68
+   },
+   {
+    "id": "q_541753f486fd1816",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 69
+   },
+   {
+    "id": "q_4dce4cad02df28a1",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 70
+   },
+   {
+    "id": "q_8f5f6d612b1432de",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 71
+   },
+   {
+    "id": "q_56e9f5d801d8a0b3",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "gnuradio_usage",
+    "row": 72
+   },
+   {
+    "id": "q_433c07fbf3fd4e25",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 73
+   },
+   {
+    "id": "q_6ae5eee4379ff250",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 74
+   },
+   {
+    "id": "q_466b87ae853397fe",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "gnuradio_usage",
+    "row": 75
+   },
+   {
+    "id": "q_7567b5734eb0daf1",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 76
+   },
+   {
+    "id": "q_bb495e790c321b8d",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 77
+   },
+   {
+    "id": "q_4d1af9105dc89c50",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 78
+   },
+   {
+    "id": "q_50bb5518b5b67ee2",
+    "label": "reasoning",
+    "method": "classified",
+    "raw": "compare_choose",
+    "row": 79
+   },
+   {
+    "id": "q_897890d7902cc37c",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 80
+   },
+   {
+    "id": "q_b26a9b17d821a179",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 81
+   },
+   {
+    "id": "q_bdc9ec6004176b04",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 82
+   },
+   {
+    "id": "q_07a4ef5c791e7122",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 83
+   },
+   {
+    "id": "q_e83fabbd7a9b60f2",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 84
+   },
+   {
+    "id": "q_077669492b6be5e5",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 85
+   },
+   {
+    "id": "q_4927483ac1133675",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 86
+   },
+   {
+    "id": "q_531ced5e3e02fb50",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 87
+   },
+   {
+    "id": "q_973554db29bbdb0f",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 88
+   },
+   {
+    "id": "q_88a149d7fd788bec",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "gnuradio_usage",
+    "row": 89
+   },
+   {
+    "id": "q_a9ebf3d005b4d6c7",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 90
+   },
+   {
+    "id": "q_fbb13ed4bf699f2c",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 91
+   },
+   {
+    "id": "q_97a478e473a650c2",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 92
+   },
+   {
+    "id": "q_935c26a6d7804641",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 93
+   },
+   {
+    "id": "q_89cd162ed94e07da",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 94
+   },
+   {
+    "id": "q_928846b7cb1b418a",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 95
+   },
+   {
+    "id": "q_9fcd91af9e4c4e92",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 96
+   },
+   {
+    "id": "q_e49a2c3ef426bd5c",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 97
+   },
+   {
+    "id": "q_cd57ca55184d4269",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 98
+   },
+   {
+    "id": "q_44cadfa786558e3d",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "debugging",
+    "row": 99
+   },
+   {
+    "id": "q_f30c132320baa3dc",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 100
+   },
+   {
+    "id": "q_de04770f86cbf332",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 101
+   },
+   {
+    "id": "q_3c90bc2efc659a8e",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 102
+   },
+   {
+    "id": "q_2e51e523144e6a02",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 103
+   },
+   {
+    "id": "q_696b1e2a67563717",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "gnuradio_usage",
+    "row": 104
+   },
+   {
+    "id": "q_98c083984e0742e0",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 105
+   },
+   {
+    "id": "q_54d4149153c3c0a4",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "debugging",
+    "row": 106
+   },
+   {
+    "id": "q_87f73b24850976ca",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 107
+   },
+   {
+    "id": "q_c5eb6aa1afbdf5c6",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 108
+   },
+   {
+    "id": "q_a0725259570d0025",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 109
+   },
+   {
+    "id": "q_d929f63039ae1383",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 110
+   },
+   {
+    "id": "q_f465746681c503d9",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 111
+   },
+   {
+    "id": "q_85463dc7b2bf98e5",
+    "label": "gnuradio_usage",
+    "method": "classified",
+    "raw": "conceptual",
+    "row": 112
+   },
+   {
+    "id": "q_67ff0659bbb14fbc",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 113
+   },
+   {
+    "id": "q_8149278c493f28bc",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 114
+   },
+   {
+    "id": "q_e396d0f2e0a433ad",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 115
+   },
+   {
+    "id": "q_92038b996d555ab5",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 116
+   },
+   {
+    "id": "q_a986dc028cb20ec6",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 117
+   },
+   {
+    "id": "q_edcca9288889d2d7",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 118
+   },
+   {
+    "id": "q_d148de87a3fee472",
+    "label": "diagnosis",
+    "method": "classified",
+    "raw": "information_gathering",
+    "row": 119
+   },
+   {
+    "id": "q_193e37ad7f436a5a",
+    "label": "reasoning",
+    "method": "classified",
+    "raw": "compare/choose",
+    "row": 120
+   },
+   {
+    "id": "q_ff960a86d597df3b",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 121
+   },
+   {
+    "id": "q_2212bc2b1cd9586b",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 122
+   },
+   {
+    "id": "q_632782b7f494ba60",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 123
+   },
+   {
+    "id": "q_fc578468b84b286a",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 124
+   },
+   {
+    "id": "q_e102d93f83a502ca",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 125
+   },
+   {
+    "id": "q_528db0d7f7d9b7cd",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 126
+   },
+   {
+    "id": "q_fd1b70335ee9b114",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 127
+   },
+   {
+    "id": "q_8c3d5d5ee45ade9c",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual",
+    "row": 128
+   },
+   {
+    "id": "q_841f415adffda15f",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 129
+   },
+   {
+    "id": "q_2ae8a6a623a89162",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "debugging",
+    "row": 130
+   },
+   {
+    "id": "q_a09bcaf60eaecda3",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 131
+   },
+   {
+    "id": "q_6b447412baf07dbd",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 132
+   },
+   {
+    "id": "q_1c95b4687d4757f7",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 133
+   },
+   {
+    "id": "q_def2b66e1224753a",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 134
+   },
+   {
+    "id": "q_c78d6d122d1ca257",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 135
+   },
+   {
+    "id": "q_c09c05d5b813d585",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 136
+   },
+   {
+    "id": "q_3a1d4d1f8dc39e80",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 137
+   },
+   {
+    "id": "q_9fcdf7efffba838f",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 138
+   },
+   {
+    "id": "q_db0d3504a9f7ab9c",
+    "label": "reasoning",
+    "method": "classified",
+    "raw": "compare/choose",
+    "row": 139
+   },
+   {
+    "id": "q_c241dd8dd9b94295",
+    "label": "reasoning",
+    "method": "rule",
+    "raw": "reasoning",
+    "row": 140
+   },
+   {
+    "id": "q_c18e9ec762a823af",
+    "label": "factual",
+    "method": "classified",
+    "raw": "compare",
+    "row": 141
+   },
+   {
+    "id": "q_5277969609f8252c",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 142
+   },
+   {
+    "id": "q_90e98b01787b056c",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 143
+   },
+   {
+    "id": "q_6fa6856e217869d3",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 144
+   },
+   {
+    "id": "q_67451b27873066b8",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 145
+   },
+   {
+    "id": "q_a12aaf693a804505",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 146
+   },
+   {
+    "id": "q_6b1a3bc46bc7eb09",
+    "label": "design",
+    "method": "rule",
+    "raw": "design",
+    "row": 147
+   },
+   {
+    "id": "q_674c6dc9f58481e6",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 148
+   },
+   {
+    "id": "q_d848ca962c5ad1a1",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 149
+   },
+   {
+    "id": "q_9245edf97f2bf438",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual knowledge",
+    "row": 150
+   },
+   {
+    "id": "q_196ee2dfb51d7487",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 151
+   },
+   {
+    "id": "q_7a0a9f23f55e639f",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 152
+   },
+   {
+    "id": "q_d08c023245a4a4af",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis",
+    "row": 153
+   },
+   {
+    "id": "q_f696d5b20b82045f",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 154
+   },
+   {
+    "id": "q_0bc6f95c28af5cd3",
+    "label": "calculation",
+    "method": "rule",
+    "raw": "calculation",
+    "row": 155
+   },
+   {
+    "id": "q_c67a5ef4dc4ee80c",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "GNU Radio usage",
+    "row": 156
+   },
+   {
+    "id": "q_8f32f1520e72ed90",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual knowledge",
+    "row": 157
+   },
+   {
+    "id": "q_b6eb81b3acf7bfd4",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual knowledge",
+    "row": 158
+   },
+   {
+    "id": "q_b397d882f983f048",
+    "label": "factual",
+    "method": "rule",
+    "raw": "factual knowledge",
+    "row": 159
+   },
+   {
+    "id": "q_9bef95af0bc61cce",
+    "label": "design",
+    "method": "rule",
+    "raw": "system_design",
+    "row": 160
+   },
+   {
+    "id": "q_a62569cd611b6ba5",
+    "label": "factual",
+    "method": "classified",
+    "raw": "conceptual",
+    "row": 161
+   },
+   {
+    "id": "q_25495cc008bd32b8",
+    "label": "factual",
+    "method": "classified",
+    "raw": "conceptual",
+    "row": 162
+   },
+   {
+    "id": "q_b4ba5434400d07d3",
+    "label": "design",
+    "method": "rule",
+    "raw": "system_design",
+    "row": 163
+   },
+   {
+    "id": "q_97fb31ef7f56f0a2",
+    "label": "design",
+    "method": "rule",
+    "raw": "system_design",
+    "row": 164
+   },
+   {
+    "id": "q_da889f46850bdb94",
+    "label": "factual",
+    "method": "classified",
+    "raw": "conceptual",
+    "row": 165
+   },
+   {
+    "id": "q_b4430b0f92180f8a",
+    "label": "design",
+    "method": "rule",
+    "raw": "system_design",
+    "row": 166
+   },
+   {
+    "id": "q_3121fb3fe73f7a0b",
+    "label": "factual",
+    "method": "classified",
+    "raw": "conceptual",
+    "row": 167
+   },
+   {
+    "id": "q_eb7b0e9855dd0733",
+    "label": "diagnosis",
+    "method": "rule",
+    "raw": "diagnosis from symptoms",
+    "row": 168
+   },
+   {
+    "id": "q_4474e0203a70a87f",
+    "label": "gnuradio_usage",
+    "method": "rule",
+    "raw": "gnu_radio_usage",
+    "row": 169
+   },
+   {
+    "id": "q_723d8480f5988dab",
+    "label": "diagnosis",
+    "method": "classified",
+    "raw": "asking for missing information",
+    "row": 170
+   }
+  ],
+  "seed": "grc-bench-labels-spotcheck-v1-2026-10-14",
+  "sheet": "handoff/review_sheets/task_type_spotcheck_train.csv",
+  "strata": {
+   "GNU Radio usage": 1,
+   "ask_for_info": 1,
+   "asking for missing information": 1,
+   "calculation": 21,
+   "calculations": 2,
+   "compare": 1,
+   "compare/choose": 2,
+   "compare_choose": 2,
+   "conceptual": 7,
+   "debugging": 5,
+   "design": 23,
+   "diagnosis": 10,
+   "diagnosis from symptoms": 2,
+   "diagnosis_from_symptoms": 1,
+   "factual": 15,
+   "factual knowledge": 4,
+   "factual_knowledge": 2,
+   "gnu_radio_usage": 1,
+   "gnuradio_usage": 7,
+   "information_gathering": 1,
+   "reasoning": 53,
+   "system design": 4,
+   "system_design": 4
+  },
+  "stratified_by": "raw task_type spelling (largest remainder; at least one row per spelling)"
+ }
+}

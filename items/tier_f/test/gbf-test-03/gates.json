@@ -1,0 +1,70 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 10
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 235
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "note": "build task: no starting flowgraph",
+   "passed": true
+  },
+  "variants": {
+   "n": 9,
+   "passed": true,
+   "results": {
+    "v1_hpf_lpf_cascade.grc": [
+     "V6",
+     null
+    ],
+    "v2_fir_filter_firdes_hann.grc": [
+     "V6",
+     null
+    ],
+    "v3_fastnoise_blackman.grc": [
+     "V6",
+     null
+    ],
+    "v4_fft_filter_band_pass_2.grc": [
+     "V6",
+     null
+    ],
+    "v5_rectangular_window.grc": [
+     "V6",
+     null
+    ],
+    "v6_kaiser_100hz_fullpath.grc": [
+     "V6",
+     null
+    ],
+    "v7_fft_filter_blackman_harris_100hz.grc": [
+     "V6",
+     null
+    ],
+    "v8_fastnoise_rectangular.grc": [
+     "V6",
+     null
+    ],
+    "v9_hamming_50hz.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-test-03"
+}

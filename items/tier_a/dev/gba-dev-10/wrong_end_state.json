@@ -1,0 +1,6 @@
+{
+ "files": {
+  "export/stream_mux_demo.py": "class stream_mux_demo(gr.top_block):\n    pass\n# blocks.stream_mux(\n",
+  "mux.json": "{\"num_inputs\": 2, \"lengths\": [4, 3]}\n"
+ }
+}

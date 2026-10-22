@@ -1,0 +1,35 @@
+options:
+  parameters: {id: if_tx_v1, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: import_0
+  id: import
+  parameters: {imports: import math}
+- name: symbols
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '(-1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1,
+      -1, -1, 1, 1, -1, 1, 1, 1, -1, 1, -1, 1, -1)'}
+- name: pulse_shaping
+  id: interp_fir_filter_xxx
+  parameters: {type: fff, interp: '8', taps: 'firdes.low_pass(8, samp_rate, 2000, 1000)'}
+- name: to_complex
+  id: blocks_float_to_complex
+  parameters: {}
+- name: upconvert
+  id: blocks_rotator_cc
+  parameters: {phase_inc: 2*math.pi*8000/samp_rate}
+- name: if_sink
+  id: blocks_file_sink
+  parameters: {type: complex, file: if.dat}
+- name: symbol_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: symbols.dat}
+connections:
+- [symbols, '0', pulse_shaping, '0']
+- [pulse_shaping, '0', to_complex, '0']
+- [to_complex, '0', upconvert, '0']
+- [upconvert, '0', if_sink, '0']
+- [symbols, '0', symbol_sink, '0']
+metadata: {file_format: 1}

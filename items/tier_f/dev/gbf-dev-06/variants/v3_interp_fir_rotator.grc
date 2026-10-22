@@ -1,0 +1,50 @@
+options:
+  parameters: {id: ssb_interp_fir, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: fs_audio
+  id: variable
+  parameters: {value: '8000'}
+- name: t1
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: fs_audio, freq: '700', amp: '0.8'}
+- name: t2
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: fs_audio, freq: '2400', amp: '0.5'}
+- name: adder
+  id: blocks_add_xx
+  parameters: {type: float}
+- name: half
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '0.5'}
+- name: snk_audio
+  id: blocks_file_sink
+  parameters: {type: float, file: audio.dat}
+- name: interp
+  id: interp_fir_filter_xxx
+  parameters: {type: fff, interp: '6', taps: 'firdes.low_pass(6, samp_rate, 3500, 1000)'}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {num_taps: '129'}
+- name: rot
+  id: blocks_rotator_cc
+  parameters: {phase_inc: 2*3.141592653589793*10000/samp_rate}
+- name: real
+  id: blocks_complex_to_real
+  parameters: {}
+- name: snk_ssb
+  id: blocks_file_sink
+  parameters: {type: float, file: ssb.dat}
+connections:
+- [t1, '0', adder, '0']
+- [t2, '0', adder, '1']
+- [adder, '0', half, '0']
+- [half, '0', snk_audio, '0']
+- [half, '0', interp, '0']
+- [interp, '0', hilbert, '0']
+- [hilbert, '0', rot, '0']
+- [rot, '0', real, '0']
+- [real, '0', snk_ssb, '0']
+metadata: {file_format: 1}

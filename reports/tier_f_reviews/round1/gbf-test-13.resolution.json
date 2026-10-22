@@ -1,0 +1,59 @@
+{
+ "task": "gbf-test-13",
+ "action": "retheme",
+ "rethemed": true,
+ "new_theme": "Build L2 (test): a baseband-to-IF data transmitter, built in the empty flowgraph at 32 kHz. A Vector Source repeats 32 listed NRZ symbols (a 31-chip m-sequence plus one symbol) at 4 kBd; the symbol stream itself goes to symbols.dat (float, one per symbol); the symbols are interpolated x8 with low-pass pulse shaping and shifted to a complex IF at exactly +8 kHz, written to if.dat (complex). Reference: Repeat 8 -> Low Pass Filter 2 kHz/1 kHz -> Float To Complex -> Multiply by a complex 8 kHz Signal Source -> Throttle -> if.dat. 9 functional blocks, a rate change and upconversion: L2. Signature v2 data_source|filter|mix|resample -> test; cluster_id chain:data_source|filter|mix|resample.",
+ "accepted": [
+  {
+   "id": "compliance/F1",
+   "change": "Applies to the new content (the oracle needs 6144 items at each point). The instruction ends with the set run sentence (R5), and spec_properties has 'run' (V5 liveness at both points)."
+  },
+  {
+   "id": "compliance/F2",
+   "change": "Resolved by signature v2, which is an order-independent set of functional classes covering every enabled block, so branches count and connection order does not matter. build.py asserts that the reference and every variant hash to test, and records their v2 signatures. Reference and variants v1 (interpolating FIR + Rotator), v2 (Rational Resampler) and v4 (interpolating Low Pass Filter + Rotator): data_source|filter|mix|resample. v3 (RRC): data_source|mix|pulse_shaping|resample, also test. review.notes lists the Constellation Modulator form (data_source|linear_mod|mix|pulse_shaping|resample, train) for the reserved-signature list, per R1/R2."
+  },
+  {
+   "id": "compliance/F3",
+   "change": "Still applies (composed L2). The deviation from 'L2 from converted examples' and from eval plan 4.3's source list is recorded in review.notes for the team decision listed in fix_plan team_decisions."
+  },
+  {
+   "id": "compliance/F5",
+   "change": "The specific numbers are moot, but the lesson is applied: every tolerance and window the oracle uses is stated in the instruction (99 % within +-3 kHz, < 0.5 % at negative frequencies, RMS 0.7-1.2, from sample 2048 on, symbols.dat exact from the first symbol), and every check carries its spec-property label."
+  },
+  {
+   "id": "item-quality/F1-unchecked-filter-design",
+   "change": "The specific defect is moot. The lesson is applied: the new instruction states no filter design numbers. It states behavioural requirements only, and each one is checked: the spectral mask (band_fraction), a complex IF (negative-frequency share), the level (RMS range), the exact symbol stream (equal_prefix on symbols.dat), and the IF carrying that stream at 4 kBd on exactly +8 kHz (phase-invariant complex corr_ref >= 0.8 against the reference waveform). Near-miss mutants: low-pass cutoff 4.5 kHz (0.988 in band, fails 0.99), IF 8.1 kHz (corr 0.079), interpolation 4 (corr 0.57), one symbol with the wrong sign (symbols.dat fails)."
+  },
+  {
+   "id": "item-quality/F2-hidden-run-length",
+   "change": "Same as compliance/F1: the R5 run sentence was added."
+  },
+  {
+   "id": "item-quality/F3-nondeterministic-failure-rung",
+   "change": "Resolved by tooling T7 (taps never back-pressure the graph) and verified on the new two-rate design (if.dat at 32 kHz, symbols.dat at 4 kHz). Three wrong answers were each run 8 times at 8-way concurrency: interpolation 4, no Repeat (if.dat at 4 kHz), and symbols.dat taken after the Repeat. All 24 runs failed at V6 (highest V5), with no flips to V5."
+  },
+  {
+   "id": "item-quality/F4-variant-v1-contradicts-instruction",
+   "change": "The old variant is gone. The lesson is applied: all four new variants obey the instruction literally (unit symbols, unity DC gain, complex IF at +8 kHz, 8 samples per symbol, symbols.dat at one float per symbol). The RMS bullet now presents unit symbols, DC gain 1 and LO amplitude 1 as the explanation of the stated RMS range, not as extra unchecked requirements."
+  }
+ ],
+ "rejected": [
+  {
+   "id": "compliance/F4",
+   "reason": "Moot: the item has no interferer any more (re-themed)."
+  },
+  {
+   "id": "item-quality/F5-signature-ignores-branch",
+   "reason": "Moot. Signature v2 counts every enabled block, so the symbols.dat branch is included (see compliance/F2)."
+  }
+ ],
+ "other_changes": [
+  "Why there are two observation points: a numpy study of 21 pulse-shaping designs showed that a correlation on if.dat cannot separate a single wrong symbol (0.918-0.938) from a valid alternative pulse shape (0.926-1.0). The symbol sequence is therefore checked exactly on symbols.dat, and the if.dat correlation is loose (min 0.8). Valid designs score >= 0.93, wrong IF / rate / sequence <= 0.71. Remaining limit, in review.notes: if the IF path were fed from a second, mistyped Vector Source, it would pass.",
+  "Level stated as a range (0.7-1.2), not 'within 5 %': correct unity-DC-gain designs range from 0.73 (Gaussian BT 0.3) to 1.08 (zero-stuffing with a 2.5 kHz cutoff). The range rejects a forgotten interpolation gain (0.12), a filter gain of 8 after Repeat (6.8), an LO amplitude of 0.5 (0.43), a real IF (0.60) and over-smoothing (0.54 at a 700 Hz cutoff).",
+  "band_fraction is only used on the complex if.dat (two-sided spectrum), so the 18 Oct real-signal fix does not affect it. The window holds 16 data periods, so every spectral line is bin-centred.",
+  "Valid alternatives checked through ladder.check beyond the 4 variants: RRC alpha 0.5 and 0.2, Moving Average, Kaiser low-pass, FFT filter, complex-domain low-pass after Float To Complex, sine-wave LO. Wrong answers rejected as intended: real IF, interpolating FIR with gain 1, symbols.dat after the Repeat, 700 Hz over-smoothing, Gaussian pulse too wide for the mask.",
+  "Mutants (13): low-pass bypassed (rectangular pulses), cutoff 4.5 kHz, filter gain 8, LO amplitude 0.5, IF 6 kHz, IF 8.1 kHz, IF -8 kHz, no upconversion, interpolation 4, one symbol flipped, symbols reversed, samp_rate 48000, symbols.dat renamed.",
+  "start_grc stays null (build task, R3); the old start-less directory had no start.grc, and build.py removes a stale one if present."
+ ],
+ "gates": "PASS (18 Oct, ./gb tier-f gates on the final files): solvability 10/10 at 8 workers; size 494 tokens; variants 4/4 reach V6 and pass; start_fails n/a (build task); mutation 13 valid mutants, kill rate 1.0, no survivors. build.py regenerates task.json, reference.grc and all variants byte-identically."
+}

@@ -1,0 +1,69 @@
+{
+ "task": "gbf-dev-01",
+ "action": "retheme",
+ "rethemed": true,
+ "relabel": {},
+ "resolved_by": "Claude (Anthropic), fixer group G1, 18 Oct 2026 (pending team review)",
+ "new_theme": "Build L1 (dev): a sync-word detector on a stated 64-bit test bit stream. A repeating Vector Source plays the bits, which are recorded as float 0/1 in bits.dat. An FIR correlator (taps: the sync word 1110 1011 0010 0001, time-reversed and mapped to +-1) feeds a Threshold at 7.5. The threshold writes 1.0 to flags.dat on the last bit of each error-free copy only. Each period of the stream holds one error-free copy and one copy with one wrong bit. v2 cell: data_source|filter|nonlinear -> dev. cluster_id: chain:data_source|filter|nonlinear. compose.audit_items finds no other item in this cell.",
+ "deviation_from_plan": "The plan's brief built on 'Correlate Access Code - Bit' (digital_correlate_access_code_bb, cell data_source|frame_sync). That block is not in the pinned GNU Radio 3.10.12 GRC catalog. This stage re-checked it in WSL: /usr/share/gnuradio/grc/blocks holds only digital_correlate_access_code_tag_xx ('- Tag') and digital_correlate_access_code_xx_ts ('- Tag Stream'). gnuradio.digital still has a Python class correlate_access_code_bb, but it has no GRC block definition, so a change_graph edit cannot use it, and probe access_code_bb_block fails at V2. The two catalog variants report detections as stream tags or as variable-rate packet payloads, not as a per-bit output. So the item uses the alternative the brief lists: an FIR correlator followed by a threshold, with a float 0/1 flag stream. The planner's pre-check listed that cell as dev and unused. Everything else in the brief is kept: an explicit pattern with one error-free copy and one near-miss copy, no bit errors allowed, exact equal_prefix checks from sample 0 (max_offset 0), a path graph check against a hard-coded output, and mutants for threshold, wrong word, bypass and off-by-one. bits.dat was added as a second observation point. Without it, a flags-only oracle cannot check the stated input: a different input with the same flags (no near-miss copy, plus a detector that allows one error) passes. Probe other_input_lenient shows that it now fails.",
+ "accepted": [
+  {
+   "id": "item-quality/F1-transient-false-negatives",
+   "change": "Moot after the re-theme (no tone and no clean-up filter). The lesson still applies, and holds: a correct detector has no transient in the checked samples. Every 16-bit window that reaches back before the first bit is at least 7 bits from the sync word, verified this stage; check_pattern asserts that the zero-history flags equal the periodic ones. FIR, FFT, IIR and Rail- or Slicer-decision designs all produce identical flags from sample 0 (variants v1-v4; probes iir_as_fir_correlator and binary_slicer_threshold)."
+  },
+  {
+   "id": "item-quality/F2-gain-stage-structure-unchecked",
+   "change": "Moot after the re-theme (there is no gain stage). The lesson is applied: every structural phrase in the new instruction is checked. 'Use a repeating Vector Source' and 'computing the detection inside the flowgraph' are covered by the path graph check (Vector Source -> correlator or custom block -> File Sink), and probe hardcoded_flags fails it. No variant breaks a stated structure."
+  },
+  {
+   "id": "item-quality/F3-derived-amplitude-leak",
+   "change": "Moot after the re-theme (there is no dB conversion). The lesson is applied: the instruction states the stream, the sync word and the required output only. It gives neither the correlator taps, nor their time reversal, nor the threshold."
+  },
+  {
+   "id": "item-quality/F4-do-not-limit-unchecked",
+   "change": "Applies to the new content. The item uses the R5 run sentence. spec_properties records the requirement as V5 liveness only (4096 items at both points), and review.notes records the limit."
+  },
+  {
+   "id": "item-quality/F5-train-split-near-twin-signatures",
+   "change": "Applies, and signature v2 resolves it. v2 drops plumbing and absorbs gain/offset stages, so the reference and all four shipped variants are data_source|filter|nonlinear -> dev. The variants add a Throttle and a x2/-1 mapping (v1), an FFT correlator with hysteresis (v2), a byte source with UChar To Float (v3) and an Add Const + Rail decision (v4). build.py asserts that every shipped variant stays in the cell. A correct Binary Slicer design hashes to a test cell (data_source|filter|linear_demod), so it is kept as a passing probe and not shipped as a dev variant."
+  },
+  {
+   "id": "compliance/F1",
+   "change": "Moot after the re-theme (there is no spectral purity check). The new oracle uses exact sequence checks, which have no FFT leakage issue."
+  },
+  {
+   "id": "compliance/F2",
+   "change": "Applies to the new content; same resolution as item-quality F4."
+  },
+  {
+   "id": "compliance/F3",
+   "change": "Moot after the re-theme. The lesson is applied: spec_properties names what each check enforces, and no variant contradicts the instruction."
+  }
+ ],
+ "rejected": [],
+ "other_changes": [
+  "This stage: two mutants behaved the same: 'threshold high = 8' and 'bypass corr' both give an all-zero flags.dat. 'bypass corr' was replaced by 'rewire flags_out <- src', the brief's 'detector bypassed: raw bits written'. A wrong-rate mutant was added (FIR decim 2). There are 11 distinct mutants, each killed by the check named in its 'breaks' label; this was verified mutant by mutant.",
+  "This stage: new variant v4 (correlator - 7, clamped by a Rail to 0..1): a genuinely different decision stage in the same dev cell. A first version failed V3 because GRC blacklists the block name 'match'; the block was renamed and the variant now passes V6.",
+  "This stage: the instruction's sample-rate sentence follows R3. It now reads 'The sample rate does not affect the result, so you can leave the samp_rate variable as it is', so the model knows what to do with the samp_rate variable and nothing unobservable is required. spec_properties: 'sample rate: stated as irrelevant; not checked'.",
+  "This stage: the path check also accepts rational_resampler_xxx (1:1 with correlator taps is an FIR), so every catalog block that can realise the correlator passes.",
+  "Observation points bits.dat and flags.dat are matched with params.type = float, and the instruction names both file names and item types (R9).",
+  "Probes in build.py --probes, all with the expected verdict: the access-code-bb block fails at V2; the Binary Slicer and IIR correlators pass; hard-coded flags fail the graph check; another input with a lenient detector fails on bits.dat.",
+  "review.notes records the known limits: the path check can be cheated on purpose with a one-tap FIR; run length is checked as liveness only; samples 192-3903 are not compared. It also records the relation to gbf-dev-03 and the deviation from the plan.",
+  "Level L1: 5 functional blocks (Vector Source, two File Sinks, FIR, Threshold), single rate. Family build. Version 2. build.py regenerates every file deterministically: two consecutive builds gave byte-identical output."
+ ],
+ "gates": "passed (18 Oct, after this stage's edits; multi-point task re-gated after tooling T7): solvability 10/10, size 480 tokens, variants 4/4 reach V6, start_fails n/a (build), mutation 11 valid with kill rate 1.0; build.py --probes gives 5/5 verdicts as expected",
+ "round2": {
+  "reviewer_findings": [
+   "G1-dev01-delay-line-correlator-rejected"
+  ],
+  "accepted": [
+   {
+    "id": "G1-dev01-delay-line-correlator-rejected",
+    "change": "The path graph check now accepts every block with memory (filters, Delay, correlator blocks, Embedded Python), so delay-line correlators (Delay + Add/Subtract, Delay + Multiply, Delay + NOT/AND on bytes) pass; stateless blocks stay out of the list, so a stored flags pattern gated by the bit stream still fails. The reviewer's delay-line design and three more delay-line forms are passing probes. The Rational Resampler + Delay alternative hashes to train and is shipped as variant v5, so the reserved list includes it. build.py --probes: 13/13 verdicts as expected. Version 3."
+   }
+  ],
+  "rejected": [],
+  "resolved_by": "Claude (Anthropic), inline, 22 Oct 2026 (pending team review)",
+  "gates": "ALL PASS (22 Oct): mutation ok, size ok, solvability ok, start_fails ok, variants ok"
+ }
+}

@@ -1,0 +1,60 @@
+options:
+  parameters: {id: gmsk_tuned_v5, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: beta
+  id: variable
+  parameters: {}
+- name: freq_offset
+  id: variable
+  parameters: {}
+- name: i_ofs
+  id: variable
+  parameters: {}
+- name: magbal
+  id: variable
+  parameters: {}
+- name: phase_noise_mag
+  id: variable
+  parameters: {value: '-100'}
+- name: phasebal
+  id: variable
+  parameters: {}
+- name: q_ofs
+  id: variable
+  parameters: {}
+- name: import_0
+  id: import
+  parameters: {imports: import math}
+- name: analog_random_source_x_0
+  id: analog_random_source_x
+  parameters: {type: byte, max: '256', num_samps: '100000'}
+- name: digital_gmsk_mod_0
+  id: digital_gmsk_mod
+  parameters: {samples_per_symbol: '12', bt: '0.15'}
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: channels_impairments_0
+  id: channels_impairments
+  parameters: {beta: beta, freq_offset: freq_offset, i_ofs: i_ofs, magbal: magbal, phase_noise_mag: phase_noise_mag,
+    phasebal: phasebal, q_ofs: q_ofs}
+- name: analog_quadrature_demod_cf_0
+  id: analog_quadrature_demod_cf
+  parameters: {gain: samp_rate/(2*math.pi*1000)}
+- name: blocks_file_sink_0
+  id: blocks_file_sink
+  parameters: {type: complex, file: gmsk_iq.dat}
+- name: blocks_file_sink_1
+  id: blocks_file_sink
+  parameters: {type: float, file: freq_trace.dat}
+connections:
+- [analog_random_source_x_0, '0', digital_gmsk_mod_0, '0']
+- [digital_gmsk_mod_0, '0', blocks_throttle2_0, '0']
+- [blocks_throttle2_0, '0', channels_impairments_0, '0']
+- [channels_impairments_0, '0', blocks_file_sink_0, '0']
+- [channels_impairments_0, '0', analog_quadrature_demod_cf_0, '0']
+- [analog_quadrature_demod_cf_0, '0', blocks_file_sink_1, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,48 @@
+{
+ "task": "gbf-test-09",
+ "action": "fix",
+ "rethemed": false,
+ "date": "2026-10-18",
+ "drafted_by": "Claude (Anthropic); decisions pending team review",
+ "accepted": [
+  {
+   "id": "compliance:gbf09-F1",
+   "change": "The peak count is now exact. The f2p equal_prefix check compares every sample of the 192-period window (15360 samples, skip 480, max_offset 0) with the ideal indicator, so any extra, missing or misplaced flag fails. The mean check (0.0125, rel_tol 0.002, where one flag is 0.52 %) and the rms check (rel_tol 0.002) are kept for diagnosis. Added two near-miss mutants: the example's look-ahead formula int(samp_rate/1e3/1.1), i.e. 43 samples and 194 flags, and a 605 Hz sawtooth (194 flags); both are killed. Verified with the real ladder: look-ahead 43 and 50 fail, and so do 590 Hz and 605 Hz. Look-ahead 60 and 79 give exactly the reference output and pass."
+  },
+  {
+   "id": "compliance:gbf09-F2",
+   "change": "Added the f2p equal_prefix position check against the ideal indicator: 1.0 at samples 39 + 80k (the last sample before every drop of the unchanged sawtooth), 0.0 elsewhere. The first fixer pass checked only the first 20 periods; this pass extends it to all 192, which closes that pass's own known limit. Added the spec_property peak_position. The instruction says 'flag the top of every ramp (the last sample before the drop)' and 'every flag must sit exactly on a ramp top, with no extra or missing flags'. Verified with the real ladder over the full window: the reference, v1-v5, maxoutbuf 64 and 1000 on the chain, look-ahead 60/79, threshold factors 0.05/0.3/0.65 and alpha 0.001/0.004 all reproduce the ideal indicator exactly; gates solvability is 10/10 at 8 parallel workers. A 40-sample delayed indicator, a sawtooth phase of 1.0 rad (mutant), triangle and square waves all fail."
+  },
+  {
+   "id": "compliance:gbf09-F3",
+   "change": "The 'keep the Peak Detector2 settings' clause was removed from the instruction, following R4 (a keep clause is checked or removed). The behaviour those settings produce is checked instead: exact flag positions and count, and the running average between 0.95 and 1.05. Setting changes that keep this behaviour pass by design (threshold factor 0.05/0.3/0.65, alpha 0.001/0.004, look-ahead 60/79). Changes that alter it fail (look-ahead 43/50, alpha 0.02, factor 7). This is recorded in review.notes."
+  },
+  {
+   "id": "compliance:gbf09-F4",
+   "change": "R8: spec_properties.average_level states that, for this V3 start, p2p means properties of the parts the fault does not touch. Re-proved with the final oracle on the start graph with the faulted branch parked (Short To Float and peaks.dat removed, detector out0 to a byte Null Sink). V5 passes, every p2p check passes (running-average mean, min and max, sawtooth bottom, top and harmonic share, and the path graph check), and every f2p check fails with 'observation missing'."
+  },
+  {
+   "id": "item-quality:F1",
+   "change": "The false waveform claim was removed from average_level, and the sawtooth is now checked directly. A new edge observation point 'saw' on the Signal Source output adds no block, so the item stays L1. Its p2p checks: min (bottom 0.25 +-0.075), max (top 1.73125 +-0.075, i.e. 5 % of the 1.5 swing, a tolerance the instruction states) and band_fraction 1150-1250 Hz with remove_mean. The last expects 0.152318 +-10 %, the 2nd-harmonic share of the ideal 80-sample ramp; triangle and square waves give 0. Verified: triangle and square fail both p2p (shape) and f2p (positions); 590 and 605 Hz fail the exact positions and count; amplitude 1.4 and offset 0.3 fail. Mutants added for a triangle wave and for amplitude 1.65. Amplitude 1.6 with offset 0.2 stays within the stated 0.075 at bottom and top and passes, as stated."
+  },
+  {
+   "id": "item-quality:F2",
+   "change": "The settings clause was removed (see compliance:gbf09-F3) instead of adding a parameter assertion. A block_present check on the raw values of threshold_factor_rise, alpha and look_ahead would compare expression strings and could not see a changed variable value. The no-detector cheat is closed by a p2p graph check: a path from analog_sig_source_x through blocks_peak_detector2_fb to a blocks_file_sink. Verified: the cheat (a Vector Source pattern into peaks.dat and a Constant Source 0.99 into average.dat) now fails V6, through the missing path and the missing 'saw' point. One partial cheat remains: peaks.dat fed from a Vector Source while the detector still feeds average.dat. It passes and is recorded in review.notes as a known limit."
+  },
+  {
+   "id": "item-quality:F3",
+   "change": "The two-sided running-average requirement is now checked with tooling T4: p2p min >= 0.95 and max <= 1.05 on average.dat from 0.1 s on (reference 0.9806 / 1.0107). The instruction states 'between 0.95 and 1.05'. Verified: amplitude 1.4 (min 0.932) and offset 0.3 (max 1.061) fail."
+  },
+  {
+   "id": "item-quality:F4",
+   "change": "Same fix as compliance:gbf09-F4: the p2p semantics are stated and proved on the parked start."
+  },
+  {
+   "id": "plan:R5-R9-R10-R11-R12",
+   "change": "The instruction gives the run sentence; spec_properties.run_length is recorded as V5 liveness at 16384 items per point. Both File Sinks are named with file name and item type, and the observation points check the type. Variants v4 (literal numbers, samp_rate 48e3, absolute File Sink paths) and v5 (the old Short To Float left disabled, Char To Float added) come from the reviewers' valid alternatives. Kept variants: v1 (UChar To Float), v2 (Char To Short then Short To Float with scale 256) and v3 (Throttle plus Char To Float). Mutants were added for the 'both output files' keep clause (peaks.dat renamed) and for every new property. perturbation.changes records the widget-to-variable conversion, the Qt sink conversion, the dropped Throttle and disabled File Sinks, and the stripped options. The GPL attribution and the known limits are in review.notes. R12: the only band_fraction check uses remove_mean, so no threshold depends on a DC level; it was derived with the corrected oracle."
+  }
+ ],
+ "rejected": [],
+ "notes": "Second fixer pass (G9, after the tooling stage): the first pass's build.py regenerated byte-identically and passed its gates. This pass extended the exact flag-position check from the first 20 periods to all 192, re-verified every claim with the real ladder, and superseded the partial records.",
+ "gates": "PASS (18 Oct, current tooling incl. T7): solvability 10/10, size 433 tokens, variants 5/5 at V6, start fails at V3 (expected V3), mutation 18/18 valid mutants killed (kill rate 1.0, no survivors)."
+}

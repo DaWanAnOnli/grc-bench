@@ -1,0 +1,57 @@
+{
+ "task": "gbf-test-06",
+ "action": "fix",
+ "relabel": {"family": "parameter-tune (was modify)", "level": "L3 (was L1; pending team confirmation)"},
+ "rethemed": false,
+ "accepted": [
+  {
+   "id": "item-quality/F1-timing-underchecked",
+   "change": "Windows tightened and made to pin the switch: p2p window 0-0.45 s and f2p window 0.95-1.45 s, each with a band_fraction purity check (>= 99 % of the power within 50 Hz of its tone), so any power of the other tone in either window fails. The instruction now states the window (the switch must show up after 0.45 s and before 0.95 s of the recording) and that it currently shows up at about 0.7 s. Measured switch: 0.6826 s in 24/24 runs at 8-way concurrency (round 1: 0.597-0.768 s); the strobe cannot fire before 0.5 s. Mutants added: Message Strobe period 1000 ms (the unperturbed seed value; switch at 1.19 s, killed by f2p purity 0.696 and rms) and period 100 ms (switch at 0.26-0.34 s, killed by p2p purity 0.367). Not taken from the suggestion: period 250 ms as a mutant (it lands at 0.4266 s, one 4096-item buffer step from the 0.45 s edge, so it is not a reliable spec break) and a 0-0.5 s pre-window (0.45 s keeps 0.05 s margin below the earliest possible switch)."
+  },
+  {
+   "id": "item-quality/F2-level-mislabel",
+   "change": "Relabelled L3 (proposal 5.2: message ports are L3), recorded as pending team confirmation in review.notes. The seeds.py L3_HINTS fix ('message'/'strobe') is tooling T8 (src/, outside this stage); noted in review.notes."
+  },
+  {
+   "id": "item-quality/F3-tone-purity-unchecked",
+   "change": "Added band_fraction checks: p2p >= 0.99 within 1450-1550 Hz on 0-0.45 s (reference 0.99945) and f2p >= 0.99 within 4150-4250 Hz on 0.95-1.45 s (reference 1.0); stated in the instruction. Mutants added: Signal Source square waveform (purity 0.416 / 0.405) and a DC offset in the retune dict (f2p purity 0.941; its RMS 1.24 alone would pass)."
+  },
+  {
+   "id": "item-quality/F4-family-borderline",
+   "change": "Relabelled parameter-tune (plan R6). Instruction says 'Change parameter values only: do not add, remove or rewire blocks, and do not add or remove variables'; enforced by graph_checks same_blocks_as_start (variables value_only, ignore_ids import/note) and same_connections_as_start (isomorphic), group p2p. The old v3 variant (extra Multiply Const) was invalid under the rule and was replaced; all variants now change values only."
+  },
+  {
+   "id": "compliance/F1-timing-underchecked",
+   "change": "Same fix as item-quality/F1 (tight purity-checked windows, stated switch window, period 1000/100 ms mutants). The suggested random-delay mean 400 ms mutant was not added: its switch lands at 0.85-0.94 s (measured, 24 runs), inside the stated 0.45-0.95 s window, so it satisfies the spec and is not a mutant."
+  },
+  {
+   "id": "compliance/F2-everything-else-ambiguity",
+   "change": "'Keep everything else' removed; the instruction lists what to keep (48 kHz rate, switch timing, complex output) and the values-only rule covers the rest. The reviewer's alternative (Random-Delay strobe deleted, strobe wired straight to cmd) now fails same_blocks_as_start and same_connections_as_start (probed: only the graph checks fail it); so do 'both message paths' and 'retune dict held in a new variable'. Recorded in review.notes as alternatives that are invalid by the stated rule."
+  },
+  {
+   "id": "compliance/F3-switch-range-misdocumented",
+   "change": "build.py docstring and task notes now give the measured ranges (0.6826 s, 24/24 runs at 8-way on 18 Oct; 0.597-0.768 s in round 1) and the real margins (>= 0.05 s before the earliest possible switch at 0.5 s, >= 0.18 s after the latest observed one)."
+  },
+  {
+   "id": "compliance/F4-licence-notices-stripped",
+   "change": "The seed's author/copyright notice (Marcus Mueller / 2020 Free Software Foundation) is kept in the options block of start.grc, reference.grc and every variant; task.json license names the holder and the modification; new source.attribution field; perturbation.changes now records the options id change, generate_options qt_gui -> no_gui, the dropped GUI/build options, the kept notice and the modification record. The licence policy for seed-derived items stays a team decision (review.notes)."
+  },
+  {
+   "id": "compliance/F5-L1-source-deviation",
+   "change": "Recorded in review.notes as a team decision (seed-derived item; level now L3, pending team)."
+  },
+  {
+   "id": "compliance/F6-showports-silent-drop",
+   "change": "Documented in review.notes as a known harness limit (dropping showports hides the cmd port and GRC omits the message connection silently, so such an answer fails at V6, not V2). The V2 lint itself is outside this task directory (not changed in this stage)."
+  }
+ ],
+ "rejected": [],
+ "notes": "Variants (all values only): v1 PMT dict API; v2 single-quoted keys in the other order with float literals (round-1 alternative); v3 retune as an expression of samp_rate with the File Sink renamed and a ./ path (round-1 alternative). 14 mutants, each verified to die for its labelled reason (near misses: 4260 Hz, ampl 1.1, initial 1540 Hz, initial amp 0.9). Run sentence added (R5); observation sink params include type complex (R9). Convention for parameter-tune shared with gbf-test-19: no variables added or removed (value_only).",
+ "gates": "PASS (18 Oct): solvability 10/10, 467 tokens, variants 3/3, start fails at V6 (f2p fails, p2p passes), mutation 14/14 valid, kill rate 1.0",
+ "round2": {
+  "accepted": [],
+  "rejected": [],
+  "notes": "No round-2 finding for this task. The round-2 reviewer's probes were re-run against the current task: rand_mean_400 passes V6 (switch inside the stated 0.45-0.95 s window, as recorded in round 1); period_250 fails V6 (switch before 0.45 s, outside the stated window); with_phase_key fails V6 (adding 'phase': 0.0 to the retune dict makes the Random-Delay strobe reset the phase of the 4.2 kHz tone about every 100 ms after the switch, so the stated >= 99 % purity fails at 0.974). All three results follow the instruction.",
+  "gates": "PASS (re-run 18 Oct): solvability 10/10, 467 tokens, variants 3/3, start fails at V6 (f2p fails, p2p passes), mutation 14/14 valid, kill rate 1.0; build.py regenerates every file byte-identically"
+ }
+}

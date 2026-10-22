@@ -1,0 +1,32 @@
+{
+ "query_knowledge": {
+  "query": "analog_noise_source_x analog_sig_source_x band_pass_filter blocks_add_xx blocks_multiply_const_vxx blocks_throttle2 channels_quantizer blocks_file_sink",
+  "domain": "catalog",
+  "k": 16
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "blocks_throttle2_0:0->quantizer:0",
+   "quantizer:0->blocks_multiply_const_vxx_0:0",
+   "quantizer:0->quantized_sink:0"
+  ],
+  "remove_blocks": [
+   "quantizer"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "channels_quantizer",
+    "instance_name": "quantizer",
+    "params": {
+     "bits": "bits"
+    }
+   }
+  ],
+  "add_connections": [
+   "blocks_throttle2_0:0->quantizer:0",
+   "quantizer:0->blocks_multiply_const_vxx_0:0",
+   "quantizer:0->quantized_sink:0"
+  ]
+ }
+}

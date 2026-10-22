@@ -1,0 +1,25 @@
+{
+ "query_knowledge": {
+  "query": "analog_noise_source_x blocks_throttle2 analog_rail_ff blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "noise_src",
+    "params": {
+     "amp": "0.4"
+    }
+   },
+   {
+    "instance_name": "limiter",
+    "params": {
+     "lo": "-0.784",
+     "hi": "0.784"
+    }
+   }
+  ]
+ }
+}

@@ -1,0 +1,83 @@
+options:
+  parameters: {id: pam_timing, generate_options: no_gui, output_language: python}
+blocks:
+- name: const
+  id: variable
+  parameters: {value: digital.qpsk_constellation()}
+- name: freq_offset
+  id: variable
+  parameters: {}
+- name: interpratio
+  id: variable
+  parameters: {value: '0.998'}
+- name: nfilts
+  id: variable
+  parameters: {value: '32'}
+- name: noise_amp
+  id: variable
+  parameters: {value: '0.05'}
+- name: rolloff
+  id: variable
+  parameters: {value: '0.5'}
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: sym_rate
+  id: variable
+  parameters: {value: '9600'}
+- name: spb
+  id: variable
+  parameters: {value: int(samp_rate/sym_rate)}
+- name: time_bw
+  id: variable
+  parameters: {value: '0.0628'}
+- name: analog_random_source_x
+  id: analog_random_source_x
+  parameters: {max: const.arity(), num_samps: '100000', type: byte}
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters: {limit: auto, type: complex}
+- name: channels_channel_model_0
+  id: channels_channel_model
+  parameters: {epsilon: interpratio, freq_offset: freq_offset, noise_voltage: noise_amp, seed: '42'}
+- name: digital_chunks_to_symbols_xx
+  id: digital_chunks_to_symbols_xx
+  parameters: {dimension: '1', in_type: byte, out_type: complex, symbol_table: const.points()}
+- name: digital_pfb_clock_sync_xxx_0
+  id: digital_pfb_clock_sync_xxx
+  parameters: {filter_size: nfilts, init_phase: nfilts/2, loop_bw: time_bw, sps: spb, taps: 'firdes.root_raised_cosine(nfilts,
+      nfilts*spb, 1.0, rolloff, 44*nfilts)', type: ccf, max_dev: '0.5'}
+- name: import_0
+  id: import
+  parameters: {imports: from gnuradio import digital}
+- name: pfb_arb_resampler_xxx_0
+  id: pfb_arb_resampler_xxx
+  parameters: {rrate: samp_rate/sym_rate, taps: 'firdes.root_raised_cosine(nfilts, nfilts, 1.0, rolloff,
+      44*nfilts)', type: ccf}
+- name: tx_signal_sink
+  id: blocks_file_sink
+  parameters: {file: tx_signal.dat, type: complex}
+- name: rx_symbols_sink
+  id: blocks_file_sink
+  parameters: {file: rx_symbols.dat, type: complex}
+- name: timing_error_sink
+  id: blocks_file_sink
+  parameters: {file: timing_error.dat, type: float}
+- name: timing_rate_sink
+  id: blocks_file_sink
+  parameters: {file: timing_rate.dat, type: float}
+- name: timing_phase_sink
+  id: blocks_file_sink
+  parameters: {file: timing_phase.dat, type: float}
+connections:
+- [analog_random_source_x, '0', digital_chunks_to_symbols_xx, '0']
+- [blocks_throttle2_0, '0', digital_pfb_clock_sync_xxx_0, '0']
+- [channels_channel_model_0, '0', blocks_throttle2_0, '0']
+- [digital_chunks_to_symbols_xx, '0', pfb_arb_resampler_xxx_0, '0']
+- [digital_pfb_clock_sync_xxx_0, '0', rx_symbols_sink, '0']
+- [digital_pfb_clock_sync_xxx_0, '1', timing_error_sink, '0']
+- [digital_pfb_clock_sync_xxx_0, '2', timing_rate_sink, '0']
+- [digital_pfb_clock_sync_xxx_0, '3', timing_phase_sink, '0']
+- [pfb_arb_resampler_xxx_0, '0', channels_channel_model_0, '0']
+- [pfb_arb_resampler_xxx_0, '0', tx_signal_sink, '0']
+metadata: {file_format: 1}

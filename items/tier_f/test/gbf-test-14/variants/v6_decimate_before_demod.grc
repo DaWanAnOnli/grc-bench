@@ -1,0 +1,38 @@
+options:
+  parameters: {id: fm_loop_v6, generate_options: no_gui}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '40000'}
+- name: audio_rate
+  id: variable
+  parameters: {value: '8000'}
+- name: tone
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: audio_rate, freq: '1200'}
+- name: up
+  id: rational_resampler_xxx
+  parameters: {type: fff, interp: '5'}
+- name: mod
+  id: analog_frequency_modulator_fc
+  parameters: {sensitivity: 2*math.pi*2500/samp_rate}
+- name: iq_rec
+  id: blocks_file_sink
+  parameters: {type: complex, file: fm_iq.dat}
+- name: chan
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, decim: '5', cutoff_freq: '3800', width: '200'}
+- name: demod8k
+  id: analog_quadrature_demod_cf
+  parameters: {gain: audio_rate/(2*math.pi*1000)}
+- name: au_rec
+  id: blocks_file_sink
+  parameters: {type: float, file: recovered.dat}
+connections:
+- [tone, '0', up, '0']
+- [up, '0', mod, '0']
+- [mod, '0', iq_rec, '0']
+- [mod, '0', chan, '0']
+- [chan, '0', demod8k, '0']
+- [demod8k, '0', au_rec, '0']
+metadata: {file_format: 1}

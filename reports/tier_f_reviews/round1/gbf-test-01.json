@@ -1,0 +1,75 @@
+{
+ "task": "gbf-test-01",
+ "round": 1,
+ "note": "Adversarial review findings (item-quality and compliance lenses) from the 15-17 Oct review round, recovered from the workflow transcripts after the device move. Not yet acted on.",
+ "lenses": {
+  "compliance": {
+   "reviewed_at_utc": "2026-10-15T06:28:20.742Z",
+   "verdict": "REFUTED as a fully valid item: it fails on oracle coverage, though its compliance metadata is clean. I re-ran `./gb tier-f gates items/tier_f/test/gbf-test-01` and it passed again with the same gates.json: solvability 10/10, 235 tokens, 3/3 variants at V6, 10/10 valid mutants, kill rate 1.0. build.py regenerates task.json, reference.grc and all variants byte-identically. The metadata checks out: licence, source, cluster_id, provenance, review, perturbation (false, composed chain), id/dir/split, and the canary appears only in task.json. The reference signature hashes to test. The task is disjoint from training_task_specs.json (nothing there involves square waves or harmonics). All 10 mutations break the spec and reach V5. The P2 and P3 tolerances follow the spec: a tone with a 3rd harmonic at -31 dB passes and one at -29 dB fails. The flaw is that the oracle only looks at the output, so it cannot see the square-wave source or the filter, which are the point of the task. A plain 1.5 kHz cosine of amplitude 0.5 written to fundamental.dat passes V6. Smaller problems: the minimum run length is not stated, the task nearly duplicates gbf-test-07, the split is met only on paper, and the float type is never checked. Probe files are in ~/grc-bench-work/review/gbf-test-01/probes and the probe script is in the scratchpad at gbf-test-01/probes.py.",
+   "findings": [
+    {
+     "id": "F1-shortcut-passes",
+     "severity": "high",
+     "claim": "The instruction's main requirements are never checked: generate a 1.5 kHz square wave that switches between -1 and +1 (average zero) and low-pass filter it. A flowgraph with no square wave and no filter passes every V6 check, so the item cannot tell harmonic filtering apart from simple sine generation.",
+     "evidence": "Probe p01_pure_cosine is just Signal Source (cos, 1500 Hz, amp 0.5) -> File Sink fundamental.dat. Result: highest=V6, peak_freq 1500.0, band_fraction 1.0, rms 0.353553, all checks pass. A cosine-for-square mutant of the reference (waveform analog.GR_COS_WAVE, amp 1.27324, offset 0, everything else unchanged) also reaches V6 (rms 0.352968). spec_properties P1-P4 cover only the output. None of the 10 mutations touches the source waveform, because the oracle could not kill such a mutant. The only observation point is 'out' (fundamental.dat). Sibling gbf-dev-05 already shows the fix pattern: it has a second File Sink, clock_in.dat, that records the square wave.",
+     "suggested_fix": "Add a second required observation point to the instruction, for example: 'Also write the square wave itself, before any gain or filtering, as float samples to a File Sink whose file name is square.dat.' Add a property P0 with checks on that point: peak_freq 1500 ±15; mean 0 (tol about 0.01); rms 1.0 (rel_tol 0.05); max_abs 1.0 (rel_tol 0.05); and band_fraction in [1400,1600] with max about 0.9 (an ideal square is about 0.81), so harmonics must be present. Then add a mutation that sets the waveform to analog.GR_COS_WAVE and confirm it is killed. Update the variants and the reference to add the extra sink."
+    },
+    {
+     "id": "F2-unstated-run-length",
+     "severity": "medium",
+     "claim": "The oracle depends on numbers the instruction never states. Liveness needs at least 16,384 samples at fundamental.dat (n_items/min_items = 16384), but the instruction never says the flowgraph must keep running or how many samples to write. A correct flowgraph that bounds its file with a Head block fails at V5. The ±1 % frequency tolerance and the 4096-sample start-up skip are also unstated.",
+     "evidence": "Probe p03_head_8192 is the reference chain with Head(num_items 8192) before the File Sink. It fails at V5: \"liveness: an observation point received too few items {'out': 8192}\". The same chain with Head 48000 (p04) passes V6. Sibling items state the convention: gbf-test-07 says 'The flowgraph should keep running until it is stopped.' gbf-dev-01 says '...until it is stopped; do not limit the number of samples.' gbf-test-12 states 'within 1 %' and 'after the first 4096 samples'. gbf-test-01 says none of these.",
+     "suggested_fix": "Add to the instruction: 'The flowgraph should keep running until it is stopped; do not limit the number of samples.' Optionally also state 'frequency within 1 %' and 'measured on the steady-state output after the first 4096 samples', as gbf-test-12 does."
+    },
+    {
+     "id": "F3-near-duplicate-in-test",
+     "severity": "medium",
+     "claim": "gbf-test-01 nearly duplicates gbf-test-07 in the same test split: same 1.5 kHz square wave, same 48 kHz sample rate, same low-pass to a sine. It also shares its theme with gbf-test-08 and gbf-test-12. Their cluster_ids differ (each is its chain signature), so statistics that use clusters will count these correlated items as independent.",
+     "evidence": "gbf-test-07 (modify, cluster chain:analog_sig_source_x|blocks_multiply_const_vxx|low_pass_filter|blocks_add_const_vxx|blocks_file_sink): 'generates a 1.5 kHz square-wave test signal at a sample rate of 48 kHz ... I want a smooth 1.5 kHz sine ... Add a low-pass filter'. gbf-test-08 (repair): 'supposed to turn a square wave into a clean sine wave' (1.2 kHz, 48 kHz). gbf-test-12 (parameter-tune): 'low-pass filters a 1 kHz square wave and writes a clean 1 kHz sine'. That makes 4 of the 19 test items square-to-sine via a low-pass filter.",
+     "suggested_fix": "Make this item different from gbf-test-07. The slot brief allows a sawtooth, which has even and odd harmonics and a different fundamental amplitude (2/pi). Also use a different fundamental and sample rate. Alternatively, the team could give the square-to-sine items a shared theme-level cluster_id so cluster bootstrap treats them as correlated. Raise this for team review."
+    },
+    {
+     "id": "F4-split-only-nominal",
+     "severity": "low",
+     "claim": "Split discipline is met only on paper. The reference lands in test only because it has a separate Multiply Const stage. The simplest natural solution and variant v2 hash to dev. Functionally identical chains that just reorder or add blocks hash to train, so a training-side chain generator that obeys signature_split=='train' could legally produce this same square-to-sine task.",
+     "evidence": "signature_split results: reference sig|multiply_const|low_pass_filter|file_sink = test; v1 sig|low_pass_filter|file_sink = dev (the author notes the plain chain hashes to dev); v2 sig|multiply|add_const|low_pass|file = dev; v3 = test. Two functional twins hash to train: analog_sig_source_x|fir_filter_xxx|blocks_multiply_const_vxx|blocks_file_sink and analog_sig_source_x|blocks_throttle2|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink. The compose.py docstring says training-side generators must check signature_split(sig)=='train'.",
+     "suggested_fix": "Record the theme 'square/sawtooth harmonic removal to a sine' as reserved for test/dev, so training-side generators exclude it whatever their signature. Mention this in the disjointness field. Longer term, the team could split composed chains by theme, or by an order-insensitive block multiset, rather than by the ordered block-id tuple."
+    },
+    {
+     "id": "F5-float-type-unchecked",
+     "severity": "low",
+     "claim": "P4 requires float samples, but nothing checks the item type. A complex output with the same tone passes every V6 check.",
+     "evidence": "Probe p02_complex_exp is Signal Source (complex, 1500 Hz, amp 0.353553) -> File Sink type complex, fundamental.dat. Result: highest=V6, peak_freq 1500.0, band_fraction 1.0, rms 0.353553. The oracle has no dtype feature. The observation match uses only block_id and the file name.",
+     "suggested_fix": "Add a dtype assertion for the observation point: either a new oracle feature (for example 'is_real') or a check in V5/V6 that the tapped port dtype is float. Until then, mark P4's float requirement as not checked in spec_properties so reviewers know it is unenforced."
+    }
+   ]
+  },
+  "item-quality": {
+   "reviewed_at_utc": "2026-10-15T06:28:37.423Z",
+   "verdict": "Fair to correct solutions, but the oracle is unsound. Correct alternatives pass: a band-pass fft_filter with firdes taps writing to /tmp/fundamental.dat reached V6. The tolerances match the stated numbers, L1/build is correct, the observation point is named unambiguously, and nothing hidden is required for amplitude or frequency. However, a one-block 1.5 kHz cosine with amplitude 0.5 also passes V6 (verified with ./gb ladder), so the stated square-wave and low-pass requirements, which are the point of the item, are unchecked. Other issues: the item duplicates the theme of gbf-test-07, -08 and -12 under different cluster_ids, and the minimum run length is a hidden requirement (a Head of 8192 samples fails V5). Needs revision before acceptance; the scratch probes are in ~/grc-bench-work/review/gbf-test-01.",
+   "findings": [
+    {
+     "id": "F1-shortcut-accepted",
+     "severity": "high",
+     "claim": "The oracle cannot tell the requested square-wave-plus-low-pass flowgraph apart from a one-block shortcut. A plain 1.5 kHz cosine source with amplitude 0.5 wired straight into the File Sink passes V6. So the instruction's central requirements are stated but never checked: generate a square wave that switches between -1 and +1, and low-pass filter it. The item's real difficulty is also bypassed. That difficulty is knowing that GR_SQR_WAVE runs from 0 to amp, that the fundamental of a ±1 square wave has peak 4/pi so the gain is pi/8, and placing the cutoff between 1.5 and 4.5 kHz. The authoring rule says every stated behavioural requirement must be checked where it is measurable, and the square wave becomes measurable as soon as it is exposed at an observation point.",
+     "evidence": "Scratch file ~/grc-bench-work/review/gbf-test-01/shortcut_cos.grc contains samp_rate 48000, analog_sig_source_x (float, GR_COS_WAVE, freq 1500, amp 0.5) and blocks_file_sink (float, fundamental.dat), with no square wave and no filter. Running ./gb ladder on it with --task items/tier_f/test/gbf-test-01/task.json gives highest_passed V6, first_failed None, checks peak_freq 1500.0 pass, band_fraction 1.0 pass, rms 0.353553 pass. spec_properties P1-P4 say nothing about the square wave or the filter. The mutation gate cannot catch this, because every mutant is an edit of the reference.",
+     "suggested_fix": "Add a second observation point for the square wave itself. For example, the instruction could add: 'Also write the square wave itself, before any filtering or scaling, as float samples to a second File Sink whose file name is square.dat'. That makes 5 functional blocks, which is still L1. Check that point with rms 1.0 (rel_tol 0.05), mean 0 (tol 0.01) and band_fraction over [1400, 1600] with max of about 0.9: a ±1 square wave has about 81 % of its power in the fundamental, while a sine has 100 %. Optionally also check band_fraction over [4400, 4600] with min 0.05. Add a mutation that swaps the waveform to analog.GR_COS_WAVE to show it is killed. If the team keeps output-only checking, record in review.notes that a direct-sine shortcut passes V6."
+    },
+    {
+     "id": "F2-theme-redundancy-cluster",
+     "severity": "medium",
+     "claim": "This item is the fourth test item built on the same idea: a square wave, low-pass filtered into a clean sine with a stated amplitude. Because cluster_id is the order-sensitive chain signature, the four items get four different cluster_ids. The eval plan uses clustered SEs for items from the same question family, so these items would count as independent and the confidence interval would be too narrow. Separately, a near-identical chain (Throttle added, gain after the filter) hashes to train, so splitting by signature does not stop a training-side item with this exact theme.",
+     "evidence": "gbf-test-07 (modify) is the same 1.5 kHz square at 48 kHz with an LPF added. gbf-test-08 (repair) takes a ±1 square at 48 kHz through an LPF and a pi/4 gain to a sine with peak 1. gbf-test-12 (tune) takes a square through an LPF and gain to a sine with peak 0.5 and RMS 0.354 at 32 kHz. Their cluster_ids are chain:sig|mult|lpf|file (01), sig|mult|lpf|add|file (07), sig|add|lpf|mult|file (08) and sig|lpf|mult|file (12). Eval plan line 221: 'Items from the same question family or source flowgraph are not independent, so we use clustered standard errors'. compose.signature_split gives train for analog_sig_source_x|blocks_throttle2|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink. The author also notes that the gain stage was added because the plain sig|lpf|file chain hashes to dev.",
+     "suggested_fix": "Use the other option the slot brief allows, a sawtooth. GR_SAW_WAVE is a 0..amp ramp with every harmonic, including 3 kHz, and its fundamental peak is amp/pi. The cutoff then has to sit between 1.5 and 3 kHz and the DC must be removed, which tests a different skill from tests 07, 08 and 12. If the square-wave theme stays, give the square-to-sine items a shared theme-level cluster_id (e.g. 'theme:square-to-sine') and exclude this theme from training-side composed-chain generation."
+    },
+    {
+     "id": "F3-unstated-run-length",
+     "severity": "low",
+     "claim": "The oracle has two requirements the instruction never states. It needs at least 16384 output samples (about 0.34 s): min_items equals n_items equals 16384, otherwise V5 liveness fails. It also measures only after skipping the first 4096 samples. The instruction says neither that the flowgraph must run continuously nor how much output it must write. Putting a Head block before a File Sink to bound the file is common practice, so a correct solution that writes fewer than 16384 samples is rejected at V5.",
+     "evidence": "Scratch file head_8192.grc is a correct chain (±1 square, then low_pass_filter with gain 0.392699, cutoff 3000 and width 1000) followed by blocks_head with 8192 items and then the File Sink. ./gb ladder gives highest_passed V4, first_failed V5, with \"liveness: an observation point received too few items {'out': 8192}\". Sibling items state this requirement: gbf-test-07 says 'The flowgraph should keep running until it is stopped' and gbf-test-12 says 'measured on the steady-state output after the first 4096 samples'.",
+     "suggested_fix": "Add one sentence to the instruction, such as: 'The flowgraph should keep running until it is stopped (do not limit the number of samples written); the requirements apply to the steady-state output once the filter has settled.'"
+    }
+   ]
+  }
+ }
+}

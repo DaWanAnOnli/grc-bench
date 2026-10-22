@@ -1,0 +1,1214 @@
+{
+ "all_corpora": {
+  "any": {
+   "items_flagged": 33,
+   "rate": 0.165
+  },
+  "embed": {
+   "items_flagged": 22,
+   "rate": 0.11
+  },
+  "ngram": {
+   "items_flagged": 7,
+   "rate": 0.035
+  },
+  "tfidf": {
+   "items_flagged": 14,
+   "rate": 0.07
+  }
+ },
+ "corpora": {
+  "repaired": {
+   "any_signal": {
+    "items_flagged": 2,
+    "rate": 0.01
+   },
+   "description": "repaired answers (10_repaired)",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8652,
+     "min": 0.6202,
+     "p10": 0.7068,
+     "p25": 0.7327,
+     "p50": 0.7622,
+     "p75": 0.7949,
+     "p90": 0.8246,
+     "p95": 0.8353,
+     "p99": 0.8552
+    },
+    "passages_embedded": 549,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 3042,
+   "n_passages": 40896,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 2,
+    "rate": 0.01,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "3042 repaired answers; 423 rows for dev questions dropped"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "data/GRC_dataset_20261007/dataset/10_repaired/repaired_answers.jsonl",
+     "sha256": "3805f11f270e2ddc956d21bec3e4ebbcd23f2306e1bb62f904f797531c4dc2ca"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.5269,
+     "min": 0.1315,
+     "p10": 0.1911,
+     "p25": 0.2296,
+     "p50": 0.2696,
+     "p75": 0.331,
+     "p90": 0.3735,
+     "p95": 0.4034,
+     "p99": 0.4607
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "devstral-small2-24b/q_3694a55df5b74c9b",
+     "doc_ref": "q_3694a55df5b74c9b",
+     "embed": 0.8652,
+     "item": "Calculate the minimum FFT size required to perform linear convolution of two sequences of length N and M using the overlap-add method.",
+     "item_id": "q_791a5d356b2f460d",
+     "ngram_shared": 0,
+     "tfidf": 0.5269,
+     "training": "To convolve two sequences x[n] and h[n] of length N = 1024 using an FFT-based algorithm (overlap-add or overlap-save), follow these steps. ### FFT-Based Convolution (Overlap-Add Method) 1. **Choose the FFT Size** - To avoid circular-convol…"
+    },
+    {
+     "doc_id": "gpt-oss-120b/q_4caff409c6b08245",
+     "doc_ref": "q_4caff409c6b08245",
+     "embed": 0.856,
+     "item": "You are designing a GNU Radio block for a preamble detector that uses a correlation threshold. The block outputs a tag at the peak correlation position. The ta…",
+     "item_id": "q_b0710c247c6ce19d",
+     "ngram_shared": 0,
+     "tfidf": 0.3229,
+     "training": "Goal** Detect a known preamble in a continuous complex baseband stream, generate a tag when the correlation peak exceeds a threshold, and hand the subsequent samples to a packet-processing chain (header-payload demux, decoding, etc.). **Ty…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_d663d08bf5f92003",
+     "doc_ref": "q_d663d08bf5f92003",
+     "embed": 0.8552,
+     "item": "You are building an OOT (Out-Of-Tree) module for GNU Radio. Explain the process of defining a new block in C++ and how the `gr-modtool` simplifies the integrat…",
+     "item_id": "q_d58a760a53c68a34",
+     "ngram_shared": 0,
+     "tfidf": 0.4173,
+     "training": "To add a new Python block to an existing Out-Of-Tree (OOT) module in GNU Radio, you use the `gr-modtool` utility. This tool handles the scaffolding, including the creation of the Python class and the YAML definition file required for the b…"
+    },
+    {
+     "doc_id": "laguna-s21/q_f696d5b20b82045f",
+     "doc_ref": "q_f696d5b20b82045f",
+     "embed": 0.854,
+     "item": "Design a multi‑stage IIR low‑pass filter (e.g., Butterworth) to achieve -60 dB attenuation at 2 kHz while preserving a 500 Hz passband. State order and compone…",
+     "item_id": "q_4b2d7058cb6b83d1",
+     "ngram_shared": 0,
+     "tfidf": 0.3735,
+     "training": "To design a 2nd-order Butterworth IIR low-pass filter with a cutoff frequency of 500 Hz, we'll follow these steps: ### Step 1: Specifications - **Filter Type**: Low-pass - **Order**: 2 (second-order) - **Cutoff Frequency (\\(f_c\\))**: 500 H…"
+    },
+    {
+     "doc_id": "laguna-s21/q_b529a2e96f4a6f14",
+     "doc_ref": "q_b529a2e96f4a6f14",
+     "embed": 0.8505,
+     "item": "What are the key parameters to configure in an OFDM system (e.g., FFT size, cyclic prefix length, subcarrier spacing)? How do they affect performance?",
+     "item_id": "q_504dc17896c644cb",
+     "ngram_shared": 0,
+     "tfidf": 0.3415,
+     "training": "alongside other OFDM components (e.g., cyclic prefix insertion/removal and modulation/demodulation). Key configuration parameters for FFT/IFFT blocks in an OFDM context are: #### **1. FFT/IFFT Block Parameters** - **FFT Size (N):** - Deter…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_4dc07d03e1eadd74",
+     "doc_ref": "q_4dc07d03e1eadd74",
+     "embed": 0.8495,
+     "item": "Implement a high-pass filter in GNU Radio to remove DC offset from a signal.",
+     "item_id": "q_8a85a884de1f5695",
+     "ngram_shared": 0,
+     "tfidf": 0.3452,
+     "training": "shift. - **Filter Design**: Ensure the LPF cutoff is wider than the signal bandwidth but narrow enough to reject the image. - **DC Offset**: For zero-IF systems, consider adding a `DC Block` after filtering to remove offset. This approach…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_26360889d777833f",
+     "doc_ref": "q_26360889d777833f",
+     "embed": 0.8453,
+     "item": "Explain how RTL-SDR can be used for demodulating FM radio signals in GNU Radio. What blocks are required?",
+     "item_id": "q_2fb3ad48a14e7b4d",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "To demodulate an FM signal and apply a low-pass filter in GNU Radio, use the following blocks: 1. **Source Block**: Use a file source (e.g., `File Source`) or a signal source (e.g., `Signal Source`) to provide the FM signal. - If using a f…"
+    },
+    {
+     "doc_id": "nemotron3-super-120b/q_7b084d292e87599f",
+     "doc_ref": "q_7b084d292e87599f",
+     "embed": 0.8441,
+     "item": "Calculate the bandwidth required for an FSK signal with a mark frequency of 107 kHz, space frequency of 123 kHz, and bit rate of 10 kbps (using Carson's rule a…",
+     "item_id": "q_a56c8c040b651365",
+     "ngram_shared": 0,
+     "tfidf": 0.2838,
+     "training": "FSK bandwidth** For binary FSK the occupied bandwidth is commonly estimated with Carson's rule (the \"2Df + R_s\" approximation): BW_FSK ~= 2*Df + R_s, where R_s = symbol rate = 10 kbaud and Df = peak frequency deviation = 5 kHz. BW_FSK ~= 2…"
+    },
+    {
+     "doc_id": "gpt-oss-120b/q_94cfbac02fdce9ca",
+     "doc_ref": "q_94cfbac02fdce9ca",
+     "embed": 0.8418,
+     "item": "Why is a stable reference clock important for SDR transmitters?",
+     "item_id": "q_363068b2554043c2",
+     "ngram_shared": 0,
+     "tfidf": 0.2545,
+     "training": "Primary purpose of a reference clock in an SDR** | Function | Why it matters for an SDR | |----------|----------------------------| | **Frequency accuracy / stability** | The RF front-end (mixers, synthesizers, DAC/ADC converters) must be…"
+    },
+    {
+     "doc_id": "nemotron3-super-120b/q_67a5dcb53b3487bb",
+     "doc_ref": "q_67a5dcb53b3487bb",
+     "embed": 0.8354,
+     "item": "Explain the role of the `work` or `general_work` function in a custom GNU Radio block. How does it process input and output buffers?",
+     "item_id": "q_5ad6ae2cc249fac3",
+     "ngram_shared": 0,
+     "tfidf": 0.378,
+     "training": "output to the downstream block’s input. When a block’s work function is called, it reads items from its input buffers, processes them, and writes results to its output buffers. The scheduler then moves on to the next ready block. ### Sched…"
+    }
+   ]
+  },
+  "repaired_glm": {
+   "any_signal": {
+    "items_flagged": 2,
+    "rate": 0.01
+   },
+   "description": "repaired answers (10_repaired_glm)",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.875,
+     "min": 0.6251,
+     "p10": 0.7157,
+     "p25": 0.736,
+     "p50": 0.7639,
+     "p75": 0.7966,
+     "p90": 0.8245,
+     "p95": 0.837,
+     "p99": 0.8545
+    },
+    "passages_embedded": 575,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 3042,
+   "n_passages": 55753,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 2,
+    "rate": 0.01,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "3042 repaired answers; 423 rows for dev questions dropped"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "data/GRC_dataset_20261007/dataset/10_repaired_glm/repaired_answers.jsonl",
+     "sha256": "1bc492ba0320c608ce8c864a77de9a0930cefbfaec7b2c70fba5224f6234e632"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.5115,
+     "min": 0.1547,
+     "p10": 0.2004,
+     "p25": 0.2335,
+     "p50": 0.2795,
+     "p75": 0.3284,
+     "p90": 0.382,
+     "p95": 0.4128,
+     "p99": 0.4883
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "devstral-small2-24b/q_3694a55df5b74c9b",
+     "doc_ref": "q_3694a55df5b74c9b",
+     "embed": 0.875,
+     "item": "Calculate the minimum FFT size required to perform linear convolution of two sequences of length N and M using the overlap-add method.",
+     "item_id": "q_791a5d356b2f460d",
+     "ngram_shared": 0,
+     "tfidf": 0.5115,
+     "training": "To convolve two sequences \\( x[n] \\) and \\( h[n] \\) of length \\( N = 1024 \\) using an FFT-based algorithm (also known as overlap-add or overlap-save), follow these steps: ### **FFT-Based Convolution (Overlap-Add Method)** 1. **Choose FFT S…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_d663d08bf5f92003",
+     "doc_ref": "q_d663d08bf5f92003",
+     "embed": 0.8552,
+     "item": "You are building an OOT (Out-Of-Tree) module for GNU Radio. Explain the process of defining a new block in C++ and how the `gr-modtool` simplifies the integrat…",
+     "item_id": "q_d58a760a53c68a34",
+     "ngram_shared": 0,
+     "tfidf": 0.4109,
+     "training": "To add a new Python block to an existing Out-Of-Tree (OOT) module in GNU Radio, you use the `gr-modtool` utility. This tool handles the scaffolding, including the creation of the Python class and the YAML definition file required for the b…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_7972f8585c8e33a2",
+     "doc_ref": "q_7972f8585c8e33a2",
+     "embed": 0.8545,
+     "item": "You are designing a GNU Radio block for a preamble detector that uses a correlation threshold. The block outputs a tag at the peak correlation position. The ta…",
+     "item_id": "q_b0710c247c6ce19d",
+     "ngram_shared": 0,
+     "tfidf": 0.3477,
+     "training": "Optional downstream**: `Tagged Stream` blocks or a custom consumer that uses the tag to trigger packet demodulation. --- ### Implementation of the Preamble Detector Block The core logic requires calculating the correlation of the incoming…"
+    },
+    {
+     "doc_id": "laguna-s21/q_f696d5b20b82045f",
+     "doc_ref": "q_f696d5b20b82045f",
+     "embed": 0.8502,
+     "item": "Design a multi‑stage IIR low‑pass filter (e.g., Butterworth) to achieve -60 dB attenuation at 2 kHz while preserving a 500 Hz passband. State order and compone…",
+     "item_id": "q_4b2d7058cb6b83d1",
+     "ngram_shared": 0,
+     "tfidf": 0.3509,
+     "training": "To design a 2nd-order Butterworth IIR low-pass filter with a cutoff frequency of 500 Hz, we'll follow these steps: ### Step 1: Specifications - **Filter Type**: Low-pass - **Order**: 2 (second-order) - **Cutoff Frequency (fc)**: 500 Hz - *…"
+    },
+    {
+     "doc_id": "laguna-s21/q_08019807e3517ce8",
+     "doc_ref": "q_08019807e3517ce8",
+     "embed": 0.8463,
+     "item": "You need to synchronize two USRP N310s for MIMO operation. They share a 10 MHz reference clock and a PPS signal. Describe the complete synchronization procedur…",
+     "item_id": "q_41689c675839146b",
+     "ngram_shared": 0,
+     "tfidf": 0.2678,
+     "training": "To synchronize multiple USRP B210 devices for phase-coherent MIMO operation, you need both **hardware-level synchronization** and **software-level calibration**. Here's a detailed breakdown: --- ### 1. Hardware Connections Required #### a)…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_7b084d292e87599f",
+     "doc_ref": "q_7b084d292e87599f",
+     "embed": 0.8447,
+     "item": "Calculate the bandwidth required for an FSK signal with a mark frequency of 107 kHz, space frequency of 123 kHz, and bit rate of 10 kbps (using Carson's rule a…",
+     "item_id": "q_a56c8c040b651365",
+     "ngram_shared": 0,
+     "tfidf": 0.3286,
+     "training": "FSK bandwidth (Carson's rule):** For an FSK signal, a standard estimate is Carson's rule: B ≈ 2·(Δf + f_max) where Δf is the peak frequency deviation and f_max is the highest modulating (symbol) frequency. With a symbol rate of 10 kbaud (f…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_38757bfc57d45310",
+     "doc_ref": "q_38757bfc57d45310",
+     "embed": 0.8434,
+     "item": "Implement a high-pass filter in GNU Radio to remove DC offset from a signal.",
+     "item_id": "q_8a85a884de1f5695",
+     "ngram_shared": 0,
+     "tfidf": 0.4323,
+     "training": "To remove high-frequency noise from a signal in GNU Radio, you implement a **Low Pass Filter (LPF)**. In GNU Radio Companion (GRC), the most efficient way to do this is using the **Low Pass Filter** block, which internally implements an FI…"
+    },
+    {
+     "doc_id": "gpt-oss-120b/q_94cfbac02fdce9ca",
+     "doc_ref": "q_94cfbac02fdce9ca",
+     "embed": 0.8429,
+     "item": "Why is a stable reference clock important for SDR transmitters?",
+     "item_id": "q_363068b2554043c2",
+     "ngram_shared": 0,
+     "tfidf": 0.2541,
+     "training": "Primary purpose of a reference clock in an SDR** | Function | Why it matters for an SDR | |----------|----------------------------| | **Frequency accuracy / stability** | The RF front‑end (mixers, synthesizers, DAC/ADC converters) must be…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_d6c2cc946a91a5fd",
+     "doc_ref": "q_d6c2cc946a91a5fd",
+     "embed": 0.841,
+     "item": "Design a band-pass filter centered at 10 kHz with a bandwidth of 2 kHz.",
+     "item_id": "q_9057eaf6ba9e3448",
+     "ngram_shared": 0,
+     "tfidf": 0.3832,
+     "training": "To design a band-pass filter that extracts a signal in the 1-2 kHz range from a 10 kHz sampled signal, we can use a **Finite Impulse Response (FIR) filter** designed using the **Windowing Method**. Here's a step-by-step approach: ### 1. **…"
+    },
+    {
+     "doc_id": "nemotron3-super-120b/q_6f607c7268a7bd18",
+     "doc_ref": "q_6f607c7268a7bd18",
+     "embed": 0.8398,
+     "item": "A receiver has a 3 dB noise figure. If you add a 10 dB attenuator at the input, what is the new noise figure of the system?",
+     "item_id": "q_a6d0a1f19cd8449d",
+     "ngram_shared": 0,
+     "tfidf": 0.4021,
+     "training": "Step 3 - Add the receiver noise figure:** A noise figure of 3 dB means the receiver degrades the SNR by 3 dB, i.e. the effective noise floor rises by 3 dB: N_eff = -114 dBm + 3 dB = **-111 dBm**. **Step 4 - Add the required SNR:** For a de…"
+    }
+   ]
+  },
+  "sft_sessions": {
+   "any_signal": {
+    "items_flagged": 0,
+    "rate": 0.0
+   },
+   "description": "SFT sessions and quarantine (grc-agent-sft-v0.1.0), all message text",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.8203,
+     "min": 0.5986,
+     "p10": 0.6705,
+     "p25": 0.7012,
+     "p50": 0.7275,
+     "p75": 0.7547,
+     "p90": 0.7776,
+     "p95": 0.7916,
+     "p99": 0.8096
+    },
+    "passages_embedded": 491,
+    "rate": 0.0,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 32,
+   "n_passages": 60828,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 0,
+    "rate": 0.0,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "32 sessions (12 sft_train + 20 quarantine); system prompt included"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "data/grc-agent-sft-v0.1.0/grc-agent-sft-v0.1.0/sft_train.jsonl",
+     "sha256": "786849e056a7aa0efcf33738284a654190466a9019246cccf03a9c71d832d1a8"
+    },
+    {
+     "path": "data/grc-agent-sft-v0.1.0/grc-agent-sft-v0.1.0/quarantine.jsonl",
+     "sha256": "57080b78798d6fd5991deee9f2aff9876ae50acb26fd0f64945906c60a40ad00"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.4513,
+     "min": 0.1073,
+     "p10": 0.1428,
+     "p25": 0.1694,
+     "p50": 0.2062,
+     "p75": 0.249,
+     "p90": 0.2773,
+     "p95": 0.297,
+     "p99": 0.3577
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.8203,
+     "item": "If an AM receiver produces distorted audio, what could be the issue?",
+     "item_id": "q_497060c918e9c34d",
+     "ngram_shared": 0,
+     "tfidf": 0.2334,
+     "training": "right... what's making it sound wrong.\" Hmm, \"sound wrong\" — that suggests the audio IS produced but is distorted/low/odd. What could cause that? Let me think: - The bogus QPSK demod branch: doesn't affect audio. - squelch: could mute (sou…"
+    },
+    {
+     "doc_id": "quarantine/01/session-4",
+     "doc_ref": "t02_qpsk_ber_chain",
+     "embed": 0.8109,
+     "item": "In an AWGN channel, a BPSK signal requires Eb/N0 = 9.6 dB for BER = 1e-5. If the same signal passes through a Rayleigh fading channel with perfect CSI at the r…",
+     "item_id": "q_be516ad3e91eb0f8",
+     "ngram_shared": 0,
+     "tfidf": 0.3997,
+     "training": "think about scaling: BER in QPSK with differential ≈ 2·Q(sqrt(2·Eb/N0)). To get BER ~1e-2 need Eb/N0 ≈ 4.3 dB; BER 1e-3 → Eb/N0 ≈ 6.8 dB. From empirical data at σ=0.3: 0 errors over ~62k bits → BER < 1.6e-5 → Eb/N0 > 9.2 dB. Eb/N0 relates…"
+    },
+    {
+     "doc_id": "quarantine/08/session-20",
+     "doc_ref": "t04_broken_sink_repair",
+     "embed": 0.8096,
+     "item": "How do you connect a 'Signal Source' block to a 'QT GUI Sink' block in GRC? What parameters must you configure for this to work?",
+     "item_id": "q_21a5bf62d9d7abca",
+     "ngram_shared": 0,
+     "tfidf": 0.2748,
+     "training": "a **Signal Source** and a **QT GUI Time Sink** block to the flowgraph, and connect them accordingly:\\n[](https://wiki.gnuradio.org/index.php?title=File:Virtual_sink_source_complex_connection.png)\\n\\nNote that the previously white connectio…"
+    },
+    {
+     "doc_id": "quarantine/07/session-15",
+     "doc_ref": "t09_knowledge_concepts",
+     "embed": 0.809,
+     "item": "A signal is modulated using 8-PSK. If the noise level increases, which constellation points are most likely to be confused with each other? How does this compa…",
+     "item_id": "q_fb08c10cad1536f5",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Increase noise level, observe the complex noise on BPSK and QPSK constellation\\n * Change _Delta_f (BPSK shift)_ and observe how the BPSK Spectrum is shifted.\\n * What is the BPSK center frequency ?\\n * Explain why the BPSK constellation i…"
+    },
+    {
+     "doc_id": "sft_train/00/session-7",
+     "doc_ref": "t02_qpsk_ber_chain",
+     "embed": 0.8084,
+     "item": "A signal has mean 0V and std dev 0.5V. If Gaussian noise (mean 0V, std dev 0.2V) is added, what are the mean and variance of the output?",
+     "item_id": "q_55c711d3f2e62b90",
+     "ngram_shared": 0,
+     "tfidf": 0.2824,
+     "training": "0.2 and check BER. Note: noise amp for gaussian = std dev per component? analog_noise_source gaussian: complex noise with each component gaussian std = amp/sqrt(2)? Actually `noise_source_c` with GR_GAUSSIAN: amplitude = amp, and it genera…"
+    },
+    {
+     "doc_id": "quarantine/07/session-15",
+     "doc_ref": "t09_knowledge_concepts",
+     "embed": 0.7939,
+     "item": "A signal suffers from IQ imbalance of 0.2 dB amplitude mismatch and 5° phase mismatch. How does this affect the image rejection ratio, and what digital correct…",
+     "item_id": "q_531ced5e3e02fb50",
+     "ngram_shared": 0,
+     "tfidf": 0.2224,
+     "training": "something that will be very visible in the Frequency domain.\\n\\nChx Enable IQ Imbalance Correction\\n Attempts to correct any IQ imbalance, which is when there is a mismatch between the I and Q signal paths, typically causing a stretching e…"
+    },
+    {
+     "doc_id": "quarantine/03/session-9",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.7936,
+     "item": "What does the ‘throttle’ block do in a flowgraph that runs on a standard PC without hardware?",
+     "item_id": "q_e09e162725c299cb",
+     "ngram_shared": 0,
+     "tfidf": 0.2629,
+     "training": "there is no hardware involved, a Throttle block is used to limit the flow through the system. See [Sample_Rate_Tutorial#When_there_is_no_hardware_block](https://wiki.gnuradio.org/index.php?title=Sample_Rate_Tutorial#When_there_is_no_hardwa…"
+    },
+    {
+     "doc_id": "quarantine/03/session-9",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.7934,
+     "item": "What is the role of the 'sink' and 'source' blocks in GNU Radio, and how do they differ from 'sync' blocks?",
+     "item_id": "q_ce76fa99b23b3ed7",
+     "ngram_shared": 0,
+     "tfidf": 0.2677,
+     "training": "is that the source should be an `analog_sig_source` or a proper SDR. But that changes \"pull in a station\". Let me look at this differently. Let me query knowledge for the canonical GNU Radio FM receiver example flowgraph and see which bloc…"
+    },
+    {
+     "doc_id": "sft_train/07/session-21",
+     "doc_ref": "t12_fivegnalizer_modify",
+     "embed": 0.7932,
+     "item": "In GNU Radio, how do you pass metadata associated with specific samples (e.g., timestamps or signal types) between blocks without interrupting the sample strea…",
+     "item_id": "q_38847cfce5b96da7",
+     "ngram_shared": 0,
+     "tfidf": 0.2107,
+     "training": "procedure.\\n\\n\\n* * *\"}, {\"text\": \"path: Message_Passing\\nheading: Background\\nGNU Radio was originally a streaming system with no other mechanism to pass data between blocks. Streams of data are a model that work well for samples, bits, e…"
+    },
+    {
+     "doc_id": "quarantine/03/session-9",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.7922,
+     "item": "You are tasked with creating a receiver for a signal that uses a non-standard modulation. You have a capture of the IQ data. Describe the step-by-step process…",
+     "item_id": "q_219ddf4f2201b757",
+     "ngram_shared": 0,
+     "tfidf": 0.1892,
+     "training": "the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2 MHz to the input of the **Audio Sin…"
+    }
+   ]
+  },
+  "task_specs": {
+   "any_signal": {
+    "items_flagged": 0,
+    "rate": 0.0
+   },
+   "description": "training-side agent task specs (Qoherent tasks, GRC-Agent scenarios, SFT tasks)",
+   "embedding": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.7987,
+     "min": 0.5506,
+     "p10": 0.611,
+     "p25": 0.6382,
+     "p50": 0.6626,
+     "p75": 0.6904,
+     "p90": 0.7175,
+     "p95": 0.728,
+     "p99": 0.7709
+    },
+    "passages_embedded": 75,
+    "rate": 0.0,
+    "scope": "every passage",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 62,
+   "n_passages": 75,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 0,
+    "rate": 0.0,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "62 goals; grc_agent_scenario 15, qoherent_collection_task 15, sft_quarantined_session 20, sft_trainable_session 12"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 0
+   },
+   "sources": [
+    {
+     "path": "grc-bench/reports/reference/training_task_specs.json",
+     "sha256": "c386714a44f37e8f991a7d138db8faf003b97e392f6b72d36cadca7912225286"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 0,
+    "max_cosine_quantiles": {
+     "max": 0.3318,
+     "min": 0.0493,
+     "p10": 0.0869,
+     "p25": 0.0999,
+     "p50": 0.1222,
+     "p75": 0.151,
+     "p90": 0.1932,
+     "p95": 0.2149,
+     "p99": 0.2855
+    },
+    "rate": 0.0,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "sft_quarantined_session/t17_wbfm_tune_repair",
+     "doc_ref": "",
+     "embed": 0.7987,
+     "item": "If an AM receiver produces distorted audio, what could be the issue?",
+     "item_id": "q_497060c918e9c34d",
+     "ngram_shared": 0,
+     "tfidf": 0.117,
+     "training": "Hey, my wideband FM receiver graph is spitting sample-rate mismatch errors and the audio sounds all wrong. Can you sort the rates and the filter out?"
+    },
+    {
+     "doc_id": "grc_agent_scenario/09_docs_stream_tags_concept",
+     "doc_ref": "",
+     "embed": 0.7914,
+     "item": "Explain the concept of a GNU Radio variable and how it is used in flowgraphs.",
+     "item_id": "q_e4e404a75317a135",
+     "ngram_shared": 0,
+     "tfidf": 0.2853,
+     "training": "I'm learning GNU Radio. Use `query_knowledge` with the **docs** domain to explain what a 'stream tag' is and how tags move through a flowgraph. Summarize what the documentation says. Don't change the graph."
+    },
+    {
+     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
+     "doc_ref": "",
+     "embed": 0.7707,
+     "item": "Design a GNU Radio flowgraph that uses a file source, applies filtering, and outputs to both a file sink and a UDP sink for real-time monitoring.",
+     "item_id": "q_e20c91caae63ed54",
+     "ngram_shared": 0,
+     "tfidf": 0.1324,
+     "training": "the file source (`blocks_file_source_0`). The file source's output must go into the filter's input. The time display (`qtgui_time_sink_x_0_0`) and frequency display (`qtgui_freq_sink_x_0_0`) must remain connected directly to the original f…"
+    },
+    {
+     "doc_id": "sft_quarantined_session/t21_gmsk_pipe_build",
+     "doc_ref": "",
+     "embed": 0.7574,
+     "item": "You are tasked with creating a receiver for a signal that uses a non-standard modulation. You have a capture of the IQ data. Describe the step-by-step process…",
+     "item_id": "q_219ddf4f2201b757",
+     "ngram_shared": 0,
+     "tfidf": 0.1235,
+     "training": "I want a GMSK chain that modulates some data, unpacks it in the middle, then demodulates it. Can you build and run it?"
+    },
+    {
+     "doc_id": "sft_trainable_session/t22_epy_integrator",
+     "doc_ref": "",
+     "embed": 0.7521,
+     "item": "In GNU Radio, a custom block implements a PLL for carrier recovery. The block uses a general_work() method and consumes/produces variable amounts of data based…",
+     "item_id": "q_9ce93a861965f692",
+     "ngram_shared": 0,
+     "tfidf": 0.1778,
+     "training": "I need a python block that integrates the incoming stream, resetting its state when a message arrives. It has to validate inside my flowgraph."
+    },
+    {
+     "doc_id": "qoherent_collection_task/t02_qpsk_ber_chain",
+     "doc_ref": "",
+     "embed": 0.7386,
+     "item": "Explain how you would use GNU Radio to test the performance of a new modulation scheme under various channel conditions.",
+     "item_id": "q_a455b9643511a945",
+     "ngram_shared": 0,
+     "tfidf": 0.0169,
+     "training": "make me a qpsk modulator and show me messages getting modulated, sent, decoded, and compared with the original, with the BER"
+    },
+    {
+     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
+     "doc_ref": "",
+     "embed": 0.7373,
+     "item": "A filter: y[n] = 0.5y[n-1] + x[n] - 0.5x[n-1]. Find impulse response and use it to calculate output for x[n] = {1,-1,1,-1}.",
+     "item_id": "q_f738313144adfa19",
+     "ngram_shared": 0,
+     "tfidf": 0.0648,
+     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
+     "doc_ref": "",
+     "embed": 0.7354,
+     "item": "How do you connect a 'Signal Source' block to a 'QT GUI Sink' block in GRC? What parameters must you configure for this to work?",
+     "item_id": "q_21a5bf62d9d7abca",
+     "ngram_shared": 0,
+     "tfidf": 0.1413,
+     "training": "catalog for a squelch block that operates on complex signals. Add it, call it `signal_squelch`, type `analog_simple_squelch_cc`. Set its threshold to `-50` and alpha to `0.01`. 4. Insert `channel_filter` right after the file source (`block…"
+    },
+    {
+     "doc_id": "sft_quarantined_session/t17_wbfm_tune_repair",
+     "doc_ref": "",
+     "embed": 0.733,
+     "item": "If an FSK receiver experiences high bit error rates, what could be the cause?",
+     "item_id": "q_ef5010f831b3d6c0",
+     "ngram_shared": 0,
+     "tfidf": 0.0914,
+     "training": "Hey, my wideband FM receiver graph is spitting sample-rate mismatch errors and the audio sounds all wrong. Can you sort the rates and the filter out?"
+    },
+    {
+     "doc_id": "grc_agent_scenario/01_add_throttle",
+     "doc_ref": "",
+     "embed": 0.7304,
+     "item": "In GNU Radio, you use a 'Throttle' block. Under what specific conditions is a Throttle block absolutely necessary, and why is it dangerous to use one in a real…",
+     "item_id": "q_0f0bcc41631edebc",
+     "ngram_shared": 0,
+     "tfidf": 0.1912,
+     "training": "Take a look at the flowgraph, then add a throttle block in the path between the 350 Hz tone and the adder that mixes the tones together. Call it `mid_throttle`, set its type to float, and have it use the samp_rate variable for its rate. Ma…"
+    }
+   ]
+  },
+  "teacher_answers": {
+   "any_signal": {
+    "items_flagged": 12,
+    "rate": 0.06
+   },
+   "description": "teacher answers and rationales (05_answers)",
+   "embedding": {
+    "items_flagged": 3,
+    "max_cosine_quantiles": {
+     "max": 0.9054,
+     "min": 0.6678,
+     "p10": 0.7496,
+     "p25": 0.7714,
+     "p50": 0.7988,
+     "p75": 0.8317,
+     "p90": 0.8528,
+     "p95": 0.8655,
+     "p99": 0.8874
+    },
+    "passages_embedded": 576,
+    "rate": 0.015,
+    "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 10262,
+   "n_passages": 267068,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 7,
+    "rate": 0.035,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "7 teachers; 10262 (question_id, model) answers",
+    "104 duplicate (question_id, model) rows replaced by the later row (laguna-s21 re-runs)",
+    "1415 rows for dev questions dropped",
+    "0 rows with no text skipped"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 1,
+    "ngram+tfidf": 1,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 1
+   },
+   "sources": [
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/devstral-small2-24b/answers.jsonl",
+     "sha256": "0e460de250ae80ec3405d1f5f6758ddb1d42f181e0001a1e3ff5738a69d92c0f"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/gemma4-31b/answers.jsonl",
+     "sha256": "0e936f72b859640df9f6349aec169ef9970a39ac12025668a9e887d92ca6efd3"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/gpt-oss-120b/answers.jsonl",
+     "sha256": "97c22228532eae6737644696aa561c610c6dcebade2f26f69058046cce034014"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/laguna-s21/answers.jsonl",
+     "sha256": "bf02502e41c4249c1fe8f2cf9c9c7dad9fd6ad6c2b732b71cc857c744d6fded5"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/muse-glimmer-30b/answers.jsonl",
+     "sha256": "46bbded25448b47866f6b8c7440fd77ad820907544e9dfca5225ecd8490534a1"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/nemotron3-super-120b/answers.jsonl",
+     "sha256": "8d4c04280f9dba4b392472e6f6e0832a253170280f987b1fe892692240a4cc0e"
+    },
+    {
+     "path": "data/GRC_dataset_20261007/dataset/05_answers/qwen36-27b/answers.jsonl",
+     "sha256": "6cc79a4afa742b85d11b70e063c7668e9058ea5828cd5efd5c6b4fbbcd5402d6"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 5,
+    "max_cosine_quantiles": {
+     "max": 0.6156,
+     "min": 0.1741,
+     "p10": 0.2719,
+     "p25": 0.3217,
+     "p50": 0.3747,
+     "p75": 0.4273,
+     "p90": 0.4681,
+     "p95": 0.5044,
+     "p99": 0.5718
+    },
+    "rate": 0.025,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "devstral-small2-24b/q_0f24610157c86cf4",
+     "doc_ref": "q_0f24610157c86cf4",
+     "embed": 0.9054,
+     "item": "Calculate the new sampling rate after upsampling a 12 kHz signal by a factor of 4.",
+     "item_id": "q_140b8b2dd724019a",
+     "ngram_shared": 0,
+     "tfidf": 0.5795,
+     "training": "The new sampling rate after downsampling a 48 kHz signal by a factor of 4 is calculated as: 48 kHz ÷ 4 = 12 kHz"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_a70a055613a24fe1",
+     "doc_ref": "q_a70a055613a24fe1",
+     "embed": 0.8896,
+     "item": "Explain how the region of convergence (ROC) in the Laplace transform affects the stability and causality of systems, and how it is determined from the pole-zer…",
+     "item_id": "q_1d340d991f1abe23",
+     "ngram_shared": 0,
+     "tfidf": 0.451,
+     "training": "e^{\\sigma t} e^{j\\omega t}\\). - If \\(\\sigma = 0\\), the Laplace transform reduces to the **Fourier transform** (pure sinusoids). 2. **Region of Convergence (ROC)**: - The Laplace transform is defined over a **ROC** in the s-plane where the…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_81887451de8443fa",
+     "doc_ref": "q_81887451de8443fa",
+     "embed": 0.8874,
+     "item": "You are building an OOT (Out-Of-Tree) module for GNU Radio. Explain the process of defining a new block in C++ and how the `gr-modtool` simplifies the integrat…",
+     "item_id": "q_d58a760a53c68a34",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "gr_modtool` (the GNU Radio module development tool). Create a new Python block for a custom OOT (Out-Of-Tree) module. RF/Wireless/DSP/SDR/GNU Radio Expert. * What is `gr_modtool`? It's a command-line utility that handles the boilerplate fo…"
+    },
+    {
+     "doc_id": "laguna-s21/q_3aa7002eb63d5c58",
+     "doc_ref": "q_3aa7002eb63d5c58",
+     "embed": 0.8798,
+     "item": "Describe how IQ imbalance manifests in the spectrum of a single-tone RF signal after downconversion. How does it differ from DC offset?",
+     "item_id": "q_91ebcee77ca63c08",
+     "ngram_shared": 0,
+     "tfidf": 0.389,
+     "training": "frequency? Actually, after downconversion, IQ imbalance results in an image at -f (the negative frequency) of the desired signal, appearing as a tone at the opposite side of the spectrum. To distinguish: If you have a known tone at some IF…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_1fc86de2ae9510e9",
+     "doc_ref": "q_1fc86de2ae9510e9",
+     "embed": 0.8761,
+     "item": "An OFDM system has 64 subcarriers and a sampling rate of 20 MHz. What is the subcarrier spacing if a 64-point IFFT is used?",
+     "item_id": "q_34fb3c5aef70cda6",
+     "ngram_shared": 0,
+     "tfidf": 0.4261,
+     "training": "4 pilot, and 12 null (including DC). The cyclic prefix is 16 samples. The sample rate is 20 MS/s. Calculate the subcarrier spacing, symbol duration, useful symbol duration, and total symbol duration. What is the maximum delay spread this s…"
+    },
+    {
+     "doc_id": "qwen36-27b/q_82f3a902a1150c6a",
+     "doc_ref": "q_82f3a902a1150c6a",
+     "embed": 0.8755,
+     "item": "How would you implement a custom GNU Radio block in C++ that has multiple input and output streams?",
+     "item_id": "q_25958e1b72c0e063",
+     "ngram_shared": 0,
+     "tfidf": 0.3624,
+     "training": "GNU Radio custom block development - **Specific Questions:** - How to define input and output ports? - What data types are supported? - **Context:** GNU Radio (likely OOT blocks, Python/C++ implementations) 2. **Identify Key Concepts in GN…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_3694a55df5b74c9b",
+     "doc_ref": "q_3694a55df5b74c9b",
+     "embed": 0.875,
+     "item": "Calculate the minimum FFT size required to perform linear convolution of two sequences of length N and M using the overlap-add method.",
+     "item_id": "q_791a5d356b2f460d",
+     "ngram_shared": 0,
+     "tfidf": 0.5144,
+     "training": "To convolve two sequences \\( x[n] \\) and \\( h[n] \\) of length \\( N = 1024 \\) using an FFT-based algorithm (also known as overlap-add or overlap-save), follow these steps: ### **FFT-Based Convolution (Overlap-Add Method)** 1. **Choose FFT S…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_97ebcdce51a77e91",
+     "doc_ref": "q_97ebcdce51a77e91",
+     "embed": 0.8678,
+     "item": "How would you use a GNU Radio variable to control the center frequency of a USRP source from a GUI slider?",
+     "item_id": "q_7f2eb85b452f974a",
+     "ngram_shared": 0,
+     "tfidf": 0.4493,
+     "training": "you want to change a variable (like center frequency) while the flowgraph is running. How do you implement this using a GUI widget and the GNU Radio variable system? We need answer about GNU Radio variable system, GUI widget, change while…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_89af28597364fa12",
+     "doc_ref": "q_89af28597364fa12",
+     "embed": 0.8673,
+     "item": "A signal suffers from IQ imbalance of 0.2 dB amplitude mismatch and 5° phase mismatch. How does this affect the image rejection ratio, and what digital correct…",
+     "item_id": "q_531ced5e3e02fb50",
+     "ngram_shared": 0,
+     "tfidf": 0.4172,
+     "training": "IRR}\\approx1/192$. An IQ imbalance of 1 dB gain mismatch and 5-degree phase error is present. Calculate the image rejection ratio. If the desired signal is at +100 kHz and the image is at -100 kHz, what is the image power relative to the d…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_00c184122e1de21d",
+     "doc_ref": "q_00c184122e1de21d",
+     "embed": 0.867,
+     "item": "A direct-conversion receiver has LO leakage of -30 dBc relative to the desired signal at baseband. The desired signal is at -10 dBFS. What is the absolute leve…",
+     "item_id": "q_bc6ddbf4adbec95d",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "how presence of strong LO leakage can be detected in spectrum of direct-conversion receiver. Direct conversion receiver: zero-IF. LO leakage appears at DC? Or at LO frequency? In direct conversion, LO is at RF frequency, downconverted to b…"
+    }
+   ]
+  },
+  "train_questions": {
+   "any_signal": {
+    "items_flagged": 23,
+    "rate": 0.115
+   },
+   "description": "frozen training questions minus the dev split",
+   "embedding": {
+    "items_flagged": 20,
+    "max_cosine_quantiles": {
+     "max": 0.9522,
+     "min": 0.6957,
+     "p10": 0.7666,
+     "p25": 0.7915,
+     "p50": 0.8205,
+     "p75": 0.8528,
+     "p90": 0.8804,
+     "p95": 0.9038,
+     "p99": 0.9209
+    },
+    "passages_embedded": 1468,
+    "rate": 0.1,
+    "scope": "every passage",
+    "signal": "semantic",
+    "status": "done",
+    "threshold": 0.88
+   },
+   "n_docs": 1468,
+   "n_passages": 1468,
+   "ngram": {
+    "items_coverage_ge_50pct": 0,
+    "items_with_twin": 0,
+    "rate": 0.0,
+    "rate_coverage_ge_50pct": 0.0
+   },
+   "notes": [
+    "1668 training questions; 200 dev questions removed"
+   ],
+   "signal_overlap": {
+    "ngram+embed": 0,
+    "ngram+tfidf": 0,
+    "ngram+tfidf+embed": 0,
+    "tfidf+embed": 8
+   },
+   "sources": [
+    {
+     "path": "data/GRC_dataset_20261007/dataset/04_eval_frozen/train_questions.jsonl",
+     "sha256": "7e3df67853dd23dd010e5218fb946898ea4e263f8a8136f5cca67e5cc261e799"
+    }
+   ],
+   "tfidf": {
+    "items_flagged": 11,
+    "max_cosine_quantiles": {
+     "max": 0.8289,
+     "min": 0.1588,
+     "p10": 0.2602,
+     "p25": 0.315,
+     "p50": 0.369,
+     "p75": 0.4474,
+     "p90": 0.5042,
+     "p95": 0.5615,
+     "p99": 0.6959
+    },
+    "rate": 0.055,
+    "signal": "lexical (not paraphrase detection)",
+    "threshold": 0.55
+   },
+   "top_pairs": [
+    {
+     "doc_id": "q_f886778a63c53b30",
+     "doc_ref": "",
+     "embed": 0.9522,
+     "item": "How does dBm differ from dB in terms of what they represent?",
+     "item_id": "q_69a11f5e4ce23cca",
+     "ngram_shared": 0,
+     "tfidf": 0.353,
+     "training": "What is the difference between dB and dBm?"
+    },
+    {
+     "doc_id": "q_cdb9d188d784089e",
+     "doc_ref": "",
+     "embed": 0.9346,
+     "item": "Explain how dBm is related to dB. What reference level does dBm use?",
+     "item_id": "q_6e0faea656cd822d",
+     "ngram_shared": 0,
+     "tfidf": 0.6361,
+     "training": "What does dBm measure, and what is its reference level?"
+    },
+    {
+     "doc_id": "q_f5b67405ccd63d04",
+     "doc_ref": "",
+     "embed": 0.9208,
+     "item": "If a dB measurement is inconsistent, what could be the issue?",
+     "item_id": "q_ad26c39020601477",
+     "ngram_shared": 0,
+     "tfidf": 0.5603,
+     "training": "If a signal's power measurement in dB is inconsistent, what are the possible causes, and how would you address them?"
+    },
+    {
+     "doc_id": "q_3121fb3fe73f7a0b",
+     "doc_ref": "",
+     "embed": 0.9156,
+     "item": "How does phase modulation (PM) encode information onto a carrier wave?",
+     "item_id": "q_9eaf4014db5dfa3d",
+     "ngram_shared": 0,
+     "tfidf": 0.7867,
+     "training": "How does amplitude modulation (AM) encode information onto a carrier wave?"
+    },
+    {
+     "doc_id": "q_89578735a1a9f161",
+     "doc_ref": "",
+     "embed": 0.906,
+     "item": "Explain how RTL-SDR can be used for demodulating FM radio signals in GNU Radio. What blocks are required?",
+     "item_id": "q_2fb3ad48a14e7b4d",
+     "ngram_shared": 0,
+     "tfidf": 0.3142,
+     "training": "How do you demodulate an AM signal in GNU Radio? What blocks are required, and how are they configured?"
+    },
+    {
+     "doc_id": "q_38757bfc57d45310",
+     "doc_ref": "",
+     "embed": 0.9054,
+     "item": "Implement a high-pass filter in GNU Radio to remove DC offset from a signal.",
+     "item_id": "q_8a85a884de1f5695",
+     "ngram_shared": 0,
+     "tfidf": 0.6732,
+     "training": "Implement an FIR filter in GNU Radio to remove high-frequency noise from a signal."
+    },
+    {
+     "doc_id": "q_6e9d084f02ee5e34",
+     "doc_ref": "",
+     "embed": 0.9054,
+     "item": "Explain the software setup process for RTL-SDR on Ubuntu versus Windows. What are the key differences and potential issues?",
+     "item_id": "q_9ac62847f315bd8d",
+     "ngram_shared": 0,
+     "tfidf": 0.6507,
+     "training": "Explain the software and hardware setup required for BladeRF on Ubuntu versus Windows/macOS. What are the key differences and considerations?"
+    },
+    {
+     "doc_id": "q_37f370b7f5583374",
+     "doc_ref": "",
+     "embed": 0.9045,
+     "item": "A system: y[n] = x[2n]. Is it linear, time-invariant, and/or causal? How would you modify it to be causal?",
+     "item_id": "q_7a5cd9c9da34fe27",
+     "ngram_shared": 0,
+     "tfidf": 0.4833,
+     "training": "A system: y[n] = 2x[n] + 3x[n-1]. Determine if it is: (a) linear, (b) time-invariant, (c) causal, (d) stable. Justify each."
+    },
+    {
+     "doc_id": "q_d6c2cc946a91a5fd",
+     "doc_ref": "",
+     "embed": 0.9042,
+     "item": "Design a band-pass filter centered at 10 kHz with a bandwidth of 2 kHz.",
+     "item_id": "q_9057eaf6ba9e3448",
+     "ngram_shared": 0,
+     "tfidf": 0.5177,
+     "training": "Design a band-pass filter to extract a signal in the 1-2 kHz range from a 10 kHz sampled signal, specifying the filter type and design method."
+    },
+    {
+     "doc_id": "q_0f24610157c86cf4",
+     "doc_ref": "",
+     "embed": 0.904,
+     "item": "Calculate the new sampling rate after upsampling a 12 kHz signal by a factor of 4.",
+     "item_id": "q_140b8b2dd724019a",
+     "ngram_shared": 0,
+     "tfidf": 0.736,
+     "training": "Calculate the new sampling rate after downsampling a 48 kHz signal by a factor of 4."
+    }
+   ]
+  }
+ },
+ "description": "dev questions named in splits/tier_k_dev.json plus items/tier_k/dev records",
+ "embedding_status": "done",
+ "flagged_items": {
+  "q_0473f7fc3c48850a": [
+   "train_questions:embed"
+  ],
+  "q_1137ebea8d573983": [
+   "train_questions:embed"
+  ],
+  "q_140b8b2dd724019a": [
+   "train_questions:tfidf",
+   "train_questions:embed",
+   "teacher_answers:tfidf",
+   "teacher_answers:embed"
+  ],
+  "q_1682079f3d91e2b9": [
+   "train_questions:tfidf",
+   "train_questions:embed"
+  ],
+  "q_1d340d991f1abe23": [
+   "teacher_answers:embed"
+  ],
+  "q_2fb3ad48a14e7b4d": [
+   "train_questions:embed"
+  ],
+  "q_34fb3c5aef70cda6": [
+   "train_questions:embed"
+  ],
+  "q_385ec9e6b80a8a3c": [
+   "train_questions:embed"
+  ],
+  "q_4af3d4be8c06a2df": [
+   "train_questions:embed"
+  ],
+  "q_5125508d56d86860": [
+   "train_questions:tfidf"
+  ],
+  "q_69a11f5e4ce23cca": [
+   "train_questions:embed"
+  ],
+  "q_6e0faea656cd822d": [
+   "train_questions:tfidf",
+   "train_questions:embed"
+  ],
+  "q_791a5d356b2f460d": [
+   "teacher_answers:ngram"
+  ],
+  "q_7a5cd9c9da34fe27": [
+   "train_questions:embed"
+  ],
+  "q_7f2eb85b452f974a": [
+   "teacher_answers:ngram"
+  ],
+  "q_80a7399b75fa118d": [
+   "teacher_answers:ngram"
+  ],
+  "q_8a85a884de1f5695": [
+   "train_questions:tfidf",
+   "train_questions:embed"
+  ],
+  "q_8ecdc62911af2d64": [
+   "train_questions:embed"
+  ],
+  "q_8ed8a2e1c91d301f": [
+   "teacher_answers:tfidf"
+  ],
+  "q_9057eaf6ba9e3448": [
+   "train_questions:tfidf",
+   "train_questions:embed",
+   "teacher_answers:tfidf"
+  ],
+  "q_9a1048a5aeb68aac": [
+   "teacher_answers:ngram",
+   "repaired:ngram"
+  ],
+  "q_9ac62847f315bd8d": [
+   "train_questions:tfidf",
+   "train_questions:embed"
+  ],
+  "q_9eaf4014db5dfa3d": [
+   "train_questions:tfidf",
+   "train_questions:embed"
+  ],
+  "q_ad26c39020601477": [
+   "train_questions:tfidf",
+   "train_questions:embed"
+  ],
+  "q_b528805fb8b16fc4": [
+   "train_questions:embed"
+  ],
+  "q_be516ad3e91eb0f8": [
+   "teacher_answers:ngram",
+   "teacher_answers:tfidf",
+   "repaired_glm:ngram"
+  ],
+  "q_ce76fa99b23b3ed7": [
+   "train_questions:embed"
+  ],
+  "q_cebf27dd1dab9f46": [
+   "teacher_answers:ngram"
+  ],
+  "q_d58a760a53c68a34": [
+   "teacher_answers:ngram",
+   "teacher_answers:embed",
+   "repaired:ngram",
+   "repaired_glm:ngram"
+  ],
+  "q_d6c3a9fbe4e67ed4": [
+   "train_questions:tfidf"
+  ],
+  "q_e8bc12c1ec2deaa5": [
+   "teacher_answers:tfidf"
+  ],
+  "q_ef5010f831b3d6c0": [
+   "train_questions:embed"
+  ],
+  "q_f738313144adfa19": [
+   "train_questions:tfidf"
+  ]
+ },
+ "implements": [
+  "eval plan §6: contamination audit, a contamination rate for each tier",
+  "proposal §4.5: 8-gram decontamination; embedding near-duplicates"
+ ],
+ "n_items": 200,
+ "sources": [
+  {
+   "path": "grc-bench/splits/tier_k_dev.json",
+   "sha256": "02342682e1f7ceeb875c62ee30bf57741bc241eb698c537c073bbfd9e261e2ab"
+  },
+  {
+   "path": "data/GRC_dataset_20261007/dataset/04_eval_frozen/train_questions.jsonl",
+   "sha256": "7e3df67853dd23dd010e5218fb946898ea4e263f8a8136f5cca67e5cc261e799"
+  },
+  {
+   "path": "grc-bench/items/tier_k/dev/questions.jsonl",
+   "sha256": "e57f83b2379cfcdaef28ab2cd41cbcc365381d6ac3c0f341230bbc7d3c17c7f1"
+  }
+ ],
+ "status": "flags are candidates for team review; nothing is removed",
+ "thresholds": {
+  "embed": 0.88,
+  "ngram_high_coverage": 0.5,
+  "ngram_n": 8,
+  "tfidf": 0.55
+ },
+ "tier": "tier_k_dev"
+}

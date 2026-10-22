@@ -1,0 +1,45 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "files[0]: backup/spec_an_copy.grc does not exist",
+    "files[1]: blocks.txt does not exist"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "files[1]: blocks.txt: regex '\\\\A\\\\s*analog_noise_source_x\\\\s*\\\\n\\\\s*analog_sig_source_x\\\\s*\\\\n\\\\s*blocks_add_xx\\\\s*\\\\n\\\\s*blocks_divide_xx\\\\s*\\\\n\\\\s*blocks_file_sink\\\\s*\\\\n\\\\s*blocks_nlog10_ff\\\\s*\\\\n\\\\s*blocks_rms_xx\\\\s*\\\\n\\\\s*blocks_throttle2\\\\s*\\\\n\\\\s*low_pass_filter\\\\s*\\\\Z' does not match"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "45ce64166d3637d90bf8db73f9a7b97ec33dd02fb2529777f0342e180719bca1",
+ "passed": true,
+ "task": "gba-test-08"
+}

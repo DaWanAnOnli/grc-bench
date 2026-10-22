@@ -1,0 +1,220 @@
+options:
+    parameters:
+        alias: ''
+        author: null
+        catch_exceptions: 'True'
+        comment: ''
+        copyright: null
+        description: null
+        gen_linking: dynamic
+        generate_options: no_gui
+        generator_class_name: PythonNoGuiGenerator
+        generator_module: gnuradio.grc.workflows.python_nogui
+        hier_block_src_path: '.:'
+        id: mains_peak
+        max_nouts: '0'
+        output_language: python
+        realtime_scheduling: ''
+        run_command: '{python} -u {filename}'
+        run_options: prompt
+        thread_safe_setters: ''
+        title: null
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 0
+        - 12.0
+        state: enabled
+blocks:
+-   name: samp_rate
+    id: variable
+    parameters:
+        comment: ''
+        value: '48000'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 232
+        - 12.0
+        state: enabled
+-   name: envelope
+    id: blocks_vector_source_x
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        repeat: 'True'
+        tags: '[]'
+        type: float
+        vector: '[1.0]*24000 + [0.5]*24000'
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 0
+        - 212.0
+        state: enabled
+-   name: level
+    id: blocks_multiply_xx
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        num_inputs: '2'
+        type: float
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 232
+        - 212.0
+        state: enabled
+-   name: mains
+    id: analog_sig_source_x
+    parameters:
+        affinity: ''
+        alias: ''
+        amp: '2.0'
+        comment: ''
+        freq: '50'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        offset: '0'
+        phase: '0'
+        samp_rate: samp_rate
+        showports: 'False'
+        type: float
+        waveform: analog.GR_COS_WAVE
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 0
+        - 412.0
+        state: enabled
+-   name: out
+    id: blocks_file_sink
+    parameters:
+        affinity: ''
+        alias: ''
+        append: 'False'
+        comment: ''
+        file: rectified.dat
+        type: float
+        unbuffered: 'False'
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 696
+        - 212.0
+        state: enabled
+-   name: peak_hold
+    id: epy_block
+    parameters:
+        _source_code: "\"\"\"Peak hold: every output is the largest of the current\
+            \ input and the window - 1 inputs before it.\"\"\"\n\nimport numpy as\
+            \ np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    \"\"\
+            \"Peak hold over a sliding window of samples.\"\"\"\n\n    def __init__(self,\
+            \ window=960):\n        gr.sync_block.__init__(self, name=\"Peak Hold\"\
+            , in_sig=[np.float32], out_sig=[np.float32])\n        self.window = int(window)\n\
+            \        self.set_history(self.window)\n\n    def work(self, input_items,\
+            \ output_items):\n        x = input_items[0]\n        n = len(output_items[0])\n\
+            \        output_items[0][:] = np.lib.stride_tricks.sliding_window_view(x[:n\
+            \ + self.window - 1], self.window).max(axis=1)\n        return n\n"
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        window: '960'
+    states:
+        _io_cache: ('Peak Hold', 'blk', [('window', '960')], [('0', 'float', 1)],
+            [('0', 'float', 1)], 'Peak hold over a sliding window of samples.', ['window'])
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 696
+        - 412.0
+        state: enabled
+-   name: peak_sink
+    id: blocks_file_sink
+    parameters:
+        affinity: ''
+        alias: ''
+        append: 'False'
+        comment: ''
+        file: peak.dat
+        type: float
+        unbuffered: 'False'
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 928
+        - 212.0
+        state: enabled
+-   name: rectifier
+    id: blocks_abs_xx
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        type: float
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 464
+        - 212.0
+        state: enabled
+connections:
+-   - envelope
+    - '0'
+    - level
+    - '1'
+-   - level
+    - '0'
+    - rectifier
+    - '0'
+-   - mains
+    - '0'
+    - level
+    - '0'
+-   - peak_hold
+    - '0'
+    - peak_sink
+    - '0'
+-   - rectifier
+    - '0'
+    - out
+    - '0'
+-   - rectifier
+    - '0'
+    - peak_hold
+    - '0'
+metadata:
+    file_format: 1
+    grc_version: 3.10.12.0

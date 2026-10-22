@@ -1,0 +1,155 @@
+options:
+  parameters:
+    alias: ''
+    author: null
+    catch_exceptions: 'True'
+    comment: ''
+    copyright: null
+    description: null
+    gen_linking: dynamic
+    generate_options: no_gui
+    generator_class_name: PythonNoGuiGenerator
+    generator_module: gnuradio.grc.workflows.python_nogui
+    hier_block_src_path: '.:'
+    id: delay_reference
+    max_nouts: '0'
+    output_language: python
+    realtime_scheduling: ''
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    thread_safe_setters: ''
+    title: null
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+
+blocks:
+- name: lpf_taps
+  id: variable
+  parameters:
+    comment: ''
+    value: '[-0.001103, -0.000718, 0.0, 0.001219, 0.002893, 0.004558, 0.00531, 0.004055,
+      0.0, -0.006774, -0.014889, -0.021649, -0.023511, -0.01703, 0.0, 0.027549, 0.062877,
+      0.100808, 0.134761, 0.158291, 0.166706, 0.158291, 0.134761, 0.100808, 0.062877,
+      0.027549, 0.0, -0.01703, -0.023511, -0.021649, -0.014889, -0.006774, 0.0, 0.004055,
+      0.00531, 0.004558, 0.002893, 0.001219, 0.0, -0.000718, -0.001103]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: align
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Delays a float stream by a whole number of samples (zeros\
+      \ first).\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n\
+      \    \"\"\"Delays a float stream by `delay` samples.\"\"\"\n\n    def __init__(self,\
+      \ delay=20):\n        gr.sync_block.__init__(self, name=\"Sample Delay\", in_sig=[np.float32],\
+      \ out_sig=[np.float32])\n        self.delay = int(delay)\n        self.set_history(self.delay\
+      \ + 1)\n\n    def work(self, input_items, output_items):\n        n = len(output_items[0])\n\
+      \        output_items[0][:] = input_items[0][:n]\n        return n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: '20'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Sample Delay', 'blk', [('delay', '20')], [('0', 'float', 1)], [('0',
+      'float', 1)], 'Delays a float stream by `delay` samples.', ['delay'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: lpf
+  id: fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_delay: '0'
+    taps: lpf_taps
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: out_sink
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: out.dat
+    type: float
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: ref_sink
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: ref.dat
+    type: float
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: src
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '0.8'
+    comment: ''
+    freq: '1500'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: float
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+
+connections:
+- [align, '0', ref_sink, '0']
+- [lpf, '0', out_sink, '0']
+- [src, '0', align, '0']
+- [src, '0', lpf, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0

@@ -1,0 +1,53 @@
+{
+ "cache_dir": "/home/lenovo/grc-bench-cache",
+ "gnuradio_version": "3.10.12.0",
+ "gpu": {
+  "llama_cpp_cuda_dir": "/home/lenovo/grc-bench-cache/llama.cpp/b10333-cuda",
+  "llama_cpp_cuda_version": [
+   "version: 10333 (08659901c)",
+   "built with GNU 13.4.0 for Linux x86_64"
+  ],
+  "nvcc": "Build cuda_12.9.r12.9/compiler.36037853_0",
+  "nvidia_smi": "NVIDIA GeForce RTX 5090, 32607 MiB, 610.88, 12.0"
+ },
+ "grc_agent_commit": "6c9812884bebaa51991b91984cd5f1746003cc3d",
+ "packages": {
+  "jsonschema": "4.26.0",
+  "numpy": "2.3.5",
+  "pydantic_ai": "2.37.0",
+  "pytest": "9.1.1",
+  "scipy": "1.16.3",
+  "tiktoken": "0.13.0",
+  "yaml": "6.0.3"
+ },
+ "pins": {
+  "gnuradio": "3.10.12.0",
+  "grc_agent_commit": "6c98128",
+  "llama_cpp_build": "b10333"
+ },
+ "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+ "python": "3.14.4",
+ "third_party": {
+  "embeddinggemma": {
+   "path": "/home/lenovo/grc-bench-cache/models/embeddinggemma-300m-qat-Q8_0.gguf",
+   "sha256": "6fa0c02a9c302be6f977521d399b4de3a46310a4f2621ee0063747881b673f67",
+   "url": "https://huggingface.co/ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/resolve/main/embeddinggemma-300m-qat-Q8_0.gguf"
+  },
+  "llama_cpp": {
+   "path": "/home/lenovo/grc-bench-cache/llama.cpp/llama-b10333-bin-ubuntu-x64.tar.gz",
+   "sha256": "936ce04d98abe2a977e9dd2ff92659bb96947e136acee8f2bc3e21d8eaebbf23",
+   "unpacked": "/home/lenovo/grc-bench-cache/llama.cpp/b10333",
+   "url": "https://github.com/ggml-org/llama.cpp/releases/download/b10333/llama-b10333-bin-ubuntu-x64.tar.gz",
+   "version_output": [
+    "version: 10333 (08659901c)",
+    "built with GNU 11.4.0 for Linux x86_64"
+   ]
+  },
+  "qwen3_4b": {
+   "path": "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+   "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+   "url": "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf"
+  },
+  "tiktoken_cache": "/home/lenovo/grc-bench-cache/tiktoken"
+ }
+}

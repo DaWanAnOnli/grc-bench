@@ -1,0 +1,82 @@
+options:
+  parameters: {id: cw_rx_conj, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '96000'}
+- name: decim
+  id: variable
+  parameters: {value: '8'}
+- name: f_beacon
+  id: variable
+  parameters: {value: '21000'}
+- name: f_tune
+  id: variable
+  parameters: {value: '19500'}
+- name: imp
+  id: import
+  parameters: {imports: import math}
+- name: imp_window
+  id: import
+  parameters: {imports: from gnuradio.fft import window}
+- name: src_beacon
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: f_beacon, amp: '0.5'}
+- name: src_key
+  id: analog_sig_source_x
+  parameters: {type: float, waveform: analog.GR_SQR_WAVE, freq: '5'}
+- name: key_to_c
+  id: blocks_float_to_complex
+  parameters: {}
+- name: on_off
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: src_qrm1
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '25000', amp: '1.0'}
+- name: src_qrm2
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-17000', amp: '1.0'}
+- name: sum3
+  id: blocks_add_xx
+  parameters: {type: complex, num_inputs: '3'}
+- name: tune
+  id: blocks_rotator_cc
+  parameters: {phase_inc: -2 * math.pi * f_tune / samp_rate}
+- name: chan_fir
+  id: fir_filter_xxx
+  parameters: {type: ccf, decim: decim, taps: 'firdes.low_pass(1.0, samp_rate, 3000, 1000, window.WIN_HANN)'}
+- name: channel_sink
+  id: blocks_file_sink
+  parameters: {type: complex, file: channel.dat}
+- name: bfo_conj
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate / decim, freq: '800', amp: '1.6'}
+- name: mix_conj
+  id: blocks_multiply_conjugate_cc
+  parameters: {}
+- name: c2f
+  id: blocks_complex_to_float
+  parameters: {}
+- name: imag_dump
+  id: blocks_null_sink
+  parameters: {type: float}
+- name: audio_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: audio.dat}
+connections:
+- [src_beacon, '0', on_off, '0']
+- [src_key, '0', key_to_c, '0']
+- [key_to_c, '0', on_off, '1']
+- [on_off, '0', sum3, '0']
+- [src_qrm1, '0', sum3, '1']
+- [src_qrm2, '0', sum3, '2']
+- [sum3, '0', tune, '0']
+- [tune, '0', chan_fir, '0']
+- [chan_fir, '0', channel_sink, '0']
+- [chan_fir, '0', mix_conj, '0']
+- [bfo_conj, '0', mix_conj, '1']
+- [mix_conj, '0', c2f, '0']
+- [c2f, '0', audio_sink, '0']
+- [c2f, '1', imag_dump, '0']
+metadata: {file_format: 1}

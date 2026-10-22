@@ -1,0 +1,52 @@
+{
+ "query_knowledge": {
+  "query": "analog_noise_source_x blocks_throttle2 band_pass_filter blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_noise_source_x",
+    "instance_name": "noise",
+    "params": {
+     "type": "float",
+     "amp": "2.0",
+     "seed": "2718",
+     "noise_type": "analog.GR_GAUSSIAN"
+    }
+   },
+   {
+    "block_id": "blocks_throttle2",
+    "instance_name": "thr",
+    "params": {
+     "type": "float"
+    }
+   },
+   {
+    "block_id": "band_pass_filter",
+    "instance_name": "bpf",
+    "params": {
+     "type": "fir_filter_fff",
+     "low_cutoff_freq": "6000",
+     "high_cutoff_freq": "9000",
+     "width": "500"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "snk",
+    "params": {
+     "type": "float",
+     "file": "bandnoise.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "noise:0->thr:0",
+   "thr:0->bpf:0",
+   "bpf:0->snk:0"
+  ]
+ }
+}

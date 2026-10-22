@@ -1,0 +1,81 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "thr",
+     "mag"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "complex to arg phase angle"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "phase of complex samples radians"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "blocks_complex_to_arg",
+      "instance_name": "phase"
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "phase_sink",
+      "params": {
+       "file": "phase.dat",
+       "type": "float"
+      }
+     }
+    ],
+    "add_connections": [
+     "thr:0->phase:0",
+     "phase:0->phase_sink:0"
+    ],
+    "reason": "Record the phase of the noise in radians in phase.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I added a Complex to Arg block after the Throttle and a File Sink writing its output, the phase in radians, to phase.dat as float samples. envelope.dat is unchanged, and the flowgraph is saved."
+}

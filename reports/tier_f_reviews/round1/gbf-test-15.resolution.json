@@ -1,0 +1,66 @@
+{
+ "task": "gbf-test-15",
+ "action": "fix",
+ "rethemed": false,
+ "date": "2026-10-18",
+ "drafted_by": "Claude (Anthropic); decisions pending team review",
+ "accepted": [
+  {
+   "id": "item-quality:F1-cutoff-width-underchecked",
+   "change": "Added f2p band checks derived from the taps of the stated design, firdes.low_pass(1, 64e3, 6e3, 1.5e3), with the aliasing of the decimation included. (1) The noise share of each transition band, 5.25-6.75 kHz: 0.01393 +-25 %. This pass widened the first fixer's +-20 %, under which a cutoff only 1.7 % high (6.1 kHz) already failed because seed 42 reads +4.2 % on that side. (2) The noise share of the last 1.5 kHz of the passband, -5.25 to -3.75 kHz: 0.04042 +-10 %, i.e. unity gain up to 5.25 kHz. (3) The noise share of each stopband, 6.75-8 kHz: at most 1.35e-4, what a flat -30 dB stopband passes. The capture is 32000 output samples, giving 0.5 Hz bins with the tone on an exact bin. Verified with the real ladder: cutoffs of 5.88 and 6.10 kHz pass and 5.80, 5.85, 6.12, 6.15 and 6.20 kHz fail, so the cutoff is held within about 2 % as stated. Widths of 0.9, 1.0, 2.0, 2.25 and 2.4 kHz pass and 0.5, 0.75, 0.8, 2.5, 2.6 and 3.0 kHz fail, against a stated 'between about 1 and 2.5 kHz'. Near-miss mutants: cutoff 5.8e3 and 6.2e3 (+-3.3 %, replacing +-2.5 %, which sat at the tolerance edge), 6.75e3, width 3e3 and 0.5e3, gain 1.1, a rectangular window, and the tone moved to 3.2 kHz."
+  },
+  {
+   "id": "item-quality:F2-rms-expect-idealised",
+   "change": "The expected output RMS is now sqrt(0.5^2 |H(3.1 kHz)|^2 + 0.794^2 * sum(h^2)) = 0.6037, from the stated design's taps (sum h^2 = 0.18014), instead of the brick-wall 0.6069. Measured: reference 0.6025, variants and other noise seeds 0.597-0.604. Gains of 0.96 and 1.04 pass and 1.1 fails, matching 'levels within 5 %'."
+  },
+  {
+   "id": "item-quality:F3-spec-property-wording",
+   "change": "spec_properties were rewritten as {id, text, checked_by} objects. The cutoff and stopband entries state the GNU Radio convention: the transition band is centred on the cutoff, 5.25-6.75 kHz. The stopband entry says the 30 dB is an average over 6.75-8 kHz after decimation. Every mutant's 'breaks' names one of these ids."
+  },
+  {
+   "id": "item-quality:F4-unobservable-keep-unchanged-and-inert-perturbation",
+   "change": "The alpha perturbation is now observable. A p2p check on the tone meter's first 4000 samples expects 0.5*sqrt(1-(1-alpha)^(n+1)) = 0.3639 +-5 % for alpha 0.0005; the example's 0.0001 gives 0.1989. The instruction states that the meters average with alpha 0.0005 and must keep 'how their meters average'. Verified: restoring .0001 on both meters fails, both on settling (0.1989) and on the tone and noise meters at 12000 samples (0.466 / 0.742). A mutant restores it on the tone meter. The 64 kHz rate is observable only through the filter edges relative to the output band (a 48 kHz mutant is killed); this is recorded in notes."
+  },
+  {
+   "id": "compliance:F1-cutoff-width-not-discriminated",
+   "change": "Same fix as item-quality:F1 (spec-derived transition, passband and stopband checks, with near-miss mutants). Whole transition bands are used instead of the reviewer's half-bands [5.5, 6.0] and [6.0, 6.5] kHz. At the correct cutoff, the firdes analysis moves those half-bands by -12 to +7 % and by +23 to -11 % between GNU Radio's windows (Hann to Kaiser, relative to Hamming), but the whole band only by -8 to +5 %. A band centred on the cutoff (+-250 Hz) would separate cutoff from window better (+-3 %), but a 0.5 kHz width would pass it, so the stated width range would need a second check per side. The whole-band check was kept, and review.notes records that the window shifts the effective cutoff tolerance by about +-1 %."
+  },
+  {
+   "id": "compliance:F2-stopband-convention-unstated",
+   "change": "The instruction now names the convention: 'a cutoff frequency of 6 kHz and a transition width of 1.5 kHz centred on the cutoff, as GNU Radio's filter design defines it (the passband ends at 5.25 kHz, the stopband starts at 6.75 kHz), suppressing the noise above 6.75 kHz by at least 30 dB on average'. Consequence, flagged for the team in review.notes: readings of 6 kHz as the passband edge (6-7.5 kHz) or as the stopband edge (4.5-6 kHz) now fail, both as Low Pass Filter cutoffs and as optfir designs. So do a rectangular window (passband share +21 % and about 21 dB of stopband) and a cascade of two identical 6 kHz / 1.5 kHz stages (combined -6 dB point near 5.7 kHz, transition share -37 %). An equiripple design with the stated edges 5.25 / 6.75 kHz passes at 30 dB and at 40 dB (v9 uses 40 dB), as does a properly designed two-stage decimator (v5)."
+  },
+  {
+   "id": "compliance:F3-no-shift-requirement-implicit",
+   "change": "Added 'Do not shift the signal in frequency: the tone must still appear at +3.1 kHz in the 16 kHz output.' Verified: a Frequency Xlating FIR Filter centred on 3.1 kHz fails peak_freq; a centre of 0 (v3) passes."
+  },
+  {
+   "id": "compliance:F4-perturbation-record-incomplete",
+   "change": "perturbation.changes now records that the Qt range widgets freq_offset and snr became plain variables, that the disabled Qt time sink was removed, and that the options block was stripped (qt_gui, run_options prompt, author 'mettus', window settings)."
+  },
+  {
+   "id": "plan:R4-oracle-policy",
+   "change": "The keep clause 'Keep everything else unchanged: ...' literally covered the Throttle and the noise distribution, which are unobservable (a graph without the Throttle passes). It is now an explicit, fully checked list: 'Keep the 64 kHz sample rate, the tone, the noise level and the three measurement outputs (including how their meters average) as they are; the meters must keep measuring the unfiltered tone and noise.' No graph check is added. The request is behavioural, a zoomed 16 kHz spectrum with a stated filter response, and every legitimate structure passes: Low Pass Filter, Rational Resampler, Keep 1 in N after a full-rate filter, Frequency Xlating FIR, two-stage, Polyphase Decimator, FFT filter, Decimating FIR with a taps variable, equiripple, low_pass_2, and the filter before the Throttle. Filtering only the meters' inputs fails the p2p meter checks."
+  },
+  {
+   "id": "plan:R5-R9-R10-R11-R12-T7",
+   "change": "The instruction gives the run condition and the tolerances: tone 1 %, levels 5 %, SNR 0.4 dB, cutoff about 2 %, width about 1-2.5 kHz. Every observation point's sink params include the item type (complex / float). Liveness was re-derived for the non-blocking taps of tooling T7: every tap must hold 32768 items, and the 16 kHz spectrum tap needs 2.05 s behind the Throttle. Variants cover every valid alternative the reviewers showed: v5 two-stage decimation (wide first stage), v6 Polyphase Decimator, v7 FFT filter decimating by 4, v8 Low-Pass Filter Taps variable with a Hann window feeding a Decimating FIR, and v9 equiripple with the stated band edges. This pass added v10, firdes.low_pass_2 at 40 dB, which the compliance reviewer listed as a correct design. It also added v11, with the Throttle removed and noise seed 0, which the compliance reviewer showed and the reworded keep clause now allows. The existing v1-v4 cover the rational resampler, Keep 1 in N with a Blackman window, the decimation held in a variable, and the filter before the Throttle with a Kaiser window. Probe runs with noise seeds 0, 7, 1234 and -1 all pass. The GPL attribution and known limits are in review.notes. R12: complex signals use the two-sided spectrum, so the 18 Oct band_fraction change does not apply; all shares were still re-derived and measured with the corrected oracle."
+  }
+ ],
+ "rejected": [],
+ "notes": "Second fixer pass (G9, after the tooling stage): the first pass's build.py regenerated byte-identically and passed its gates. This pass found and fixed: the transition-band tolerance was tighter than the stated 2 % (6.1 kHz failed), the 'everything else unchanged' clause was unobservable, the stopband statement now says 'on average', the near-miss mutants were moved off the tolerance edge, and two reviewer alternatives are now variants. The partial records were superseded.",
+ "gates": "PASS (18 Oct, current tooling incl. T7): solvability 10/10, size 928 tokens, variants 11/11 at V6, start fails at V6 (f2p fails, p2p passes), mutation 21/21 valid mutants killed (kill rate 1.0, no survivors).",
+ "round2": {
+  "reviewer_findings": [
+   "gbf-test-15:equiripple-stated-edges-rejected"
+  ],
+  "accepted": [
+   {
+    "id": "gbf-test-15:equiripple-stated-edges-rejected",
+    "change": "Option (b) of the finding. The instruction states the filter as band edges (unity gain up to 5.25 kHz, stopband from 6.75 kHz), states the 30 dB figure as what is measured (the noise in 6.75-8 kHz of the 16 kHz output against decimating without a filter), allows any design that meets the edges, and bounds the half-amplitude point to about 5 % of 6 kHz. The transition-band check accepts -45 % to +58 % of the stated design's share, derived from the taps of equiripple designs with the stated edges (0.01-0.5 dB ripple, 30-80 dB: -35 % to +46 %) plus the noise spread (about +-6 %). New variants v12-v14 (optfir 0.1/30, 0.01/30, 0.5/80). Near-miss mutants are now cutoff 5.6 / 6.4 kHz (+-6.7 %); the 0.5 kHz-transition mutant was removed, since it meets the band edges. All 12 of the reviewer's optfir and windowed probes that meet the stated edges now pass; low_pass_2 at 30 dB and a 2.5 kHz transition fail the stopband check, as stated. The resolution's earlier claim about equiripple designs holds now. Version 3."
+   }
+  ],
+  "rejected": [],
+  "resolved_by": "Claude (Anthropic), inline, 22 Oct 2026 (pending team review)",
+  "gates": "ALL PASS (22 Oct): mutation ok, size ok, solvability ok, start_fails ok, variants ok"
+ }
+}

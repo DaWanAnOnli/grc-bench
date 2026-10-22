@@ -1,0 +1,19 @@
+options:
+  parameters: {id: full_wave_rectifier, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: mains
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '50', amp: '2.0'}
+- name: rectifier
+  id: blocks_abs_xx
+  parameters: {type: float}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: rectified.dat}
+connections:
+- [mains, '0', rectifier, '0']
+- [rectifier, '0', out, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,23 @@
+options:
+  parameters: {id: rectifier_mag, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: 48e3}
+- name: ac_in
+  id: analog_sig_source_x
+  parameters: {type: float, waveform: analog.GR_SIN_WAVE, freq: '50', amp: '2'}
+- name: to_cplx
+  id: blocks_float_to_complex
+  parameters: {}
+- name: mag
+  id: blocks_complex_to_mag
+  parameters: {}
+- name: rect_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: rectified.dat}
+connections:
+- [ac_in, '0', to_cplx, '0']
+- [to_cplx, '0', mag, '0']
+- [mag, '0', rect_sink, '0']
+metadata: {file_format: 1}

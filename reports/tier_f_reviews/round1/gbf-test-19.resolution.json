@@ -1,0 +1,31 @@
+{
+ "task": "gbf-test-19",
+ "action": "fix",
+ "rethemed": false,
+ "accepted": [
+  {
+   "id": "item-quality/F1",
+   "change": "Added an f2p check that pins the bit rate independently of the demodulator gain: a signed corr_ref of freq_trace.dat (skip 4096, n 4608, max_lag 256, min 0.6) against the trace the seeded Random Source must give at 4 kbit/s. build.py computes that trace in numpy (MSB-first unpacking, NRZ, firdes.gaussian taps convolved with a 12-sample rectangle, FM sensitivity pi/24, gain 48000/(2*pi*1000)), so the stored 4352-value reference is deterministic; against a real reference run it agrees within 1e-5 at lag 0 (the -100 dB phase noise is the only difference). Calibration (numpy model, same window): every correct bit rate scores >= 0.78 for any BT (0.4: 0.993, 0.3: 1.000, 0.1: 0.871, 0.03: 0.781); wrong bit rates with a re-fitted gain score 0.06-0.21. Re-ran the reviewer's attack graphs through ladder.check with the new task.json; all now fail V6 at corr_ref: w08 (sps 16, gain 2*sps/pi) 0.104, w01 (sps 16, gain for 750 Hz) 0.104, w02 (sps 10, BT 0.2, gain for 1200 Hz) 0.067, w09 (sps 11) 0.062, w10 (sps 13) 0.107, w05 (samp_rate 96000, sps 24) 0.092, which also fails the new sample-rate graph check. Valid alternatives still pass: BT 0.1 (0.871), BT 0.05 (0.800), samp_rate written 48e3. Threshold 0.6 instead of the suggested 0.5, and lags +-128 instead of 1024: under the value-only rule (compliance/F1) no block can be added, so the delay cannot change. The suggested multi-parameter mutants cannot be expressed as gate mutations (edit.apply applies one operator per mutant); they were run as the scratch graphs above instead, and a single-operator mutant that only this check kills was added (Random Source min 1: other bytes, corr 0.43). spec_properties.bit_rate.checked_by updated."
+  },
+  {
+   "id": "item-quality/F2",
+   "change": "The corr_ref check above is signed (tooling T2: Re<ref, x>/(|ref||x|)), so a negated trace fails: w07 (gain -samp_rate/(2*pi*1000)) scores 0.039 and fails V6. Added the mutant 'Quadrature Demod gain negated' (breaks trace_sign, killed only by this check), the spec property trace_sign, and the instruction now says the trace is 'positive above 0 Hz and negative below'."
+  },
+  {
+   "id": "compliance/F1",
+   "change": "Applied the value-only rule R6 with tooling T1: the instruction now says 'Change parameter values only: do not add, remove or rewire blocks, and do not add or remove variables', and three p2p graph checks enforce it and the keep-list: same_blocks_as_start (variables value_only, import/note ignored), same_connections_as_start (isomorphic) and block_present variable with value 48000. w06 (samp_rate 32000 with a literal gain, outputs bit-identical to the reference) now fails the sample-rate check; w11 (HW Impairments bypassed) fails both structure checks. Added the mutant 'bypass channels_impairments_0'; the samp_rate 32000 mutant was already in the set. The old variants broke the value-only rule (v1 added 4 variables, v2 added a Multiply Const, v3 removed the Throttle, as the T1 dry run reported), so they were replaced by five value-only variants: BT 0.25 with sps int(samp_rate/4000); BT 0.3 with GNU Radio's gmsk_demod gain idiom 2*12/math.pi; BT 0.35 with a literal gain; BT 0.4 (band edge, 0.99919) with sps samp_rate//4000; BT 0.15. spec_properties.sample_rate and channel_unchanged checked_by updated."
+  },
+  {
+   "id": "compliance/F2",
+   "change": "review.notes now holds the remaining oracle limits for the team sheet: (1) the bit-rate/sign check depends on the harness seeding numpy with 0 before the Random Source is built (backed by the stated 'keep the random byte source'); (2) samp_rate = 48000 is checked as a graph fact, the Throttle's own rate parameter is not; (3) a changed HW Impairments freq_offset is invisible, because the block does not move the signal. The stale authoring_notes.oracle_limits text was removed: the sign and consistent-rate-change gaps it described are closed."
+  }
+ ],
+ "rejected": [],
+ "other_changes": [
+  "R5: added the set run sentence ('The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.') and a 'run' spec property (V5 liveness, 71680 items at each point).",
+  "R11: perturbation.changes now also records the headless conversion (options stripped, including the author field and qt_gui; the two Qt sinks replaced by File Sinks; seven Qt range widgets turned into variables; const_size removed), and review.notes carries the GPL attribution.",
+  "Added the mutant 'trace written to another file name' (breaks outputs). The mutation set now has 20 mutants, every one valid and killed.",
+  "version 2; disjointness also names the two other G6 test items (gbf-test-20, gbf-test-13)."
+ ],
+ "gates": "PASS (18 Oct, ./gb tier-f gates on the final files): solvability 10/10 at 8 workers; size 610 tokens; variants 5/5 reach V6 and pass; start fails at V6 (f2p false, p2p true); mutation 20 valid mutants, kill rate 1.0, no survivors. build.py regenerates task.json, start.grc, reference.grc and all variants byte-identically."
+}

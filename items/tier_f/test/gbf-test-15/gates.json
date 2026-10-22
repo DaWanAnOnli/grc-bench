@@ -1,0 +1,95 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 20
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 928
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "expected": null,
+   "first_failed": "V6",
+   "passed": true,
+   "v6_groups": {
+    "f2p": false,
+    "p2p": true
+   }
+  },
+  "variants": {
+   "n": 14,
+   "passed": true,
+   "results": {
+    "v10_low_pass_2_40db.grc": [
+     "V6",
+     null
+    ],
+    "v11_no_throttle_seed0.grc": [
+     "V6",
+     null
+    ],
+    "v12_equiripple_0p1db_30db.grc": [
+     "V6",
+     null
+    ],
+    "v13_equiripple_0p01db_30db.grc": [
+     "V6",
+     null
+    ],
+    "v14_equiripple_0p5db_80db.grc": [
+     "V6",
+     null
+    ],
+    "v1_rational_resampler.grc": [
+     "V6",
+     null
+    ],
+    "v2_filter_then_keep_one_in_n.grc": [
+     "V6",
+     null
+    ],
+    "v3_xlating_filter_vars.grc": [
+     "V6",
+     null
+    ],
+    "v4_filter_before_throttle.grc": [
+     "V6",
+     null
+    ],
+    "v5_two_stage_decimation.grc": [
+     "V6",
+     null
+    ],
+    "v6_polyphase_decimator.grc": [
+     "V6",
+     null
+    ],
+    "v7_fft_filter.grc": [
+     "V6",
+     null
+    ],
+    "v8_taps_variable_hann_fir.grc": [
+     "V6",
+     null
+    ],
+    "v9_equiripple_band_edges.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-test-15"
+}

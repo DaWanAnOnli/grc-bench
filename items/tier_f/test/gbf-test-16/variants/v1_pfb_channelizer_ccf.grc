@@ -1,0 +1,94 @@
+options:
+  parameters:
+    id: polyphase_channelizer_demo
+    generate_options: no_gui
+    output_language: python
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    value: '48000'
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    amp: '0.02'
+    type: complex
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
+  parameters:
+    freq: '1200'
+    type: complex
+    amp: '0.8'
+- name: analog_sig_source_x_1
+  id: analog_sig_source_x
+  parameters:
+    freq: '13920'
+    type: complex
+    amp: '0.5'
+- name: analog_sig_source_x_2
+  id: analog_sig_source_x
+  parameters:
+    freq: '34560'
+    type: complex
+    amp: '0.3'
+- name: analog_sig_source_x_3
+  id: analog_sig_source_x
+  parameters:
+    freq: '23040'
+    type: complex
+    amp: '0.2'
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    limit: auto
+    type: complex
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    num_inputs: '5'
+    type: complex
+- name: spectrum_sink
+  id: blocks_file_sink
+  parameters:
+    file: spectrum.dat
+    type: complex
+- name: ch0_sink
+  id: blocks_file_sink
+  parameters:
+    file: ch0.dat
+    type: complex
+- name: ch1_sink
+  id: blocks_file_sink
+  parameters:
+    file: ch1.dat
+    type: complex
+- name: ch2_sink
+  id: blocks_file_sink
+  parameters:
+    file: ch2.dat
+    type: complex
+- name: ch3_sink
+  id: blocks_file_sink
+  parameters:
+    type: complex
+    file: ch3.dat
+- name: pfb_channelizer_hier_ccf_0
+  id: pfb_channelizer_ccf
+  parameters:
+    nchans: '4'
+    taps: firdes.low_pass_2(1.0, samp_rate, 5000, 2000, 80)
+connections:
+- [analog_noise_source_x_0, '0', blocks_throttle2_0, '0']
+- [analog_sig_source_x_0, '0', blocks_add_xx_0, '0']
+- [analog_sig_source_x_1, '0', blocks_add_xx_0, '1']
+- [analog_sig_source_x_2, '0', blocks_add_xx_0, '2']
+- [analog_sig_source_x_3, '0', blocks_add_xx_0, '4']
+- [blocks_add_xx_0, '0', spectrum_sink, '0']
+- [blocks_throttle2_0, '0', blocks_add_xx_0, '3']
+- [blocks_add_xx_0, '0', pfb_channelizer_hier_ccf_0, '0']
+- [pfb_channelizer_hier_ccf_0, '0', ch0_sink, '0']
+- [pfb_channelizer_hier_ccf_0, '1', ch1_sink, '0']
+- [pfb_channelizer_hier_ccf_0, '2', ch2_sink, '0']
+- [pfb_channelizer_hier_ccf_0, '3', ch3_sink, '0']
+metadata:
+  file_format: 1

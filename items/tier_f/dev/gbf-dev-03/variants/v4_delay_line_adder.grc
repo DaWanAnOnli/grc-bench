@@ -1,0 +1,73 @@
+options:
+  parameters: {id: nrz_test_pattern, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: sps
+  id: variable
+  parameters: {value: '8'}
+- name: symbols
+  id: variable
+  parameters: {value: '(1, -1, -1, 1, 1, 1, -1, 1, -1, -1, -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1,
+      1)'}
+- name: src
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '[s for s in symbols for _ in range(sps)]'}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: nrz_out
+  id: blocks_file_sink
+  parameters: {type: float, file: nrz.dat}
+- name: d1
+  id: blocks_delay
+  parameters: {type: float, delay: '1'}
+- name: d2
+  id: blocks_delay
+  parameters: {type: float, delay: '2'}
+- name: d3
+  id: blocks_delay
+  parameters: {type: float, delay: '3'}
+- name: d4
+  id: blocks_delay
+  parameters: {type: float, delay: '4'}
+- name: d5
+  id: blocks_delay
+  parameters: {type: float, delay: '5'}
+- name: d6
+  id: blocks_delay
+  parameters: {type: float, delay: '6'}
+- name: d7
+  id: blocks_delay
+  parameters: {type: float, delay: '7'}
+- name: acc
+  id: blocks_add_xx
+  parameters: {type: float, num_inputs: '8'}
+- name: norm
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '0.125'}
+- name: mf_out
+  id: blocks_file_sink
+  parameters: {type: float, file: mf.dat}
+connections:
+- [src, '0', thr, '0']
+- [thr, '0', nrz_out, '0']
+- [thr, '0', acc, '0']
+- [thr, '0', d1, '0']
+- [thr, '0', d2, '0']
+- [thr, '0', d3, '0']
+- [thr, '0', d4, '0']
+- [thr, '0', d5, '0']
+- [thr, '0', d6, '0']
+- [thr, '0', d7, '0']
+- [d1, '0', acc, '1']
+- [d2, '0', acc, '2']
+- [d3, '0', acc, '3']
+- [d4, '0', acc, '4']
+- [d5, '0', acc, '5']
+- [d6, '0', acc, '6']
+- [d7, '0', acc, '7']
+- [acc, '0', norm, '0']
+- [norm, '0', mf_out, '0']
+metadata: {file_format: 1}

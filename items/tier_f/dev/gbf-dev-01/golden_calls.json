@@ -1,0 +1,58 @@
+{
+ "query_knowledge": {
+  "query": "blocks_vector_source_x blocks_file_sink fir_filter_xxx blocks_threshold_ff",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "blocks_vector_source_x",
+    "instance_name": "src",
+    "params": {
+     "type": "float",
+     "vector": "(0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0)"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "bits_out",
+    "params": {
+     "type": "float",
+     "file": "bits.dat"
+    }
+   },
+   {
+    "block_id": "fir_filter_xxx",
+    "instance_name": "corr",
+    "params": {
+     "type": "fff",
+     "taps": "[1, -1, -1, -1, -1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, 1]"
+    }
+   },
+   {
+    "block_id": "blocks_threshold_ff",
+    "instance_name": "det",
+    "params": {
+     "low": "7.5",
+     "high": "7.5"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "flags_out",
+    "params": {
+     "type": "float",
+     "file": "flags.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "src:0->bits_out:0",
+   "src:0->corr:0",
+   "corr:0->det:0",
+   "det:0->flags_out:0"
+  ]
+ }
+}

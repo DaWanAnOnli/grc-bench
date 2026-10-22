@@ -1,0 +1,4427 @@
+{
+ "signature_version": 2,
+ "seed": "grc-bench-l1-signatures-v2-2026-10-18",
+ "shares": {
+  "test": 0.45,
+  "dev": 0.2,
+  "train": 0.35
+ },
+ "rows": [
+  {
+   "task": "gbf-dev-01",
+   "split": "dev",
+   "family": "build",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_multiply_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_multiply_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_multiply_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "dev",
+   "v2_signature": [
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:tone",
+   "fine_profile": {
+    "scale": 1,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_amp_on_source.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_sine_throttle_db_variable.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_complex_real_part.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_complex_to_real",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v4_const_source_multiplier.grc",
+     "v1_signature": [
+      "analog_const_source_x",
+      "blocks_multiply_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "scale": 1,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": true
+  },
+  {
+   "task": "gbf-dev-02",
+   "split": "dev",
+   "family": "build",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_noise_source_x|band_pass_filter|blocks_throttle2|blocks_file_sink",
+   "cluster_id": "chain:analog_noise_source_x|band_pass_filter|blocks_throttle2|blocks_file_sink",
+   "v1_signature": [
+    "analog_noise_source_x",
+    "band_pass_filter",
+    "blocks_throttle2",
+    "blocks_file_sink"
+   ],
+   "v1_split": "dev",
+   "v2_signature": [
+    "filter",
+    "noise"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:filter|noise",
+   "fine_profile": {
+    "bandpass": 1,
+    "noise": 1
+   },
+   "variants": [
+    {
+     "file": "v1_real_noise_float_to_complex_taps.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "band_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "noise"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "noise": 1
+     }
+    },
+    {
+     "file": "v2_lowpass_then_frequency_shift.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_xx",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "filter",
+      "mix",
+      "noise"
+     ],
+     "v2_split": "dev",
+     "same_signature": false,
+     "same_split": false,
+     "fine_profile": {
+      "lowpass": 1,
+      "mix": 1,
+      "noise": 1
+     }
+    },
+    {
+     "file": "v3_fastnoise_fir_complex_band_pass_taps.grc",
+     "v1_signature": [
+      "analog_fastnoise_source_x",
+      "fir_filter_xxx",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "noise"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "noise": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": true
+  },
+  {
+   "task": "gbf-dev-03",
+   "split": "dev",
+   "family": "modify",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_add_const_vxx|blocks_multiply_const_vxx|blocks_throttle2|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_add_const_vxx|blocks_multiply_const_vxx|blocks_throttle2|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_add_const_vxx",
+    "blocks_multiply_const_vxx",
+    "blocks_throttle2",
+    "blocks_file_sink"
+   ],
+   "v1_split": "dev",
+   "v2_signature": [
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:tone",
+   "fine_profile": {
+    "offset": 1,
+    "scale": 1,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_gain_and_offset.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_const_vxx",
+      "blocks_multiply_const_vxx",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "offset": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_sine_with_source_offset.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_const_vxx",
+      "blocks_multiply_const_vxx",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "offset": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_collapsed_source.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": true,
+   "start_v2_signature": [
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-dev-04",
+   "split": "dev",
+   "family": "repair",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_add_xx|high_pass_filter|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_add_xx|high_pass_filter|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_add_xx",
+    "high_pass_filter",
+    "blocks_file_sink"
+   ],
+   "v1_split": "dev",
+   "v2_signature": [
+    "combine",
+    "filter",
+    "tone"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:combine|filter|tone",
+   "fine_profile": {
+    "combine": 1,
+    "highpass": 1,
+    "tone": 2
+   },
+   "variants": [
+    {
+     "file": "v1_literal_blackman.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "high_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "highpass": 1,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v2_fir_taps.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "highpass": 1,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v3_notch.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "band_reject_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandreject": 1,
+      "combine": 1,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v4_band_pass.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "band_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "combine": 1,
+      "tone": 2
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true,
+   "start_v2_signature": [
+    "combine",
+    "filter",
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-dev-05",
+   "split": "dev",
+   "family": "parameter-tune",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|band_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|band_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "band_pass_filter",
+    "blocks_multiply_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "dev",
+   "v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:filter|harmonic_wave",
+   "fine_profile": {
+    "bandpass": 1,
+    "harmonic_wave": 1,
+    "scale": 1
+   },
+   "variants": [
+    {
+     "file": "v1_filter_gain_blackman.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "band_pass_filter",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "harmonic_wave": 1,
+      "scale": 1
+     }
+    },
+    {
+     "file": "v2_kaiser_samp_rate_expressions.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "band_pass_filter",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "harmonic_wave": 1,
+      "scale": 1
+     }
+    },
+    {
+     "file": "v3_hann_split_gain.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "band_pass_filter",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "harmonic_wave": 1,
+      "scale": 1
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true,
+   "start_v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ]
+  },
+  {
+   "task": "gbf-dev-06",
+   "split": "dev",
+   "family": "build",
+   "level": "L2",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_add_xx|blocks_throttle2|freq_xlating_fir_filter_xxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_add_xx|blocks_throttle2|freq_xlating_fir_filter_xxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_add_xx",
+    "blocks_throttle2",
+    "freq_xlating_fir_filter_xxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "dev",
+   "v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:combine|filter|mix|resample|tone",
+   "fine_profile": {
+    "combine": 1,
+    "decimate": 2,
+    "lowpass": 2,
+    "mix": 2,
+    "tone": 2
+   },
+   "variants": [
+    {
+     "file": "v1_mixer_blackman_lpf.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_xx",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 2,
+      "mix": 2,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v2_rotator_two_stage_decimation.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "blocks_float_to_complex",
+      "blocks_rotator_cc",
+      "fir_filter_xxx",
+      "blocks_keep_one_in_n",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 4,
+      "lowpass": 2,
+      "mix": 2,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v3_fft_xlating_kaiser.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "blocks_float_to_complex",
+      "freq_xlating_fft_filter_ccc",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 2,
+      "mix": 2,
+      "tone": 2
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": true
+  },
+  {
+   "task": "gbf-dev-07",
+   "split": "dev",
+   "family": "modify",
+   "level": "L2",
+   "source_kind": "gnuradio_example",
+   "source_ref": "blocks/stream_mux_demo.grc",
+   "cluster_id": "blocks/stream_mux_demo.grc",
+   "v1_signature": [
+    "blocks_vector_source_x",
+    "blocks_stream_mux",
+    "blocks_throttle2",
+    "blocks_file_sink"
+   ],
+   "v1_split": "train",
+   "v2_signature": [
+    "data_source",
+    "mux"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:data_source|mux",
+   "fine_profile": {
+    "data_source": 3,
+    "mux": 1
+   },
+   "variants": [
+    {
+     "file": "v1_cascaded_muxes.grc",
+     "v1_signature": [
+      "blocks_vector_source_x",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "data_source",
+      "mux"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "data_source": 3,
+      "mux": 2
+     }
+    },
+    {
+     "file": "v2_patterned_interleaver.grc",
+     "v1_signature": [
+      "blocks_vector_source_x",
+      "blocks_patterned_interleaver",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "data_source",
+      "mux"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "data_source": 3,
+      "mux": 1
+     }
+    },
+    {
+     "file": "v3_constant_sources.grc",
+     "v1_signature": [
+      "blocks_vector_source_x",
+      "blocks_stream_mux",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "data_source",
+      "mux"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "data_source": 4,
+      "mux": 1
+     }
+    },
+    {
+     "file": "v4_variables.grc",
+     "v1_signature": [
+      "blocks_vector_source_x",
+      "blocks_stream_mux",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "data_source",
+      "mux"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "data_source": 3,
+      "mux": 1
+     }
+    }
+   ],
+   "rule_split": "dev",
+   "conflict": false,
+   "start_v2_signature": [
+    "data_source",
+    "mux"
+   ]
+  },
+  {
+   "task": "gbf-dev-08",
+   "split": "dev",
+   "family": "repair",
+   "level": "L2",
+   "source_kind": "gnuradio_example",
+   "source_ref": "channels/demo_quantization.grc",
+   "cluster_id": "channels/demo_quantization.grc",
+   "v1_signature": [
+    "analog_noise_source_x",
+    "band_pass_filter",
+    "blocks_add_xx",
+    "blocks_throttle2",
+    "channels_quantizer",
+    "blocks_file_sink"
+   ],
+   "v1_split": "dev",
+   "v2_signature": [
+    "combine",
+    "filter",
+    "noise",
+    "quantize",
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:combine|filter|noise|quantize|tone",
+   "fine_profile": {
+    "bandpass": 1,
+    "combine": 1,
+    "noise": 1,
+    "quantize": 1,
+    "scale": 1,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_float_short_converters.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "band_pass_filter",
+      "blocks_add_xx",
+      "blocks_throttle2",
+      "blocks_float_to_short",
+      "blocks_short_to_float",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "noise",
+      "quantize",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "combine": 1,
+      "noise": 1,
+      "quantize": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_int_levels_first.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "band_pass_filter",
+      "blocks_add_xx",
+      "blocks_throttle2",
+      "blocks_multiply_const_vxx",
+      "blocks_float_to_int",
+      "blocks_int_to_float",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "noise",
+      "quantize",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "combine": 1,
+      "noise": 1,
+      "quantize": 1,
+      "scale": 2,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_char_converters.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "band_pass_filter",
+      "blocks_add_xx",
+      "blocks_throttle2",
+      "blocks_float_to_char",
+      "blocks_char_to_float",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "noise",
+      "quantize",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "combine": 1,
+      "noise": 1,
+      "quantize": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v4_literal_bits_no_throttle.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "band_pass_filter",
+      "blocks_add_xx",
+      "channels_quantizer",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "noise",
+      "quantize",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "combine": 1,
+      "noise": 1,
+      "quantize": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "dev",
+   "conflict": false,
+   "start_v2_signature": [
+    "combine",
+    "filter",
+    "noise",
+    "other:blocks_quantizer_ff",
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-dev-09",
+   "split": "dev",
+   "family": "parameter-tune",
+   "level": "L2",
+   "source_kind": "gnuradio_example",
+   "source_ref": "filter/filter_taps.grc",
+   "cluster_id": "filter/filter_taps.grc",
+   "v1_signature": [
+    "analog_fastnoise_source_x",
+    "fir_filter_xxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "train",
+   "v2_signature": [
+    "filter",
+    "noise",
+    "pulse_shaping"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:filter|noise|pulse_shaping",
+   "fine_profile": {
+    "bandpass": 1,
+    "bandreject": 1,
+    "highpass": 1,
+    "lowpass": 1,
+    "noise": 1,
+    "pulse_shaping": 1
+   },
+   "variants": [
+    {
+     "file": "v1_blackman_300hz.grc",
+     "v1_signature": [
+      "analog_fastnoise_source_x",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "filter",
+      "noise",
+      "pulse_shaping"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "bandreject": 1,
+      "highpass": 1,
+      "lowpass": 1,
+      "noise": 1,
+      "pulse_shaping": 1
+     }
+    },
+    {
+     "file": "v2_band_plan_variables_kaiser.grc",
+     "v1_signature": [
+      "analog_fastnoise_source_x",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "filter",
+      "noise",
+      "pulse_shaping"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "bandreject": 1,
+      "highpass": 1,
+      "lowpass": 1,
+      "noise": 1,
+      "pulse_shaping": 1
+     }
+    },
+    {
+     "file": "v3_literal_taps_hann.grc",
+     "v1_signature": [
+      "analog_fastnoise_source_x",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "filter",
+      "noise",
+      "pulse_shaping"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "bandreject": 1,
+      "highpass": 1,
+      "lowpass": 1,
+      "noise": 1,
+      "pulse_shaping": 1
+     }
+    }
+   ],
+   "rule_split": "dev",
+   "conflict": false,
+   "start_v2_signature": [
+    "filter",
+    "noise",
+    "pulse_shaping"
+   ]
+  },
+  {
+   "task": "gbf-dev-10",
+   "split": "dev",
+   "family": "repair",
+   "level": "L2",
+   "source_kind": "gnuradio_example",
+   "source_ref": "digital/demod/test_corr_est.grc",
+   "cluster_id": "digital/demod/test_corr_est.grc",
+   "v1_signature": [
+    "blocks_null_source",
+    "blocks_stream_mux",
+    "blocks_throttle2",
+    "channels_channel_model",
+    "digital_corr_est_cc",
+    "digital_pfb_clock_sync_xxx",
+    "digital_costas_loop_cc",
+    "blocks_file_sink"
+   ],
+   "v1_split": "train",
+   "v2_signature": [
+    "carrier_sync",
+    "channel_model",
+    "data_source",
+    "frame_sync",
+    "linear_mod",
+    "mux",
+    "pulse_shaping",
+    "resample",
+    "timing_sync"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:carrier_sync|channel_model|data_source|frame_sync|linear_mod|mux|pulse_shaping|resample|timing_sync",
+   "fine_profile": {
+    "carrier_sync": 1,
+    "channel_model": 1,
+    "data_source": 1,
+    "frame_sync": 1,
+    "interpolate": 1,
+    "linear_mod": 1,
+    "mux": 1,
+    "pulse_shaping": 2,
+    "timing_sync": 1
+   },
+   "variants": [
+    {
+     "file": "v1_symbol_sync_pfb_matched_filter.grc",
+     "v1_signature": [
+      "blocks_null_source",
+      "blocks_stream_mux",
+      "blocks_throttle2",
+      "channels_channel_model",
+      "digital_corr_est_cc",
+      "digital_symbol_sync_xx",
+      "digital_costas_loop_cc",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "carrier_sync",
+      "channel_model",
+      "data_source",
+      "frame_sync",
+      "linear_mod",
+      "mux",
+      "pulse_shaping",
+      "resample",
+      "timing_sync"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "carrier_sync": 1,
+      "channel_model": 1,
+      "data_source": 1,
+      "frame_sync": 1,
+      "interpolate": 1,
+      "linear_mod": 1,
+      "mux": 1,
+      "pulse_shaping": 2,
+      "timing_sync": 1
+     }
+    },
+    {
+     "file": "v2_rrc_filter_then_symbol_sync.grc",
+     "v1_signature": [
+      "blocks_null_source",
+      "blocks_stream_mux",
+      "blocks_throttle2",
+      "channels_channel_model",
+      "digital_corr_est_cc",
+      "fir_filter_xxx",
+      "digital_symbol_sync_xx",
+      "digital_costas_loop_cc",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "carrier_sync",
+      "channel_model",
+      "data_source",
+      "frame_sync",
+      "linear_mod",
+      "mux",
+      "pulse_shaping",
+      "resample",
+      "timing_sync"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "carrier_sync": 1,
+      "channel_model": 1,
+      "data_source": 1,
+      "frame_sync": 1,
+      "interpolate": 1,
+      "linear_mod": 1,
+      "mux": 1,
+      "pulse_shaping": 2,
+      "timing_sync": 1
+     }
+    },
+    {
+     "file": "v3_ccf_literals_no_throttle.grc",
+     "v1_signature": [
+      "blocks_null_source",
+      "blocks_stream_mux",
+      "channels_channel_model",
+      "digital_corr_est_cc",
+      "digital_pfb_clock_sync_xxx",
+      "digital_costas_loop_cc",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "carrier_sync",
+      "channel_model",
+      "data_source",
+      "frame_sync",
+      "linear_mod",
+      "mux",
+      "pulse_shaping",
+      "resample",
+      "timing_sync"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "carrier_sync": 1,
+      "channel_model": 1,
+      "data_source": 1,
+      "frame_sync": 1,
+      "interpolate": 1,
+      "linear_mod": 1,
+      "mux": 1,
+      "pulse_shaping": 2,
+      "timing_sync": 1
+     }
+    }
+   ],
+   "rule_split": "dev",
+   "conflict": false,
+   "start_v2_signature": [
+    "carrier_sync",
+    "channel_model",
+    "data_source",
+    "frame_sync",
+    "linear_mod",
+    "mux",
+    "pulse_shaping",
+    "resample",
+    "timing_sync"
+   ]
+  },
+  {
+   "task": "gbf-test-01",
+   "split": "test",
+   "family": "build",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_multiply_const_vxx|low_pass_filter|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_multiply_const_vxx|low_pass_filter|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_multiply_const_vxx",
+    "low_pass_filter",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:filter|harmonic_wave",
+   "fine_profile": {
+    "harmonic_wave": 1,
+    "lowpass": 1,
+    "scale": 1
+   },
+   "variants": [
+    {
+     "file": "v1_filter_gain_blackman.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1
+     }
+    },
+    {
+     "file": "v2_unipolar_shift.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_const_vxx",
+      "blocks_add_const_vxx",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "offset": 1,
+      "scale": 1
+     }
+    },
+    {
+     "file": "v3_fir_taps_throttle.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "fir_filter_xxx",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "scale": 1
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true
+  },
+  {
+   "task": "gbf-test-02",
+   "split": "test",
+   "family": "build",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_multiply_conjugate_cc|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_multiply_conjugate_cc|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_multiply_conjugate_cc",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "mix",
+    "tone"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:mix|tone",
+   "fine_profile": {
+    "mix": 1,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_multiply_negative_lo.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "mix",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "mix": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_conjugate_block.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_conjugate_cc",
+      "blocks_multiply_xx",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "mix",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "mix": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_rotator.grc",
+     "v1_signature": [
+      "import"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "mix",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "mix": 1,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true
+  },
+  {
+   "task": "gbf-test-03",
+   "split": "test",
+   "family": "build",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_noise_source_x|blocks_throttle2|band_pass_filter|blocks_file_sink",
+   "cluster_id": "chain:analog_noise_source_x|blocks_throttle2|band_pass_filter|blocks_file_sink",
+   "v1_signature": [
+    "analog_noise_source_x",
+    "blocks_throttle2",
+    "band_pass_filter",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "filter",
+    "noise"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:filter|noise",
+   "fine_profile": {
+    "bandpass": 1,
+    "noise": 1
+   },
+   "variants": [
+    {
+     "file": "v1_hpf_lpf_cascade.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "high_pass_filter",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "noise"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "highpass": 1,
+      "lowpass": 1,
+      "noise": 1
+     }
+    },
+    {
+     "file": "v2_fir_filter_firdes_taps.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "blocks_throttle2",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "noise"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "noise": 1
+     }
+    },
+    {
+     "file": "v3_fastnoise_blackman.grc",
+     "v1_signature": [
+      "analog_fastnoise_source_x",
+      "band_pass_filter",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "filter",
+      "noise"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "noise": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false
+  },
+  {
+   "task": "gbf-test-04",
+   "split": "test",
+   "family": "build",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_multiply_const_vxx|blocks_add_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_multiply_const_vxx|blocks_add_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_multiply_const_vxx",
+    "blocks_add_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:tone",
+   "fine_profile": {
+    "offset": 1,
+    "scale": 1,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_source_amp_offset.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_offset_then_scale_sine.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_add_const_vxx",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "offset": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_const_source_adder.grc",
+     "v1_signature": [
+      "analog_const_source_x",
+      "blocks_add_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "offset": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false
+  },
+  {
+   "task": "gbf-test-05",
+   "split": "test",
+   "family": "build",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_add_xx|fft_filter_xxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_add_xx|fft_filter_xxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_add_xx",
+    "fft_filter_xxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "combine",
+    "filter",
+    "tone"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:combine|filter|tone",
+   "fine_profile": {
+    "combine": 1,
+    "highpass": 1,
+    "tone": 2
+   },
+   "variants": [
+    {
+     "file": "v1_high_pass_filter_block.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "high_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "highpass": 1,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v2_inline_taps_fir_blackman.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "highpass": 1,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v3_sine_kaiser_throttle.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "blocks_throttle2",
+      "high_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "highpass": 1,
+      "tone": 2
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true
+  },
+  {
+   "task": "gbf-test-06",
+   "split": "test",
+   "family": "modify",
+   "level": "L1",
+   "source_kind": "gnuradio_example",
+   "source_ref": "analog/sig_source_msg_ports.grc",
+   "cluster_id": "analog/sig_source_msg_ports.grc",
+   "v1_signature": [
+    "blocks_message_strobe",
+    "blocks_message_strobe_random",
+    "analog_sig_source_x",
+    "blocks_throttle2",
+    "blocks_file_sink"
+   ],
+   "v1_split": "train",
+   "v2_signature": [
+    "message_source",
+    "tone"
+   ],
+   "v2_split": "dev",
+   "v2_cluster_id": "chain:message_source|tone",
+   "fine_profile": {
+    "message_source": 2,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_pmt_dict_api.grc",
+     "v1_signature": [
+      "blocks_message_strobe",
+      "blocks_message_strobe_random",
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "message_source",
+      "tone"
+     ],
+     "v2_split": "dev",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "message_source": 2,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_variables.grc",
+     "v1_signature": [
+      "blocks_message_strobe",
+      "blocks_message_strobe_random",
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "message_source",
+      "tone"
+     ],
+     "v2_split": "dev",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "message_source": 2,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_gain_stage.grc",
+     "v1_signature": [
+      "blocks_message_strobe",
+      "blocks_message_strobe_random",
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "message_source",
+      "tone"
+     ],
+     "v2_split": "dev",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "message_source": 2,
+      "scale": 1,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "message_source",
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-test-07",
+   "split": "test",
+   "family": "modify",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_multiply_const_vxx|low_pass_filter|blocks_add_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_multiply_const_vxx|low_pass_filter|blocks_add_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_multiply_const_vxx",
+    "low_pass_filter",
+    "blocks_add_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:filter|harmonic_wave",
+   "fine_profile": {
+    "harmonic_wave": 1,
+    "lowpass": 1,
+    "offset": 1,
+    "scale": 1
+   },
+   "variants": [
+    {
+     "file": "v1_blackman_before_sink.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_const_vxx",
+      "blocks_add_const_vxx",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "offset": 1,
+      "scale": 1
+     }
+    },
+    {
+     "file": "v2_fir_taps_hann_at_source.grc",
+     "v1_signature": [
+      "import"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "offset": 1,
+      "scale": 1
+     }
+    },
+    {
+     "file": "v3_fft_filter_lp2.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_multiply_const_vxx",
+      "fft_filter_xxx",
+      "blocks_add_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "offset": 1,
+      "scale": 1
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true,
+   "start_v2_signature": [
+    "harmonic_wave"
+   ]
+  },
+  {
+   "task": "gbf-test-08",
+   "split": "test",
+   "family": "repair",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_add_const_vxx|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_add_const_vxx|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_add_const_vxx",
+    "low_pass_filter",
+    "blocks_multiply_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:filter|harmonic_wave",
+   "fine_profile": {
+    "harmonic_wave": 1,
+    "lowpass": 1,
+    "offset": 1,
+    "scale": 1
+   },
+   "variants": [
+    {
+     "file": "v1_gain_in_filter.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_const_vxx",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "offset": 1
+     }
+    },
+    {
+     "file": "v2_source_offset_blackman.grc",
+     "v1_signature": [
+      "import"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "scale": 1
+     }
+    },
+    {
+     "file": "v3_fir_taps_throttle.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_add_const_vxx",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "offset": 1
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true,
+   "start_v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ]
+  },
+  {
+   "task": "gbf-test-09",
+   "split": "test",
+   "family": "repair",
+   "level": "L1",
+   "source_kind": "gnuradio_example",
+   "source_ref": "blocks/peak_detector2.grc",
+   "cluster_id": "blocks/peak_detector2.grc",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_peak_detector2_fb",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "harmonic_wave",
+    "peak_detect"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:harmonic_wave|peak_detect",
+   "fine_profile": {
+    "harmonic_wave": 1,
+    "peak_detect": 1
+   },
+   "variants": [
+    {
+     "file": "v1_uchar_to_float.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_peak_detector2_fb",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "harmonic_wave",
+      "peak_detect"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "peak_detect": 1
+     }
+    },
+    {
+     "file": "v2_char_to_short_then_short_to_float.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_peak_detector2_fb",
+      "blocks_char_to_short",
+      "blocks_short_to_float",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "harmonic_wave",
+      "peak_detect"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "peak_detect": 1
+     }
+    },
+    {
+     "file": "v3_throttle_and_char_to_float.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_peak_detector2_fb",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "harmonic_wave",
+      "peak_detect"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "peak_detect": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "harmonic_wave",
+    "peak_detect"
+   ]
+  },
+  {
+   "task": "gbf-test-10",
+   "split": "test",
+   "family": "repair",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|high_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|high_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "high_pass_filter",
+    "blocks_multiply_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "filter",
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:filter|tone",
+   "fine_profile": {
+    "highpass": 1,
+    "scale": 1,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_taps_variable_fir.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "fir_filter_xxx",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "filter",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "highpass": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_dc_blocker.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "dc_blocker_xx",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "filter",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "highpass": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_gain_in_filter.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "high_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "highpass": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v4_scale_then_band_pass.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_const_vxx",
+      "band_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "bandpass": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "other:filter_high_pass_filter",
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-test-11",
+   "split": "test",
+   "family": "parameter-tune",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_multiply_const_vxx|low_pass_filter|blocks_add_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_multiply_const_vxx|low_pass_filter|blocks_add_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_multiply_const_vxx",
+    "low_pass_filter",
+    "blocks_add_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "filter",
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:filter|tone",
+   "fine_profile": {
+    "lowpass": 1,
+    "offset": 1,
+    "scale": 1,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_source_amp_wide_filter.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_const_vxx",
+      "low_pass_filter",
+      "blocks_add_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "lowpass": 1,
+      "offset": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_filter_gain_blackman.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_const_vxx",
+      "low_pass_filter",
+      "blocks_add_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "lowpass": 1,
+      "offset": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_samp_rate_expressions.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_const_vxx",
+      "low_pass_filter",
+      "blocks_add_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "lowpass": 1,
+      "offset": 1,
+      "scale": 1,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "filter",
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-test-12",
+   "split": "test",
+   "family": "parameter-tune",
+   "level": "L1",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "low_pass_filter",
+    "blocks_multiply_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:filter|harmonic_wave",
+   "fine_profile": {
+    "harmonic_wave": 1,
+    "lowpass": 1,
+    "scale": 1
+   },
+   "variants": [
+    {
+     "file": "v1_wide_blackman_filter.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "low_pass_filter",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "scale": 1
+     }
+    },
+    {
+     "file": "v2_cosine_source_no_filter.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": false,
+     "same_split": false,
+     "fine_profile": {
+      "scale": 1,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_add_const_dc_and_filter_gain.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_const_vxx",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "harmonic_wave"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "harmonic_wave": 1,
+      "lowpass": 1,
+      "offset": 1
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true,
+   "start_v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ]
+  },
+  {
+   "task": "gbf-test-13",
+   "split": "test",
+   "family": "build",
+   "level": "L2",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_add_xx|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_add_xx|low_pass_filter|blocks_multiply_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_add_xx",
+    "low_pass_filter",
+    "blocks_multiply_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "combine",
+    "filter",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:combine|filter|resample|tone",
+   "fine_profile": {
+    "combine": 1,
+    "decimate": 2,
+    "lowpass": 1,
+    "scale": 1,
+    "tone": 2
+   },
+   "variants": [
+    {
+     "file": "v1_fir_taps_gain_in_filter.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "identity": 1,
+      "lowpass": 1,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v2_fullrate_filter_then_keep.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "blocks_throttle2",
+      "low_pass_filter",
+      "blocks_keep_one_in_n",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 1,
+      "scale": 1,
+      "tone": 2
+     }
+    },
+    {
+     "file": "v3_rational_resampler.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "rational_resampler_xxx",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 1,
+      "scale": 1,
+      "tone": 2
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true
+  },
+  {
+   "task": "gbf-test-14",
+   "split": "test",
+   "family": "build",
+   "level": "L2",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|rational_resampler_xxx|analog_frequency_modulator_fc|analog_quadrature_demod_cf|low_pass_filter|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|rational_resampler_xxx|analog_frequency_modulator_fc|analog_quadrature_demod_cf|low_pass_filter|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "rational_resampler_xxx",
+    "analog_frequency_modulator_fc",
+    "analog_quadrature_demod_cf",
+    "low_pass_filter",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "filter",
+    "fm_demod",
+    "fm_mod",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:filter|fm_demod|fm_mod|resample|tone",
+   "fine_profile": {
+    "decimate": 1,
+    "fm_demod": 1,
+    "fm_mod": 1,
+    "interpolate": 1,
+    "lowpass": 2,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_pfb_up_rational_down.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "pfb_arb_resampler_xxx",
+      "analog_frequency_modulator_fc",
+      "analog_quadrature_demod_cf",
+      "rational_resampler_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "filter",
+      "fm_demod",
+      "fm_mod",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "decimate": 1,
+      "fm_demod": 1,
+      "fm_mod": 1,
+      "interpolate": 1,
+      "lowpass": 2,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_interp_fir_fm_demod_block.grc",
+     "v1_signature": [
+      "import"
+     ],
+     "v1_split": "dev",
+     "v2_signature": [
+      "filter",
+      "fm_demod",
+      "fm_mod",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "decimate": 1,
+      "fm_demod": 1,
+      "fm_mod": 1,
+      "interpolate": 1,
+      "lowpass": 2,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_throttle_lpf_keep_one_in_n.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "rational_resampler_xxx",
+      "analog_frequency_modulator_fc",
+      "analog_quadrature_demod_cf",
+      "low_pass_filter",
+      "blocks_keep_one_in_n",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "filter",
+      "fm_demod",
+      "fm_mod",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "decimate": 1,
+      "fm_demod": 1,
+      "fm_mod": 1,
+      "interpolate": 1,
+      "lowpass": 2,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false
+  },
+  {
+   "task": "gbf-test-15",
+   "split": "test",
+   "family": "modify",
+   "level": "L2",
+   "source_kind": "gnuradio_example",
+   "source_ref": "channels/demo_spec_an.grc",
+   "cluster_id": "channels/demo_spec_an.grc",
+   "v1_signature": [
+    "analog_noise_source_x",
+    "blocks_rms_xx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "train",
+   "v2_signature": [
+    "combine",
+    "divide",
+    "filter",
+    "log",
+    "noise",
+    "power_measure",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:combine|divide|filter|log|noise|power_measure|resample|tone",
+   "fine_profile": {
+    "combine": 1,
+    "decimate": 1,
+    "divide": 1,
+    "log": 1,
+    "lowpass": 1,
+    "noise": 1,
+    "power_measure": 2,
+    "tone": 1
+   },
+   "variants": [
+    {
+     "file": "v1_rational_resampler.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "blocks_rms_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "divide",
+      "filter",
+      "log",
+      "noise",
+      "power_measure",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "divide": 1,
+      "log": 1,
+      "lowpass": 1,
+      "noise": 1,
+      "power_measure": 2,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v2_filter_then_keep_one_in_n.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "blocks_rms_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "divide",
+      "filter",
+      "log",
+      "noise",
+      "power_measure",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "divide": 1,
+      "log": 1,
+      "lowpass": 1,
+      "noise": 1,
+      "power_measure": 2,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v3_xlating_filter_vars.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "blocks_rms_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "divide",
+      "filter",
+      "log",
+      "noise",
+      "power_measure",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "divide": 1,
+      "log": 1,
+      "lowpass": 1,
+      "noise": 1,
+      "power_measure": 2,
+      "tone": 1
+     }
+    },
+    {
+     "file": "v4_filter_before_throttle.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "blocks_rms_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "divide",
+      "filter",
+      "log",
+      "noise",
+      "power_measure",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "divide": 1,
+      "log": 1,
+      "lowpass": 1,
+      "noise": 1,
+      "power_measure": 2,
+      "tone": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "combine",
+    "divide",
+    "log",
+    "noise",
+    "power_measure",
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-test-16",
+   "split": "test",
+   "family": "modify",
+   "level": "L2",
+   "source_kind": "gnuradio_example",
+   "source_ref": "filter/polyphase_channelizer_demo.grc",
+   "cluster_id": "filter/polyphase_channelizer_demo.grc",
+   "v1_signature": [
+    "analog_noise_source_x",
+    "blocks_throttle2",
+    "blocks_add_xx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "noise",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:combine|filter|mix|noise|resample|tone",
+   "fine_profile": {
+    "combine": 1,
+    "decimate": 1,
+    "lowpass": 1,
+    "mix": 1,
+    "noise": 1,
+    "tone": 3
+   },
+   "variants": [
+    {
+     "file": "v1_pfb_channelizer_ccf.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "blocks_throttle2",
+      "blocks_add_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "noise",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "lowpass": 1,
+      "mix": 1,
+      "noise": 1,
+      "tone": 3
+     }
+    },
+    {
+     "file": "v2_xlating_filters.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "blocks_throttle2",
+      "blocks_add_xx",
+      "freq_xlating_fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "noise",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 4,
+      "lowpass": 4,
+      "mix": 3,
+      "noise": 1,
+      "tone": 3
+     }
+    },
+    {
+     "file": "v3_hier_variables.grc",
+     "v1_signature": [
+      "analog_noise_source_x",
+      "blocks_throttle2",
+      "blocks_add_xx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "noise",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "lowpass": 1,
+      "mix": 1,
+      "noise": 1,
+      "tone": 3
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "noise",
+    "resample",
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-test-17",
+   "split": "test",
+   "family": "repair",
+   "level": "L2",
+   "source_kind": "gnuradio_example",
+   "source_ref": "digital/demod/pam_timing.grc",
+   "cluster_id": "digital/demod/pam_timing.grc",
+   "v1_signature": [
+    "analog_random_source_x",
+    "digital_chunks_to_symbols_xx",
+    "pfb_arb_resampler_xxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "train",
+   "v2_signature": [
+    "channel_model",
+    "data_source",
+    "linear_mod",
+    "pulse_shaping",
+    "resample",
+    "timing_sync"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:channel_model|data_source|linear_mod|pulse_shaping|resample|timing_sync",
+   "fine_profile": {
+    "channel_model": 1,
+    "data_source": 1,
+    "interpolate": 1,
+    "linear_mod": 1,
+    "pulse_shaping": 2,
+    "timing_sync": 1
+   },
+   "variants": [
+    {
+     "file": "v1_literal_spb.grc",
+     "v1_signature": [
+      "analog_random_source_x",
+      "digital_chunks_to_symbols_xx",
+      "pfb_arb_resampler_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "channel_model",
+      "data_source",
+      "linear_mod",
+      "pulse_shaping",
+      "resample",
+      "timing_sync"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "channel_model": 1,
+      "data_source": 1,
+      "interpolate": 1,
+      "linear_mod": 1,
+      "pulse_shaping": 2,
+      "timing_sync": 1
+     }
+    },
+    {
+     "file": "v2_inline_rx_rate.grc",
+     "v1_signature": [
+      "analog_random_source_x",
+      "digital_chunks_to_symbols_xx",
+      "pfb_arb_resampler_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "channel_model",
+      "data_source",
+      "linear_mod",
+      "pulse_shaping",
+      "resample",
+      "timing_sync"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "channel_model": 1,
+      "data_source": 1,
+      "interpolate": 1,
+      "linear_mod": 1,
+      "pulse_shaping": 2,
+      "timing_sync": 1
+     }
+    },
+    {
+     "file": "v3_64_filter_bank.grc",
+     "v1_signature": [
+      "analog_random_source_x",
+      "digital_chunks_to_symbols_xx",
+      "pfb_arb_resampler_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "channel_model",
+      "data_source",
+      "linear_mod",
+      "pulse_shaping",
+      "resample",
+      "timing_sync"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "channel_model": 1,
+      "data_source": 1,
+      "interpolate": 1,
+      "linear_mod": 1,
+      "pulse_shaping": 2,
+      "timing_sync": 1
+     }
+    },
+    {
+     "file": "v4_no_throttle.grc",
+     "v1_signature": [
+      "analog_random_source_x",
+      "digital_chunks_to_symbols_xx",
+      "pfb_arb_resampler_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "channel_model",
+      "data_source",
+      "linear_mod",
+      "pulse_shaping",
+      "resample",
+      "timing_sync"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "channel_model": 1,
+      "data_source": 1,
+      "interpolate": 1,
+      "linear_mod": 1,
+      "pulse_shaping": 2,
+      "timing_sync": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "channel_model",
+    "data_source",
+    "linear_mod",
+    "pulse_shaping",
+    "resample",
+    "timing_sync"
+   ]
+  },
+  {
+   "task": "gbf-test-18",
+   "split": "test",
+   "family": "repair",
+   "level": "L2",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_add_xx|blocks_multiply_xx|low_pass_filter|blocks_multiply_xx|blocks_complex_to_real|blocks_multiply_const_vxx|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_add_xx|blocks_multiply_xx|low_pass_filter|blocks_multiply_xx|blocks_complex_to_real|blocks_multiply_const_vxx|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_add_xx",
+    "blocks_multiply_xx",
+    "low_pass_filter",
+    "blocks_multiply_xx",
+    "blocks_complex_to_real",
+    "blocks_multiply_const_vxx",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:combine|filter|mix|resample|tone",
+   "fine_profile": {
+    "combine": 1,
+    "decimate": 1,
+    "lowpass": 1,
+    "mix": 2,
+    "scale": 1,
+    "tone": 3
+   },
+   "variants": [
+    {
+     "file": "v1_rotator_bfo_blackman.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "blocks_multiply_xx",
+      "low_pass_filter",
+      "blocks_rotator_cc",
+      "blocks_complex_to_real",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "lowpass": 1,
+      "mix": 2,
+      "scale": 1,
+      "tone": 3
+     }
+    },
+    {
+     "file": "v2_xlating_filter_bfo_gain.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_xx",
+      "blocks_complex_to_real",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "lowpass": 1,
+      "mix": 2,
+      "tone": 3
+     }
+    },
+    {
+     "file": "v3_rotator_tune_conjugate_bfo.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_multiply_conjugate_cc",
+      "blocks_complex_to_float",
+      "blocks_null_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "mix",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 1,
+      "lowpass": 1,
+      "mix": 2,
+      "tone": 3
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "resample",
+    "tone"
+   ]
+  },
+  {
+   "task": "gbf-test-19",
+   "split": "test",
+   "family": "parameter-tune",
+   "level": "L2",
+   "source_kind": "gnuradio_example",
+   "source_ref": "channels/demo_gmsk.grc",
+   "cluster_id": "channels/demo_gmsk.grc",
+   "v1_signature": [
+    "analog_random_source_x",
+    "digital_gmsk_mod",
+    "blocks_throttle2",
+    "channels_impairments",
+    "analog_quadrature_demod_cf",
+    "blocks_file_sink"
+   ],
+   "v1_split": "train",
+   "v2_signature": [
+    "channel_model",
+    "data_source",
+    "fm_demod",
+    "fsk_mod",
+    "pulse_shaping",
+    "resample"
+   ],
+   "v2_split": "test",
+   "v2_cluster_id": "chain:channel_model|data_source|fm_demod|fsk_mod|pulse_shaping|resample",
+   "fine_profile": {
+    "channel_model": 1,
+    "data_source": 1,
+    "fm_demod": 1,
+    "fsk_mod": 1,
+    "interpolate": 1,
+    "pulse_shaping": 1
+   },
+   "variants": [
+    {
+     "file": "v1_bit_rate_variables_bt025.grc",
+     "v1_signature": [
+      "analog_random_source_x",
+      "digital_gmsk_mod",
+      "blocks_throttle2",
+      "channels_impairments",
+      "analog_quadrature_demod_cf",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "channel_model",
+      "data_source",
+      "fm_demod",
+      "fsk_mod",
+      "pulse_shaping",
+      "resample"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "channel_model": 1,
+      "data_source": 1,
+      "fm_demod": 1,
+      "fsk_mod": 1,
+      "interpolate": 1,
+      "pulse_shaping": 1
+     }
+    },
+    {
+     "file": "v2_gain_after_demod_multiply_const.grc",
+     "v1_signature": [
+      "analog_random_source_x",
+      "digital_gmsk_mod",
+      "blocks_throttle2",
+      "channels_impairments",
+      "analog_quadrature_demod_cf",
+      "blocks_multiply_const_vxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "channel_model",
+      "data_source",
+      "fm_demod",
+      "fsk_mod",
+      "pulse_shaping",
+      "resample"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "channel_model": 1,
+      "data_source": 1,
+      "fm_demod": 1,
+      "fsk_mod": 1,
+      "interpolate": 1,
+      "pulse_shaping": 1,
+      "scale": 1
+     }
+    },
+    {
+     "file": "v3_no_throttle_bt035_literal_gain.grc",
+     "v1_signature": [
+      "analog_random_source_x",
+      "digital_gmsk_mod",
+      "channels_impairments",
+      "analog_quadrature_demod_cf",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "channel_model",
+      "data_source",
+      "fm_demod",
+      "fsk_mod",
+      "pulse_shaping",
+      "resample"
+     ],
+     "v2_split": "test",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "channel_model": 1,
+      "data_source": 1,
+      "fm_demod": 1,
+      "fsk_mod": 1,
+      "interpolate": 1,
+      "pulse_shaping": 1
+     }
+    }
+   ],
+   "rule_split": "test",
+   "conflict": false,
+   "start_v2_signature": [
+    "channel_model",
+    "data_source",
+    "fm_demod",
+    "fsk_mod",
+    "pulse_shaping",
+    "resample"
+   ]
+  },
+  {
+   "task": "gbf-test-20",
+   "split": "test",
+   "family": "parameter-tune",
+   "level": "L2",
+   "source_kind": "composed_chain",
+   "source_ref": "analog_sig_source_x|blocks_add_xx|low_pass_filter|low_pass_filter|blocks_file_sink",
+   "cluster_id": "chain:analog_sig_source_x|blocks_add_xx|low_pass_filter|low_pass_filter|blocks_file_sink",
+   "v1_signature": [
+    "analog_sig_source_x",
+    "blocks_add_xx",
+    "low_pass_filter",
+    "low_pass_filter",
+    "blocks_file_sink"
+   ],
+   "v1_split": "test",
+   "v2_signature": [
+    "combine",
+    "filter",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "train",
+   "v2_cluster_id": "chain:combine|filter|resample|tone",
+   "fine_profile": {
+    "combine": 1,
+    "decimate": 2,
+    "lowpass": 2,
+    "tone": 4
+   },
+   "variants": [
+    {
+     "file": "v1_blackman_windows.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "low_pass_filter",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 2,
+      "tone": 4
+     }
+    },
+    {
+     "file": "v2_decimate_2_then_6.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "low_pass_filter",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 2,
+      "tone": 4
+     }
+    },
+    {
+     "file": "v3_kaiser_with_variables.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "low_pass_filter",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 2,
+      "tone": 4
+     }
+    },
+    {
+     "file": "v4_sharp_first_stage.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "low_pass_filter",
+      "low_pass_filter",
+      "blocks_file_sink"
+     ],
+     "v1_split": "test",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 2,
+      "tone": 4
+     }
+    },
+    {
+     "file": "v5_fir_filter_second_stage.grc",
+     "v1_signature": [
+      "analog_sig_source_x",
+      "blocks_add_xx",
+      "low_pass_filter",
+      "fir_filter_xxx",
+      "blocks_file_sink"
+     ],
+     "v1_split": "train",
+     "v2_signature": [
+      "combine",
+      "filter",
+      "resample",
+      "tone"
+     ],
+     "v2_split": "train",
+     "same_signature": true,
+     "same_split": true,
+     "fine_profile": {
+      "combine": 1,
+      "decimate": 2,
+      "lowpass": 2,
+      "tone": 4
+     }
+    }
+   ],
+   "rule_split": "train",
+   "conflict": true,
+   "start_v2_signature": [
+    "combine",
+    "filter",
+    "resample",
+    "tone"
+   ]
+  }
+ ],
+ "twin_groups": [
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "test",
+   "tasks": [
+    "gbf-dev-06",
+    "gbf-test-18"
+   ],
+   "splits": [
+    "dev",
+    "test"
+   ],
+   "kinds": [
+    "composed_chain"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "train",
+   "tasks": [
+    "gbf-test-13",
+    "gbf-test-20"
+   ],
+   "splits": [
+    "test"
+   ],
+   "kinds": [
+    "composed_chain"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "tone"
+   ],
+   "v2_split": "train",
+   "tasks": [
+    "gbf-dev-04",
+    "gbf-test-05"
+   ],
+   "splits": [
+    "dev",
+    "test"
+   ],
+   "kinds": [
+    "composed_chain"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ],
+   "v2_split": "train",
+   "tasks": [
+    "gbf-dev-05",
+    "gbf-test-01",
+    "gbf-test-07",
+    "gbf-test-08",
+    "gbf-test-12"
+   ],
+   "splits": [
+    "dev",
+    "test"
+   ],
+   "kinds": [
+    "composed_chain"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "noise"
+   ],
+   "v2_split": "test",
+   "tasks": [
+    "gbf-dev-02",
+    "gbf-test-03"
+   ],
+   "splits": [
+    "dev",
+    "test"
+   ],
+   "kinds": [
+    "composed_chain"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "tone"
+   ],
+   "v2_split": "test",
+   "tasks": [
+    "gbf-test-10",
+    "gbf-test-11"
+   ],
+   "splits": [
+    "test"
+   ],
+   "kinds": [
+    "composed_chain"
+   ]
+  },
+  {
+   "v2_signature": [
+    "tone"
+   ],
+   "v2_split": "test",
+   "tasks": [
+    "gbf-dev-01",
+    "gbf-dev-03",
+    "gbf-test-04"
+   ],
+   "splits": [
+    "dev",
+    "test"
+   ],
+   "kinds": [
+    "composed_chain"
+   ]
+  }
+ ],
+ "solution_overlaps": [
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "resample",
+    "tone"
+   ],
+   "tasks": [
+    "gbf-dev-06",
+    "gbf-test-18"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "resample",
+    "tone"
+   ],
+   "tasks": [
+    "gbf-test-13",
+    "gbf-test-20"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "tone"
+   ],
+   "tasks": [
+    "gbf-dev-04",
+    "gbf-test-05"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ],
+   "tasks": [
+    "gbf-dev-05",
+    "gbf-test-01",
+    "gbf-test-07",
+    "gbf-test-08",
+    "gbf-test-12"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "noise"
+   ],
+   "tasks": [
+    "gbf-dev-02",
+    "gbf-test-03"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "tone"
+   ],
+   "tasks": [
+    "gbf-test-10",
+    "gbf-test-11"
+   ]
+  },
+  {
+   "v2_signature": [
+    "tone"
+   ],
+   "tasks": [
+    "gbf-dev-01",
+    "gbf-dev-03",
+    "gbf-test-04",
+    "gbf-test-12"
+   ]
+  }
+ ],
+ "reserved": [
+  {
+   "v2_signature": [
+    "carrier_sync",
+    "channel_model",
+    "data_source",
+    "frame_sync",
+    "linear_mod",
+    "mux",
+    "pulse_shaping",
+    "resample",
+    "timing_sync"
+   ],
+   "v2_split": "test",
+   "digest": "b81b0cc41960851e7c70",
+   "tasks": [
+    "gbf-dev-10"
+   ]
+  },
+  {
+   "v2_signature": [
+    "channel_model",
+    "data_source",
+    "fm_demod",
+    "fsk_mod",
+    "pulse_shaping",
+    "resample"
+   ],
+   "v2_split": "test",
+   "digest": "29a13630a4ab383919d0",
+   "tasks": [
+    "gbf-test-19"
+   ]
+  },
+  {
+   "v2_signature": [
+    "channel_model",
+    "data_source",
+    "linear_mod",
+    "pulse_shaping",
+    "resample",
+    "timing_sync"
+   ],
+   "v2_split": "test",
+   "digest": "90953dfcf0ec96a7642c",
+   "tasks": [
+    "gbf-test-17"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "divide",
+    "filter",
+    "log",
+    "noise",
+    "power_measure",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "train",
+   "digest": "2d4f9815ea866d38085e",
+   "tasks": [
+    "gbf-test-15"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "noise",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "train",
+   "digest": "fd19b849478687a9f70d",
+   "tasks": [
+    "gbf-test-16"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "mix",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "test",
+   "digest": "27d038f88cbdd861b839",
+   "tasks": [
+    "gbf-dev-06",
+    "gbf-test-18"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "noise",
+    "quantize",
+    "tone"
+   ],
+   "v2_split": "test",
+   "digest": "1ac302bfc20c5b87f4e0",
+   "tasks": [
+    "gbf-dev-08"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "train",
+   "digest": "ba7214e46f34ff3fe3bf",
+   "tasks": [
+    "gbf-test-13",
+    "gbf-test-20"
+   ]
+  },
+  {
+   "v2_signature": [
+    "combine",
+    "filter",
+    "tone"
+   ],
+   "v2_split": "train",
+   "digest": "33789262226244a5ed04",
+   "tasks": [
+    "gbf-dev-04",
+    "gbf-test-05"
+   ]
+  },
+  {
+   "v2_signature": [
+    "data_source",
+    "mux"
+   ],
+   "v2_split": "test",
+   "digest": "6479a87c44ec30d75f68",
+   "tasks": [
+    "gbf-dev-07"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "fm_demod",
+    "fm_mod",
+    "resample",
+    "tone"
+   ],
+   "v2_split": "test",
+   "digest": "f77b92c4dfed7b580069",
+   "tasks": [
+    "gbf-test-14"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "harmonic_wave"
+   ],
+   "v2_split": "train",
+   "digest": "c5397304a2048ef3b764",
+   "tasks": [
+    "gbf-dev-05",
+    "gbf-test-01",
+    "gbf-test-07",
+    "gbf-test-08",
+    "gbf-test-12"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "mix",
+    "noise"
+   ],
+   "v2_split": "dev",
+   "digest": "5f80a56e12bacfecaea3",
+   "tasks": [
+    "gbf-dev-02"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "noise"
+   ],
+   "v2_split": "test",
+   "digest": "d10c13614d6a9c101429",
+   "tasks": [
+    "gbf-dev-02",
+    "gbf-test-03"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "noise",
+    "pulse_shaping"
+   ],
+   "v2_split": "test",
+   "digest": "a27921e97d54ada8925f",
+   "tasks": [
+    "gbf-dev-09"
+   ]
+  },
+  {
+   "v2_signature": [
+    "filter",
+    "tone"
+   ],
+   "v2_split": "test",
+   "digest": "baaaf6581cef560a67a4",
+   "tasks": [
+    "gbf-test-10",
+    "gbf-test-11"
+   ]
+  },
+  {
+   "v2_signature": [
+    "harmonic_wave",
+    "peak_detect"
+   ],
+   "v2_split": "test",
+   "digest": "de17f08cc093a90fcaf5",
+   "tasks": [
+    "gbf-test-09"
+   ]
+  },
+  {
+   "v2_signature": [
+    "message_source",
+    "tone"
+   ],
+   "v2_split": "dev",
+   "digest": "fd138bddb17aee775806",
+   "tasks": [
+    "gbf-test-06"
+   ]
+  },
+  {
+   "v2_signature": [
+    "mix",
+    "tone"
+   ],
+   "v2_split": "train",
+   "digest": "27ef5b2d38ad51048836",
+   "tasks": [
+    "gbf-test-02"
+   ]
+  },
+  {
+   "v2_signature": [
+    "tone"
+   ],
+   "v2_split": "test",
+   "digest": "7bed20560ffaf7d331db",
+   "tasks": [
+    "gbf-dev-01",
+    "gbf-dev-03",
+    "gbf-test-04",
+    "gbf-test-12"
+   ]
+  }
+ ],
+ "ablation": [
+  {
+   "config": "v1: ordered block ids along one walk",
+   "variants": 65,
+   "signature_differs": 51,
+   "split_differs": 38,
+   "distinct_reference_cells": 19
+  },
+  {
+   "config": "fine classes, multiset (scale/offset kept, LP/HP/BP/BR and decim/interp apart)",
+   "variants": 65,
+   "signature_differs": 20,
+   "split_differs": 10,
+   "distinct_reference_cells": 15
+  },
+  {
+   "config": "fine classes, set",
+   "variants": 65,
+   "signature_differs": 19,
+   "split_differs": 14,
+   "distinct_reference_cells": 15
+  },
+  {
+   "config": "v2 but scale/offset kept as classes",
+   "variants": 65,
+   "signature_differs": 15,
+   "split_differs": 6,
+   "distinct_reference_cells": 14
+  },
+  {
+   "config": "v2 but filter responses kept apart",
+   "variants": 65,
+   "signature_differs": 6,
+   "split_differs": 5,
+   "distinct_reference_cells": 11
+  },
+  {
+   "config": "v2 but decimation/interpolation kept apart",
+   "variants": 65,
+   "signature_differs": 2,
+   "split_differs": 2,
+   "distinct_reference_cells": 9
+  },
+  {
+   "config": "v2 as a multiset (counts kept)",
+   "variants": 65,
+   "signature_differs": 4,
+   "split_differs": 3,
+   "distinct_reference_cells": 11
+  },
+  {
+   "config": "v2 (adopted)",
+   "variants": 65,
+   "signature_differs": 2,
+   "split_differs": 2,
+   "distinct_reference_cells": 9
+  }
+ ],
+ "loophole_cases": [
+  {
+   "case": "gbf-test-04: inert Throttle inserted",
+   "v1": [
+    "test",
+    "train"
+   ],
+   "v2_signature": [
+    [
+     "tone"
+    ],
+    [
+     "tone"
+    ]
+   ],
+   "v2": [
+    "test",
+    "test"
+   ]
+  },
+  {
+   "case": "gbf-test-04: Add Const and Multiply Const swapped",
+   "v1": [
+    "test",
+    "train"
+   ],
+   "v2_signature": [
+    [
+     "tone"
+    ],
+    [
+     "tone"
+    ]
+   ],
+   "v2": [
+    "test",
+    "test"
+   ]
+  },
+  {
+   "case": "gbf-test-03 / gbf-dev-02: Throttle before or after the band-pass",
+   "v1": [
+    "test",
+    "dev"
+   ],
+   "v2_signature": [
+    [
+     "filter",
+     "noise"
+    ],
+    [
+     "filter",
+     "noise"
+    ]
+   ],
+   "v2": [
+    "test",
+    "test"
+   ]
+  },
+  {
+   "case": "gbf-test-03: Fast Noise Source instead of Noise Source",
+   "v1": [
+    "test",
+    "train"
+   ],
+   "v2_signature": [
+    [
+     "filter",
+     "noise"
+    ],
+    [
+     "filter",
+     "noise"
+    ]
+   ],
+   "v2": [
+    "test",
+    "test"
+   ]
+  },
+  {
+   "case": "gbf-test-02: Multiply Conjugate vs Multiply with a negative LO",
+   "v1": [
+    "test",
+    "dev"
+   ],
+   "v2_signature": [
+    [
+     "mix",
+     "tone"
+    ],
+    [
+     "mix",
+     "tone"
+    ]
+   ],
+   "v2": [
+    "train",
+    "train"
+   ]
+  },
+  {
+   "case": "gbf-test-02: Multiply Conjugate vs Rotator",
+   "v1": [
+    "test",
+    "train"
+   ],
+   "v2_signature": [
+    [
+     "mix",
+     "tone"
+    ],
+    [
+     "mix",
+     "tone"
+    ]
+   ],
+   "v2": [
+    "train",
+    "train"
+   ]
+  },
+  {
+   "case": "gbf-test-02: Multiply Conjugate vs Frequency Xlating FIR (taps [1])",
+   "v1": [
+    "test",
+    "train"
+   ],
+   "v2_signature": [
+    [
+     "mix",
+     "tone"
+    ],
+    [
+     "mix",
+     "tone"
+    ]
+   ],
+   "v2": [
+    "train",
+    "train"
+   ]
+  },
+  {
+   "case": "gbf-test-02: Multiply Conjugate vs Conjugate + Multiply + Throttle",
+   "v1": [
+    "test",
+    "train"
+   ],
+   "v2_signature": [
+    [
+     "mix",
+     "tone"
+    ],
+    [
+     "mix",
+     "tone"
+    ]
+   ],
+   "v2": [
+    "train",
+    "train"
+   ]
+  },
+  {
+   "case": "gbf-dev-06 (L2, two branches): Throttle removed",
+   "v1": [
+    "dev",
+    "train"
+   ],
+   "v2_signature": [
+    [
+     "combine",
+     "filter",
+     "mix",
+     "resample",
+     "tone"
+    ],
+    [
+     "combine",
+     "filter",
+     "mix",
+     "resample",
+     "tone"
+    ]
+   ],
+   "v2": [
+    "test",
+    "test"
+   ]
+  }
+ ],
+ "class_space": {
+  "sources": [
+   "tone",
+   "harmonic_wave",
+   "noise",
+   "data_source"
+  ],
+  "processing": [
+   "filter",
+   "mix",
+   "combine",
+   "multiply",
+   "resample",
+   "fm_mod",
+   "fm_demod",
+   "envelope",
+   "quantize",
+   "delay",
+   "hilbert",
+   "conjugate",
+   "nonlinear",
+   "agc",
+   "pulse_shaping",
+   "linear_mod"
+  ],
+  "n_signatures": 6970,
+  "split_counts": {
+   "test": 3165,
+   "train": 2460,
+   "dev": 1345
+  },
+  "n_small": 68,
+  "small_split_counts": {
+   "test": 24,
+   "train": 23,
+   "dev": 21
+  },
+  "uniformity_20000": {
+   "dev": 4055,
+   "train": 6896,
+   "test": 9049
+  }
+ },
+ "v2_classes": [
+  "tone",
+  "harmonic_wave",
+  "noise",
+  "data_source",
+  "message_source",
+  "mix",
+  "combine",
+  "multiply",
+  "conjugate",
+  "filter",
+  "pulse_shaping",
+  "hilbert",
+  "resample",
+  "fm_mod",
+  "fm_demod",
+  "envelope",
+  "phase",
+  "linear_mod",
+  "linear_demod",
+  "fsk_mod",
+  "fsk_demod",
+  "quantize",
+  "carrier_sync",
+  "timing_sync",
+  "frame_sync",
+  "equalizer",
+  "channel_model",
+  "agc",
+  "squelch",
+  "power_measure",
+  "log",
+  "divide",
+  "peak_detect",
+  "delay",
+  "mux",
+  "demux",
+  "nonlinear",
+  "fft",
+  "fec",
+  "custom"
+ ]
+}

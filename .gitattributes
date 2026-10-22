@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.grc text eol=lf
+*.py text eol=lf
+gb text eol=lf
+*.docx binary
+*.pdf binary
+*.png binary

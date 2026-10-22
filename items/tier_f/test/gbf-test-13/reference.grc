@@ -1,0 +1,44 @@
+options:
+  parameters: {id: if_data_tx, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: symbols
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '(-1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1,
+      -1, -1, 1, 1, -1, 1, 1, 1, -1, 1, -1, 1, -1)'}
+- name: hold
+  id: blocks_repeat
+  parameters: {type: float, interp: '8'}
+- name: pulse_shaping
+  id: low_pass_filter
+  parameters: {type: fir_filter_fff, cutoff_freq: '2000', width: '1000'}
+- name: to_complex
+  id: blocks_float_to_complex
+  parameters: {}
+- name: if_lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '8000'}
+- name: upconvert
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: if_sink
+  id: blocks_file_sink
+  parameters: {type: complex, file: if.dat}
+- name: symbol_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: symbols.dat}
+connections:
+- [symbols, '0', hold, '0']
+- [hold, '0', pulse_shaping, '0']
+- [pulse_shaping, '0', to_complex, '0']
+- [to_complex, '0', upconvert, '0']
+- [if_lo, '0', upconvert, '1']
+- [upconvert, '0', throttle, '0']
+- [throttle, '0', if_sink, '0']
+- [symbols, '0', symbol_sink, '0']
+metadata: {file_format: 1}

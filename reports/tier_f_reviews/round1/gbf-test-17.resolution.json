@@ -1,0 +1,36 @@
+{
+ "task": "gbf-test-17",
+ "action": "fix",
+ "rethemed": false,
+ "relabel": {},
+ "resolved_by": "Claude (Anthropic), fixer group G8, 18 Oct 2026 (pending team review). Completes an earlier, interrupted G8 run: its build.py and generated files were consistent (byte-identical regeneration), but its gates.json listed an invalid mutant that no longer existed. This run re-verified every change with probes, corrected one recorded number, rebuilt and re-gated.",
+ "accepted": [
+  {
+   "id": "item-quality/F1-keep-requirements-unchecked",
+   "change": "The 'keep' sentence is now checked, all in group p2p. (1) Five block_present blocks_file_sink checks with {file, type} for tx_signal.dat and rx_symbols.dat (complex) and timing_error.dat, timing_rate.dat and timing_phase.dat (float). (2) A path channels_channel_model -> {Polyphase Clock Sync, Symbol Sync, M&M, MSK timing recovery} -> blocks_file_sink. (3) The reviewer's stopgap for the channel values: block_present channels_channel_model with {noise_voltage: noise_amp, epsilon: interpratio, freq_offset: freq_offset}, plus variables holding 0.998 and 0.05. This is string-level and recorded as known limit (1). (4) A second observation point, tx_signal.dat, with a signed complex corr_ref >= 0.999 against the exact transmitted waveform. build.py computes it from the same blocks and the worker's numpy seed, so the 9.6 kBd rate, roll-off 0.5, the constellation and the 48 kHz rate become measurable. Probes: the reviewer's shortcut (no clock sync, interpratio 1, Delay 3 + decimating RRC FIR) passes every signal check but fails the path check, the channel check and three File Sink checks. Deleting the three timing sinks fails the File Sink checks. All five reviewer survivors are now killed mutants: noise 0, interpratio 1, interpratio 1.002, roll-off 0.35, channel taps 1j."
+  },
+  {
+   "id": "item-quality/F2-symbol-check-phase-blind",
+   "change": "The symbol check is now corr_ref against the complex transmitted QPSK symbols (ref + ref_imag, tooling T2) with signed: true and min 0.95, over 4,096 symbols with a fixed-delay search of -64..192 symbols. The instruction states 'without any rotation or I/Q mirroring' and the 0.95 bound. Probes with a block inserted before rx_symbols.dat: Complex Conjugate scores 0.037, Multiply Const 1j 0.026, exp(j*pi/4) 0.707; the reference scores 0.9994. A drifting rotation (frequency offset 1e-4) is killed. Mutants channel taps 1j and 45 degrees were added; the conjugate cannot be written with the current single-op edit set, so it is verified by probe only. The check note and spec_properties.symbol_sequence now describe the signed check."
+  },
+  {
+   "id": "item-quality/F3-receiver-parameters-vs-v3",
+   "change": "Option 1: the instruction no longer states 32 filters, loop bandwidth 0.0628 or maximum deviation 0.5. It describes 'a Polyphase Clock Sync whose bank of root-raised-cosine filters is matched to the transmitter's pulse and symbol rate', so v3 (64 filters) obeys it. Both reviewer alternatives are variants: v5 (textbook taps, 11 symbols per filter, int length) and v6 (spb = samp_rate/sym_rate/interpratio = 5.01). v7 adds int(samp_rate/sym_rate) with init_phase nfilts/2. spec_properties.receiver_design records that these settings are not requirements. Probes: spb 5.05 and 5.1 and clock loop_bw 0.03 and 0.1 also pass."
+  },
+  {
+   "id": "compliance/F1-mutation-gate-misses-stated-requirements",
+   "change": "The five survivors are now mutants: noise_amp 0, interpratio 1, interpratio 1.002, rolloff 0.35, channel taps 1j. Also added: 45-degree rotation, frequency offset 1e-4, shared nfilts 64, sym_rate 10000 at both ends, transmitter resampler rate 4.8, timing_rate.dat renamed, the tx_signal.dat sink bypassed, a wrong tap and osps 2. Deleting a single timing sink is not a valid mutant: pfb_clock_sync_ccf accepts 1 or 4 connected outputs and fails V5. Sink deletion is covered by the rename and tx-sink mutants and by the three-sink deletion probe. 25 mutants, all valid, all killed."
+  },
+  {
+   "id": "compliance/F2-inaccurate-recorded-claims",
+   "change": "(a) The corr_ref note and spec_properties.symbol_sequence now describe the signed complex check, which detects constant rotations and mirroring. (b) spec_properties.pulse_shape became receiver_design: only the clock sync's own filter count may change (v3: filter_size 64 with matching taps). Changing the shared nfilts to 64 is a killed mutant labelled 'transmitter', because the resampler keeps 32 arms. (c) The 4.99 sentence was replaced by a measured statement and re-measured in this run (24 runs, 8 in parallel). spb = samp_rate/sym_rate*interpratio = 4.99 passed 21 of 24 with four distinct outputs; the earlier G8 trial gave 20 of 24 (the round-1 64/64 predates T7's scheduling change). spb 5 and 5.01 were bit-identical in 24 of 24. build.py and review.notes (4) now record both trials."
+  }
+ ],
+ "rejected": [],
+ "notes": [
+  "Set-level note applied (fix plan G8): gbf-dev-10 no longer repairs the Polyphase Clock Sync. Its fault is now a float-typed Null Source. review.notes (5) and disjointness of both items say so.",
+  "Known limits in review.notes: (1) channel keep checked at string level; (2) File Sink checks pin file name and type, not which clock-sync output feeds each; (3) any timing-recovery block satisfies the path check; (4) the GNU Radio 3.10.12 Polyphase Clock Sync is not reproducible just below an integer samples-per-symbol, so the wrong-direction answer 4.99 passes in most but not all runs. The matched 5 and the compensating 5.01 are deterministic.",
+  "Probe scripts (scratch, not part of the item): probe_t17.py and probe_t17_reps.py in the G8 scratchpad."
+ ],
+ "gates": "ALL PASS (18 Oct, after the final change; two observation points, after T7): solvability 10/10 at 8 workers; reference 975 tokens; variants 7/7 at V6; start fails at V3 = fault.expected_rung; mutation 25/25 valid, kill rate 1.0, no survivors."
+}

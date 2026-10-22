@@ -1,0 +1,30 @@
+options:
+  parameters: {id: if_mixer_v3, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: lo_freq
+  id: parameter
+  parameters: {label: LO frequency, type: eng_float, value: 12.7e3, hide: none}
+- name: rf
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '10700', amp: '0.8'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: float, freq: lo_freq, amp: '1.0'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: float}
+- name: lpf_fir
+  id: fir_filter_xxx
+  parameters: {type: fff, taps: 'firdes.low_pass(1.0, samp_rate, 3000, 2000)'}
+- name: sink
+  id: blocks_file_sink
+  parameters: {type: float, file: if.dat}
+connections:
+- [rf, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', lpf_fir, '0']
+- [lpf_fir, '0', sink, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,46 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V6: observation 'clip': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'clipped.dat', 'type': 'float'}}; clip max_int_dev = observation missing; clip min = observation missing; clip max = observation missing; clip mean = observation missing; graph check path: no such path",
+    "blocks_present[0]: 0 matching block(s) []",
+    "blocks_present[1]: 0 matching block(s) []; candidates: [\"sink_in (enabled): file='noise_in.dat'\", \"sink_out (enabled): file='limited.dat'\"]"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V6: clip mean = 0.20885"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "f2452485e668ee5eb2f661612406165574a70d6881a9f2b39726bc45ec1394bb",
+ "passed": true,
+ "task": "gba-dev-06"
+}

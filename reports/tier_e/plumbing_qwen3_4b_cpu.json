@@ -1,0 +1,457 @@
+{
+ "applied_settings_problems": [],
+ "cli_args": [
+  "tier-e",
+  "run",
+  "--model",
+  "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+  "--hardware",
+  "H1",
+  "--contexts",
+  "4096,16384",
+  "--extend",
+  "32768",
+  "--extend-if-under",
+  "180",
+  "--threads",
+  "16",
+  "--name",
+  "plumbing_qwen3_4b_cpu",
+  "--note",
+  "Qwen3-4B Q4_K_M is the smoke-test model (implementation plan, decision 4), not a GRC-Bench model.",
+  "--note",
+  "Threads fixed at 16 of the 24 cores (this Core Ultra 9 285K has 8 performance and 16 efficiency cores, one thread each), to leave cores to the other GRC-Bench workflows running on this machine; H1 laptops have 8-16 cores.",
+  "--note",
+  "The task for this test: 4K and 16K; add 32K only if the 16K measurement takes under 3 minutes (read as the whole 16K measurement, both processes with warm-ups); 64K not requested.",
+  "--note",
+  "Other GRC-Bench workflows shared this machine during the run. Before each llama-bench process the run waited until no other llama-server / llama-bench was running, but other CPU load was not excluded; the 1-minute load average before and after each process is recorded in the spread table.",
+  "--note",
+  "Two earlier attempts on 18 Oct did not finish. The first was stopped during 16K because GPU-backend detection matched libggml-cpu-cannonlake.so as the CANN backend (fixed and regression-tested). The second was cut off when the machine was moved, during the 16K depth process, after its 16K prompt process had finished (five 16,384-token prompts of 701-1176 s each). Their raw files, and the second attempt's partial record, are kept in ~/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu.attempt1_gpu_probe_bug and .attempt2_interrupted_machine_move. This run started again from the warm-up; the record is now saved after every llama-bench process."
+ ],
+ "code": {
+  "grc_bench_commit": "uncommitted",
+  "module": "grcbench.tier_e.bench",
+  "module_sha256": "cd32f84389678504c62b2b62760d4b5abd7442489ff62450e7cec9d8bac65ecb"
+ },
+ "contexts": [
+  {
+   "context": 4096,
+   "errors": [],
+   "generation": {
+    "kind": "tg",
+    "llama_bench_avg_ts": 12.737346,
+    "llama_bench_stddev_ts": 0.305962,
+    "max_ts": 13.138,
+    "median_ns": 10109746440.0,
+    "median_s": 10.1097,
+    "median_ts": 12.661,
+    "min_ts": 12.401,
+    "n_depth": 4096,
+    "n_gen": 128,
+    "n_prompt": 0,
+    "repetitions": 5,
+    "samples_ns": [
+     10109746440,
+     10219296016,
+     9742438763,
+     9876011024,
+     10321528650
+    ],
+    "samples_ts": [
+     12.661,
+     12.5253,
+     13.1384,
+     12.9607,
+     12.4013
+    ],
+    "test": "tg128 @ d4096",
+    "test_time": "2026-10-18T09:21:14Z"
+   },
+   "gpu_note": "n/a: llama-bench used only the CPU backend",
+   "incremental_prompt": {
+    "kind": "pp",
+    "llama_bench_avg_ts": 51.157911,
+    "llama_bench_stddev_ts": 1.741071,
+    "max_ts": 52.901,
+    "median_ns": 9830422585.0,
+    "median_s": 9.8304,
+    "median_ts": 52.083,
+    "min_ts": 49.142,
+    "n_depth": 4096,
+    "n_gen": 0,
+    "n_prompt": 512,
+    "repetitions": 5,
+    "samples_ns": [
+     9678433037,
+     9801378794,
+     9830422585,
+     10418846249,
+     10358930600
+    ],
+    "samples_ts": [
+     52.9011,
+     52.2375,
+     52.0832,
+     49.1417,
+     49.426
+    ],
+    "test": "pp512 @ d4096",
+    "test_time": "2026-10-18T09:19:37Z"
+   },
+   "invocations": [
+    {
+     "argv": [
+      "/home/lenovo/grc-bench-cache/llama.cpp/b10333/llama-bench",
+      "-m",
+      "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+      "-p",
+      "4096",
+      "-n",
+      "0",
+      "-d",
+      "0",
+      "-r",
+      "5",
+      "-t",
+      "16",
+      "-b",
+      "2048",
+      "-ub",
+      "512",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "-fa",
+      "on",
+      "-ngl",
+      "0",
+      "-lm",
+      "mmap",
+      "-o",
+      "json",
+      "--progress"
+     ],
+     "error": null,
+     "gpu_peak_delta_bytes": null,
+     "idle_wait": {
+      "idle": true,
+      "seen": [],
+      "waited_s": 0.0
+     },
+     "kind": "prompt",
+     "load1_after": 18.53,
+     "load1_before": 21.49,
+     "max_rss_bytes": 4714803200,
+     "other_llama_processes": [
+      "llama-server (pid 34448)"
+     ],
+     "returncode": 0,
+     "started_utc": "2026-10-18T09:12:39Z",
+     "stderr": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_prompt.log",
+     "stdout": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_prompt.json",
+     "vmhwm_sampled_bytes": 4717330432,
+     "wall_s": 417.04
+    },
+    {
+     "argv": [
+      "/home/lenovo/grc-bench-cache/llama.cpp/b10333/llama-bench",
+      "-m",
+      "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+      "-p",
+      "512",
+      "-n",
+      "128",
+      "-d",
+      "4096",
+      "-r",
+      "5",
+      "-t",
+      "16",
+      "-b",
+      "2048",
+      "-ub",
+      "512",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "-fa",
+      "on",
+      "-ngl",
+      "0",
+      "-lm",
+      "mmap",
+      "-o",
+      "json",
+      "--progress"
+     ],
+     "error": null,
+     "gpu_peak_delta_bytes": null,
+     "idle_wait": {
+      "idle": true,
+      "seen": [],
+      "waited_s": 0.0
+     },
+     "kind": "depth",
+     "load1_after": 18.81,
+     "load1_before": 18.53,
+     "max_rss_bytes": 5076434944,
+     "other_llama_processes": [],
+     "returncode": 0,
+     "started_utc": "2026-10-18T09:19:36Z",
+     "stderr": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_depth.log",
+     "stdout": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_depth.json",
+     "vmhwm_sampled_bytes": 5078855680,
+     "wall_s": 149.1
+    }
+   ],
+   "label": "4K",
+   "ok": true,
+   "peak_gpu_bytes": null,
+   "peak_ram_bytes": 5076434944,
+   "prompt": {
+    "kind": "pp",
+    "llama_bench_avg_ts": 85.057617,
+    "llama_bench_stddev_ts": 22.232464,
+    "max_ts": 96.206,
+    "median_ns": 43077898794.0,
+    "median_s": 43.0779,
+    "median_ts": 95.084,
+    "min_ts": 45.341,
+    "n_depth": 0,
+    "n_gen": 0,
+    "n_prompt": 4096,
+    "repetitions": 5,
+    "samples_ns": [
+     90337664768,
+     43994321888,
+     42575155786,
+     43077898794,
+     42865698157
+    ],
+    "samples_ts": [
+     45.341,
+     93.1029,
+     96.2063,
+     95.0836,
+     95.5543
+    ],
+    "test": "pp4096 @ d0",
+    "test_time": "2026-10-18T09:12:40Z"
+   },
+   "ttft": {
+    "first_decode_s": 0.07898,
+    "prefill_s": 43.0779,
+    "seconds": 43.1569
+   },
+   "wall_s": 566.1
+  }
+ ],
+ "deviations": [],
+ "error": "Stopped: stopped by SIGTERM",
+ "finished_utc": "2026-10-18T09:52:58Z",
+ "hardware": {
+  "definition": "CPU-only laptop, 8-16 cores, 32 GB RAM (team)",
+  "gpu_used": false,
+  "label": "H1",
+  "mismatches": [
+   "24 physical cores (H1: 8-16)",
+   "140 GiB RAM visible (H1: 32 GB)"
+  ]
+ },
+ "label": "Plumbing test of the protocol on the build workstation, not a Tier-E result for any GRC-Bench model or hardware tier.",
+ "llama_cpp": {
+  "backends": "CPU",
+  "build_commit": "08659901c",
+  "build_number": 10333,
+  "cpu_backend_variant": "alderlake",
+  "cpu_info": "Intel(R) Core(TM) Ultra 9 285K",
+  "gpu_info": "",
+  "matches_pin": true
+ },
+ "machine": {
+  "cpu_model": "Intel(R) Core(TM) Ultra 9 285K",
+  "gpus": [
+   {
+    "driver": "596.36",
+    "memory_total_mib": 32607,
+    "name": "NVIDIA GeForce RTX 5090"
+   }
+  ],
+  "kernel": "6.18.54.1-microsoft-standard-WSL2",
+  "llama_cpp": {
+   "backend_libraries": [
+    "libggml-base.so",
+    "libggml-cpu-alderlake.so",
+    "libggml-cpu-cannonlake.so",
+    "libggml-cpu-cascadelake.so",
+    "libggml-cpu-cooperlake.so",
+    "libggml-cpu-haswell.so",
+    "libggml-cpu-icelake.so",
+    "libggml-cpu-ivybridge.so",
+    "libggml-cpu-piledriver.so",
+    "libggml-cpu-sandybridge.so",
+    "libggml-cpu-sapphirerapids.so",
+    "libggml-cpu-skylakex.so",
+    "libggml-cpu-sse42.so",
+    "libggml-cpu-x64.so",
+    "libggml-cpu-zen4.so",
+    "libggml-rpc.so"
+   ],
+   "dir": "/home/lenovo/grc-bench-cache/llama.cpp/b10333",
+   "gpu_backend_libraries": [],
+   "pinned_build": "b10333"
+  },
+  "logical_cpus": 24,
+  "os": "Ubuntu 26.04.1 LTS",
+  "physical_cores": 24,
+  "ram_total_bytes": 150823895040,
+  "wsl": true
+ },
+ "machine_label": "the build workstation",
+ "model": {
+  "file": "Qwen3-4B-Q4_K_M.gguf",
+  "llama_bench_model_size": 2491323904,
+  "llama_bench_model_type": "qwen3 4B Q4_K - Medium",
+  "n_params": 4022468096,
+  "path": "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+  "quant": "Q4_K_M",
+  "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+  "size_bytes": 2497280256
+ },
+ "name": "plumbing_qwen3_4b_cpu",
+ "notes": [
+  "Qwen3-4B Q4_K_M is the smoke-test model (implementation plan, decision 4), not a GRC-Bench model.",
+  "Threads fixed at 16 of the 24 cores (this Core Ultra 9 285K has 8 performance and 16 efficiency cores, one thread each), to leave cores to the other GRC-Bench workflows running on this machine; H1 laptops have 8-16 cores.",
+  "The task for this test: 4K and 16K; add 32K only if the 16K measurement takes under 3 minutes (read as the whole 16K measurement, both processes with warm-ups); 64K not requested.",
+  "Other GRC-Bench workflows shared this machine during the run. Before each llama-bench process the run waited until no other llama-server / llama-bench was running, but other CPU load was not excluded; the 1-minute load average before and after each process is recorded in the spread table.",
+  "Two earlier attempts on 18 Oct did not finish. The first was stopped during 16K because GPU-backend detection matched libggml-cpu-cannonlake.so as the CANN backend (fixed and regression-tested). The second was cut off when the machine was moved, during the 16K depth process, after its 16K prompt process had finished (five 16,384-token prompts of 701-1176 s each). Their raw files, and the second attempt's partial record, are kept in ~/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu.attempt1_gpu_probe_bug and .attempt2_interrupted_machine_move. This run started again from the warm-up; the record is now saved after every llama-bench process."
+ ],
+ "protocol": {
+  "batch": 2048,
+  "cache_type_k": "q8_0",
+  "cache_type_v": "q8_0",
+  "contention": "wait until no other llama-server/llama-bench process runs (poll 30 s, up to 60 min) before every llama-bench process; record load average",
+  "contexts": [
+   4096,
+   16384,
+   32768,
+   65536
+  ],
+  "extension_rule": "--extend C --extend-if-under S: C is measured only if the previous context's whole measurement (both processes, warm-ups included) took under S seconds",
+  "flash_attn": "on",
+  "load_mode": "mmap",
+  "n_gpu_layers": {
+   "H1": 0,
+   "H2": 999,
+   "H3": 999,
+   "server": 999
+  },
+  "peak_gpu": "nvidia-smi memory.used, sampled every second, peak minus the value before the process started (device-wide); n/a without a GPU backend",
+  "peak_ram": "ru_maxrss of the llama-bench process from wait4 (= VmHWM at exit); max over a context's processes",
+  "repetitions": 5,
+  "source": "eval plan §4.5 (median of 5 runs, warm cache, 4K-64K context); §7.1 (8-bit KV cache)",
+  "statistic": "median of the per-run samples of each llama-bench test",
+  "tests_per_context": {
+   "depth": "llama-bench -p 512 -n 128 -d C: tg128 and pp512 with C tokens already in the KV cache",
+   "prompt": "llama-bench -p C -n 0 -d 0: a C-token prompt into an empty KV cache"
+  },
+  "threads": "physical cores unless set; fixed for the whole run",
+  "ttft": "median prefill time of the C-token prompt + one decode step at depth C (1 / median tg128 tokens/s); derived, both parts recorded",
+  "ubatch": 512,
+  "version": "tier-e/1",
+  "warmup": "one short warm-up llama-bench invocation per run (pp512 + tg16, 1 repetition; discarded) to page the weights in, plus llama-bench's own warm-up run before every test (discarded)"
+ },
+ "purpose": "plumbing",
+ "raw_dir": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu",
+ "requested": {
+  "contexts": [
+   4096,
+   16384
+  ],
+  "extend": [
+   32768
+  ],
+  "extend_if_under_s": 180.0
+ },
+ "settings": {
+  "batch": 2048,
+  "cache_type_k": "q8_0",
+  "cache_type_v": "q8_0",
+  "flash_attn": "on",
+  "gen_tokens": 128,
+  "incremental_prompt": 512,
+  "load_mode": "mmap",
+  "n_cpu_moe": 0,
+  "n_gpu_layers": 0,
+  "override_tensor": null,
+  "repetitions": 5,
+  "threads": 16,
+  "ubatch": 512
+ },
+ "skipped": [
+  {
+   "context": 16384,
+   "label": "16K",
+   "reason": "16K not measured: the run stopped before it (Stopped: stopped by SIGTERM)"
+  },
+  {
+   "context": 32768,
+   "label": "32K",
+   "reason": "32K not measured: the run stopped before it (Stopped: stopped by SIGTERM)"
+  },
+  {
+   "context": 65536,
+   "label": "64K",
+   "reason": "64K not requested in this run"
+  }
+ ],
+ "started_utc": "2026-10-18T09:12:31Z",
+ "status": "failed",
+ "warmup": {
+  "argv": [
+   "/home/lenovo/grc-bench-cache/llama.cpp/b10333/llama-bench",
+   "-m",
+   "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+   "-p",
+   "512",
+   "-n",
+   "16",
+   "-d",
+   "0",
+   "-r",
+   "1",
+   "-t",
+   "16",
+   "-b",
+   "2048",
+   "-ub",
+   "512",
+   "-ctk",
+   "q8_0",
+   "-ctv",
+   "q8_0",
+   "-fa",
+   "on",
+   "-ngl",
+   "0",
+   "-lm",
+   "mmap",
+   "-o",
+   "json",
+   "--progress"
+  ],
+  "error": null,
+  "idle_wait": {
+   "idle": true,
+   "seen": [],
+   "waited_s": 0.0
+  },
+  "load1_after": 21.49,
+  "load1_before": 21.77,
+  "max_rss_bytes": 4430114816,
+  "returncode": 0,
+  "wall_s": 8.01
+ }
+}

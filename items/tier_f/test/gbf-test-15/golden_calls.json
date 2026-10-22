@@ -1,0 +1,29 @@
+{
+ "query_knowledge": {
+  "query": "analog_noise_source_x analog_sig_source_x blocks_add_xx blocks_divide_xx blocks_nlog10_ff blocks_rms_xx blocks_throttle2 blocks_file_sink low_pass_filter",
+  "domain": "catalog",
+  "k": 18
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "blocks_throttle2_0:0->qtgui_freq_sink_x_0_0:0"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "zoom_filter",
+    "params": {
+     "type": "fir_filter_ccf",
+     "decim": "4",
+     "cutoff_freq": "6e3",
+     "width": "1.5e3"
+    }
+   }
+  ],
+  "add_connections": [
+   "blocks_throttle2_0:0->zoom_filter:0",
+   "zoom_filter:0->qtgui_freq_sink_x_0_0:0"
+  ]
+ }
+}

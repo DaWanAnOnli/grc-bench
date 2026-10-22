@@ -1,0 +1,87 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 15
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 862
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "expected": "V6",
+   "first_failed": "V6",
+   "passed": true,
+   "v6_groups": {
+    "f2p": false,
+    "p2p": true
+   }
+  },
+  "variants": {
+   "n": 12,
+   "passed": true,
+   "results": {
+    "v10_repair_two_branch_bfo_at_96k.grc": [
+     "V6",
+     null
+    ],
+    "v11_repair_xlating_fir_as_bfo.grc": [
+     "V6",
+     null
+    ],
+    "v12_repair_fft_channel_filter.grc": [
+     "V6",
+     null
+    ],
+    "v1_rotator_bfo_blackman.grc": [
+     "V6",
+     null
+    ],
+    "v2_xlating_filter_bfo_gain.grc": [
+     "V6",
+     null
+    ],
+    "v3_rotator_tune_conjugate_bfo.grc": [
+     "V6",
+     null
+    ],
+    "v4_repair_literal_12000.grc": [
+     "V6",
+     null
+    ],
+    "v5_repair_freq_minus_6400_at_96k.grc": [
+     "V6",
+     null
+    ],
+    "v6_repair_bfo_minus_2200.grc": [
+     "V6",
+     null
+    ],
+    "v7_repair_audio_rate_variable.grc": [
+     "V6",
+     null
+    ],
+    "v8_repair_plus_throttle.grc": [
+     "V6",
+     null
+    ],
+    "v9_repair_plus_audio_lpf.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-test-18"
+}

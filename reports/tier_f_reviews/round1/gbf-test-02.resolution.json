@@ -1,0 +1,54 @@
+{
+ "task": "gbf-test-02",
+ "action": "retheme",
+ "rethemed": true,
+ "relabel": {},
+ "new_theme": "BUILD L1 (test): carrier recovery with a phase-locked loop. In the empty flowgraph at 32 kHz: a complex tone at +2.4 kHz (amplitude 1) plus complex white Gaussian noise of amplitude 0.7 (carrier 3.1 dB above the noise) written to received.dat (complex); a phase-locked loop recovers a clean reference carrier, written to carrier.dat (complex). V6 from 0.5 s on: received.dat peak 2.4 kHz (1 %), RMS 1.22 (5 %), carrier-to-noise ratio 3.1 dB (0.5 dB); carrier.dat peak 2.4 kHz (1 %), >= 90 % of the power within 50 Hz, RMS 1.0 (2 %), max |x| <= 1.05; graph check path noise generator -> PLL block -> File Sink. Reference: Signal Source -> Channel Model (noise 0.7) -> PLL Carrier Regeneration (w 0.02) -> File Sinks (5 functional blocks). v2 signature carrier_sync|channel_model|tone (test); cluster_id chain:carrier_sync|channel_model|tone.",
+ "resolved_by": "Claude (Anthropic), fixer group G8, 18 Oct 2026 (pending team review). Completes an earlier, interrupted G8 run whose build.py and generated files were consistent (byte-identical regeneration) but whose gates.json was still that of the old theme.",
+ "accepted": [
+  {
+   "id": "item-quality/F1-shortcut-passes",
+   "change": "Moot for the old frequency-shift content (gone). The concern applies to the new content as 'write a clean 2.4 kHz tone straight to carrier.dat', which passes every signal check. It is closed by the graph check path {Noise Source, Fast Noise Source, Channel Model (1/2/dynamic)} -> {PLL Carrier Regeneration / Carrier Tracking / Frequency Detector, Costas loop} -> File Sink (group main). Mutant 'carrier_sink fed by the clean carrier source, loop parked' is killed by that check alone (probe: carrier.dat purity 1.0, every signal check passes, path fails). The stated input is observed too (received.dat: peak, RMS, carrier-to-noise ratio), so the reviewer's 'wrong input frequency/amplitude' answers fail."
+  },
+  {
+   "id": "compliance/F1-shortcut-passes-oracle",
+   "change": "Same resolution as item-quality/F1: structural path check plus a second observation point (received.dat) that checks the stated simulated input. Every stated requirement maps to a check (spec_properties)."
+  },
+  {
+   "id": "item-quality/F2-split-twins-in-train",
+   "change": "Moot under signature v2 (functional class set; plumbing, gains and equivalent blocks merged) and the new theme. build.py asserts the v2 split and prints every variant's signature: reference carrier_sync|channel_model|tone; v1/v2 (Noise Source or Fast Noise Source + Add) carrier_sync|combine|noise|tone; v3 (band-pass pre-filter) carrier_sync|channel_model|filter|tone; v4 (wide loop) carrier_sync|channel_model|tone; v5 (PLL Frequency Detector + Frequency Modulator) carrier_sync|channel_model|fm_mod|tone. All five hash to test; review.notes lists them for the reserved-signature regeneration (rule R2)."
+  },
+  {
+   "id": "compliance/F2-accepted-solutions-in-train-partition",
+   "change": "Same resolution as item-quality/F2: every accepted solution shape of the new theme hashes to test under v2; none is in train."
+  },
+  {
+   "id": "item-quality/F3-image-tolerance-loose",
+   "change": "Applies in spirit: every threshold is now stated in the instruction and derived from it, then calibrated with the ladder (rule R12; all band_fraction checks are on complex signals, so the 18 Oct real-spectrum correction does not change them). Purity >= 90 % within 50 Hz accepts loop bandwidths 0.0075-0.12 rad/sample over Channel Model seeds 0/1/5/42 (GNU Radio's documented pi/200-2*pi/100: 0.947-0.991); 0.006 and below do not lock by 0.5 s, 0.15 gives 0.869-0.879. The received-signal tolerance was rephrased: a 5 % box on both amplitudes maps to a carrier-share range that also admitted a noise amplitude of 0.75-0.77 (probe: noise 0.75 passed the earlier draft). The instruction now states the two measurable numbers, RMS within 5 % of 1.22 and carrier-to-noise ratio within 0.5 dB of 3.1 dB, and the share bounds [0.6464, 0.6971] are computed from them (counting the noise's own 51/16000 share of the band). Reference 0.668-0.674 over four seeds; noise 0.75 now fails (0.642)."
+  },
+  {
+   "id": "compliance/F3-single-tone-threshold-lenient",
+   "change": "Same resolution as item-quality/F3: stated, spec-derived thresholds with measured margins on both sides."
+  },
+  {
+   "id": "item-quality/F4-method-prescribed-not-enforced",
+   "change": "Applies in spirit: the new instruction requires 'a phase-locked loop', and the graph check enforces it while accepting every PLL block in the catalog plus the Costas loop. All five variants use a PLL (PLL Carrier Regeneration in v1-v4, PLL Frequency Detector driving a Frequency Modulator in v5). Probes: no Costas-based design (direct output, or the phase output through a Phase Modulator, loop bandwidths 0.002-0.02) meets the stated purity, so none is listed as a variant; PLL Carrier Tracking (outputs the de-rotated input) is a killed mutant. The lock range is deliberately not stated: probes show a range of +-4000 left in Hz, +-pi or 0..+4 kHz behave the same, so it would be an uncheckable requirement (review.notes 3)."
+  },
+  {
+   "id": "fixer/mutant-not-spec-breaking",
+   "change": "The earlier draft's mutant 'max_freq = +2 kHz' survived the gates, but it is not spec-breaking. GNU Radio's PLL clamps only its integrator, so the proportional phase term still tracks the 2.4 kHz carrier: the output passes every stated requirement (probe: cap +2 kHz passes at w 0.02, +1.5 kHz and below fail, w 0.05 with +1.5 kHz passes). It was replaced by a sign-error range (-4..-2 kHz; output at -2 kHz, killed). The build.py docstring and review.notes no longer claim that a range just below 2.4 kHz prevents lock."
+  },
+  {
+   "id": "fixer/near-miss-mutants",
+   "change": "Rule R10 near misses on the stated numbers: loop bandwidth 0.005 (no lock by 0.5 s) and 0.15 (purity 0.88), carrier 2.45 kHz (2 %), carrier amplitude 1.07 (RMS +5.1 %), noise amplitude 0.75 (2.5 dB), noise 0.7 per I/Q component (0.99 total). Plus the gross ones: no loop, Carrier Tracking, sign-error range, 2.8 kHz, carrier 0.5, noise 0.5 and 0, 48 kHz, the clean-source shortcut, and received.dat tapped before the noise. 16 mutants, all valid and all killed."
+  }
+ ],
+ "rejected": [],
+ "notes": [
+  "Old content (complex frequency shift of a tone, mix|tone, hashed to train under v2) is gone. Each old finding was real for it; the resolution above records whether it is moot or how its concern was applied to the new content.",
+  "Deviation from the plan's brief: the reference adds the noise with a Channel Model (5 functional blocks with two observation points, L1); the brief's Noise Source + Add form is variant v1 (6 functional blocks) and hashes to the brief's cell carrier_sync|combine|noise|tone (test). The brief's purity target (99 % within 25 Hz after 0.25 s) was not reachable by sensible loops at 3 dB SNR (0.0157 gives 0.99 within 50 Hz); the stated 90 % within 50 Hz from 0.5 s was calibrated instead. The lock range in Hz was not stated (uncheckable, see item-quality/F4).",
+  "Known limits recorded in review.notes: block-level graph check (a loop into an unrelated third File Sink, or a second noiseless loop input, would pass; implausible); frequency lock rather than phase lock is checked (v5 is accepted); Costas loops are accepted by the graph check but none meets the purity; the received amplitudes are checked only through RMS and carrier-to-noise ratio, which the instruction states.",
+  "Probe scripts (scratch, not part of the item): probe_t02.py, probe_t02b.py and probe_t02c.py in the G8 scratchpad. They cover a 14-bandwidth x 4-seed sweep, the alternative designs, the near misses and the PLL range limits."
+ ],
+ "gates": "ALL PASS (18 Oct, after the final change): solvability 10/10 at 8 workers; reference 279 tokens; variants 5/5 at V6; start_fails n/a (build); mutation 16/16 valid, kill rate 1.0, no survivors."
+}

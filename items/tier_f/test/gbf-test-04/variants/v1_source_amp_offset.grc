@@ -1,0 +1,15 @@
+options:
+  parameters: {id: dac_test_v1, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: 48e3}
+- name: tone
+  id: analog_sig_source_x
+  parameters: {type: float, freq: 1.25e3, amp: '0.4', offset: '0.55'}
+- name: dac_out
+  id: blocks_file_sink
+  parameters: {type: float, file: dac_test.dat}
+connections:
+- [tone, '0', dac_out, '0']
+metadata: {file_format: 1}

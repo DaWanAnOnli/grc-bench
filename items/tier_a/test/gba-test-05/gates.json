@@ -1,0 +1,46 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V6: graph check path: no such path",
+    "blocks_present[0]: 0 matching block(s) []",
+    "blocks_absent[0]: 1 forbidden block(s) ['pulse_shaping']"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "blocks_present[0]: 0 matching block(s) []; candidates: [\"rrc (enabled): alpha='0.5' (0.5) vs 0.35\"]"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "1b6aecef1dfd2f41d4f93772b0f8c61e9191f506dc95612bf44201429766b3ed",
+ "passed": true,
+ "task": "gba-test-05"
+}

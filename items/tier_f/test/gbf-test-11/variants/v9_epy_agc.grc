@@ -1,0 +1,36 @@
+options:
+  parameters: {id: burst_agc, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '1200', amp: '0.5'}
+- name: envelope
+  id: blocks_vector_source_x
+  parameters: {type: complex, vector: '[0.1] * 4000 + [3.0] * 4000'}
+- name: bursts
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: epy_agc
+  id: epy_block
+  parameters: {_source_code: "\"\"\"Feedback AGC: gain += rate * (reference - |output|), like GNU Radio's\
+      \ AGC block.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n\
+      \    \"\"\"Feedback AGC: gain += rate * (reference - |output|), like GNU Radio's AGC block.\"\"\"\
+      \n\n    def __init__(self, rate=0.3, reference=1.0):\n        gr.sync_block.__init__(self, name=\"\
+      Feedback AGC\", in_sig=[np.complex64], out_sig=[np.complex64])\n        self.rate = rate\n     \
+      \   self.reference = reference\n        self._g = 1.0\n\n    def work(self, input_items, output_items):\n\
+      \        g, out = self._g, []\n        for x in input_items[0].tolist():\n            y = x * g\n\
+      \            out.append(y)\n            g = min(g + self.rate * (self.reference - abs(y)), 65536.0)\n\
+      \        output_items[0][:] = out\n        self._g = g\n        return len(output_items[0])\n",
+    rate: '0.3', reference: '1.0'}
+- name: rx_sink
+  id: blocks_file_sink
+  parameters: {type: complex, file: rx.dat}
+connections:
+- [tone, '0', bursts, '0']
+- [envelope, '0', bursts, '1']
+- [bursts, '0', epy_agc, '0']
+- [epy_agc, '0', rx_sink, '0']
+metadata: {file_format: 1}

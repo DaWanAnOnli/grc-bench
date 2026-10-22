@@ -1,0 +1,56 @@
+{
+ "task": "gbf-dev-08",
+ "action": "fix",
+ "rethemed": false,
+ "date": "2026-10-18",
+ "drafted_by": "Claude (Anthropic); decisions pending team review",
+ "accepted": [
+  {
+   "id": "compliance:F1-bandpass-edges-unchecked",
+   "change": "Added p2p edge-position checks on quantized.dat: the power within +-0.4 kHz of each band edge (band_fraction 5.6-6.4 kHz and 17.6-18.4 kHz). The expected share is 0.001632, computed from the start graph's filter taps; the tolerance is +-20 %. Every windowed-sinc design crosses half amplitude at the edge, so this share measures the edge position and little else. In the firdes analysis an edge moved 0.1 kHz changes it by ~15 % and one moved 0.2 kHz by 28-33 %, while the Hann, Hamming, Blackman and Kaiser windows and transition widths of 1.2-4.8 kHz change it by at most ~8 %. A numpy Monte-Carlo over 60 noise seeds gives an sd of 3.1-3.4 %. Real ladder at seed 42: an edge moved 0.15 kHz outward fails, and so does every 0.2-0.3 kHz shift (23-56 %). The 0.1 kHz shifts pass, except the upper edge moved up (+23.5 %), because seed 42 already reads +6 % in that band. Hamming, Blackman and Kaiser windows and widths of 1.2-3.6 kHz pass. A 4.8 kHz width fails the stated floor below 4 kHz. This replaces the first fixer's +-1.2 kHz transition-band checks, which mixed up window and edge position: Kaiser read +18 % at seed 42, close to its +-20 % limit, and a 0.2 kHz inward shift passed while an outward one failed. The instruction now states only filter properties that are checked: 'the band from 6 kHz to 18 kHz' and 'the noise band's edges within about 0.1 kHz'. The window and the transition width are visible in the start graph but not observable, so they are no longer stated. New near-miss mutants move each edge 0.2 kHz up and 0.2 kHz down. They replace the 17.5 kHz, 6.3 kHz and 5.7 kHz mutants and the bw/10 width mutant, which is no longer spec-breaking."
+  },
+  {
+   "id": "compliance:F2-quantization-lattice-unchecked",
+   "change": "Added f2p max_int_dev checks (tooling T3): scale 32 on quantized.dat and scale 1 on codes.dat, each with max 1e-4. Verified with the real ladder: a mid-rise quantizer and the additive-uniform-noise fake both score 0.5 and fail f2p. All 6 variants score 0. Added the near-miss mutant Multiply Const pow(2,bits-1)*1.01 (codes not integer, RMS +1 %), which only the lattice check kills. spec_properties rounded_to_step and codes_integer now carry this claim."
+  },
+  {
+   "id": "compliance:F3-disabled-missing-block-rejected",
+   "change": "The instruction now says 'the repaired flowgraph must not contain any Missing Block, not even a disabled one', which leaks nothing about the fix. spec_properties.loads and fault.description record that V2 rejects unknown block ids even when the block is disabled. Verified: the start graph with the dummy block disabled plus a correct channels_quantizer fails V2 with \"unknown block id 'blocks_quantizer_ff'\"."
+  },
+  {
+   "id": "item-quality:F1",
+   "change": "Same fix as compliance:F2 (lattice checks on both outputs). Verified with the real ladder: the uniform-noise fake (alt_fake_noise) and the Embedded-Python mid-rise quantizer reach V5 and fail f2p (max_int_dev 0.5). Embedded-Python rounding passes, with both round-half-even and round-half-up; it is variant v5, which also saturates to the 6-bit range."
+  },
+  {
+   "id": "item-quality:F2",
+   "change": "Truncation is now an f2p failure. The rounding-noise floor checks (0-4 kHz and 20-24 kHz on both outputs) expect 2.4824e-4 (from (1/32)^2/12 and the taps-derived total power) with rel_tol 0.15, i.e. +-0.6 dB as stated, instead of a factor of 2. Real ladder: the reference reads 2.50e-4; noise seeds 0, 7 and 1234 and the Monte-Carlo stay within +-5 %. Truncation reads 3.14e-4 / 3.24e-4 (+27 to +30 %) and fails, and so does floor() (4.6e-3, from the DC offset). The p2p total-level checks also fail on truncation (out RMS 0.2206, -5.7 %; codes 7.06), so spec_properties notes that those tolerances must not be widened."
+  },
+  {
+   "id": "item-quality:F3",
+   "change": "Added the codes.dat 20-24 kHz floor check (f2p, property codes_quantized), matching the quantized.dat one."
+  },
+  {
+   "id": "item-quality:F4",
+   "change": "Recorded only; the fix belongs to the scoring stage (tooling T9). review.notes says that a model copying the injected id blocks_quantizer_ff unchanged should count as 'fault not repaired', not as a hallucinated block; fault.wrong_id already identifies the id."
+  },
+  {
+   "id": "plan:R4-oracle-policy",
+   "change": "The instruction says 'repair the flowgraph so that it works as described', which makes every described property a requirement. The descriptions that V6 cannot observe were therefore removed: 'Gaussian' noise (after the band-pass filter any noise looks Gaussian), the 'cosine' phase, 'After a Throttle' (v4 drops it), and the 'Hann window, 2.4 kHz transition width'. The keep clause now reads 'the sample rate, the noise level and its 6-18 kHz band, the tone, the 6-bit resolution and both output files', and every item in it is checked. The floor statement now covers only the bands that are checked: 'Below 4 kHz and above 20 kHz ... (power (1/32)^2/12 in quantized.dat)'. No graph check is needed, because the repair is fully specified by behaviour; channels_quantizer, type-converter chains and an Embedded-Python quantizer all pass."
+  },
+  {
+   "id": "plan:R8-p2p-semantics",
+   "change": "spec_properties.codes_scale states what p2p means for this V2 start. Re-proved with the final oracle: the start graph with the Missing Block bypassed (parked) reaches V5 and passes every p2p check (codes RMS 7.4905, tone 12600 Hz, level 0.2341, noise shares 0.0303 / 0.0222, edge shares 0.001569 / 0.001685), and it fails all six f2p checks."
+  },
+  {
+   "id": "plan:R12-band-fraction",
+   "change": "Every band_fraction expectation was re-derived from the stated numbers and the filter's taps with the corrected oracle: floor 2.4824e-4, noise 0.03071, upper passband 0.02216, edges 0.001632. The total power uses sum(h^2) = 0.45996, giving RMS 0.23384. All observed signals are zero-mean, so the 18 Oct one-sided-spectrum fix does not move the shares."
+  },
+  {
+   "id": "plan:R5-R10-R11-records",
+   "change": "The instruction gives the run sentence and the tolerances (tone 1 %, levels 5 %, band edges about 0.1 kHz, floor about 0.6 dB, judged after 512 samples). spec_properties.run_length is recorded as V5 liveness at 65536 items per point. perturbation.changes records the widget-to-variable conversions, the Qt sink conversion, the quantizer rename and the stripped options (author 'mettus'). The GPL attribution and the known oracle limits are in review.notes. A mutant for the 'both output files' keep clause renames quantized.dat. Variants from the reviewers' alternatives: v5 (Embedded-Python rounding quantizer, saturating), v6 (codes from a separate Float To Short path) and v2 (Float To Int levels). Kept variants: v1 (Float To Short / Short To Float), v3 (Char converters) and v4 (literal numbers, no Throttle, noise seed 7)."
+  }
+ ],
+ "rejected": [],
+ "notes": "Second fixer pass (G9, after the tooling stage): the first pass's build.py regenerated byte-identically and passed its gates, but the window/edge confound and the unverifiable descriptive claims above were found and fixed. The partial records from the first pass were superseded.",
+ "gates": "PASS (18 Oct, current tooling incl. T7): solvability 10/10, size 711 tokens, variants 6/6 at V6, start fails at V2 (expected V2), mutation 22/22 valid mutants killed (kill rate 1.0, no survivors)."
+}

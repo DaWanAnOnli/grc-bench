@@ -1,0 +1,57 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_multiply_const_vxx blocks_add_const_vxx blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "src",
+    "params": {
+     "type": "float",
+     "freq": "1250"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_const_vxx",
+    "instance_name": "gain",
+    "params": {
+     "type": "float",
+     "const": "0.4"
+    }
+   },
+   {
+    "block_id": "blocks_add_const_vxx",
+    "instance_name": "offset",
+    "params": {
+     "type": "float",
+     "const": "0.55"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "float",
+     "file": "dac_test.dat"
+    }
+   }
+  ],
+  "update_params": [
+   {
+    "instance_name": "samp_rate",
+    "params": {
+     "value": "48000"
+    }
+   }
+  ],
+  "add_connections": [
+   "src:0->gain:0",
+   "gain:0->offset:0",
+   "offset:0->out:0"
+  ]
+ }
+}

@@ -1,0 +1,33 @@
+options:
+  parameters: {id: bpsk_demapper_v3, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: soft
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '[-0.92, 1.07, -1.21, -0.05, 0.88, -1.13, 0.37, 1.02, 0.96, 0.12,
+      -0.84, 1.18, -0.21, -0.97, -1.09, 0.79, -1.04, -0.44, 0.03, -0.91, -1.26, 0.83, 1.15, -0.68, 1.11,
+      -0.73, -1.02, 0.94, 0.27, 1.31, -0.89, -0.16]'}
+- name: neg
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '-1'}
+- name: decide
+  id: blocks_threshold_ff
+  parameters: {low: '0', high: '0'}
+- name: to_uchar
+  id: blocks_float_to_uchar
+  parameters: {}
+- name: pack8
+  id: blocks_pack_k_bits_bb
+  parameters: {k: '8'}
+- name: bits_sink
+  id: blocks_file_sink
+  parameters: {type: byte, file: bits.dat}
+connections:
+- [soft, '0', neg, '0']
+- [neg, '0', decide, '0']
+- [decide, '0', to_uchar, '0']
+- [to_uchar, '0', pack8, '0']
+- [pack8, '0', bits_sink, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,47 @@
+options:
+  parameters: {id: sync_detect_v1, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: sync
+  id: variable
+  parameters: {value: '(1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1)'}
+- name: pattern
+  id: variable
+  parameters: {value: '(0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0,
+      0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1,
+      0, 0, 0, 0, 1, 0)'}
+- name: bitsrc
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: pattern}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: bits_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: bits.dat}
+- name: x2
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '2'}
+- name: minus1
+  id: blocks_add_const_vxx
+  parameters: {type: float, const: '-1'}
+- name: correlator
+  id: fir_filter_xxx
+  parameters: {type: fff, taps: '[2*s - 1 for s in reversed(sync)]'}
+- name: decide
+  id: blocks_threshold_ff
+  parameters: {low: '15', high: '15'}
+- name: flag_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: flags.dat}
+connections:
+- [bitsrc, '0', thr, '0']
+- [thr, '0', bits_sink, '0']
+- [thr, '0', x2, '0']
+- [x2, '0', minus1, '0']
+- [minus1, '0', correlator, '0']
+- [correlator, '0', decide, '0']
+- [decide, '0', flag_sink, '0']
+metadata: {file_format: 1}

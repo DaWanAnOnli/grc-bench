@@ -1,0 +1,30 @@
+{
+ "query_knowledge": {
+  "query": "blocks_vector_source_x blocks_packed_to_unpacked_xx digital_chunks_to_symbols_xx blocks_repeat blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "unpack_bits",
+    "params": {
+     "bits_per_chunk": "2"
+    }
+   },
+   {
+    "instance_name": "symbol_mapper",
+    "params": {
+     "symbol_table": "[-3, -1, 3, 1]"
+    }
+   },
+   {
+    "instance_name": "symbol_hold",
+    "params": {
+     "interp": "20"
+    }
+   }
+  ]
+ }
+}

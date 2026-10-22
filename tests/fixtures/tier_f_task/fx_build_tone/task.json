@@ -1,0 +1,63 @@
+{
+ "id": "fx-build-tone",
+ "tier": "F",
+ "split": "dev",
+ "version": 1,
+ "license": "CC-BY-4.0 (test fixture)",
+ "source": {
+  "kind": "test_fixture",
+  "ref": "tests/test_tier_a_runner.py"
+ },
+ "cluster_id": "fixture",
+ "provenance": {
+  "drafted_by": "Claude (Anthropic)",
+  "generator": "tests"
+ },
+ "review": {
+  "status": "not-required",
+  "notes": "unit-test fixture for the Tier-F setting of the Tier-A runner, not a benchmark item"
+ },
+ "family": "build",
+ "level": "L1",
+ "instruction": "Build a flowgraph that runs at a sample rate of 48 kHz and generates a real-valued 2 kHz cosine tone with an amplitude of 1. Write the tone as float samples to a File Sink whose file name is output.dat.",
+ "start_grc": null,
+ "reference_grc": "reference.grc",
+ "observation": {
+  "points": [
+   {
+    "name": "out",
+    "sink": {
+     "block_id": "blocks_file_sink",
+     "params": {
+      "file": "output.dat"
+     }
+    }
+   }
+  ],
+  "run": {
+   "n_items": 8192,
+   "min_items": 8192,
+   "timeout_s": 10
+  },
+  "contract": "samples written to output.dat"
+ },
+ "oracle": {
+  "checks": [
+   {
+    "point": "out",
+    "feature": "peak_freq",
+    "fs": 48000,
+    "expect": 2000,
+    "tol": 20,
+    "group": "f2p"
+   },
+   {
+    "point": "out",
+    "feature": "rms",
+    "expect": 0.7071,
+    "rel_tol": 0.05,
+    "group": "p2p"
+   }
+  ]
+ }
+}

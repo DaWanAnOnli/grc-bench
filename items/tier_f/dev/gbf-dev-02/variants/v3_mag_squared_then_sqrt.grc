@@ -1,0 +1,31 @@
+options:
+  parameters: {id: fading_sqrt, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: src
+  id: analog_noise_source_x
+  parameters: {type: complex, seed: '5', noise_type: analog.GR_GAUSSIAN}
+- name: scale
+  id: blocks_multiply_const_vxx
+  parameters: {type: complex, const: '0.8'}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: complex}
+- name: power
+  id: blocks_complex_to_mag_squared
+  parameters: {}
+- name: root
+  id: blocks_transcendental
+  parameters: {type: float, name: sqrt}
+- name: snk
+  id: blocks_file_sink
+  parameters: {type: float, file: envelope.dat}
+connections:
+- [src, '0', scale, '0']
+- [scale, '0', thr, '0']
+- [thr, '0', power, '0']
+- [power, '0', root, '0']
+- [root, '0', snk, '0']
+metadata: {file_format: 1}

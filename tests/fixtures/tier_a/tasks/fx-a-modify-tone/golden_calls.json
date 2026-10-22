@@ -1,0 +1,66 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "src"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "signal source frequency"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "reason": "Set the tone frequency to 2 kHz.",
+    "update_params": [
+     {
+      "instance_name": "src",
+      "params": {
+       "freq": "2000"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "src"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "Done: the tone is now 2 kHz and everything else is unchanged; the flowgraph is saved."
+}

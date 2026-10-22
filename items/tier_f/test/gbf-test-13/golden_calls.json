@@ -1,0 +1,90 @@
+{
+ "query_knowledge": {
+  "query": "blocks_vector_source_x blocks_repeat low_pass_filter blocks_float_to_complex analog_sig_source_x blocks_multiply_xx blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 16
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "blocks_vector_source_x",
+    "instance_name": "symbols",
+    "params": {
+     "type": "float",
+     "vector": "(-1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1, 1, 1, -1, 1, 1, 1, -1, 1, -1, 1, -1)"
+    }
+   },
+   {
+    "block_id": "blocks_repeat",
+    "instance_name": "hold",
+    "params": {
+     "type": "float",
+     "interp": "8"
+    }
+   },
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "pulse_shaping",
+    "params": {
+     "type": "fir_filter_fff",
+     "cutoff_freq": "2000",
+     "width": "1000"
+    }
+   },
+   {
+    "block_id": "blocks_float_to_complex",
+    "instance_name": "to_complex"
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "if_lo",
+    "params": {
+     "type": "complex",
+     "freq": "8000"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "upconvert",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_throttle2",
+    "instance_name": "throttle",
+    "params": {
+     "type": "complex",
+     "limit": "auto"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "if_sink",
+    "params": {
+     "type": "complex",
+     "file": "if.dat"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "symbol_sink",
+    "params": {
+     "type": "float",
+     "file": "symbols.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "symbols:0->hold:0",
+   "hold:0->pulse_shaping:0",
+   "pulse_shaping:0->to_complex:0",
+   "to_complex:0->upconvert:0",
+   "if_lo:0->upconvert:1",
+   "upconvert:0->throttle:0",
+   "throttle:0->if_sink:0",
+   "symbols:0->symbol_sink:0"
+  ]
+ }
+}

@@ -1,0 +1,102 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "rectifier",
+     "out"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "embedded python block set_history"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "file sink float"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "epy_block",
+      "instance_name": "peak_hold",
+      "params": {
+       "_source_code": "\"\"\"Peak hold: every output is the largest of the current input and the window - 1 inputs before it.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    \"\"\"Peak hold over a sliding window of samples.\"\"\"\n\n    def __init__(self, window=960):\n        gr.sync_block.__init__(self, name=\"Peak Hold\", in_sig=[np.float32], out_sig=[np.float32])\n        self.window = int(window)\n        self.set_history(self.window)\n\n    def work(self, input_items, output_items):\n        x = input_items[0]\n        n = len(output_items[0])\n        output_items[0][:] = np.lib.stride_tricks.sliding_window_view(x[:n + self.window - 1], self.window).max(axis=1)\n        return n\n"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "peak_sink",
+      "params": {
+       "file": "peak.dat",
+       "type": "float"
+      }
+     }
+    ],
+    "add_connections": [
+     "rectifier:0->peak_hold:0",
+     "peak_hold:0->peak_sink:0"
+    ],
+    "reason": "Add a 960-sample peak-hold Embedded Python block writing to peak.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "peak_hold"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "reason": "Set the peak-hold window to 960 samples.",
+    "update_params": [
+     {
+      "instance_name": "peak_hold",
+      "params": {
+       "window": "960"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I added an Embedded Python block after the rectifier that outputs the maximum of the last 960 samples (history 960) and a File Sink writing it to peak.dat as float. rectified.dat is unchanged, and the flowgraph is saved."
+}

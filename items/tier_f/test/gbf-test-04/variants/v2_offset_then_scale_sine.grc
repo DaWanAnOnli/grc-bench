@@ -1,0 +1,36 @@
+options:
+  parameters: {id: dac_test_v2, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_freq
+  id: variable
+  parameters: {value: '1250'}
+- name: scale
+  id: variable
+  parameters: {value: '0.4'}
+- name: dc_level
+  id: variable
+  parameters: {value: '0.55'}
+- name: src
+  id: analog_sig_source_x
+  parameters: {type: float, waveform: analog.GR_SIN_WAVE, freq: tone_freq}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: pre_offset
+  id: blocks_add_const_vxx
+  parameters: {type: float, const: dc_level / scale}
+- name: scale_blk
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: scale}
+- name: sink
+  id: blocks_file_sink
+  parameters: {type: float, file: /tmp/dac_test.dat}
+connections:
+- [src, '0', thr, '0']
+- [thr, '0', pre_offset, '0']
+- [pre_offset, '0', scale_blk, '0']
+- [scale_blk, '0', sink, '0']
+metadata: {file_format: 1}

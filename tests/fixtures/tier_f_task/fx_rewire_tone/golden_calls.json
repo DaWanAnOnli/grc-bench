@@ -1,0 +1,48 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_multiply_const_xx blocks_file_sink blocks_null_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "src:0->thr:0",
+   "thr:0->gain:0",
+   "gain:0->out:0"
+  ],
+  "remove_blocks": [
+   "thr",
+   "gain"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "blocks_multiply_const_xx",
+    "instance_name": "gain",
+    "params": {
+     "type": "float",
+     "const": "1"
+    }
+   }
+  ],
+  "update_params": [
+   {
+    "instance_name": "out",
+    "params": {
+     "unbuffered": "False"
+    }
+   }
+  ],
+  "update_states": [
+   {
+    "instance_name": "spare",
+    "state": "enabled"
+   }
+  ],
+  "add_connections": [
+   "src:0->gain:0",
+   "gain:0->out:0",
+   "gain:0->spare:0"
+  ]
+ }
+}

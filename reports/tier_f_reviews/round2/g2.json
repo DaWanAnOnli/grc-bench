@@ -1,0 +1,21 @@
+{
+ "group": "g2",
+ "tasks": [
+  "gbf-test-03",
+  "gbf-dev-02",
+  "gbf-dev-05"
+ ],
+ "reviewer": "Claude (Anthropic), checklist pass (docs/checklists/tier_f_task_review.md, sections A-E), 22 Oct 2026",
+ "verdict": "No high or medium problem. All three tasks pass every gate (22 Oct run) and rebuild byte-identically from build.py. gbf-test-03: every number the oracle uses is stated, every check matches a sentence, and the method words are graph checks. gbf-dev-02: the RMS magnitude is defined in the instruction, the noise-to-sink path check blocks a stored-sample shortcut, and the 48 kHz rate is the build-start default. gbf-dev-05: the values-only rule is enforced by both same_blocks_as_start (variables value_only) and same_connections_as_start, and the clip levels follow from the stated 2.5 % points. One low finding, recorded in gbf-test-03's notes as known limit (7).",
+ "findings": [
+  {
+   "id": "G2-test03-rectangular-window-rms",
+   "task": "gbf-test-03",
+   "lens": "item-quality",
+   "severity": "low",
+   "claim": "A rectangular-window Band Pass Filter with a 340-375 Hz transition has an expected output RMS of 0.79-0.805 (0.803-0.805 at 350-360 Hz), at or above the stated upper bound 0.80, so it fails the RMS check on some or most noise seeds. GNU Radio normalises the band-pass gain at the band centre, and for these widths the centre sits in a ripple trough, so the average passband gain is about 4 % high.",
+   "evidence": "sigma * sqrt(sum h^2) from firdes.band_pass(1, 40000, 6000, 9000, width, WIN_RECTANGULAR): 340 Hz 0.791, 350 Hz 0.803, 360 Hz 0.805, 375 Hz 0.794; Hamming, Hann and Blackman designs give 0.747-0.773 for 50-500 Hz. The seed-to-seed spread is 0.7 % (build.py calibration).",
+   "suggested_fix": "Keep the oracle: raising the bound would also admit a 10 % gain error (0.812-0.845). Record the limit for the team (done: review.notes (7)); the team may state that the passband gain must be unity on average."
+  }
+ ]
+}

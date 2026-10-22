@@ -1,0 +1,24 @@
+options:
+  parameters: {id: rectifier_max, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: mains_50hz
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '50', amp: '2.0'}
+- name: negate
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '-1'}
+- name: larger
+  id: blocks_max_xx
+  parameters: {type: float, num_inputs: '2'}
+- name: rectified_out
+  id: blocks_file_sink
+  parameters: {type: float, file: rectified.dat}
+connections:
+- [mains_50hz, '0', larger, '0']
+- [mains_50hz, '0', negate, '0']
+- [negate, '0', larger, '1']
+- [larger, '0', rectified_out, '0']
+metadata: {file_format: 1}

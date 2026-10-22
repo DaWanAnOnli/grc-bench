@@ -1,0 +1,146 @@
+options:
+    parameters:
+        alias: ''
+        author: null
+        catch_exceptions: 'True'
+        comment: ''
+        copyright: null
+        description: null
+        gen_linking: dynamic
+        generate_options: no_gui
+        generator_class_name: PythonNoGuiGenerator
+        generator_module: gnuradio.grc.workflows.python_nogui
+        hier_block_src_path: '.:'
+        id: burst_agc
+        max_nouts: '0'
+        output_language: python
+        realtime_scheduling: ''
+        run_command: '{python} -u {filename}'
+        run_options: prompt
+        thread_safe_setters: ''
+        title: null
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        state: enabled
+blocks:
+-   name: samp_rate
+    id: variable
+    parameters:
+        comment: ''
+        value: '48000'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        state: enabled
+-   name: agc
+    id: analog_agc_xx
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        gain: '1.0'
+        max_gain: '65536'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        rate: '0.3'
+        reference: '1.0'
+        type: complex
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        state: enabled
+-   name: bursts
+    id: blocks_multiply_xx
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        num_inputs: '2'
+        type: complex
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        state: enabled
+-   name: envelope
+    id: blocks_vector_source_x
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        repeat: 'True'
+        tags: '[]'
+        type: complex
+        vector: '[0.1] * 4000 + [3.0] * 4000'
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        state: enabled
+-   name: rx_sink
+    id: blocks_file_sink
+    parameters:
+        affinity: ''
+        alias: ''
+        append: 'False'
+        comment: ''
+        file: rx.dat
+        type: complex
+        unbuffered: 'False'
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        state: enabled
+-   name: tone
+    id: analog_sig_source_x
+    parameters:
+        affinity: ''
+        alias: ''
+        amp: '0.5'
+        comment: ''
+        freq: '1200'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        offset: '0'
+        phase: '0'
+        samp_rate: samp_rate
+        showports: 'False'
+        type: complex
+        waveform: analog.GR_COS_WAVE
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        state: enabled
+connections:
+-   - agc
+    - '0'
+    - rx_sink
+    - '0'
+-   - bursts
+    - '0'
+    - agc
+    - '0'
+-   - envelope
+    - '0'
+    - bursts
+    - '1'
+-   - tone
+    - '0'
+    - bursts
+    - '0'
+metadata:
+    file_format: 1
+    grc_version: 3.10.12.0

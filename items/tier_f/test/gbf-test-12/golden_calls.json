@@ -1,0 +1,19 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x channels_channel_model blocks_file_sink",
+  "domain": "catalog",
+  "k": 6
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "channels_channel_model_0",
+    "params": {
+     "noise_voltage": "0.05",
+     "freq_offset": "0.0125"
+    }
+   }
+  ]
+ }
+}

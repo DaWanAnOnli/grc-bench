@@ -1,0 +1,458 @@
+{
+ "counts": {
+  "dev": 8,
+  "test": 22,
+  "train": 31
+ },
+ "forced_train_stems": [
+  "5G_nebula",
+  "5gnalizer",
+  "broken_unconnected_sink",
+  "demo_qam",
+  "dial_tone",
+  "empty",
+  "fm_rx",
+  "new_dmeo",
+  "qtgui_vector_sink_example",
+  "resampler_demo",
+  "run_test_null_sink"
+ ],
+ "rule": "usable seeds (ladder V1-V5 pass after headless conversion) split by largest remainder per directory, ranked by sha256(seed + NUL + file); forced-train stems always train; unusable examples get no split",
+ "seed": "grc-bench-seeds-v1-2026-10-14",
+ "seeds": {
+  "analog/noise_power.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 23,
+   "sha256": "6b2f0aa966c074e4a0c029c003fa4e421219cb5d8831f645caea13c665a9ca56",
+   "split": "train"
+  },
+  "analog/sig_source_msg_ports.grc": {
+   "level_estimate": "L1",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 5,
+   "sha256": "2c3fe219ba8b1c9c31e54f6d3411fbe8812c1d30f39ae108b1cef38e8b857363",
+   "split": "test"
+  },
+  "audio/dial_tone.grc": {
+   "level_estimate": "L1",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 5,
+   "sha256": "6245b830ce2081fa37d61deba385ee8212072a4d3859d65535cde418894716db",
+   "split": "train"
+  },
+  "blocks/burst_to_stream.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 12,
+   "sha256": "d7e6535e3ef95b70d723e6939991774c84ba0bcee694172a4a14b03212a252d8",
+   "split": "test"
+  },
+  "blocks/matrix_interleaver.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 10,
+   "sha256": "7175059388fdce69c13d46cec730f9cd7154724a82e865790c660f59b5b06be3",
+   "split": "train"
+  },
+  "blocks/matrix_multiplexer.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 7,
+   "sha256": "7cbe78500867c5e3866f829b97c93c35d36864236b92aa0b30f70fd77a39cc54",
+   "split": "test"
+  },
+  "blocks/peak_detector2.grc": {
+   "level_estimate": "L1",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 5,
+   "sha256": "78cb54563e44c0e39410514cb88f9dc5471bbf6bdb9f918a7f4e86da7bb79add",
+   "split": "test"
+  },
+  "blocks/stream_demux_demo.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 7,
+   "sha256": "20728fb00cc79d6c74e7fd416f678a06e09d9481e4d717f0b4228e0145257ade",
+   "split": "train"
+  },
+  "blocks/stream_mux_demo.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 7,
+   "sha256": "42dc921d1c4f20b2a4b3d506b3b5cedcfd13dc93a6e07d96cb7804bf09a4c81e",
+   "split": "dev"
+  },
+  "blocks/vector_source_with_tags.grc": {
+   "level_estimate": "L1",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 3,
+   "sha256": "75b55fcd1a0145ba53a5eace015506bb0b1d39b4d74083034c0f6cb26c57b3b4",
+   "split": "train"
+  },
+  "channels/channel_tone_response.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 6,
+   "sha256": "1380769e95080f8c870059e1ca7be7e5fe78ec30e7cea618c9c9b34d6e1fb4c5",
+   "split": "train"
+  },
+  "channels/demo_gmsk.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 7,
+   "sha256": "768ba6abd6876c56793abadda2da1d74020977b876ccd0387f8961ee4f4d23c3",
+   "split": "test"
+  },
+  "channels/demo_ofdm.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 16,
+   "sha256": "ec405ff939d53877ed81f31ec70b008cb18bcb5547c2882be92d042fe98c68c1",
+   "split": "train"
+  },
+  "channels/demo_qam.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 10,
+   "sha256": "23da4e6160368b142cd2a2d1032d71b61f73ab5249254a43f3c77e1376df1581",
+   "split": "train"
+  },
+  "channels/demo_quantization.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 9,
+   "sha256": "23f35aa381e4f41fce0f0d629428cd654e3a93650f1dd5be381593c65bfa488d",
+   "split": "dev"
+  },
+  "channels/demo_spec_an.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 12,
+   "sha256": "63828fde895b1b0329fcdcf53f00f07df772c4b568455f186a5e5e302cdb07e2",
+   "split": "test"
+  },
+  "ctrlport/pfb_sync_test.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 12,
+   "sha256": "0949c8d68d19f2db51e5a56efe355412bbecf939d650bac61e32bc841a9444cf",
+   "split": "train"
+  },
+  "digital/demod/constellation_soft_decoder.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 17,
+   "sha256": "6ca25c4d61172c0b1ac1eff6e6657bf5f0d99be5b802e136cb48051c5c49b8bc",
+   "split": "test"
+  },
+  "digital/demod/pam_timing.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 11,
+   "sha256": "95f77f485c889cca220461b1f03ca2383f85cf34f9cf0cbb64097d02ed061a0c",
+   "split": "test"
+  },
+  "digital/demod/symbol_sync_test_complex.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 19,
+   "sha256": "033747cef4d2d361b000c9b6e889a8b5b389de95b4b806ae1bd3c5c8357fb992",
+   "split": "train"
+  },
+  "digital/demod/symbol_sync_test_float.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 15,
+   "sha256": "cdcfde12b2230ba41831618d54eb4ba591901562150af983a264ed25895cda36",
+   "split": "train"
+  },
+  "digital/demod/test_corr_est.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 14,
+   "sha256": "5fe522f423c750c0729a78182fa8ee18d784866de83afd11bc38e1581a3d9ae9",
+   "split": "dev"
+  },
+  "digital/equalizers/le_vs_dfe.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 16,
+   "sha256": "f87307ac883d2c4c91b0f8a950d180596047ac7041b1c81930bae183e917ab9b",
+   "split": "test"
+  },
+  "digital/equalizers/linear_equalizer_compare.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 21,
+   "sha256": "31b6248372953491726138eb71ad31e70aa075c670d356ecacf0fa8d8f2cc6fd",
+   "split": "train"
+  },
+  "digital/mpsk_stage6.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 19,
+   "sha256": "370c1c95f4a13127739dd4b9fb9889ea95eb6f84b37bbdc88abc3a1796646b00",
+   "split": "train"
+  },
+  "digital/ofdm/tx_ofdm.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 29,
+   "sha256": "63408bfce48761bad5d454243c47da11a8f797862453f499e8c931c4afecdf6e",
+   "split": "train"
+  },
+  "digital/packet/example_corr_est.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 13,
+   "sha256": "d811609ea5004b86bb66e7e6bdaf94c7eee3d65848ccedc344058ddd3c04cdb0",
+   "split": "test"
+  },
+  "digital/packet/example_corr_est_and_clock_sync.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 14,
+   "sha256": "50f410a4a88916b0d970904db3800620d39f7735f6fb6f98e26990281619d0a3",
+   "split": "train"
+  },
+  "digital/packet/example_corr_est_and_phase_sync.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 16,
+   "sha256": "02b689d177e95ab4d7a0c315646518cee4b77c8dd42d1787ea4c77086cc41afb",
+   "split": "train"
+  },
+  "digital/packet/simple_bpsk_tx.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 13,
+   "sha256": "dd09757dd0f713cbe6d8049fdf8f0559e274dd98125ff139032766b9ff830af0",
+   "split": "dev"
+  },
+  "digital/packet/tx_stage4.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 19,
+   "sha256": "89135749414b7bc6571ba4d159ba0bf17e45ca566827321c92405ee4aabd3a2a",
+   "split": "test"
+  },
+  "fec/fecapi_async_decoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 16,
+   "sha256": "e17256d2668b1d545f7abccbfc71e57122bb401bbd35e4f40d722461a33bca69",
+   "split": "test"
+  },
+  "fec/fecapi_async_encoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 12,
+   "sha256": "5ad94e08701ae55011cd1f38e2918ff12010835ee29695201433bd8a9fd9edf2",
+   "split": "train"
+  },
+  "fec/fecapi_async_ldpc_decoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 16,
+   "sha256": "82c288dc008e98dbc41ff9950f35a6c29ab4998fea6616e5f27d84e78f7132c5",
+   "split": "test"
+  },
+  "fec/fecapi_async_ldpc_encoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 13,
+   "sha256": "32337d25449c29bac4ed24527fd33aff4bba27a2bca9facc6978054cebc85072",
+   "split": "train"
+  },
+  "fec/fecapi_async_packed_decoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 15,
+   "sha256": "45382178e9ab8e63e383104e989bf551f27184e0901a8638c78cebf9efe7ebb2",
+   "split": "test"
+  },
+  "fec/fecapi_cc_decoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 10,
+   "sha256": "1e1044d1f846482ea3d0ff43072a9a28528d473f8490be9eb1619c5a141fb1c7",
+   "split": "dev"
+  },
+  "fec/fecapi_decoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 20,
+   "sha256": "039f0a821aed2e76efd54f2b03998a28d9ed3423e463fec028ea1f17e9c0a5d7",
+   "split": "test"
+  },
+  "fec/fecapi_encoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 11,
+   "sha256": "599d008386cc5194a2ba4c26ef5153e5abfca210c5b84515cb5c37f3a2f91a4f",
+   "split": "train"
+  },
+  "fec/fecapi_polar_async_packed_decoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 15,
+   "sha256": "1dfcd7a336cf21197e282d8c6c2f3c4d58f70be1ea42e4a50383ac909cc5e7fb",
+   "split": "train"
+  },
+  "fec/fecapi_polar_decoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 20,
+   "sha256": "5b32f1b33eec5ba29aba3493c226255fc0fcd95f6c8a48c58bed9a3238140b88",
+   "split": "test"
+  },
+  "fec/fecapi_polar_encoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 16,
+   "sha256": "ec6005ca7de5e7545febcf1a26ff0e014125df4f22f9210a2d0652bf6db3a8cb",
+   "split": "dev"
+  },
+  "fec/fecapi_tagged_decoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 20,
+   "sha256": "0d91839bf035d011f493ebfc9fd04eb0bd7a58f980f6a7db3c702856365070d3",
+   "split": "train"
+  },
+  "fec/fecapi_tagged_encoders.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 16,
+   "sha256": "b5be0a1ad2cec02a2991047b1f8bb423cd14d11ebbf4370bda2580fd355ce5d9",
+   "split": "train"
+  },
+  "filter/filter_taps.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 7,
+   "sha256": "493f7f19aa59618aafdf3fc30b991214af4bf8e3add49657e6053352dc3bdf53",
+   "split": "dev"
+  },
+  "filter/filter_taps_loader.grc": {
+   "level_estimate": "L1",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 4,
+   "sha256": "e4e88e0a00e526cf28277fd815b306906dc8eefc5533b688fb88bfa687f228b2",
+   "split": "train"
+  },
+  "filter/polyphase_channelizer_demo.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 11,
+   "sha256": "8bce36c19cff6c9019a8212de14fc186ea0e489bc462a041db336e3e30cf802e",
+   "split": "test"
+  },
+  "filter/resampler_demo.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 7,
+   "sha256": "1d1614392363b0645f81ea1ed3a60bd6aa408aa2b93057b674d4d70fb73b40d7",
+   "split": "train"
+  },
+  "pdu/pdu_lambda_chirp_demo.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 8,
+   "sha256": "2aeff1d908bedb3552649de382ca45661d6160d760cb560a7949e4d5d3061ec8",
+   "split": "test"
+  },
+  "pdu/simple_pdu_to_stream_example.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 5,
+   "sha256": "696649e52aceeea6822ab9b094565423c5ffa343004ab4bc565b51d0a6170972",
+   "split": "train"
+  },
+  "qt-gui/qtgui_multi_input.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 12,
+   "sha256": "313d3d21ceb3aa854bc67b3c8ab76b2d34e03569f507a73921ec77fcdd0a9d98",
+   "split": "test"
+  },
+  "qt-gui/qtgui_tags_viewing.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 13,
+   "sha256": "189f3ae160312c0736debc0814754933404a58e48728303a84e7d758b36ec644",
+   "split": "dev"
+  },
+  "qt-gui/qtgui_vector_sink_example.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 7,
+   "sha256": "5ce7423ff67fb6599fce16df02fddb6e16a5646d0dd2bc72c50ea8fc2e580c09",
+   "split": "train"
+  },
+  "qt-gui/test_autocorrelator.grc": {
+   "level_estimate": "L2",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 4,
+   "sha256": "0fffacb4fc5d477c9650c56ecf1117f8fb7cee0f0328d9efca1f7768e7999916",
+   "split": "train"
+  },
+  "qt-gui/test_compass_stream.grc": {
+   "level_estimate": "L1",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 3,
+   "sha256": "91601e55164b1b21b01d6f6391c59e6392da65f2977398c586a3c829a6b70848",
+   "split": "test"
+  },
+  "qt-gui/test_qtgui_msg.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 6,
+   "sha256": "692ed1773084b9dc9d9a389f30e84a0519f50aa78ccf7b7b1672a55deeaf86ac",
+   "split": "train"
+  },
+  "tags/test_tag_prop.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 5,
+   "sha256": "9bc318bf53f0f092d4ea754883440dedf243fab5e820203dbfc5d23c6bab72b5",
+   "split": "train"
+  },
+  "trellis/pccc.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 15,
+   "sha256": "bec836c7d12b3aa5ba6964a5e2a3a03c9ef30f12f86ed7492a4e36a216e0f4f2",
+   "split": "train"
+  },
+  "trellis/sccc.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 13,
+   "sha256": "1d9b4b84d53da60ecbee7748f6fa38adc1cc2cf1c058d909c86655071f0f21ce",
+   "split": "test"
+  },
+  "trellis/tcm.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 13,
+   "sha256": "ff01bb2764ff5501145f73ca1f75283d279f007410034d0d623f0c85397c3982",
+   "split": "test"
+  },
+  "trellis/viterbi_equalization.grc": {
+   "level_estimate": "L3",
+   "license": "GPL-3.0-or-later (example flowgraph shipped with GNU Radio 3.10.12)",
+   "n_blocks": 16,
+   "sha256": "07587bedc34ca73f2539761cd0df7903b338e664630ba3cdb533fca77abb3a39",
+   "split": "train"
+  }
+ },
+ "shares": {
+  "dev": 0.15,
+  "test": 0.4,
+  "train": 0.45
+ },
+ "stratified_by": "example directory",
+ "unit": "source file"
+}

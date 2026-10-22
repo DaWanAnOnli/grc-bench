@@ -1,0 +1,32 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x high_pass_filter blocks_multiply_const_vxx blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "tone:0->hpf:0",
+   "hpf:0->gain:0"
+  ],
+  "remove_blocks": [
+   "hpf"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "high_pass_filter",
+    "instance_name": "hpf",
+    "params": {
+     "type": "fir_filter_fff",
+     "cutoff_freq": "300",
+     "width": "200"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone:0->hpf:0",
+   "hpf:0->gain:0"
+  ]
+ }
+}

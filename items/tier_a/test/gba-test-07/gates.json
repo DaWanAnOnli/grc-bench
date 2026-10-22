@@ -1,0 +1,44 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "hier_block: sample_delay.block.yml is not in the run's block library; sample_delay.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 9
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "hier_block: sample_delay.block.yml is not in the run's block library; sample_delay.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "737071f181be443993a19d67cc5e0630138cea10e73bf51208c28e53f1b4cd4d",
+ "passed": true,
+ "task": "gba-test-07"
+}

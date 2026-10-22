@@ -1,0 +1,60 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "pfb_channelizer_hier_ccf_0",
+     "samp_rate"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "analog_sig_source_x_0",
+     "analog_sig_source_x_1",
+     "analog_sig_source_x_2",
+     "analog_sig_source_x_3"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "polyphase channelizer nchans"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "channelizer output sample rate"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {},
+   "tool": "list_directory"
+  },
+  {
+   "args": {
+    "limit": 80,
+    "path": "channelizer_demo.grc"
+   },
+   "tool": "read_file"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  }
+ ],
+ "final_text": "The summed input runs at a sample rate of 48000 samples per second (48 kHz). The polyphase channelizer splits it into 4 channels. The strongest tone is the one at 1200 Hz (amplitude 0.8). I did not change the flowgraph."
+}

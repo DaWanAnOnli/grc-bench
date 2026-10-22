@@ -1,0 +1,19 @@
+options:
+  parameters: {id: clean_tone, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '1200', amp: '0.4', offset: '0.75'}
+- name: hpf
+  id: high_pass_filter
+  parameters: {type: fir_filter_fff, cutoff_freq: '300', width: '200', gain: '2.5'}
+- name: clean_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: clean_tone.dat}
+connections:
+- [tone, '0', hpf, '0']
+- [hpf, '0', clean_sink, '0']
+metadata: {file_format: 1}

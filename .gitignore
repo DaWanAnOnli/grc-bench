@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# run outputs (only the append-only test-run log is versioned)
+runs/*
+!runs/test_run_log.jsonl
+!runs/README.md
+
+# editor / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

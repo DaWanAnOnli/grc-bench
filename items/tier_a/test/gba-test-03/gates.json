@@ -1,0 +1,44 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V6: rx rms = 0.051707; rx rms = 0.060754; rx rms = 2.008537; rx rms = 1.773369; rx rms = 0.054505; rx rms = 0.063517; rx rms = 2.086645; rx rms = 1.833439; rx rms = 0.05601; rx rms = 0.065003; rx rms = 2.128666; rx rms = 1.865762"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V6: rx rms = 0.100264; rx rms = 0.330119; rx band_fraction = 0.978143; rx rms = 3.86722; rx rms = 1.126037; rx band_fraction = 0.881911; rx rms = 0.084572; rx rms = 0.319317; rx band_fraction = 0.975776; rx rms = 3.807823; rx rms = 1.122925; rx band_fraction = 0.884794; rx rms = 0.084572; rx rms = 0.319317; rx band_fraction = 0.975776; rx rms = 3.807824; rx rms = 1.122925; rx band_fraction = 0.884794"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "2c99e83185b77b3c4780b77b760dbf32dddfb5f6f7504592e298f35fcbe6513f",
+ "passed": true,
+ "task": "gba-test-03"
+}

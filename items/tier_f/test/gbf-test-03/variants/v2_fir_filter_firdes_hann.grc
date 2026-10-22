@@ -1,0 +1,32 @@
+options:
+  parameters: {id: noise_fir_taps, generate_options: no_gui, output_language: python}
+blocks:
+- name: import_0
+  id: import
+  parameters: {imports: from gnuradio.fft import window}
+- name: samp_rate
+  id: variable
+  parameters: {value: 40e3}
+- name: f_low
+  id: variable
+  parameters: {value: 6e3}
+- name: f_high
+  id: variable
+  parameters: {value: 9e3}
+- name: noise_src
+  id: analog_noise_source_x
+  parameters: {type: float, amp: '2.0', seed: '1', noise_type: analog.GR_GAUSSIAN}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: band_filter
+  id: fir_filter_xxx
+  parameters: {type: fff, taps: 'firdes.band_pass(1.0, samp_rate, f_low, f_high, 500, window.WIN_HANN)'}
+- name: sink
+  id: blocks_file_sink
+  parameters: {type: float, file: bandnoise.dat}
+connections:
+- [noise_src, '0', throttle, '0']
+- [throttle, '0', band_filter, '0']
+- [band_filter, '0', sink, '0']
+metadata: {file_format: 1}

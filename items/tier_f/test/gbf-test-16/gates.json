@@ -1,0 +1,123 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 15
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 775
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "expected": null,
+   "first_failed": "V6",
+   "passed": true,
+   "v6_groups": {
+    "f2p": false,
+    "p2p": true
+   }
+  },
+  "variants": {
+   "n": 21,
+   "passed": true,
+   "results": {
+    "alt_hier_bw045_tb005.grc": [
+     "V6",
+     null
+    ],
+    "alt_hier_bw048_tb002.grc": [
+     "V6",
+     null
+    ],
+    "alt_hier_bw05_tb002.grc": [
+     "V6",
+     null
+    ],
+    "alt_hier_taps_lp2_100db.grc": [
+     "V6",
+     null
+    ],
+    "alt_hier_user_taps.grc": [
+     "V6",
+     null
+    ],
+    "alt_pfb_decimators.grc": [
+     "V6",
+     null
+    ],
+    "alt_pfb_decimators_nofft.grc": [
+     "V6",
+     null
+    ],
+    "alt_pfb_lp2_6k_60db.grc": [
+     "V6",
+     null
+    ],
+    "alt_pfb_lp2_sharp.grc": [
+     "V6",
+     null
+    ],
+    "alt_pfb_lp2_tw50_4363taps.grc": [
+     "V6",
+     null
+    ],
+    "alt_pfb_lp2_verysharp.grc": [
+     "V6",
+     null
+    ],
+    "alt_pfb_lp_hamming.grc": [
+     "V6",
+     null
+    ],
+    "alt_rotator_fft_filter.grc": [
+     "V6",
+     null
+    ],
+    "alt_rotator_fir.grc": [
+     "V6",
+     null
+    ],
+    "alt_throttle_after_add.grc": [
+     "V6",
+     null
+    ],
+    "alt_xlating_fft_filters.grc": [
+     "V6",
+     null
+    ],
+    "alt_xlating_sharp_lp2.grc": [
+     "V6",
+     null
+    ],
+    "alt_xlating_sharp_tw100.grc": [
+     "V6",
+     null
+    ],
+    "v1_pfb_channelizer_ccf.grc": [
+     "V6",
+     null
+    ],
+    "v2_xlating_filters.grc": [
+     "V6",
+     null
+    ],
+    "v3_hier_variables.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-test-16"
+}

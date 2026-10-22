@@ -1,0 +1,40 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_abs_xx blocks_file_sink",
+  "domain": "catalog",
+  "k": 6
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "mains",
+    "params": {
+     "type": "float",
+     "freq": "50",
+     "amp": "2.0"
+    }
+   },
+   {
+    "block_id": "blocks_abs_xx",
+    "instance_name": "rectifier",
+    "params": {
+     "type": "float"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "float",
+     "file": "rectified.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "mains:0->rectifier:0",
+   "rectifier:0->out:0"
+  ]
+ }
+}

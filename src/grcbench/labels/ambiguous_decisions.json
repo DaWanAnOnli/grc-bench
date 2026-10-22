@@ -1,0 +1,821 @@
+{
+ "about": "Task-type labels for the 134 questions whose raw spelling is ambiguous. Each question was read and classified individually against 00_dataset_spec/task_types.json and curriculum.md. Labelling only: no reference answer or rubric text is drafted here (eval plan Table 5).",
+ "date": "2026-10-14",
+ "decisions": {
+  "q_0447117e2c706aab": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the Nyquist theorem; the GNU Radio sample-rate clause is the setting, not a GNU Radio-specific skill.",
+   "rule": "concept"
+  },
+  "q_047f1be8b8ace2e4": {
+   "clean": "gnuradio_usage",
+   "raw": "compare/choose",
+   "reason": "Hierarchical block versus OOT module: GNU Radio-specific ways of structuring a design.",
+   "rule": "gnuradio"
+  },
+  "q_087fe90a62eb07a3": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "Second half asks how an AWGN channel is implemented in GNU Radio (which blocks): GNU Radio usage beyond the basic definition.",
+   "rule": "gnuradio"
+  },
+  "q_0b52ca6a0631c1ab": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains IQ representation and why SDRs use it.",
+   "rule": "concept"
+  },
+  "q_0e1d94a08eb37f4c": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains how FM encodes information.",
+   "rule": "concept"
+  },
+  "q_111fed98501d7b95": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose FDD over TDD: system-level selection.",
+   "rule": "selection"
+  },
+  "q_136c02cbaa6f93f2": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose an external over the internal reference clock: a configuration choice justified by requirements.",
+   "rule": "selection"
+  },
+  "q_161735a463c96318": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About named GNU Radio blocks (ZMQ PUB Sink, ZMQ SUB Source) linking separate flowgraphs.",
+   "rule": "gnuradio"
+  },
+  "q_170dbf66b1e3f63b": {
+   "clean": "design",
+   "raw": "compare/choose",
+   "reason": "Ends by asking when to choose non-coherent FSK demodulation despite its SNR penalty: selection under trade-offs.",
+   "rule": "selection"
+  },
+  "q_193e37ad7f436a5a": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Compares spectral efficiency and required SNR of two modulations; no selection asked.",
+   "rule": "comparison"
+  },
+  "q_1aeb773e43953a8a": {
+   "clean": "gnuradio_usage",
+   "raw": "information_gathering",
+   "reason": "No symptom: asks which GNU Radio blocks must follow a sample rate changed at runtime by message (rates and messages).",
+   "rule": "gnuradio"
+  },
+  "q_1b7936b6143a8877": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "Second half asks how GNU Radio simulates multipath fading (which blocks): GNU Radio usage.",
+   "rule": "gnuradio"
+  },
+  "q_1bfac637417fa115": {
+   "clean": "diagnosis",
+   "raw": "ask_for_info",
+   "reason": "Symptom (ghost targets at regular intervals); asks which measurements discriminate PRF ambiguity from multipath.",
+   "rule": "diagnosis"
+  },
+  "q_1d98e0cb89a61557": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines a spectrogram and its relation to the STFT.",
+   "rule": "concept"
+  },
+  "q_1f11d99126b24669": {
+   "clean": "gnuradio_usage",
+   "raw": "compare/choose",
+   "reason": "About GNU Radio source blocks and vector items for an FFT block: GNU Radio item types and blocks.",
+   "rule": "gnuradio"
+  },
+  "q_2010814e3dc32ef3": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines interpolation in multirate DSP.",
+   "rule": "concept"
+  },
+  "q_224c019b853d534b": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the FFT and why it is faster than the DFT.",
+   "rule": "concept"
+  },
+  "q_22d3981610759977": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Compares three analog modulations on bandwidth and noise performance.",
+   "rule": "comparison"
+  },
+  "q_244f83241e566f40": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines an IIR filter.",
+   "rule": "concept"
+  },
+  "q_25495cc008bd32b8": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines an FIR filter and its key properties.",
+   "rule": "concept"
+  },
+  "q_25d7bc2181763ade": {
+   "clean": "gnuradio_usage",
+   "raw": "compare_choose",
+   "reason": "Asks to distinguish two GNU Radio block APIs and when to use each: GNU Radio-specific.",
+   "rule": "gnuradio"
+  },
+  "q_26f81c1c3d0d56af": {
+   "clean": "diagnosis",
+   "raw": "information_gathering",
+   "reason": "Symptom (3 dB loss in a capture); asks what information separates front-end filtering from software throttling.",
+   "rule": "diagnosis"
+  },
+  "q_288a3d602e7951a5": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines ASK and how it encodes data.",
+   "rule": "concept"
+  },
+  "q_292c9dc64b7b4a10": {
+   "clean": "design",
+   "raw": "compare/choose",
+   "reason": "Weighs the trade-offs of a chosen design fix (DC notch) under a stated constraint (no calibration possible).",
+   "rule": "selection"
+  },
+  "q_2a77d21b8813c329": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Distinguishes baseband from passband signals.",
+   "rule": "concept"
+  },
+  "q_2b87a37b6959d609": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Purpose of an FIR filter and its textbook difference from IIR: explains a standard concept.",
+   "rule": "concept"
+  },
+  "q_2c6eb86eb85de6ac": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Compares how two bands behave (shadowing under foliage) and asks which is more susceptible; infers behaviour, no selection for a requirement.",
+   "rule": "comparison"
+  },
+  "q_2ff0d3f5257870ec": {
+   "clean": "reasoning",
+   "raw": "compare_choose",
+   "reason": "Asks which of two impairments harms OFDM more and why: infers behaviour.",
+   "rule": "comparison"
+  },
+  "q_30914edff42ffc6d": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines the DFT and when it is used.",
+   "rule": "concept"
+  },
+  "q_3100e65f7d43266e": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the purpose of OFDM pilots in channel estimation and equalization.",
+   "rule": "concept"
+  },
+  "q_3121fb3fe73f7a0b": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains how AM encodes information.",
+   "rule": "concept"
+  },
+  "q_3337537790f3f78d": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines IIR filters and the textbook difference from FIR.",
+   "rule": "concept"
+  },
+  "q_35280143259efd36": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains what PSD describes.",
+   "rule": "concept"
+  },
+  "q_3adb7083164caabf": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines decimation.",
+   "rule": "concept"
+  },
+  "q_3f3e047ae33890c8": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About GNU Radio hierarchical blocks and why to use them.",
+   "rule": "gnuradio"
+  },
+  "q_3f979d4b83fe64ea": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose AM over FM for a system: selection.",
+   "rule": "selection"
+  },
+  "q_4988f02350231710": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the purpose of a band-pass filter.",
+   "rule": "concept"
+  },
+  "q_49955101180915ca": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines the DFT and its textbook difference from the continuous Fourier transform.",
+   "rule": "concept"
+  },
+  "q_49cfb6d65954e69a": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose an STFT over a single FFT: method selection by signal and goal.",
+   "rule": "selection"
+  },
+  "q_4d8868bb49c645d0": {
+   "clean": "reasoning",
+   "raw": "compare",
+   "reason": "Compares the spectral efficiency of two modulations; no quantities to compute and no selection asked.",
+   "rule": "comparison"
+  },
+  "q_4e75fc0c01ea54ff": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the FFT as a time-to-frequency transform.",
+   "rule": "concept"
+  },
+  "q_4e8aacb30a6b428f": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains what the Fourier transform reveals about a signal.",
+   "rule": "concept"
+  },
+  "q_4f93690df7c3ceff": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Compares the burst-error detection capability of CRC and checksum; no selection asked.",
+   "rule": "comparison"
+  },
+  "q_50bb5518b5b67ee2": {
+   "clean": "reasoning",
+   "raw": "compare_choose",
+   "reason": "Compares how AWGN and phase noise affect a constellation: infers behaviour.",
+   "rule": "comparison"
+  },
+  "q_5125508d56d86860": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines a polyphase matrix.",
+   "rule": "concept"
+  },
+  "q_547978ce572f9d78": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains what the STFT adds over the Fourier transform.",
+   "rule": "concept"
+  },
+  "q_5ad6ae2cc249fac3": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About the work/general_work function and buffers of a custom GNU Radio block.",
+   "rule": "gnuradio"
+  },
+  "q_5b2d837e143da121": {
+   "clean": "calculation",
+   "raw": "compare/choose",
+   "reason": "Gives explicit quantities (two branches, independent Rayleigh, 10 dB per branch) and asks for average output SNR and outage: a computed comparison.",
+   "rule": "quantities"
+  },
+  "q_5b9fe34c5dfa6544": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Filter-design scenario with a stated interferer and sample rate; justifies choosing a notch over a wide bandstop.",
+   "rule": "selection"
+  },
+  "q_5c329d70a1841300": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines aliasing and how it arises in sampling.",
+   "rule": "concept"
+  },
+  "q_5d1f475e16c3e9b6": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Names a sinusoid's three parameters and their time- and frequency-domain effects.",
+   "rule": "concept"
+  },
+  "q_5e02b804fd16f886": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines the decibel as a power ratio.",
+   "rule": "concept"
+  },
+  "q_5eccd2117d13363d": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains I and Q components.",
+   "rule": "concept"
+  },
+  "q_608f383aefe2960f": {
+   "clean": "design",
+   "raw": "compare/choose",
+   "reason": "Asks when fixed-point arithmetic is forced and its main risk: an implementation choice under constraints.",
+   "rule": "selection"
+  },
+  "q_60b116e737fc2830": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "Asks how decimation is implemented in GNU Radio and which blocks are used.",
+   "rule": "gnuradio"
+  },
+  "q_63650ef2fb85be91": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains OFDM and why it suits multipath channels.",
+   "rule": "concept"
+  },
+  "q_65e03809926c3a16": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Explains the effect of scintillation on a link and contrasts its mechanism with terrestrial multipath: explains consequences.",
+   "rule": "comparison"
+  },
+  "q_66281acaec419e9e": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the purpose of downsampling.",
+   "rule": "concept"
+  },
+  "q_67a5dcb53b3487bb": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About GNU Radio flowgraph architecture and the scheduler's role.",
+   "rule": "gnuradio"
+  },
+  "q_6b9a6646976f180b": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose FSK over PSK: selection.",
+   "rule": "selection"
+  },
+  "q_6cae9c9baf171155": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains why I/Q is used to represent bandpass signals.",
+   "rule": "concept"
+  },
+  "q_6f0e3e2a262e2553": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines QPSK and its textbook differences from BPSK; fits factual or reasoning, the raw 'conceptual' breaks the tie.",
+   "rule": "concept"
+  },
+  "q_720568986e9512fb": {
+   "clean": "design",
+   "raw": "compare/choose",
+   "reason": "Stated constraints (sharp cutoff, little memory and CPU); compares two filter designs in order to pick one.",
+   "rule": "selection"
+  },
+  "q_723d8480f5988dab": {
+   "clean": "diagnosis",
+   "raw": "asking for missing information",
+   "reason": "Symptom (Costas loop fails to lock); asks what missing information decides whether the loop can lock.",
+   "rule": "diagnosis"
+  },
+  "q_724f2e085014971f": {
+   "clean": "design",
+   "raw": "compare/choose",
+   "reason": "Asks to design an AGC loop and weigh feed-forward against feedback structures.",
+   "rule": "selection"
+  },
+  "q_72d04d5cdba57858": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Lists the main sources of electronic noise.",
+   "rule": "concept"
+  },
+  "q_731786426d698543": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines SNR and its use.",
+   "rule": "concept"
+  },
+  "q_76343089fc37a953": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the function of a high-pass filter.",
+   "rule": "concept"
+  },
+  "q_770b71487f16a066": {
+   "clean": "diagnosis",
+   "raw": "ask_for_info",
+   "reason": "Symptom (high BER on some subcarriers); asks which parameters to investigate first to find the cause.",
+   "rule": "diagnosis"
+  },
+  "q_7717a4f662a0c065": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose a larger OFDM FFT size: parameter selection.",
+   "rule": "selection"
+  },
+  "q_7836c0bd71dfb74b": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains what SNR quantifies.",
+   "rule": "concept"
+  },
+  "q_79af440aa3fd2d3f": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Distinguishes digital from analog filters.",
+   "rule": "concept"
+  },
+  "q_7b37912ca09b3cde": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines the decibel.",
+   "rule": "concept"
+  },
+  "q_7c145afb59c37d8f": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the purpose of upsampling.",
+   "rule": "concept"
+  },
+  "q_830f6d1aede95a90": {
+   "clean": "design",
+   "raw": "compare",
+   "reason": "Asks which channel model to choose for a stated scenario and why: a method selection.",
+   "rule": "selection"
+  },
+  "q_85463dc7b2bf98e5": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About GNU Radio PMTs and metadata handling.",
+   "rule": "gnuradio"
+  },
+  "q_85d68579f18693fd": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About GNU Radio stream tags and how they carry metadata.",
+   "rule": "gnuradio"
+  },
+  "q_870250822e89fef9": {
+   "clean": "design",
+   "raw": "compare/choose",
+   "reason": "Stated requirement (very low latency); compares the latency of two filter options in order to choose.",
+   "rule": "selection"
+  },
+  "q_8777df476f7a0889": {
+   "clean": "design",
+   "raw": "compare/choose",
+   "reason": "Casts the answerer as protocol designer with a stated channel constraint (high multipath); the comparison serves choosing a synchronization sequence.",
+   "rule": "selection"
+  },
+  "q_87abde3985042b8f": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About PMTs in GNU Radio message passing between blocks.",
+   "rule": "gnuradio"
+  },
+  "q_8aea53044431cf60": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines multirate DSP.",
+   "rule": "concept"
+  },
+  "q_8bdc9dfc5d09c0b1": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Compares coherent and non-coherent BPSK detection and infers which tolerates phase noise better.",
+   "rule": "comparison"
+  },
+  "q_94ce4907a535b5c3": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines power spectral density and what it describes.",
+   "rule": "concept"
+  },
+  "q_95fc0affef983385": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains filter taps and their effect on an FIR response.",
+   "rule": "concept"
+  },
+  "q_96e1458d91dcbeaf": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Compares a matched filter with a threshold detector on SNR gain and resolution.",
+   "rule": "comparison"
+  },
+  "q_9bb174082402e19e": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Stated resampling requirement (48 to 44.1 kHz); asks why the naive method is inefficient and for the better approach.",
+   "rule": "selection"
+  },
+  "q_9e873905a271c14b": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose pulse radar over FMCW: selection.",
+   "rule": "selection"
+  },
+  "q_9eaf4014db5dfa3d": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains how PM encodes information.",
+   "rule": "concept"
+  },
+  "q_9f302dc369df30fc": {
+   "clean": "design",
+   "raw": "compare/choose",
+   "reason": "Ends by asking when to choose minimum-phase versus linear-phase FIR in a receiver: selection with trade-offs.",
+   "rule": "selection"
+  },
+  "q_9f3843b65edd2c23": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains FFT complexity versus the DFT.",
+   "rule": "concept"
+  },
+  "q_a0d0b74a115aa15e": {
+   "clean": "gnuradio_usage",
+   "raw": "compare_choose",
+   "reason": "About GNU Radio block base classes (gr::block, sync_block, decim_block) and when to use each.",
+   "rule": "gnuradio"
+  },
+  "q_a3d9cd59517cca87": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About GNU Radio sync versus general blocks and when to use each.",
+   "rule": "gnuradio"
+  },
+  "q_a62569cd611b6ba5": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines dBm.",
+   "rule": "concept"
+  },
+  "q_a7419655d539da42": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the purpose of sampling.",
+   "rule": "concept"
+  },
+  "q_a83037683ce5f794": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Explains why polyphase resampling is preferred over interpolate-then-decimate; the choice is given, the task is to justify it.",
+   "rule": "comparison"
+  },
+  "q_a99b0d73cc717286": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines baseband versus passband signals: a textbook distinction.",
+   "rule": "concept"
+  },
+  "q_abd6f3f739bfd948": {
+   "clean": "gnuradio_usage",
+   "raw": "compare_choose",
+   "reason": "About whether a GNU Radio equalizer block suits gain control: GNU Radio block behaviour.",
+   "rule": "gnuradio"
+  },
+  "q_ac356dbd8936e581": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the purpose of a low-pass filter.",
+   "rule": "concept"
+  },
+  "q_aed0844881bbadc0": {
+   "clean": "diagnosis",
+   "raw": "ask_for_info",
+   "reason": "Symptom in a GNU Radio flowgraph; asks what input details are needed to diagnose it (a GNU Radio diagnosis stays diagnosis).",
+   "rule": "diagnosis"
+  },
+  "q_b17ca071c6649557": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines FSK and how it encodes data.",
+   "rule": "concept"
+  },
+  "q_b41a7fadf792e00c": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines the STFT.",
+   "rule": "concept"
+  },
+  "q_b63bf715bc88d29f": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About how two named GNU Radio blocks (ZMQ PUB Sink, ZMQ SUB Source) connect separate flowgraphs: a GNU Radio-specific mechanism.",
+   "rule": "gnuradio"
+  },
+  "q_b7824b9142baf63f": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose IIR over FIR: selection.",
+   "rule": "selection"
+  },
+  "q_b8cb504e165932a8": {
+   "clean": "gnuradio_usage",
+   "raw": "compare_choose",
+   "reason": "Asks which GNU Radio block handles a non-integer rate change of 3.75: GNU Radio rates and blocks.",
+   "rule": "gnuradio"
+  },
+  "q_ba80c8c4474307ea": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to use a Rayleigh versus a Ricean model: model selection by scenario.",
+   "rule": "selection"
+  },
+  "q_bd45cd5d197806d7": {
+   "clean": "reasoning",
+   "raw": "compare",
+   "reason": "Compares two carrier-recovery loops for QAM; no requirement or selection stated.",
+   "rule": "comparison"
+  },
+  "q_bf2a7d7593ffc5a4": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Mainly compares the failure conditions of two carrier-recovery loops; the choice is a minor final part.",
+   "rule": "comparison"
+  },
+  "q_c18e9ec762a823af": {
+   "clean": "factual",
+   "raw": "compare",
+   "reason": "Contrasts the standard roles of CRC (detection) and FEC (correction) in an NR transport block: recall of complementary functions, not a choice between alternatives.",
+   "rule": "concept"
+  },
+  "q_c50c8a9ccababafd": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the principle of AM.",
+   "rule": "concept"
+  },
+  "q_c9b703b452e0d9ea": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines a spectrogram and how it is generated: explains a standard concept.",
+   "rule": "concept"
+  },
+  "q_cb9d8920dd4780fd": {
+   "clean": "design",
+   "raw": "compare",
+   "reason": "Trade-offs of raising a design parameter (pilot power relative to data): parameter selection with trade-offs.",
+   "rule": "selection"
+  },
+  "q_cdb9d188d784089e": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines dBm and its reference level.",
+   "rule": "concept"
+  },
+  "q_ceafe4b67010437d": {
+   "clean": "diagnosis",
+   "raw": "ask_for_info",
+   "reason": "Symptom (intermittent dropouts); asks what extra information would identify the root cause.",
+   "rule": "diagnosis"
+  },
+  "q_d148de87a3fee472": {
+   "clean": "diagnosis",
+   "raw": "information_gathering",
+   "reason": "Symptom (sudden loss of lock); asks what to request from a field engineer to troubleshoot it.",
+   "rule": "diagnosis"
+  },
+  "q_d1c66fccfbc034b4": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to choose LEO over GEO: system-level selection.",
+   "rule": "selection"
+  },
+  "q_d1db59e46153e34d": {
+   "clean": "reasoning",
+   "raw": "compare",
+   "reason": "Compares how frequency-selective fading affects two systems: infers behaviour.",
+   "rule": "comparison"
+  },
+  "q_d3004b9399e37d8f": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About the GNU Radio block API for custom Python and C++ blocks.",
+   "rule": "gnuradio"
+  },
+  "q_d5f4293ab929674c": {
+   "clean": "gnuradio_usage",
+   "raw": "compare_choose",
+   "reason": "Messages versus streams in GNU Radio: GNU Radio data-movement mechanisms.",
+   "rule": "gnuradio"
+  },
+  "q_d6c3a9fbe4e67ed4": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the purpose of modulation.",
+   "rule": "concept"
+  },
+  "q_d6dee8f2dfa04b77": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains symbol-timing recovery in a QPSK receiver; the quoted block name is the setting, the concept is generic.",
+   "rule": "concept"
+  },
+  "q_d894b271f89b9bae": {
+   "clean": "design",
+   "raw": "compare_choose",
+   "reason": "Asks when to use one carrier-recovery method over another: method selection by operating conditions.",
+   "rule": "selection"
+  },
+  "q_da73c266c47097b5": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Goes beyond definitions: compares PM and FM spectral occupancy at equal modulation index.",
+   "rule": "comparison"
+  },
+  "q_da889f46850bdb94": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines aliasing and when it occurs.",
+   "rule": "concept"
+  },
+  "q_dae86ed6b7bc345e": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains the Fourier transform.",
+   "rule": "concept"
+  },
+  "q_db0d3504a9f7ab9c": {
+   "clean": "reasoning",
+   "raw": "compare/choose",
+   "reason": "Distinguishes FDD from TDD and asks for the hardware consequences of TDD.",
+   "rule": "comparison"
+  },
+  "q_e021f8c115318a4a": {
+   "clean": "reasoning",
+   "raw": "compare",
+   "reason": "Compares two modulations on efficiency and noise robustness; fits factual or reasoning, the raw 'compare' breaks the tie.",
+   "rule": "comparison"
+  },
+  "q_e029c81966ae441a": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "Second half asks how GNU Radio supports impairment modelling (which blocks).",
+   "rule": "gnuradio"
+  },
+  "q_e55075a9362453ab": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines an FIR filter.",
+   "rule": "concept"
+  },
+  "q_e584f490f2ec44da": {
+   "clean": "gnuradio_usage",
+   "raw": "conceptual",
+   "reason": "About GNU Radio out-of-tree modules and why to create one.",
+   "rule": "gnuradio"
+  },
+  "q_e96de5bf137b864a": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Defines electronic noise and its main sources.",
+   "rule": "concept"
+  },
+  "q_ec6ec1882a00fd79": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Purpose of sampling in analog-to-digital conversion: explains a standard concept.",
+   "rule": "concept"
+  },
+  "q_ef6262e90732fc61": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Explains polyphase filter banks for resampling; the mechanism is generic DSP, GNU Radio is the setting.",
+   "rule": "concept"
+  },
+  "q_f7961494051c4834": {
+   "clean": "factual",
+   "raw": "conceptual",
+   "reason": "Distinguishes digital from analog filters.",
+   "rule": "concept"
+  },
+  "q_fa79ce7ac6d7f573": {
+   "clean": "diagnosis",
+   "raw": "ask_for_info",
+   "reason": "Symptom (rotated constellation); asks what information distinguishes CFO from phase offset.",
+   "rule": "diagnosis"
+  }
+ },
+ "labeller": "Claude (Anthropic)",
+ "rule_application": "Rules are applied to the main capability the question tests (task_types.json rule 1); when a question has parts of two kinds, the part that carries most of the expected answer decides. When two types fit about equally, the raw spelling breaks the tie: conceptual -> factual, compare -> reasoning, choose -> design, missing-information -> diagnosis.",
+ "rules": {
+  "comparison": "The question compares the behaviour or performance of approaches, explains effects or consequences, or justifies an established preference, without a selection under a stated requirement -> reasoning.",
+  "concept": "The question defines or explains a standard concept, including textbook differences between two concepts -> factual.",
+  "diagnosis": "A symptom or failure is given and the question asks for causes, discriminating evidence, missing information, tests or recovery -> diagnosis (task_types.json rules 3 and 4).",
+  "gnuradio": "The answer hinges on GNU Radio-specific blocks, APIs, block types, PMTs, tags, messages, the scheduler or rate handling, or the question asks how something is done in GNU Radio -> gnuradio_usage (unless diagnosis is the primary challenge).",
+  "quantities": "Explicit quantities are given and the core of the answer is a computed result -> calculation.",
+  "selection": "The question asks when or which to choose, for the better approach, or to weigh the trade-offs of a design decision under a stated requirement -> design."
+ },
+ "version": 1
+}

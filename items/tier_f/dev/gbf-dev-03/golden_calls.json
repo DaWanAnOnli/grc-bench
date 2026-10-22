@@ -1,0 +1,33 @@
+{
+ "query_knowledge": {
+  "query": "blocks_vector_source_x blocks_throttle2 blocks_file_sink blocks_moving_average_xx",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "blocks_moving_average_xx",
+    "instance_name": "mf",
+    "params": {
+     "type": "float",
+     "length": "8",
+     "scale": "0.125"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "mf_out",
+    "params": {
+     "type": "float",
+     "file": "mf.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "thr:0->mf:0",
+   "mf:0->mf_out:0"
+  ]
+ }
+}

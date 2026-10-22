@@ -1,0 +1,555 @@
+{
+ "collection_harness_commit": "4bd0436^",
+ "grc_agent_head": "6c9812884bebaa51991b91984cd5f1746003cc3d",
+ "note": "Training-side agent task specs; GRC-Bench Tier-A tasks must be disjoint from all of them.",
+ "recovered_files": [
+  {
+   "path": "experiments/dataset_collection/README.md",
+   "sha256": "87f8a7d6df4e79097502fcbb78e25187d41caa1d5defc7e01f1a268613ad3e60"
+  },
+  {
+   "path": "experiments/dataset_collection/__init__.py",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+   "path": "experiments/dataset_collection/audit.py",
+   "sha256": "47544914574d031e83d7852cbebdc3819db2010173788048a464f541798affc5"
+  },
+  {
+   "path": "experiments/dataset_collection/collect.py",
+   "sha256": "d4d42c1a88808248fd6509502d77b55a25ae1e5ff4ef2680c16a55d2591f0b5e"
+  },
+  {
+   "path": "experiments/dataset_collection/dryrun.py",
+   "sha256": "4c1b5113e6268a0c05097d434a09814d4a851b7da68d0ad3f49408fa76c3027c"
+  },
+  {
+   "path": "experiments/dataset_collection/export.py",
+   "sha256": "a514a62ac67155ab51bcda6a2ce221f1662ca7e7bb4b754993ccc78a9dda87d2"
+  },
+  {
+   "path": "experiments/dataset_collection/invariants.py",
+   "sha256": "40be218a760e8cc01315f4ed05e4d1478f2e8d6a4674edd7d4207ba32e488c26"
+  },
+  {
+   "path": "experiments/dataset_collection/manifest.py",
+   "sha256": "3c5f8464a9217f58f050aa8c9e587e9c2898011d1be996c90df4206df1815e72"
+  },
+  {
+   "path": "experiments/dataset_collection/runner_contract.py",
+   "sha256": "b2f5675d48438a07b3d9292bd0b6fd426337c0ecef0c687b3b6048188a2fd388"
+  },
+  {
+   "path": "experiments/dataset_collection/simulator.py",
+   "sha256": "63ce920bb0c4f4e00c6bf5bd347fd2e64683dd9c4e1c487be33b64f152d91938"
+  },
+  {
+   "path": "experiments/dataset_collection/simulator_prompt.py",
+   "sha256": "2322d3628e419aa30e4090a8bcd057d27bace495656e20c448a636aada73845d"
+  },
+  {
+   "path": "experiments/dataset_collection/task_spec.py",
+   "sha256": "92e4aa82b55a7b66d43f12178f41ac8cd3e18607e4558242fc6f5166b1d2e807"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/personas.json",
+   "sha256": "b1a89447dbc04d9e891eb715fc49836b2953c323ed25e459ed280d9e0fdf4911"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t01_dial_tone.json",
+   "sha256": "2052e69dcf2c939da7911e211ea7ffdf12890e7e0edd4b7d5277b3672d18b110"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t02_qpsk_ber_chain.json",
+   "sha256": "cfc595a949d98b4daf2582de577659662cf625403ad46f3a5565fcaaa52f5e25"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t03_fm_receiver_repair.json",
+   "sha256": "74bd103e07a23faf8fb67c9bae7bcd316656ce8ec8041496704ca45fc9de66be"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t04_broken_sink_repair.json",
+   "sha256": "cbe0d1456f0f84d912458bb60848f801c1f3b6aa4887388731cc6d94c161c7b9"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t05_qam_debug.json",
+   "sha256": "e0c4055175902c08e509fd431d97425e49096b70a923f3f9af28401afbdc7ead"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t06_spectrogram_display.json",
+   "sha256": "b9f1d15d9db501510cf0bb057c8e59519dc2a5ba9724f19c1656c33e5f381cb3"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t07_epy_custom_logic.json",
+   "sha256": "57e30249cc1d55afd82f487b36bd6a595dbf704bb6dcb37b777cd558d4a6241b"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t08_run_verify_probe.json",
+   "sha256": "65cb91a79a16bfbf860b57c7fea3fc62ce9f196a51f6c5bd8fcff5278d14e452"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t09_knowledge_concepts.json",
+   "sha256": "6808ebd9ec03cd4d09aeabf3643055e0d3f2a505177e049cc4d918c6a2c2ac60"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t10_param_tuning.json",
+   "sha256": "104ee1b605673208d2f5246ee4f441608a60f91c294331883c85156c6e5aebfd"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t11_vector_sink_extend.json",
+   "sha256": "0c214a8ef453a4a299f320463c40e0b719760f2dca744cacf4a40a5798e4e74a"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t12_fivegnalizer_modify.json",
+   "sha256": "fa342c28379cfa8e9d117bc12d988f2e4f2fdcd56db95d261a86fab97138a98d"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t13_epy_save_block.json",
+   "sha256": "c3f0eb010863bf574315513dc8f7779b2d71f2ab554bd4bbe7f391d07c6501f6"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t14_file_ops_notes.json",
+   "sha256": "3115cdf377bc5a7ddebf535fb419a1c9573a416ca143a50b9ebf91172727969d"
+  },
+  {
+   "path": "experiments/dataset_collection/tasks/t15_nebula_explain_fix.json",
+   "sha256": "9315de216c79667b723b3dfe5819ff6c8d0d36da030c063952a12e0d51b10cb5"
+  }
+ ],
+ "specs": [
+  {
+   "category": "build",
+   "goal": "make me a dial tone i can actually hear, you know the two-tone phone thing",
+   "id": "t01_dial_tone",
+   "seed_grc": null,
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "build",
+   "goal": "make me a qpsk modulator and show me messages getting modulated, sent, decoded, and compared with the original, with the BER",
+   "id": "t02_qpsk_ber_chain",
+   "seed_grc": null,
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "repair",
+   "goal": "this fm receiver graph i had lying around doesn't seem right, can you look at it and get it working so i can hear a station",
+   "id": "t03_fm_receiver_repair",
+   "seed_grc": "playground/fm_rx.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "repair",
+   "goal": "my graph keeps complaining about something unconnected when i generate it, i don't get what's wrong, please fix it",
+   "id": "t04_broken_sink_repair",
+   "seed_grc": "playground/broken_unconnected_sink.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "param",
+   "goal": "the qam demo here isn't behaving, suspect the sample rates or types are off between blocks. sort it out and confirm it runs clean",
+   "id": "t05_qam_debug",
+   "seed_grc": "playground/demo_qam.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "build",
+   "goal": "i want a spectrogram view of a signal sweep so i can see the sweep pattern over time, with a waterfall display",
+   "id": "t06_spectrogram_display",
+   "seed_grc": null,
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "epy",
+   "goal": "i need a block that alternates between passing the signal through and zeroing it in fixed-length windows, like a duty-cycle gating demo. no idea if something like that exists",
+   "id": "t07_epy_custom_logic",
+   "seed_grc": null,
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "run_verify",
+   "goal": "build a quick noise source to file/level probe chain, run it briefly, and tell me the measured level actually matches what we'd expect",
+   "id": "t08_run_verify_probe",
+   "seed_grc": null,
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "knowledge",
+   "goal": "before i touch anything, walk me through how this graph works and what each block does, i want to actually understand it",
+   "id": "t09_knowledge_concepts",
+   "seed_grc": "playground/demo_qam.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "param",
+   "goal": "let's retune this one to a different center frequency and wider bandwidth, and clean up the variable names so they make sense",
+   "id": "t10_param_tuning",
+   "seed_grc": "playground/new_dmeo.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "modify",
+   "goal": "i like this vector sink example, but add a second correlated stream next to the existing one so i can compare them side by side",
+   "id": "t11_vector_sink_extend",
+   "seed_grc": "playground/qtgui_vector_sink_example.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "modify",
+   "goal": "this big 5g graph is heavy. find the sample-rate bottleneck chain and tell me what to change to lighten the fft load, then apply it",
+   "id": "t12_fivegnalizer_modify",
+   "seed_grc": "playground/5gnalizer.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "save_block",
+   "goal": "build that duty-cycle gating idea again but this time save it to my block library so i can reuse it in next semester's demos",
+   "id": "t13_epy_save_block",
+   "seed_grc": null,
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "file_ops",
+   "goal": "while you're at it, write a short notes.md in the project folder summarizing the graph setup and how to run it, so i don't forget for my report",
+   "id": "t14_file_ops_notes",
+   "seed_grc": "playground/dial_tone.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "repair",
+   "goal": "this nebula graph loads with warnings and i'm not sure it's trustworthy. check it against the docs, explain the dodgy parts, and make the minimal fixes",
+   "id": "t15_nebula_explain_fix",
+   "seed_grc": "playground/5G_nebula.grc",
+   "source": "qoherent_collection_task"
+  },
+  {
+   "category": "build",
+   "goal": "Hey, can you make me a QPSK modulator? I need to see messages modulated, sent, decoded, compared to the original, plus the BER. Kinda urgent.",
+   "id": "t02_qpsk_ber_chain",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "build",
+   "goal": "I'd like a spectrogram view of a signal sweep, so I can see the sweep pattern over time, plus a waterfall display.",
+   "id": "t06_spectrogram_display",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "run_verify",
+   "goal": "Need a quick noise source feeding a file, then a level probe on it. Run it briefly and tell me if the measured level matches theory.",
+   "id": "t08_run_verify_probe",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "param",
+   "goal": "Hey, can you retune this thing to a different center frequency and make the bandwidth wider? Also the variable names are a mess, clean those up.",
+   "id": "t10_param_tuning",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "modify",
+   "goal": "I like this vector sink example, but add a second correlated stream next to the existing one so I can compare them side by side.",
+   "id": "t11_vector_sink_extend",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "file_ops",
+   "goal": "I've got a dial tone graph in this project. Can you open it and figure out what each block is doing?",
+   "id": "t24_dial_tone_notes",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "knowledge",
+   "goal": "Can you explain how the sync and equalizer stages in my QAM graph work together? Just walk me through the chain as-is, don't change anything.",
+   "id": "t25_sync_chain_explain",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "modify",
+   "goal": "This big 5G graph is dragging. Find the bottleneck chain that's killing my FFT load and tell me what to change.",
+   "id": "t12_fivegnalizer_modify",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "epy",
+   "goal": "I need something that alternates between letting a signal through and killing it, in fixed-length chunks. Like a duty-cycle gating demo. Does anything like that already exist?",
+   "id": "t07_epy_custom_logic",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "knowledge",
+   "goal": "Before I touch anything, can you walk me through how this graph works and what each block does? I want to actually understand it.",
+   "id": "t09_knowledge_concepts",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "build",
+   "goal": "I want to mess around with AM radio stuff in software. Can you build me a little chain that makes an AM signal, takes it apart again, and saves the audio?",
+   "id": "t16_am_demod_build",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "epy",
+   "goal": "I need a python block that integrates the incoming stream, resetting its state when a message arrives. It has to validate inside my flowgraph.",
+   "id": "t22_epy_integrator",
+   "seed_grc": null,
+   "source": "sft_trainable_session"
+  },
+  {
+   "category": "build",
+   "goal": "make me a dial tone i can actually hear, the two-tone phone thing. save it as dial_tone.wav in the project dir so i can play it",
+   "id": "t01_dial_tone",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "build",
+   "goal": "hey, deadline crunch here. need a qpsk modulator showing messages getting sent, decoded, and compared with the original",
+   "id": "t02_qpsk_ber_chain",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "build",
+   "goal": "yo i need a dial tone i can actually hear, the two-tone phone thing. save it as dial_tone.wav in the project dir so i can play it.",
+   "id": "t01_dial_tone",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "Howdy — got this old FM receiver graph sitting here and the thing's just hissing at me. Mind taking a look so I can pull in a station?",
+   "id": "t03_fm_receiver_repair",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "param",
+   "goal": "The QAM demo here isn't behaving. Suspect the sample rates or types are mismatched between blocks.",
+   "id": "t05_qam_debug",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "param",
+   "goal": "The QAM demo isn't behaving. I suspect sample rates or types are mismatched between blocks. Sort it out and confirm it runs clean.",
+   "id": "t05_qam_debug",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "epy",
+   "goal": "I need a block that alternates between letting the signal through and zeroing it, in fixed-length windows. Like a duty-cycle gating demo. Not sure something like that exists.",
+   "id": "t07_epy_custom_logic",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "knowledge",
+   "goal": "Before I touch anything, can you walk me through how this graph works and what each block does?",
+   "id": "t09_knowledge_concepts",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "My graph keeps complaining about something unconnected when I generate it. I don't get what's wrong. Can you fix it?",
+   "id": "t04_broken_sink_repair",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "This nebula graph loads with warnings and I don't trust it. Can you check it against the docs?",
+   "id": "t15_nebula_explain_fix",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "Hey, I've got this FM receiver graph sitting around and it just doesn't look right. Can you take a look and get it working so I can actually hear a station?",
+   "id": "t03_fm_receiver_repair",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "Hey, I've got this FM receiver graph here that a buddy sent me, but it sounds like garbage. Can you take a look and get it so I can actually hear a station?",
+   "id": "t03_fm_receiver_repair",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "when i generate my graph it keeps complaining about something being unconnected. i don't get what's wrong, can you fix it?",
+   "id": "t04_broken_sink_repair",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "param",
+   "goal": "The QAM demo isn't behaving. I suspect the sample rates or types are off between blocks. Sort it and confirm it runs clean.",
+   "id": "t05_qam_debug",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "This nebula graph loads with warnings and I'm not sure it's trustworthy. Check it against the docs and tell me what's dodgy.",
+   "id": "t15_nebula_explain_fix",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "Hey, my wideband FM receiver graph is spitting sample-rate mismatch errors and the audio sounds all wrong. Can you sort the rates and the filter out?",
+   "id": "t17_wbfm_tune_repair",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "build",
+   "goal": "I want a PSK demodulator monitoring chain that writes the decoded stream to a file sink. Run it for a bounded time and show me the output file actually exists.",
+   "id": "t18_psk31_monitor_build",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "build",
+   "goal": "I need an RSSI meter: feed a signal through a moving average, probe the level, log it to a file, and run it so I can watch the numbers.",
+   "id": "t19_rssi_meter_build",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "repair",
+   "goal": "my resampler is outputting garbage — the ratio's wrong going 48k to 44.1k and the filter settings look like nonsense.",
+   "id": "t20_resample_ratio_repair",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": "build",
+   "goal": "I want a GMSK chain that modulates some data, unpacks it in the middle, then demodulates it. Can you build and run it?",
+   "id": "t21_gmsk_pipe_build",
+   "seed_grc": null,
+   "source": "sft_quarantined_session"
+  },
+  {
+   "category": null,
+   "goal": "Take a look at the flowgraph, then add a throttle block in the path between the 350 Hz tone and the adder that mixes the tones together. Call it `mid_throttle`, set its type to float, and have it use the samp_rate variable for its rate. Make sure the wiring is rerouted so it actually sits inline. Then inspect the result to confirm.",
+   "id": "01_add_throttle",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the current flowgraph. Then update the `samp_rate` variable to `48000`. Confirm the change by inspecting again.",
+   "id": "02_update_sample_rate",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph, then disable the noise source that's mixed into the audio output. Inspect again to confirm it's off. Then turn it back on and confirm.",
+   "id": "03_disable_and_enable",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph. Add a new variable called `gain_value` set to 2.0, then have the 350 Hz tone's amplitude use that variable instead of its current value. Inspect to confirm both changes landed.",
+   "id": "04_add_and_remove_variable",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph. I don't want the noise source anymore — remove it. In its place, add a constant source block, call it `dc_offset`, with its constant value set to 0.0, and wire its output into the same input on the adder that the noise source used to feed. Inspect the result to confirm the change.",
+   "id": "05_full_rewire",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph. I want to multiply the two sine wave tones together instead of adding them. Look up the right GNU Radio block for a signal multiplier using query_knowledge (catalog domain) — don't guess the block id. Add it, call it `multiplier`, set its type to float, wire both tone sources into it, and remove the adder that's currently combining them. Inspect the result to confirm.",
+   "id": "06_query_knowledge_multiply",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "I'm learning GNU Radio. Use `query_knowledge` with the **docs** domain to explain what a 'stream tag' is and how tags move through a flowgraph. Summarize what the documentation says. Don't change the graph.",
+   "id": "09_docs_stream_tags_concept",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph, then put the 350 Hz tone source into bypass mode. Inspect again to confirm it actually switched to bypass.",
+   "id": "10_bypass_source_block",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "This flowgraph has several blocks in it. Using inspect_graph's targets option, look at just the sample rate variable and the 350 Hz tone source — don't pull the whole overview. Then change the sample rate to 96000. Check just those same two blocks again to confirm.",
+   "id": "11_scoped_inspect_and_update",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph — right now it's empty except for the samp_rate variable. Build a minimal signal chain: a signal source called `sig` (type float, freq 1000, amp 0.5, using samp_rate), a throttle called `throttle` (type float, samples_per_second using samp_rate), and a null sink called `sink` (type float). Wire the source into the throttle, and the throttle into the sink. Inspect to confirm the chain is valid.",
+   "id": "14_build_chain_from_scratch",
+   "seed_grc": "tests/data/empty.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph. I want to make some changes:\n1. Search the catalog for a block that converts a float stream into a complex stream, and also for a block that computes the complex conjugate of a complex signal.\n2. The FM modulator in this chain isn't needed anymore — replace it entirely with the float-to-complex converter you found. Call the converter `float_to_complex_converter`.\n3. Wire the throttle's output into the converter's real-part input.\n4. Search the catalog for a constant source block. Add one, call it `zero_imag`, type float, constant value 0.0, and wire it into the converter's imaginary-part input so the converter has a valid complex input.\n5. Connect the converter's output to both the resampler and the original spectrum display that the FM modulator used to feed.\n6. Add the complex conjugate block, call it `signal_conjugate`, and insert it right after the resampler, before the resampled spectrum display — so the resampler's output goes through the conjugate block before reaching that display.\n7. Remove the old FM modulator block entirely, make sure the flowgraph is valid, and inspect it to confirm.",
+   "id": "21_type_conversion_and_conjugate",
+   "seed_grc": "tests/data/resampler_demo.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Upgrade this FM Receiver flowgraph to add a band-limiting filter and a noise squelch:\n1. Search the catalog for a standard low pass filter block.\n2. Add it to the flowgraph, call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`.\n3. Search the catalog for a squelch block that operates on complex signals. Add it, call it `signal_squelch`, type `analog_simple_squelch_cc`. Set its threshold to `-50` and alpha to `0.01`.\n4. Insert `channel_filter` right after the file source (`blocks_file_source_0`). The file source's output must go into the filter's input. The time display (`qtgui_time_sink_x_0_0`) and frequency display (`qtgui_freq_sink_x_0_0`) must remain connected directly to the original file source's output.\n5. Insert `signal_squelch` right after the `channel_filter`. The channel filter's output goes into the squelch block's input. The squelch block's output then feeds the input of the quadrature demodulator (`analog_quadrature_demod_cf_0`).\n6. Make sure you remove the direct connection from the file source to the quadrature demodulator, ensuring the new filter and squelch blocks are inline. Check that the flowgraph is valid and confirm the result.",
+   "id": "22_fm_rx_filter_squelch",
+   "seed_grc": "tests/data/fm_rx.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph. Search the catalog for the block that computes the complex conjugate of a complex signal using query_knowledge (catalog domain) — don't guess the block id. Add it, call it `signal_conjugate`, and insert it right after the resampler (`pfb_arb_resampler_xxx_0`) and before the resampled spectrum display (`qtgui_freq_sink_x_0_0`), so the resampler's output goes through the conjugate block before reaching that display. Remove the direct connection from the resampler to that display. Make sure the flowgraph is valid and inspect it to confirm.",
+   "id": "23_lexical_conjugate_insert",
+   "seed_grc": "tests/data/resampler_demo.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Show me the Python code GNU Radio would actually generate for this flowgraph — use the generate_python tool for the real generated source, don't write or guess the code yourself. Briefly summarize what it does. Don't change the graph.",
+   "id": "24_generate_python_preview",
+   "seed_grc": "tests/data/dial_tone.grc",
+   "source": "grc_agent_scenario"
+  },
+  {
+   "category": null,
+   "goal": "Inspect the flowgraph — right now it's empty except for the samp_rate variable. Write a small Embedded Python Block from scratch, call it `scale_by_three`: a gr.sync_block subclass named `blk` that takes one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called `null_sink` (type float). Wire the source into your new epy block, and the epy block into the sink. Inspect to confirm the chain is valid. Then use the save_block tool to export `scale_by_three` into the reusable block library under the block_id `agent_test_scale_multiplier` — if a block with that id already exists from a previous run, pass overwrite=True to replace it.",
+   "id": "25_save_epy_block_to_library",
+   "seed_grc": "tests/data/empty.grc",
+   "source": "grc_agent_scenario"
+  }
+ ]
+}

@@ -1,0 +1,99 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 26
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 968
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "expected": null,
+   "first_failed": "V6",
+   "passed": true,
+   "v6_groups": {
+    "f2p": false,
+    "p2p": true
+   }
+  },
+  "variants": {
+   "n": 15,
+   "passed": true,
+   "results": {
+    "alt_blackman_100hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_blackman_20hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_blackman_50hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_edges_3600_7400_200hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_edges_3900_7100_200hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_hamming_250hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_hamming_400hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_hann_250hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_hann_500hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_kaiser_500hz.grc": [
+     "V6",
+     null
+    ],
+    "alt_passband_edge_reading.grc": [
+     "V6",
+     null
+    ],
+    "v1_blackman_300hz.grc": [
+     "V6",
+     null
+    ],
+    "v2_band_plan_expressions_kaiser.grc": [
+     "V6",
+     null
+    ],
+    "v3_literal_taps_hann.grc": [
+     "V6",
+     null
+    ],
+    "v4_inline_firdes.grc": [
+     "V6",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-dev-09"
+}

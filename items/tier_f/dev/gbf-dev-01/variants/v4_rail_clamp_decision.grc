@@ -1,0 +1,37 @@
+options:
+  parameters: {id: sync_detect_v4, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: pattern_src
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '[0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0,
+      0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0,
+      0, 1, 1, 1, 0, 0, 0, 0, 1, 0]'}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: bits_rec
+  id: blocks_file_sink
+  parameters: {type: float, file: bits.dat}
+- name: sync_corr
+  id: fir_filter_xxx
+  parameters: {type: fff, taps: '[1, -1, -1, -1, -1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, 1]'}
+- name: minus7
+  id: blocks_add_const_vxx
+  parameters: {type: float, const: '-7'}
+- name: clamp
+  id: analog_rail_ff
+  parameters: {lo: '0', hi: '1'}
+- name: flags_rec
+  id: blocks_file_sink
+  parameters: {type: float, file: flags.dat}
+connections:
+- [pattern_src, '0', thr, '0']
+- [thr, '0', bits_rec, '0']
+- [thr, '0', sync_corr, '0']
+- [sync_corr, '0', minus7, '0']
+- [minus7, '0', clamp, '0']
+- [clamp, '0', flags_rec, '0']
+metadata: {file_format: 1}

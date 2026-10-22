@@ -1,0 +1,74 @@
+options:
+  parameters: {id: cw_rx_rotator, generate_options: no_gui, output_language: python}
+blocks:
+- name: rf_rate
+  id: variable
+  parameters: {value: 96e3}
+- name: ch_rate
+  id: variable
+  parameters: {value: rf_rate / 8}
+- name: imports
+  id: import
+  parameters: {imports: import math}
+- name: beacon
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: rf_rate, freq: 21e3, amp: '0.5'}
+- name: keyer
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: rf_rate, waveform: analog.GR_SQR_WAVE, freq: '5'}
+- name: key_cplx
+  id: blocks_float_to_complex
+  parameters: {}
+- name: keying
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: neighbour_a
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: rf_rate, freq: '25000', amp: '1.0'}
+- name: neighbour_b
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: rf_rate, freq: '-17000', amp: '1.0'}
+- name: rf_sum
+  id: blocks_add_xx
+  parameters: {type: complex, num_inputs: '3'}
+- name: tuner
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: rf_rate, freq: -19.5e3}
+- name: tune_mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: chan_filter
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, decim: '8', samp_rate: rf_rate, cutoff_freq: '2500', width: '1500',
+    win: window.WIN_BLACKMAN}
+- name: chan_out
+  id: blocks_file_sink
+  parameters: {type: complex, file: channel.dat}
+- name: bfo
+  id: blocks_rotator_cc
+  parameters: {phase_inc: -2 * math.pi * 800 / ch_rate}
+- name: real_part
+  id: blocks_complex_to_real
+  parameters: {}
+- name: volume
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '1.6'}
+- name: audio_out
+  id: blocks_file_sink
+  parameters: {type: float, file: audio.dat}
+connections:
+- [beacon, '0', keying, '0']
+- [keyer, '0', key_cplx, '0']
+- [key_cplx, '0', keying, '1']
+- [keying, '0', rf_sum, '0']
+- [neighbour_a, '0', rf_sum, '1']
+- [neighbour_b, '0', rf_sum, '2']
+- [rf_sum, '0', tune_mixer, '0']
+- [tuner, '0', tune_mixer, '1']
+- [tune_mixer, '0', chan_filter, '0']
+- [chan_filter, '0', chan_out, '0']
+- [chan_filter, '0', bfo, '0']
+- [bfo, '0', real_part, '0']
+- [real_part, '0', volume, '0']
+- [volume, '0', audio_out, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,24 @@
+options:
+  parameters: {id: noise_fast_blackman, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '40000'}
+- name: fast_noise
+  id: analog_fastnoise_source_x
+  parameters: {type: float, amp: '2.0', seed: '2718', samples: '16384', noise_type: analog.GR_GAUSSIAN}
+- name: bandpass
+  id: band_pass_filter
+  parameters: {type: fir_filter_fff, low_cutoff_freq: '6000', high_cutoff_freq: '9000', width: '500',
+    win: window.WIN_BLACKMAN}
+- name: rate_limit
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: file_out
+  id: blocks_file_sink
+  parameters: {type: float, file: bandnoise.dat}
+connections:
+- [fast_noise, '0', bandpass, '0']
+- [bandpass, '0', rate_limit, '0']
+- [rate_limit, '0', file_out, '0']
+metadata: {file_format: 1}

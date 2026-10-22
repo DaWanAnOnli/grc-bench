@@ -1,0 +1,61 @@
+{
+ "task": "gbf-test-03",
+ "action": "fix",
+ "rethemed": false,
+ "relabel": {},
+ "resolved_by": "Claude (Anthropic), fixer group G2, 18 Oct 2026 (pending team review)",
+ "accepted": [
+  {
+   "id": "compliance/F1-unstated-run-length",
+   "change": "The instruction now carries the R5 sentence 'The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.' The phrase 'so that every run writes the same samples' is gone. spec_properties P9 records it as a V5 run condition only (65536 items). Probe head_40000 (the reviewer's Head of 40000) fails at V5 as intended. A Head of more than 65536 items still passes (probe head_100000); review.notes (6) records this limit."
+  },
+  {
+   "id": "compliance/F2-design-numbers-unenforced",
+   "change": "Option (b): the instruction keeps the design numbers and states the acceptance criteria that check them. At least 2 % of the power must lie in each of 6.0-6.2 kHz and 8.8-9.0 kHz ('the passband reaches both cutoffs'). At most 0.1 % may lie in each of 5.5-5.8 kHz and 9.2-9.5 kHz ('steep skirts'). Four band_fraction checks enforce these. The width is now stated as 'no more than 500 Hz', so the narrower designs the reviewers accepted (300, 100 and 50 Hz) follow the wording literally. Near-miss mutants were added: lo 6250, lo 5750, hi 9250, hi 8750 and width x2. All 10 mutants are killed. My own 300-seed calibration (scratch t03_calib.py, through oracles.band_fraction) gives these results. 250 Hz cutoff shifts fail 300/300. A doubled width fails 300/300 for every window. Every window in the Band Pass Filter menu passes 300/300 at 500 Hz, as do Blackman-Harris, band_pass_2, the HPF+LPF cascade and 50-100 Hz designs. The remaining latitude is recorded in review.notes (1): about ±100 Hz on the cutoffs, and widths up to 550 Hz (Hann), 700 Hz (Hamming) or 800 Hz (Blackman, Kaiser)."
+  },
+  {
+   "id": "compliance/F3-dev-template-twin",
+   "change": "Resolved at set level, as fix_plan decided. gbf-dev-02 was re-themed (Rayleigh envelope, envelope|noise, dev), and under signature v2 the Throttle's position no longer decides the split. This item keeps the filter|noise cell (test). cluster_id and source.ref are now 'chain:filter|noise' / 'filter|noise', and build.py asserts compose.signature_split(v2) == 'test'."
+  },
+  {
+   "id": "compliance/F4-train-hashed-solution-chains",
+   "change": "Resolved by signature v2. All 9 variants have the v2 signature filter|noise (test), including the old train-hashed chains: Fast Noise Source (v3, v8), FFT filter with firdes taps (v4, v7), the HPF+LPF cascade (v1) and the inert Throttle in any position. build.py prints every variant's signature, and authoring_notes.variant_signatures_v2 records them. Disjointness says that the former train/dev-hashed solution chains are closed. The signature is reserved for test in the final R2 step."
+  },
+  {
+   "id": "compliance/F5-seed-requirement-unchecked",
+   "change": "The seed sentence was dropped from the instruction, and the seed property was removed from spec_properties. The reference keeps seed 2718 only so that gate runs are deterministic; review.notes (5) says so. Probe default_seed (GNU Radio's seed 0) passes."
+  },
+  {
+   "id": "compliance/F6-record-labels",
+   "change": "Every mutant's 'breaks' label was rewritten against the calibrated values; the mislabelled low_cutoff 6500 mutant no longer exists. Disjointness now names t08_run_verify_probe, admits the shared level-versus-theory element (P6), and names band-pass design judged on where the power lies as the distinguishing core."
+  },
+  {
+   "id": "item-quality/F1-hidden-liveness-requirement",
+   "change": "Same fix as compliance F1: R5 sentence, P9 run condition, probe head_40000 fails at V5."
+  },
+  {
+   "id": "item-quality/F2-transition-width-not-enforced",
+   "change": "The skirt criterion is stated and checked, and a width x2 mutant (scale_param width 2.0) is in the set; probe width_1000 (the reviewer's b_width1000) now fails P4 with 0.23 % in each skirt strip. The compliance reviewer's strips (5.5-5.8 / 9.2-9.5 kHz, at most 0.1 %) were used rather than this reviewer's 5.5-5.75 / 9.25-9.5 kHz at 5e-4. At 5e-4, a valid Hann design (worst seed 5.2e-4 in 5.5-5.8 kHz) would sit on the threshold. At 0.1 % every 500 Hz design has a margin of 2x or more, and a 1 kHz width is still rejected for every window."
+  },
+  {
+   "id": "item-quality/F3-seed-requirement-unchecked",
+   "change": "Same as compliance F5: the seed was dropped from the instruction, and the reference keeps it for determinism only."
+  },
+  {
+   "id": "item-quality/F4-cross-split-template-twins",
+   "change": "Same as compliance F3/F4: signature v2 removes the Throttle and the noise-source and filter aliases from the split decision, and gbf-dev-02 is re-themed. All 9 variants are filter|noise (test)."
+  }
+ ],
+ "rejected": [],
+ "other_changes": [
+  "RMS window widened from 0.70-0.80 to 0.69-0.80 (stated in the instruction and P6). My calibration put the rectangular-window design, which is in the Band Pass Filter menu, at 0.7017 over 300 seeds: about 3 sigma from the old 0.70. At 0.69 every valid design is at least 4 sigma inside the window. The level mutant moved from amplitude 1.8 (now borderline: it passed on 1 % of seeds) to amplitude 1.7 (15 % low, fails 300/300). Gain 1.1 (10 % high) still fails 300/300. That 5 % level errors are not reliably detected is recorded in review.notes (2).",
+  "'with no decimation or interpolation anywhere' was replaced by 'Write the filtered signal, still at 40 kHz, ...'. The output rate is what the spectral checks (fs = 40 kHz) can verify. A rate-neutral interpolate-then-decimate pair could not have been detected, so the old wording was a partly unchecked requirement.",
+  "Variants v8 (Fast Noise Source, default pool and seed, rectangular window) and v9 (Hamming, 50 Hz transition, 1927 taps) were added. Together with v1-v7 they cover every alternative the reviewers showed: Hann, Blackman, Kaiser, Blackman-Harris, band_pass_2, the HPF+LPF cascade, 50 / 100 Hz transitions, a full-path file name, a rectangular window on either noise source, and an FFT filter.",
+  "Graph checks (structural wording, 16 Oct oracle policy): a path from a noise source through any filter block to the File Sink, and a Gaussian noise source (noise_type). Probe uniform_rms_matched (uniform noise scaled to standard deviation 2.0) and probe tone_comb (15 tones across 6-9 kHz) each meet every signal check and fail only the graph checks.",
+  "A Bartlett-window design (firdes taps only, not offered by the Band Pass Filter block) puts 3e-3 in each skirt strip and fails the stated criterion (probe bartlett_500). It is recorded in review.notes (1) as a consequence of the stated criteria, not an oracle error.",
+  "build.py gained --probes: 9/9 verdicts as expected. Stale variant files are now removed only after a successful save. Two consecutive builds are byte-identical. The canary is in task.json only.",
+  "R12: the band_fraction thresholds were re-derived from the stated spec with the corrected (18 Oct) oracle. Zero-mean real noise has no DC line, so the correction changes only the denominator."
+ ],
+ "variant_signatures_v2": "reference and v1-v9: filter|noise (test)",
+ "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 235 tokens, variants 9/9 reach V6, start_fails n/a (build), mutation 10 valid with kill rate 1.0; build.py --probes 9/9 verdicts as expected"
+}

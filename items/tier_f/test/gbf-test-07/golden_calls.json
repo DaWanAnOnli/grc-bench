@@ -1,0 +1,27 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x fir_filter_xxx blocks_delay blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "src:0->ref_sink:0"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "blocks_delay",
+    "instance_name": "align",
+    "params": {
+     "type": "float",
+     "delay": "20"
+    }
+   }
+  ],
+  "add_connections": [
+   "src:0->align:0",
+   "align:0->ref_sink:0"
+  ]
+ }
+}

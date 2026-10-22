@@ -1,0 +1,45 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V6: observation 'ph': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'phase.dat', 'type': 'float'}}; ph rms = observation missing; ph mean = observation missing; ph min = observation missing; ph max = observation missing",
+    "blocks_present[0]: 0 matching block(s) []; candidates: [\"snk (enabled): file='envelope.dat'\"]"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V6: ph rms = 103.521149; ph mean = -0.229893; ph min = -179.999832; ph max = 179.987488"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "caf7306f779bbe288f4775ff356c1a66ac1c71a864b47d4a8c9b10cd0850dd9d",
+ "passed": true,
+ "task": "gba-dev-07"
+}

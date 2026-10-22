@@ -1,0 +1,31 @@
+{
+ "query_knowledge": {
+  "query": "analog_noise_source_x analog_sig_source_x blocks_throttle2 blocks_add_xx pfb_channelizer_hier_ccf blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "ch3_sink",
+    "params": {
+     "type": "complex",
+     "file": "ch3.dat"
+    }
+   }
+  ],
+  "update_params": [
+   {
+    "instance_name": "pfb_channelizer_hier_ccf_0",
+    "params": {
+     "nchans": "4"
+    }
+   }
+  ],
+  "add_connections": [
+   "pfb_channelizer_hier_ccf_0:3->ch3_sink:0"
+  ]
+ }
+}

@@ -1,0 +1,46 @@
+{
+ "query_knowledge": {
+  "query": "analog_noise_source_x blocks_throttle2 blocks_complex_to_mag blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_noise_source_x",
+    "instance_name": "noise",
+    "params": {
+     "type": "complex",
+     "amp": "0.8",
+     "seed": "42",
+     "noise_type": "analog.GR_GAUSSIAN"
+    }
+   },
+   {
+    "block_id": "blocks_throttle2",
+    "instance_name": "thr",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_complex_to_mag",
+    "instance_name": "mag"
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "snk",
+    "params": {
+     "type": "float",
+     "file": "envelope.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "noise:0->thr:0",
+   "thr:0->mag:0",
+   "mag:0->snk:0"
+  ]
+ }
+}

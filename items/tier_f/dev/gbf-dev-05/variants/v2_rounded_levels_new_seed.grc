@@ -1,0 +1,27 @@
+options:
+  parameters: {id: noise_limiter, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: noise_src
+  id: analog_noise_source_x
+  parameters: {type: float, amp: 2/5, seed: '123', noise_type: analog.GR_GAUSSIAN}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: limiter
+  id: analog_rail_ff
+  parameters: {lo: '-0.78', hi: '0.78'}
+- name: sink_in
+  id: blocks_file_sink
+  parameters: {type: float, file: noise_in.dat}
+- name: sink_out
+  id: blocks_file_sink
+  parameters: {type: float, file: limited.dat}
+connections:
+- [noise_src, '0', throttle, '0']
+- [throttle, '0', limiter, '0']
+- [throttle, '0', sink_in, '0']
+- [limiter, '0', sink_out, '0']
+metadata: {file_format: 1}

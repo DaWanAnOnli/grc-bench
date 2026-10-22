@@ -1,0 +1,27 @@
+options:
+  parameters: {id: rectifier_gain_throttle, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: 48 * 1000}
+- name: osc
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '50'}
+- name: gain2
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '2'}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: absval
+  id: blocks_abs_xx
+  parameters: {type: float}
+- name: fs_out
+  id: blocks_file_sink
+  parameters: {type: float, file: rectified.dat}
+connections:
+- [osc, '0', gain2, '0']
+- [gain2, '0', thr, '0']
+- [thr, '0', absval, '0']
+- [absval, '0', fs_out, '0']
+metadata: {file_format: 1}

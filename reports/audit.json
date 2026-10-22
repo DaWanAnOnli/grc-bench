@@ -1,0 +1,61 @@
+{
+ "checks": [
+  {
+   "check": "schema",
+   "detail": "557 item records",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  },
+  {
+   "check": "canary",
+   "detail": "1067 records; 39 start files read",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  },
+  {
+   "check": "licence",
+   "detail": "30 Tier-F tasks and their Tier-A reuse",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  },
+  {
+   "check": "unique ids",
+   "detail": "557 ids",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  },
+  {
+   "check": "tier-k splits",
+   "detail": "200 dev ids, 285 test items, 100 block questions",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  },
+  {
+   "check": "tier-f splits",
+   "detail": "30 tasks; 0 reference cells shared across splits (reported in reports/tier_f_first_set.md)",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  },
+  {
+   "check": "tier-a splits",
+   "detail": "start graphs of built tasks and specs",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  },
+  {
+   "check": "reserved list",
+   "detail": "61 reserved signatures",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  }
+ ],
+ "passed": true
+}

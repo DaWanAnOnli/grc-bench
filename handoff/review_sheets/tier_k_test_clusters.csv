@@ -1,0 +1,11 @@
+cluster_id,id,linked_to (evidence),origin,task_type,question,team_decision (same family / split out),reviewer,notes
+tc_0612c25f3cb028b4,q_0612c25f3cb028b4,q_2e833b0ea86738a9: 8gram:design a gnu radio flowgraph that computes the,source,design,Design a GNU Radio flowgraph that computes the DFT of a finite-length signal. What blocks would you use?,,,
+tc_0612c25f3cb028b4,q_2e833b0ea86738a9,q_0612c25f3cb028b4: 8gram:design a gnu radio flowgraph that computes the,source,design,Design a GNU Radio flowgraph that computes the STFT of a signal and displays the spectrogram. What blocks would you use?,,,
+tc_14d479a6ae393d63,q_14d479a6ae393d63,q_ae04c5efce9d1445: keep_both:bsc_0001; lexical:0.9251,blind,factual,"In an OFDM system, what is the purpose of 'Pilot Subcarriers'? How are they used for channel estimation and equalization?",,,
+tc_14d479a6ae393d63,q_ae04c5efce9d1445,q_14d479a6ae393d63: keep_both:bsc_0001; lexical:0.9251,blind,factual,"What is the purpose of pilot subcarriers in an OFDM system, and how are they used for channel estimation?",,,
+tc_31ded1d7b089f836,q_31ded1d7b089f836,q_91f6f121d2fda8c0: 8gram:how would you diagnose and fix the issue,source,diagnosis,"If a GNU Radio flowgraph is producing aliased output, how would you diagnose and fix the issue?",,,
+tc_31ded1d7b089f836,q_91f6f121d2fda8c0,q_31ded1d7b089f836: 8gram:how would you diagnose and fix the issue,source,diagnosis,"If a high-pass filter distorts low-frequency components of a signal, how would you diagnose and fix the issue?",,,
+tc_3719e7c108e7955d,q_3719e7c108e7955d,q_855c881ef54faaf3: lexical:0.5665,blind,reasoning,Why is the sample rate typically higher than the signal bandwidth in an SDR?,,,
+tc_3719e7c108e7955d,q_855c881ef54faaf3,q_3719e7c108e7955d: lexical:0.5665,blind,factual,What is the sample rate in an SDR?,,,
+tc_4a8fa353e6db1033,q_4a8fa353e6db1033,q_ba378ee64a7cddef: 8gram:gnu radio what is the role of the,source,design,How do you implement the DSP logic for a custom C++ block in GNU Radio? What is the role of the `_impl.cc` file?,,,
+tc_4a8fa353e6db1033,q_ba378ee64a7cddef,q_4a8fa353e6db1033: 8gram:gnu radio what is the role of the,blind,factual,"In GNU Radio, what is the role of the `scheduler::default_flowgraph`, and how does it prioritize threads for different blocks?",,,

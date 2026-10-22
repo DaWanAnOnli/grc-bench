@@ -1,0 +1,34 @@
+options:
+  parameters: {id: pam4_v1, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: import_0
+  id: import
+  parameters: {imports: from gnuradio import gr}
+- name: data_bytes
+  id: blocks_vector_source_x
+  parameters: {type: byte, vector: '(0x1B, 0x9C, 0x4E, 0xD2, 0x37, 0xA5, 0x60, 0xF1)'}
+- name: unpack_bits
+  id: blocks_packed_to_unpacked_xx
+  parameters: {type: byte, endianness: gr.GR_MSB_FIRST}
+- name: symbol_mapper
+  id: digital_chunks_to_symbols_xx
+  parameters: {in_type: byte, out_type: float, symbol_table: '(-3.0, -1.0, 3.0, 1.0)', dimension: '1'}
+- name: symbol_hold
+  id: blocks_repeat
+  parameters: {type: float, interp: int(samp_rate/2400)}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: float, limit: auto}
+- name: pam_sink
+  id: blocks_file_sink
+  parameters: {type: float, file: pam.dat}
+connections:
+- [data_bytes, '0', unpack_bits, '0']
+- [unpack_bits, '0', symbol_mapper, '0']
+- [symbol_mapper, '0', symbol_hold, '0']
+- [symbol_hold, '0', throttle, '0']
+- [throttle, '0', pam_sink, '0']
+metadata: {file_format: 1}

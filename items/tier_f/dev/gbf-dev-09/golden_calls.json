@@ -1,0 +1,42 @@
+{
+ "query_knowledge": {
+  "query": "analog_fastnoise_source_x fir_filter_xxx blocks_file_sink",
+  "domain": "catalog",
+  "k": 6
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "bp_high",
+    "params": {
+     "value": "7250"
+    }
+   },
+   {
+    "instance_name": "bp_low",
+    "params": {
+     "value": "3750"
+    }
+   },
+   {
+    "instance_name": "cutoff_high",
+    "params": {
+     "value": "3750"
+    }
+   },
+   {
+    "instance_name": "cutoff_low",
+    "params": {
+     "value": "7250"
+    }
+   },
+   {
+    "instance_name": "transition",
+    "params": {
+     "value": "500"
+    }
+   }
+  ]
+ }
+}

@@ -1,0 +1,48 @@
+options:
+  parameters:
+    id: good_tone
+    generate_options: no_gui
+    output_language: python
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    value: '32000'
+- name: src
+  id: analog_sig_source_x
+  parameters:
+    type: float
+    samp_rate: samp_rate
+    waveform: analog.GR_COS_WAVE
+    freq: '2000'
+    amp: '0.5'
+- name: thr
+  id: blocks_throttle2
+  parameters:
+    type: float
+    samples_per_second: samp_rate
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters:
+    type: float
+    const: '2'
+- name: out
+  id: blocks_file_sink
+  parameters:
+    type: float
+    file: output.dat
+connections:
+- - src
+  - '0'
+  - thr
+  - '0'
+- - thr
+  - '0'
+  - gain
+  - '0'
+- - gain
+  - '0'
+  - out
+  - '0'
+metadata:
+  file_format: 1

@@ -1,0 +1,64 @@
+{
+ "part": "judge",
+ "lens": "methodology+correctness",
+ "reviewer": "Claude (Anthropic), review agent, 18 Oct 2026",
+ "verdict": "The workstream is not complete and correct as claimed. The parts that work: tests/test_tier_k_judge.py passes (296 tests), and so do the neighbouring tests/test_tier_k_rules.py and tests/test_team_docs.py (275). `python -m grcbench.tier_k.judge_prompt --show --example --out` runs, gives the pinned hash 0c462ae7..., and writes a deterministic snapshot. The template meets the listed content rules: question, rubric and reasoning-stripped answer only; no model argument; one answer at a time; no length or style credit; met/partially_met/not_met with one-line reasons; hallucinated-entity list; strict JSON schema; the canary is refused and never appears in the template or snapshot; the fallback judge shares the template. All fixtures are toys, so there is no role-table breach. But my own scripts show four scoring problems and four smaller gaps. (1) When the rules defer a number to the judge, the judge route cannot settle it: it always scores 0 or raises VerdictError. This hits 2 of the 25 real calculation references. (2) The credit tiers the judge is told are not the rules' tiers. (3) The approved-rubric gate does not cover the final score. (4) The hallucination index marks some real GNU Radio names \"absent\", which zeroes the score. Smaller gaps: judge request settings not pre-registered, RecursionError escapes the parser, a stale rubric guide, and model self-identification reaching the judge.",
+ "findings": [
+  {
+   "id": "F1",
+   "severity": "high",
+   "claim": "The judge route cannot settle the readings the rule cascade hands to it. A correct answer is then scored 0 every time (counted as a DU/order-of-magnitude or wrong-sign error), or the verdict can never pass validation. This contradicts the docstring's \"a number earns the same credit whichever of the two read it\" and rules.py P4/P8 (\"... earns more, the judge decides\"; \"then the judge decides (details carry literal_credit and alt_credit)\").",
+   "evidence": "grade_value (judge_prompt.py l.816-837) re-runs rules.score on the judge's value plus a unit string, and ignores literal_credit/alt_credit. Probes (~/grc-bench-work/review/judge/probe2.py, probe3.py):\n(a) Reference {value:30, unit:dB, abs_tolerance:0.1}. This is the numeric_proposal of real test item q_a12e73b62696c2fe (processing gain); q_9849c620793a77be (PAPR 3 dB) has the same shape. rules.score('Final answer: 1000') -> judge, bare_number_unit_unclear, literal 0.0, alt 1.0. Judge route with values [(1000,'',False)] -> graded '1000.0 dB' -> score 0.0, disqualified_by ['N1:order_of_magnitude']. No unit string expresses a linear ratio: 'ratio', 'x', 'times', 'linear' raise 'unknown unit', and 'W/W' -> unit_reading_unclear.\n(b) Reference {value:100, unit:''}, answer 'The power ratio is 20 dB.' Rules -> judge, unit_reading_unclear. The faithful verdict [(20,'dB',True)] -> VerdictError \"the rule cascade cannot grade '20.0 dB'\". Same for '90 degrees' against a dimensionless 1.5708. Since this is deterministic, all MAX_ATTEMPTS=3 requests fail and the answer goes to a human, labelled 'malformed verdict'.\n(c) Reference {value:-3, unit:dB}, answer 'a loss of 3 dB'. Rules -> judge, db_sign_convention, alt_credit 1.0. The prompt has no sign or loss-word rule, so a judge reporting 3 dB as written -> score 0.0.",
+   "suggested_fix": "Give the judge a way to resolve deferred readings, for example a per-value 'reading' field (literal / ratio / loss-sign / SI-base), or pass the rules' candidate readings (literal_credit, alt_credit) into the request and have the judge choose one. Grade the chosen reading with the rules' own alt computation. At minimum, detect deferral reasons in grade_value and send them straight to human scoring rather than to DU-zero or retry loops. Add tests for the P4, P8 and sign-convention cases."
+  },
+  {
+   "id": "F2",
+   "severity": "medium",
+   "claim": "The tolerance tiers and the DU rule given to the judge for numbers stated in points are not the rule cascade's. The test's own claim (\"so judge-graded and rule-graded numbers follow one table\") is false. _tier_text uses only CREDIT_TIERS and leaves out HALF_BAND_EXTRA and the decibel rules.",
+   "evidence": "SYSTEM step 4 says: \"within 5 times the tolerance the point is at most partially_met\". rules.py says half credit only up to min(5 x tol, tol + HALF_BAND_EXTRA=0.04), and rubric_writing.md states the same (\"With 10%: full up to 10%, half up to 14%\"). Probe5 (scratchpad):\n- 10% tolerance, 30% error: rules 0.0 (outside_tolerance), judge told partially_met.\n- 10% tolerance, 49% error: same.\n- 1 dB tolerance on dBm, 1.5/3/4.9 dB error: rules 0.0, judge told partially_met.\nDU for decibel values: rules call 10 dB off -90 dBm (-100 dBm) order_of_magnitude, because the dB threshold is 10*log10(9.5)=9.78 dB. The judge is only told \"off by a factor of 9.5 or more\" (-100/-90 = 1.11), so a judge following it does not flag DU. test_number_rules_in_the_prompt_come_from_the_rule_cascade checks only the CREDIT_TIERS text.",
+   "suggested_fix": "Build _tier_text from CREDIT_TIERS, HALF_BAND_EXTRA, DB_TOLERANCE and the dB magnitude rule (10*log10 / 20*log10 of MAGNITUDE_RATIO). Say explicitly that for decibel values the tolerance and the order-of-magnitude rule apply to the difference in dB. Add a test that compares the judge's stated bands with rules.score on boundary cases. Bump PROMPT_VERSION and re-pin the hash."
+  },
+  {
+   "id": "F3",
+   "severity": "medium",
+   "claim": "The approved-rubric gate applies only to build_messages. explain_score and score_from_verdict, documented as \"the final Tier-K score either way\", give final scores for rubrics marked pending-team-review, rejected or unreviewed. On the rules route, that includes calculation references still \"pending blind team recomputation\" (14 Oct decision; eval plan §5.2: two team members check every rubric).",
+   "evidence": "Probe6 (scratchpad), all with rules_result=rules.score('Final answer: 2.5 MHz', ref):\n- explain_score(None, {numeric:{value:2.5,unit:MHz}, numeric_tolerance:'toy', review:{status:'pending-team-review'}}) -> route rules, score 1.0.\n- The same with status 'rejected' -> 1.0; with review None -> 1.0.\n- score_from_verdict(met verdict, {required_points:['Toy point.'], review:{status:'pending-team-review'}}) -> 1.0.\n- build_messages refuses all of these.\nexplain_score (l.1003-1055) never calls check_reviewed.",
+   "suggested_fix": "Call check_reviewed in explain_score/score_from_verdict when given a record, with the same allow_unreviewed escape hatch for tests and dry runs. Or record review status in the output and refuse to produce a final score for unapproved rubrics. Add tests for both routes."
+  },
+  {
+   "id": "F4",
+   "severity": "medium",
+   "claim": "The hallucination check (\"a judge's flag never zeroes a score unchecked\") marks real names \"absent\" and so zeroes correct answers. This includes the gr-osmosdr names that SYSTEM step 5 tells the judge to count as real.",
+   "evidence": "Probe4 (scratchpad): of 309 real names probed against entity_index() (GNU Radio 3.10.12, 187,802 keys), 23 came back 'absent'. Verified real ones:\n- 'grcc' (api) and 'gr_filter_design' (api): both installed as /usr/bin/grcc and /usr/bin/gr_filter_design.\n- 'VOLK' / 'volk' (module): libvolk.so.3.3 is installed; it is GNU Radio's SIMD kernel library.\n- 'gr::blocks::throttle::make' (api): C++ API; the index covers only Python and YAML names.\n- 'Embedded Python Block' (block): the documented name of epy_block.\n- 'self.nitems_written(0)' (api): the 'self.' prefix is not normalised.\n- 'osmocom Source', 'osmosdr.source', 'gr-osmosdr': SYSTEM says names in \"a widely used out-of-tree module (for example gr-osmosdr)\" are not hallucinations.\nWith HALLUCINATION_DISQUALIFIES=True, any of these flagged by the judge -> score 0.",
+   "suggested_fix": "Mark as 'unchecked' (recorded, not applied) any name the index cannot settle: C++ '::' names, names with OOT prefixes (osmosdr/osmocom/soapy-OOT), installed GNU Radio programs, VOLK. Or add those sources to the index: /usr/bin gr* programs, libvolk kernel names, an allow-list of the OOT modules the prompt names. Strip 'self.'/'tb.'-style receivers in entity_keys. Add these cases to test_the_pinned_index."
+  },
+  {
+   "id": "F5",
+   "severity": "low",
+   "claim": "The pre-registration snapshot records nothing about how the judge is called: temperature, top_p, max_tokens, seed, JSON/structured-output mode, reasoning on or off. The retry rule (\"requested again with the same messages, at most MAX_ATTEMPTS\") is undefined without them; at temperature 0 a retry just repeats the failure. Eval plan §1: every evaluation setting, judge included, is stated once.",
+   "evidence": "The snapshot from `--out` (~/grc-bench-work/review/judge/snap.json) has keys [aggregation, entity_check, example, fallback_note, judges, max_attempts, probes, prompt_sha256, prompt_version, reasoning_removal, rubric_rendering, rubric_schema, system, user_template, verdict_schema]. None of temperature, top_p, max_tokens, seed, response_format or thinking appears anywhere in it.",
+   "suggested_fix": "Add a pinned JUDGE_REQUEST dict (decoding settings, max output tokens, structured-output mode, provider no-retention setting) to the snapshot and the hash. State whether retries resample (temperature > 0) or change anything."
+  },
+  {
+   "id": "F6",
+   "severity": "low",
+   "claim": "parse_verdict breaks its contract (\"Anything else raises VerdictError\"): a deeply nested reply raises RecursionError. A retry loop that catches VerdictError would crash, not retry or route to a human.",
+   "evidence": "Probe5: jp.parse_verdict('['*200000 + ']'*200000) -> RecursionError 'Stack overflow ... while decoding a JSON array'. _one_object (l.721-733) catches only json.JSONDecodeError.",
+   "suggested_fix": "Also catch RecursionError (and ValueError from the int-conversion limit) in _one_object and re-raise as VerdictError. Add a test."
+  },
+  {
+   "id": "F7",
+   "severity": "low",
+   "claim": "The documentation contradicts the template on what the judge sees. docs/guidelines/rubric_writing.md tells writers to \"State the same tolerance in words in numeric_tolerance, so the judge can apply it to answers the rules hand over\". For any rubric with `numeric`, the template never shows that text and shows TOLERANCE_BY_CODE instead. The WS6 spec also lists 'numeric tolerance' as something the judge sees.",
+   "evidence": "render_rubric (l.632-634) uses TOLERANCE_BY_CODE when r.numbers is non-empty. test_numeric_rubric_shows_what_to_read_but_never_the_reference_value asserts that the tolerance prose '3 %' is hidden. The quoted sentence is in rubric_writing.md, section 'Numeric answers and tolerances'.",
+   "suggested_fix": "Have the docs owner change the guide's reason: the words are for the two checkers, and the code applies the `numeric` tolerance. Also record this departure from the spec's 'judge sees the numeric tolerance' in the module docstring and the pre-registration."
+  },
+  {
+   "id": "F8",
+   "severity": "low",
+   "claim": "The judge can see which model wrote an answer when the answer names itself. Eval plan §8.1 says \"the judge never sees which model wrote the answer\", but the template passes self-identification through without redacting or flagging it. Only the human calibration sheet records 'identity visible'.",
+   "evidence": "Probe6: build_messages(..., answer='As Qwen, a model developed by Alibaba Cloud, I can say: red.') puts that sentence in the user message unchanged. test_template_names_no_model checks only the template text and the toy probes, not answers.",
+   "suggested_fix": "Add a pre-registered redaction of model and vendor self-identification (a fixed list of panel and teacher family names and vendors, replaced by '[model]'). Or at least set an 'identity_visible' flag in explain_score's output so the rate can be reported for judge-scored answers too."
+  }
+ ]
+}

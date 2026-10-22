@@ -1,0 +1,43 @@
+{
+ "task": "gbf-dev-02",
+ "action": "retheme",
+ "rethemed": true,
+ "relabel": {},
+ "resolved_by": "Claude (Anthropic), fixer group G2, 18 Oct 2026 (pending team review)",
+ "new_theme": "Build L1 (dev): the amplitude of a Rayleigh flat-fading channel. The open flowgraph is empty except for samp_rate = 48000. The user asks for complex Gaussian noise with RMS magnitude 0.8 (defined as sqrt(mean |z|^2)), its magnitude written as float samples to envelope.dat, and the R5 run sentence. The output must have RMS 0.8 and mean 0.709 (0.8*sqrt(pi)/2), each within 3 %. Reference: Noise Source (complex, amp 0.8) -> Throttle -> Complex to Mag -> File Sink. The knowledge tested is GNU Radio's complex amplitude convention: amp is the RMS magnitude, each component has amp/sqrt(2). v2 signature envelope|noise -> dev, cluster_id chain:envelope|noise. Distinct from gbf-test-03 (filter|noise, band-limited real noise) and gbf-dev-05 (noise|nonlinear, clipping of real noise, parameter-tune).",
+ "deviation_from_plan": "(1) Tolerance 3 % instead of the plan's 2 %. My GNU Radio calibration (scratch d02_calib.py, 300 seeds, 65536-sample captures) found these spreads. The Noise Source stays within 0.62 %. The Fast Noise Source with its default 8192-variate pool spreads by sd 0.6 % (range -1.58..+1.86 %), and the Channel Model AWGN by sd 0.45 %. 2 % is therefore only about 3.3 sigma for a valid Fast Noise Source answer with a custom seed; 3 % is at least 5 sigma. 3 % still rejects the +5 % amplitude near miss (+4.6..+5.4 %), the per-component misreading (-29 %), the half-normal (-10 % mean) and uniform noise (-39 % mean). (2) Graph checks were added although the plan said none were needed. A rectified sine of RMS 0.8 meets both moments (mean +1.6 %), and the instruction says 'Generate complex Gaussian noise'. So a path check requires the File Sink to be fed from a noise generator: Noise Source, Fast Noise Source, or the AWGN of Channel Model, Channel Model 2 or Dynamic Channel Model. The stated 48 kHz is unobservable in white noise, so it is checked as a variable value (block_present variable 48000), per R4. (3) The plan's '|real noise| (Abs of float noise)' and 'amplitude 1.6' mutants are not single edits of the reference. The half-normal is probe half_normal (it fails P3). The amplitude mutants are the per-component misreading (amp 0.566) and a +5 % near miss (amp 0.84). (4) Seed 0, GNU Radio's default, turned out to be a fixed seed in 3.10.12, not time-seeded: 300 identical runs.",
+ "accepted": [
+  {
+   "id": "compliance/F1-split-violation-dev-twin-of-gbf-test-03",
+   "change": "Resolved by the re-theme. The new reference's v2 signature is envelope|noise, which hashes to dev, and build.py asserts it. No other task holds that cell. The band-limited-noise concept stays only in gbf-test-03 (filter|noise, test). The instruction, oracle and template share no theme with gbf-test-03: complex-noise envelope statistics here, against band-pass power shares there."
+  },
+  {
+   "id": "compliance/F4-duplicate-mutants",
+   "change": "The lesson applies to the new mutant set: 6 mutants, each a different fault class with a different observed effect. Power instead of magnitude (mean 0.64, RMS 0.905); real part instead of magnitude (mean about 0); the per-component amplitude misreading (RMS -29 %); a +5 % amplitude near miss; uniform noise (mean -39 %); samp_rate 32000 (the P1 graph check). All 6 are killed."
+  },
+  {
+   "id": "item-quality/F2-noise-not-checked-tones-and-chirp-pass",
+   "change": "The lesson applies: a moments-only oracle accepts deterministic shapes. Graph check P4 (a path from a noise generator to the File Sink) was added. Probe rectified_sine meets both moments and fails only this check. Probe fading_model_jakes (a sum-of-sinusoids Fading Model, not the noise the instruction asks for) also fails it."
+  },
+  {
+   "id": "item-quality/F3-prescribed-design-numbers-unenforced",
+   "change": "The lesson applies: every number the new instruction states is checked. RMS 0.8 (rms, 3 %), mean 0.709 (mean, 3 %), 48 kHz (variable value), the file name and float type (observation point), and the run sentence (V5). 'Complex Gaussian noise' is checked by the P4 path plus the mean/RMS ratio (0.886): uniform and single-component noise fail, and GNU Radio's complex Laplacian and impulse types fail at run time. There are no unobservable design numbers such as filter edges or a gain split. The two remaining equivalences, a non-Gaussian source with the same two moments and a samp_rate written as an expression (probe samp_rate_expression), are recorded in review.notes."
+  }
+ ],
+ "rejected": [],
+ "other_changes": [
+  "Variants: v1 Fast Noise Source (default pool and seed, no Throttle, rate 48e3); v2 two float noise sources (sd 0.8/sqrt 2) -> Float To Complex; v3 |z|^2 then Transcendental sqrt; v4 Channel Model AWGN on a Null Source. All pass. Probes: complex_to_magphase (phase output to a Null Sink) and fastnoise_seed_777 pass. magphase_phase_open fails at V5, because GNU Radio's runtime needs both outputs connected (not an oracle decision). half_normal, rectified_sine, head_40000, fading_model_jakes and samp_rate_expression fail as documented: 8/8 verdicts as expected.",
+  "Variant signatures (v2): v1, v2 envelope|noise (dev); v3 envelope|noise|nonlinear (train) and v4 channel_model|envelope (test) are genuine structural alternatives, for the reserved list (R1/R2). The magphase probe is other:blocks_complex_to_magphase|noise.",
+  "Instruction per R3 (a request about the open, empty flowgraph; the stated rate seeds the harness start graph). The R5 run sentence is stated, and P6 records it as liveness only. The observation point matches file name and type (R9).",
+  "Disjointness names t08_run_verify_probe (noise to file plus a level probe) and explains the difference. Known limits are in review.notes (R11).",
+  "build.py: --probes mode. Stale variant files are removed only after a successful save. Two consecutive builds are byte-identical. The canary is in task.json only."
+ ],
+ "variant_signatures_v2": {
+  "reference": "envelope|noise (dev)",
+  "v1": "envelope|noise (dev)",
+  "v2": "envelope|noise (dev)",
+  "v3": "envelope|noise|nonlinear (train)",
+  "v4": "channel_model|envelope (test)"
+ },
+ "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 203 tokens, variants 4/4 reach V6, start_fails n/a (build), mutation 6 valid with kill rate 1.0; build.py --probes 8/8 verdicts as expected"
+}

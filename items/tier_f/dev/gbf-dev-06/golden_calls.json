@@ -1,0 +1,122 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx blocks_file_sink rational_resampler_xxx hilbert_fc blocks_multiply_xx blocks_complex_to_real",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "variable",
+    "instance_name": "audio_rate",
+    "params": {
+     "value": "8000"
+    }
+   },
+   {
+    "block_id": "variable",
+    "instance_name": "carrier_freq",
+    "params": {
+     "value": "10000"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_700",
+    "params": {
+     "type": "float",
+     "samp_rate": "audio_rate",
+     "freq": "700",
+     "amp": "0.4"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_2400",
+    "params": {
+     "type": "float",
+     "samp_rate": "audio_rate",
+     "freq": "2400",
+     "amp": "0.25"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "audio_sum",
+    "params": {
+     "type": "float"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "audio_out",
+    "params": {
+     "type": "float",
+     "file": "audio.dat"
+    }
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "upsample",
+    "params": {
+     "type": "fff",
+     "interp": "int(samp_rate/audio_rate)"
+    }
+   },
+   {
+    "block_id": "hilbert_fc",
+    "instance_name": "hilbert",
+    "params": {
+     "num_taps": "257"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "carrier",
+    "params": {
+     "type": "complex",
+     "freq": "carrier_freq"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_complex_to_real",
+    "instance_name": "to_real"
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "ssb_out",
+    "params": {
+     "type": "float",
+     "file": "ssb.dat"
+    }
+   }
+  ],
+  "update_params": [
+   {
+    "instance_name": "samp_rate",
+    "params": {
+     "value": "48000"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_700:0->audio_sum:0",
+   "tone_2400:0->audio_sum:1",
+   "audio_sum:0->audio_out:0",
+   "audio_sum:0->upsample:0",
+   "upsample:0->hilbert:0",
+   "hilbert:0->mixer:0",
+   "carrier:0->mixer:1",
+   "mixer:0->to_real:0",
+   "to_real:0->ssb_out:0"
+  ]
+ }
+}

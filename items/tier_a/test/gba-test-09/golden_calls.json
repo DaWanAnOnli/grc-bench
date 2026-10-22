@@ -1,0 +1,53 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "bpf",
+     "snk"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {},
+   "tool": "list_directory"
+  },
+  {
+   "args": {
+    "path": "bandnoise.dat"
+   },
+   "tool": "file_info"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('bandnoise.dat',dtype=np.float32)[4096:]; p=np.abs(np.fft.rfft(x[:65536]*np.hanning(min(len(x),65536))))**2; f=np.fft.rfftfreq(min(len(x),65536),1/40000); c=np.cumsum(p)/p.sum(); print(len(x), f[np.searchsorted(c,0.01)], f[np.searchsorted(c,0.99)])\""
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "file sink raw float32 samples"
+   },
+   "tool": "query_knowledge"
+  }
+ ],
+ "final_text": "I ran the flowgraph for two seconds and analysed bandnoise.dat: most of the noise power lies between about 6000 Hz and 9000 Hz (6 kHz to 9 kHz). The flowgraph is unchanged."
+}

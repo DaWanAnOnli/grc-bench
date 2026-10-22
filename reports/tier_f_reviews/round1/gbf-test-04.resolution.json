@@ -1,0 +1,60 @@
+{
+ "task": "gbf-test-04",
+ "action": "fix",
+ "rethemed": false,
+ "relabel": {},
+ "resolved_by": "Claude (Anthropic), fixer group G1, 18 Oct 2026 (pending team review)",
+ "accepted": [
+  {
+   "id": "compliance/F1-signature-twins-in-train",
+   "change": "Resolved by signature v2 plus this item's records. Under v2 the reference, the chain with Add Const and Multiply Const swapped, and the chain with an inert Throttle all have the signature {tone}, which maps to test. Variant v2 is the reviewer's swapped-and-throttled chain; build.py prints it as 'tone -> test'. cluster_id and source.ref are chain:tone. build.py asserts the v2 split and prints the v2 signature of every variant. compose.audit_items finds no twin of this cell."
+  },
+  {
+   "id": "compliance/F2-cluster-independence",
+   "change": "Resolved at set level. The same-template siblings were re-themed in round 1: gbf-dev-01 and gbf-dev-03 in this group, gbf-test-11 by group G5. compose.audit_items shows that this item is now the only holder of {tone}, so no other item needs to share its cluster."
+  },
+  {
+   "id": "compliance/F3-sinusoid-not-enforced",
+   "change": "Removed the rms check. Added a shape check that ignores DC: band_fraction with remove_mean and a Hann window (tooling T5) requires at least 99 % of the AC power within 50 Hz of 1.25 kHz, and the instruction states this tolerance. Probes in build.py --probes, each with a swing of 0.15..0.95: the triangle scores 0.9855, the square 0.8106 and the sawtooth 0.6080, and all three fail. Mutants for all three waveforms are killed by this check."
+  },
+  {
+   "id": "compliance/F4-stated-but-unchecked-requirements",
+   "change": "The instruction states the outcome only and says 'How you generate the signal is up to you', so variant v1 (amplitude and offset set on the source) agrees with it. Dropped '32-bit float samples throughout'. Only the File Sink's item type is stated, and the observation point requires type float. The run requirement uses the R5 sentence. spec_properties records it as a V5 liveness condition only (16384 items). Probe head_8192 fails at V5. A Head of more than 16384 items still passes; review.notes records this limit. No Head-limited answer is described as correct."
+  },
+  {
+   "id": "compliance/F5-role-table-declaration-missing",
+   "change": "Valid finding, but it needs a set-level team decision (fix_plan team_decisions 4), not an item edit. review.notes points to it. provenance.drafted_by stays 'Claude (Anthropic)'."
+  },
+  {
+   "id": "compliance/F6-canary-policy-conflict",
+   "change": "Valid finding, but it needs a set-level team decision (fix_plan team_decisions 5), not an item edit. review.notes points to it. grep confirms the canary is present in task.json only."
+  },
+  {
+   "id": "item-quality/F1",
+   "change": "Same resolution as compliance F1 and F2: v2 maps the swapped and throttled chains to {tone} -> test, and gbf-dev-03 and gbf-test-11 were re-themed. The disjointness field records this. It now also names GRC-Agent scenario 14_build_chain_from_scratch, which builds a tone chain from the same empty graph, as the nearest training-side spec."
+  },
+  {
+   "id": "item-quality/F2",
+   "change": "Replaced max_abs and rms with min and max checks (tooling T4): 0.15 +- 0.01 and 0.95 +- 0.01, with mean 0.55 +- 0.01. Together they hold the implied peak amplitude to 0.4 +- 0.01 (2.5 %, tighter than the 5 % in the plan) and keep the signal inside 0..1. Reviewer probe c7 (amplitude 0.37, DC 0.565) now fails on mean, min and max. Sawtooth and triangle signals with the right swing fail the purity check. Near-miss mutants are killed: gain x1.05 (0.13..0.97), offset 0.565 and freq x1.02 (1275 Hz)."
+  },
+  {
+   "id": "item-quality/F3",
+   "change": "Uses the R5 run sentence. The capture is 16384 items, and the checks start at sample 4800 (0.1 s), so the reviewer's Head-8192 probe c3 fails at V5. spec_properties claims liveness only. review.notes records the remaining limit: a Head of more than 16384 items passes."
+  },
+  {
+   "id": "item-quality/F4",
+   "change": "The instruction states the target output and its tolerances only; the method is free. Every alternative the reviewers showed is a variant and passes V6: v4 (complex source -> Complex to Real -> blocks_multiply_const_xx -> Add Const, legacy Throttle, a quoted absolute file-name expression), v5 (Vector Source lookup table) and v6 (a sine with a phase offset through a Rail clamp). The signatures of v5 ({data_source}) and v6 ({nonlinear, tone}) hash to train. review.notes lists both for the reserved-signature step (R1/R2)."
+  }
+ ],
+ "rejected": [],
+ "other_changes": [
+  "This stage: replaced the 'rewire_input out <- gain' mutant, which behaved the same as 'bypass offset' (both give amplitude 0.4 at DC 0), with 'rewire_input out <- src' (the raw unit tone: amplitude 1 at DC 0). There are 14 mutants, each with a distinct faulty behaviour. Each one is killed by the check named in its 'breaks' label; this was verified mutant by mutant from the failing checks.",
+  "This stage: the disjointness field now names the nearest training-side specs: GRC-Agent scenarios 14_build_chain_from_scratch and 02_update_sample_rate, plus t01, t08 and t19.",
+  "The checks start 0.1 s after the start (skip 4800), and the instruction says so. A correct design with a start-up transient therefore passes (probe lowpass_cleanup).",
+  "The observation point matches the sink's item type (params.type = float), per R9.",
+  "R12: the purity check was calibrated with the corrected band_fraction (18 Oct). Because remove_mean is set, the DC level does not affect it, and the probe values match theory (triangle 96/pi^4, square 8/pi^2, sawtooth 6/pi^2).",
+  "Known limit kept in review.notes: the 48 kHz sample rate is visible only through the frequency-to-sample-rate ratio, because the samples are identical at any rate. A graph check on the samp_rate expression was not added, because correct answers such as '48*1000' would fail it.",
+  "build.py regenerates every file deterministically: two consecutive builds gave byte-identical output, and stale variant files are removed."
+ ],
+ "gates": "passed (18 Oct, after this stage's edits): solvability 10/10, size 204 tokens, variants 6/6 reach V6, start_fails n/a (build), mutation 14 valid with kill rate 1.0; build.py --probes gives 6/6 verdicts as expected"
+}

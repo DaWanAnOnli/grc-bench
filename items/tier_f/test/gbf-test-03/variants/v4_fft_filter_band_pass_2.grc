@@ -1,0 +1,23 @@
+options:
+  parameters: {id: noise_fft_bp2, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '40000'}
+- name: ns
+  id: analog_noise_source_x
+  parameters: {type: float, amp: '2.0', seed: '7', noise_type: analog.GR_GAUSSIAN}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: fftbp
+  id: fft_filter_xxx
+  parameters: {type: fff, taps: 'firdes.band_pass_2(1, samp_rate, 6000, 9000, 300, 60)'}
+- name: snk
+  id: blocks_file_sink
+  parameters: {type: float, file: bandnoise.dat}
+connections:
+- [ns, '0', thr, '0']
+- [thr, '0', fftbp, '0']
+- [fftbp, '0', snk, '0']
+metadata: {file_format: 1}

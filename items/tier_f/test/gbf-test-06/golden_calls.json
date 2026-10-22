@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_message_strobe blocks_message_strobe_random blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "blocks_message_strobe_0",
+    "params": {
+     "msg": "pmt.to_pmt({\"freq\": 4200, \"ampl\": 1.2})"
+    }
+   }
+  ]
+ }
+}

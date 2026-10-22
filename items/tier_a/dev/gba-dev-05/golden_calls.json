@@ -1,0 +1,83 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "carrier_freq",
+     "tone_2400",
+     "carrier"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "signal source frequency"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "single sideband phasing method hilbert"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "reason": "Move the carrier to 12 kHz and the upper test tone to 1.9 kHz.",
+    "update_params": [
+     {
+      "instance_name": "carrier_freq",
+      "params": {
+       "value": "12000"
+      }
+     },
+     {
+      "instance_name": "tone_2400",
+      "params": {
+       "freq": "1900"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "carrier_freq",
+     "tone_2400"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I set the carrier_freq variable to 12000 Hz and the upper test tone to 1900 Hz. The SSB signal now has its tones at 12.7 kHz and 13.9 kHz; nothing else changed, and the flowgraph is saved."
+}

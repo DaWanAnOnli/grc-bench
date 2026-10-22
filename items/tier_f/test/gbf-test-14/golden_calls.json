@@ -1,0 +1,106 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x rational_resampler_xxx analog_frequency_modulator_fc blocks_file_sink analog_quadrature_demod_cf low_pass_filter",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "variable",
+    "instance_name": "audio_rate",
+    "params": {
+     "value": "8000"
+    }
+   },
+   {
+    "block_id": "variable",
+    "instance_name": "deviation",
+    "params": {
+     "value": "2500"
+    }
+   },
+   {
+    "block_id": "variable",
+    "instance_name": "rx_scale",
+    "params": {
+     "value": "1000"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone",
+    "params": {
+     "type": "float",
+     "samp_rate": "audio_rate",
+     "freq": "1200"
+    }
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "upsample",
+    "params": {
+     "type": "fff",
+     "interp": "int(samp_rate/audio_rate)"
+    }
+   },
+   {
+    "block_id": "analog_frequency_modulator_fc",
+    "instance_name": "fm_mod",
+    "params": {
+     "sensitivity": "2*math.pi*deviation/samp_rate"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "fm_iq",
+    "params": {
+     "type": "complex",
+     "file": "fm_iq.dat"
+    }
+   },
+   {
+    "block_id": "analog_quadrature_demod_cf",
+    "instance_name": "fm_demod",
+    "params": {
+     "gain": "samp_rate/(2*math.pi*rx_scale)"
+    }
+   },
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "audio_lpf",
+    "params": {
+     "type": "fir_filter_fff",
+     "decim": "int(samp_rate/audio_rate)",
+     "cutoff_freq": "3000",
+     "width": "1000"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "recovered",
+    "params": {
+     "type": "float",
+     "file": "recovered.dat"
+    }
+   }
+  ],
+  "update_params": [
+   {
+    "instance_name": "samp_rate",
+    "params": {
+     "value": "40000"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone:0->upsample:0",
+   "upsample:0->fm_mod:0",
+   "fm_mod:0->fm_iq:0",
+   "fm_mod:0->fm_demod:0",
+   "fm_demod:0->audio_lpf:0",
+   "audio_lpf:0->recovered:0"
+  ]
+ }
+}

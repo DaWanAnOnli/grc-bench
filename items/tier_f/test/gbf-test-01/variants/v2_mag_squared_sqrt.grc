@@ -1,0 +1,27 @@
+options:
+  parameters: {id: rectifier_mag2_sqrt, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: src
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '50', amp: '2'}
+- name: f2c
+  id: blocks_float_to_complex
+  parameters: {}
+- name: power
+  id: blocks_complex_to_mag_squared
+  parameters: {}
+- name: root
+  id: blocks_transcendental
+  parameters: {name: sqrt, type: float}
+- name: sink
+  id: blocks_file_sink
+  parameters: {type: float, file: rectified.dat}
+connections:
+- [src, '0', f2c, '0']
+- [f2c, '0', power, '0']
+- [power, '0', root, '0']
+- [root, '0', sink, '0']
+metadata: {file_format: 1}

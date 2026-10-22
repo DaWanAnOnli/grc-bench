@@ -1,0 +1,48 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "files[0]: bandnoise.dat does not exist",
+    "answer[0]: lower band edge: expects 6000",
+    "answer[1]: upper band edge: expects 9000"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "files[0]: bandnoise.dat does not exist",
+      "answer[0]: lower band edge: expects 6000",
+      "answer[1]: upper band edge: expects 9000"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "dcd768d8a380b2b56dd7abda69d179194c0608614a3317b8f42177b1de0cdf64",
+ "passed": true,
+ "task": "gba-test-09"
+}

@@ -1,0 +1,46 @@
+options:
+  parameters: {id: ssb_hilbert_8k, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: imp
+  id: import
+  parameters: {imports: import math}
+- name: a1
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: '8000', freq: '700', amp: '0.4'}
+- name: a2
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: '8000', freq: 2.4e3, amp: '0.25'}
+- name: audio_add
+  id: blocks_add_xx
+  parameters: {type: float}
+- name: fs_audio
+  id: blocks_file_sink
+  parameters: {type: float, file: audio.dat}
+- name: hb
+  id: hilbert_fc
+  parameters: {}
+- name: interp
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '6'}
+- name: shift
+  id: blocks_rotator_cc
+  parameters: {phase_inc: 2*math.pi*10e3/samp_rate}
+- name: re
+  id: blocks_complex_to_real
+  parameters: {}
+- name: fs_ssb
+  id: blocks_file_sink
+  parameters: {type: float, file: ssb.dat}
+connections:
+- [a1, '0', audio_add, '0']
+- [a2, '0', audio_add, '1']
+- [audio_add, '0', fs_audio, '0']
+- [audio_add, '0', hb, '0']
+- [hb, '0', interp, '0']
+- [interp, '0', shift, '0']
+- [shift, '0', re, '0']
+- [re, '0', fs_ssb, '0']
+metadata: {file_format: 1}

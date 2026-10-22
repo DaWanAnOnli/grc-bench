@@ -1,0 +1,89 @@
+{
+ "task": "gbf-dev-03",
+ "round": 1,
+ "note": "Adversarial review findings (item-quality and compliance lenses) from the 15-17 Oct review round, recovered from the workflow transcripts after the device move. Not yet acted on.",
+ "lenses": {
+  "item-quality": {
+   "reviewed_at_utc": "2026-10-15T06:59:24.983Z",
+   "verdict": "The item is technically sound and fair. Every number the oracle depends on is in the instruction: 32 kHz, 2.4 kHz, a peak of 0.21 around a DC level of 0.35, and float samples in unipolar_tone.dat. The start graph fails at V6 for the stated reasons (1200 Hz, max 0.7, RMS 0.4287; the DC check passes), and the offset-before-gain trap is fair because the instruction spells out the start chain. Level L1 is right (5 functional blocks, single rate), and the chain signature hashes to dev as claimed.\n\nNone of the valid alternative solutions I tried was rejected. I ran these through ./gb ladder with the task's task.json, and all four passed V6:\n- a sine wave with a phase of 0.3, freq written as samp_rate*0.075 and amp as tone_amp/0.7;\n- an extra attenuator inserted before the Add Const;\n- the Throttle removed;\n- gain-then-offset order, with the file path written as ./unipolar_tone.dat and unbuffered set to True.\n\nThe naive gain-only edit (gain 0.42) fails correctly, with DC 0.21.\n\nWhat remains:\n- **F1 (medium):** the \"modify\" label. By the proposal's definition this is a parameter-tune task (\"reach a target behaviour\"), and its near-twin gbf-test-11 is labelled parameter-tune.\n- **F2, F3 (low):** the oracle overclaims two spec properties. A sample-rate change compensated by a frequency change passes, and the RMS \"waveform\" check sits in f2p and lets a contrived triangle pass.\n- **F4 (low):** this dev item shares its task template with test items.\n\nNo hidden requirements, no solution or fault leakage, and no ambiguity about the observation point.\n\nTest files are in ~/grc-bench-work/review/gbf-dev-03/ (alt_*.grc with their ladder JSON results) and in C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\C--Users-Lenovo-Documents--MScAC-2701-ml-ops-project-project\\e3a3c780-e6be-4b4a-8abe-931944b53353\\scratchpad\\rev_gbf_dev_03\\.",
+   "findings": [
+    {
+     "id": "F1-family-is-parameter-tune",
+     "severity": "medium",
+     "claim": "The item is labelled \"modify\", but by the proposal's definitions it is a parameter-tune task. Its near-twin in the test split, gbf-test-11, is labelled parameter-tune, so per-family scores would treat the same kind of task differently.",
+     "evidence": "Proposal §5.2 defines Parameter-tune as \"(reach a target behaviour)\" and gives Modify no further definition. The instruction asks for a target output (\"Change the flowgraph so that the output is a 2.4 kHz sinusoidal tone with a peak amplitude of 0.21 around the same DC level of 0.35 ... swing between 0.14 and 0.56. Keep ... the 32 kHz sample rate, the DC level of 0.35 and the float samples\"). The model has to work out which parameter gives that output: source amp 0.3, or gain 0.42 with a recomputed offset. The reference changes only two parameters (src freq 2400, amp 0.3) and adds no structure. items/tier_f/test/gbf-test-11 (parameter-tune, L1) uses nearly the same wording: \"Retune it so that the signal written to dac_test_tone.dat is a single sinusoidal tone at 5.1 kHz with a peak amplitude of 0.35 around a DC level of 0.5, so the samples swing between 0.15 and 0.85. Keep the 24 kHz sample rate, the 0.5 DC level and the float output\". The other modify items in the set either add structure (gbf-test-07: insert a low-pass filter) or edit a directly named parameter (gbf-test-06). In the training-side Qoherent taxonomy (reports/reference/training_task_specs.json), retuning frequency and bandwidth (t10_param_tuning) is \"param\", and \"modify\" means structural edits (t11, t12).",
+     "suggested_fix": "Option 1: relabel the item as parameter-tune and add the same restriction gbf-test-11 uses (\"only change parameter values; do not add or remove blocks\"). Variant v3 deletes blocks, so it would then need replacing. Option 2: keep it as modify and give it a real modify element, for example a direct edit such as moving the DC lift into the Signal Source's offset and removing the Add Const, on top of the frequency change. Either way, let the team decide whether dev keeps two modify items."
+    },
+    {
+     "id": "F2-sample-rate-unchecked",
+     "severity": "low",
+     "claim": "The instruction asks to keep the 32 kHz sample rate, and spec_properties says this is checked. It is not: changing the sample rate and the tone frequency together passes V6.",
+     "evidence": "spec_properties says: \"sample rate: 32 kHz (frequencies are measured at fs = 32 kHz; a different rate moves the tone)\". The test file ~/grc-bench-work/review/gbf-dev-03/alt_rate_changed.grc (samp_rate 48000, src freq 3600, amp 0.3, chain otherwise unchanged) was run with ./gb ladder ... --task items/tier_f/dev/gbf-dev-03/task.json. Result: first_failed None, peak_freq 2400.0, max_abs 0.56, rms 0.380197, mean 0.35, all passed. The samples are identical, so this cannot be measured from unipolar_tone.dat. The samp_rate-48000 mutant is caught only because the reference keeps freq at 2400.",
+     "suggested_fix": "Reword the spec_properties entry so it says the sample rate cannot be observed from the output samples and is checked only indirectly, through the tone frequency. Alternatively, add a structural check on the samp_rate value if the harness gains that feature. Low priority, because a competent solver will not do this."
+    },
+    {
+     "id": "F3-waveform-check-mislabelled-and-weak",
+     "severity": "low",
+     "claim": "The RMS check labelled \"waveform\" is in the f2p group, but the start graph is already sinusoidal. The start fails that check only because of the amplitude, so an amplitude error is counted twice. The check also lets a non-sinusoidal triangle wave pass.",
+     "evidence": "On start.grc the ladder gives \"waveform f2p 0.42866 False\"; the start is a pure cosine, so this is the amplitude error again. The test file ~/grc-bench-work/review/gbf-dev-03/alt_tri_contrived.grc (Signal Source waveform analog.GR_TRI_WAVE, amp 0.434, offset 0.136, then Throttle and File Sink) passes all of V6: peak_freq 2400.0, max_abs 0.57 (tolerance up to 0.5705), rms 0.374678 (minimum 0.374115), mean 0.353 (tolerance up to 0.3535). The instruction requires a \"sinusoidal tone\", and spec_properties claims a triangle is rejected (\"a triangle ... with the same swing has RMS 0.3704\"). That only holds when the swing is exactly the nominal one. Natural triangle, sawtooth and square answers are still rejected, and the mutation gate killed the GR_TRI_WAVE mutant.",
+     "suggested_fix": "Rename the property to something like \"tone level (RMS)\", or keep \"sinusoidal waveform\" and say in spec_properties that it is checked only through the RMS window, within the amplitude and DC tolerances. If a sharper waveform check is wanted, add a check that the crest factor matches a sinusoid, or a band_fraction check on the AC component around 2400 Hz."
+    },
+    {
+     "id": "F4-dev-test-template-twin",
+     "severity": "low",
+     "claim": "This dev item uses the same task template as items in the test split: retune a unipolar tone's frequency and peak amplitude around a fixed DC level, stated as \"swing between X and Y\". Dev is used for checkpoint selection, so success on this item partly predicts success on those test items. The cluster IDs differ, so clustered standard errors treat them as independent. Separately, one released variant's chain signature hashes to the test split.",
+     "evidence": "gbf-test-11 (parameter-tune) and gbf-test-04 (build) use the same template; the wording is quoted in F1. The eval plan (line 9 and line 98 of the plan text) says dev drives checkpoint selection and CI, and line 221 says clustered SEs are computed by question family or source flowgraph. Running compose.signature_split on the chain analog_sig_source_x|blocks_throttle2|blocks_file_sink (variant v3_collapsed_source) returns \"test\". No current test item uses that chain.",
+     "suggested_fix": "Note the shared template between gbf-dev-03, gbf-test-11 and gbf-test-04 in the team review sheet, or give these items a shared template cluster key for the cluster bootstrap. Optionally, rebuild v3 on a chain that hashes to dev or train (for example keep the Multiply Const at 1), so released dev files never use a test-hashed chain."
+    }
+   ]
+  },
+  "compliance": {
+   "reviewed_at_utc": "2026-10-15T07:02:10.388Z",
+   "verdict": "The item mostly holds up. It is a correct, fair and unambiguous L1 modify item, and I found nothing that blocks it. I re-ran the gates and they passed with a gates.json identical to the author's: solvability 10/10, 249 tokens, 3/3 variants pass, the start fails only at V6 (f2p false, p2p true), and all 12 mutants reach V5 with kill rate 1.0. Running build.py from a scratch copy (~/grc-bench-work/review/gbf-dev-03/repo) produced byte-identical task.json, start.grc, reference.grc and variants. The split checks hold: the start, reference, v1 and v2 all hash to dev. The licence, source, cluster_id, provenance, review and perturbation fields match the brief for a composed chain. The canary appears only in task.json, and the instruction does not mention benchmarks or oracles. The disjointness line is accurate against reports/reference/training_task_specs.json; the nearest training-side items are the GRC-Agent scenarios 02, 04 and 14, which have a different goal and start graph. The instruction states every number the oracle uses, plus the file name and item type, and it does not give away the reference value (amp 0.3). The likely wrong answer, changing only the gain to 0.42, is rejected. I ran probes in ~/grc-bench-work/review/gbf-dev-03/probes, and they turned up gaps in oracle coverage rather than errors. The main one is that the stated \"keep the 32 kHz sample rate\" requirement is not actually checked. The others are smaller: \"keep running\" is checked only up to 8192 items, the amplitude tolerance is slightly looser than stated, one variant's chain hashes to the test split, two mutants are duplicates, and one check is labelled with the wrong group.",
+   "findings": [
+    {
+     "id": "F1-sample-rate-not-enforced",
+     "severity": "medium",
+     "claim": "The instruction tells the model to keep the 32 kHz sample rate, and spec_properties lists 'sample rate' as a checked property. The oracle cannot see the sample rate: it only sees freq/samp_rate. Answers that change samp_rate pass V6 if the source frequency moves with it, or even if the tone frequency is never edited. The one samp_rate mutant changes the rate on its own, so the mutation gate overstates what is covered.",
+     "evidence": "Ladder probes with items/tier_f/dev/gbf-dev-03/task.json. p2_samp16k_freq1200.grc sets samp_rate=16000 and leaves src freq at 1200 (reference amp 0.3). It reaches V6 with first_failed=None: peak_freq 2400.0, max_abs 0.56, rms 0.380197, mean 0.35, all pass. p3_samp48k_freq3600.grc sets samp_rate=48000 and freq=3600, with the same result. In p2 the f2p 'tone frequency' check passes even though the model never changed the tone frequency. spec_properties says 'frequencies are measured at fs = 32 kHz; a different rate moves the tone', which is false when rate and frequency change together. The only sample-rate mutant ({set_param samp_rate 48000, breaks: sample rate}) is killed by the frequency check, not by any sample-rate check.",
+     "suggested_fix": "Choose one: (a) add a harness feature that enforces the rate, such as a parameter assertion that the evaluated samp_rate of the source and throttle is 32000, or a wall-clock throughput check through the Throttle; or (b) reword spec_properties and the review notes to say that only the frequency-to-sample-rate ratio is enforced, and add a mutant that changes samp_rate and freq together and is recorded as an accepted survivor. Then the gate no longer claims the sample rate is covered."
+    },
+    {
+     "id": "F2-continuous-run-not-enforced",
+     "severity": "low",
+     "claim": "The instruction says 'The flowgraph should keep running until it is stopped', but V5 only checks that 8192 items arrive. A flowgraph bounded by a Head block that stops after 8192 or more items passes every rung. V5 records finished_on_its_own but never fails on it.",
+     "evidence": "Probe p9_head_16000.grc is the reference with blocks_head (num_items 16000) placed between thr and out. It reaches V6 with first_failed=None and V5 {passed: True, finished_on_its_own: False, items: {out: 8192}, liveness: True}. Any Head of at least 8192 items passes. Models trained on training-side 'run it briefly' / 'bounded time' tasks (t08, t18) plausibly add a Head block. This is a harness-wide limitation (_worker.py _run), but this item states the requirement in its instruction.",
+     "suggested_fix": "For tasks that require continuous running, have V5 wait a short extra period after liveness, for example run.min_runtime_s, and fail if the top block has finished on its own (waiter not alive). Otherwise, describe the requirement in spec_properties as 'delivers at least 8192 items' rather than 'running continuously'."
+    },
+    {
+     "id": "F3-variant-v3-test-signature-and-structure",
+     "severity": "low",
+     "claim": "Variant v3_collapsed_source.grc has a different chain signature (analog_sig_source_x|blocks_throttle2|blocks_file_sink), and that signature hashes to the test split. So the dev item ships a flowgraph of a test-partitioned chain, which conflicts with 'all flowgraphs from one source file stay in one split' when signatures stand in for source files. v3 also deletes the Add Const and Multiply Const blocks, although the instruction says 'Keep everything else as it is'. Under a literal reading, it is not a correct solution.",
+     "evidence": "compose.signature_split over the task files: reference, start, v1 and v2 give dev; variants/v3_collapsed_source.grc gives 'analog_sig_source_x|blocks_throttle2|blocks_file_sink test'. No test item uses that chain yet, but it is a very natural L1 chain for future test items when scaling to 150. Nothing in src/ audits variant signatures; the only use of signature_split outside compose.py is a unit test.",
+     "suggested_fix": "Replace v3 with a variant whose chain hashes to dev and keeps the blocks. For example: Signal Source amp 0.21, Add Const 0.35/0.7 (or 0.5) with Multiply Const adjusted, or a variant that puts the DC level in a variable expression. The gate still passes with v1 and v2. Alternatively, document that variants are exempt from the signature split and extend the audit to say so."
+    },
+    {
+     "id": "F4-amplitude-tolerance-looser-than-stated",
+     "severity": "low",
+     "claim": "spec_properties says the peak amplitude is 0.21 ± 5 %. Amplitude is checked only through max_abs (0.56 ± 0.0105), with the DC level checked separately (± 0.0035), so amplitude errors of about ±6.7 % are accepted when the DC error goes the other way. The 'sinusoidal tone' requirement also accepts a leftover second tone up to about −26 dBc.",
+     "evidence": "Arithmetic: DC 0.3465 with amplitude 0.2240 (+6.7 %) gives max 0.5705 (within tol) and RMS 0.3810 (within [0.374115, 0.386358]). Probe p4_amp_plus6p5.grc (A=0.2237, DC=0.3469) failed only by rounding, with max_abs 0.5706 against a limit of 0.5705. Probe p5_spur_1200.grc (reference plus a 1.2 kHz tone of 0.01 at the output) passes V6: max_abs 0.57, rms 0.380263, mean 0.35.",
+     "suggested_fix": "Tighten the max_abs tolerance to 0.0105 − 0.0035 = 0.007 so the stated ±5 % amplitude holds even at the worst-case DC error. Or state the effective ±6.7 % in spec_properties and the review notes. Spur acceptance is minor; at most, mention it in spec_properties."
+    },
+    {
+     "id": "F5-duplicate-mutants",
+     "severity": "low",
+     "claim": "Two of the 12 valid mutants are behavioural duplicates, so the suite tests 11 distinct wrong behaviours, not 12. The phase plan asks for wrong-tap rewiring as its own mutant class, and the rewire chosen here is the same as a bypass.",
+     "evidence": "task.json mutations: {bypass, block: scale} and {rewire_input, dst: thr, new_src: lift} both feed thr with lift's output, 0.3cos(2π·2400t)+0.5. The rewire leaves scale's output parked on a Null Sink, so the observed signal is identical. The gate still passes (well above the 5-mutant minimum), so this does not change the result.",
+     "suggested_fix": "Replace the rewire with a distinct wrong tap, for example rewire thr to take its input from src. That gives 0.3cos at a DC level of 0, which the mean check rejects."
+    },
+    {
+     "id": "F6-waveform-check-group-label",
+     "severity": "low",
+     "claim": "The 'waveform' RMS check is in the f2p group. The start's waveform, a cosine, is already sinusoidal, so 'waveform: sinusoidal' is a property the edit must preserve, which would put it in the p2p group. The check fails on the start only because RMS also depends on the amplitude, so the f2p/p2p breakdown counts a preserved property as a requested change.",
+     "evidence": "Start graph: src waveform defaults to analog.GR_COS_WAVE. The start's RMS of 0.4287 comes from amplitude 0.35, not from a wrong waveform. The oracle check reads {feature: rms, group: f2p, property: waveform}. Right now groups only feed reporting (oracles.evaluate groups, gates start_fails.v6_groups), so the pass/fail result is unaffected.",
+     "suggested_fix": "Relabel the property as 'tone amplitude and waveform (RMS)' and say in spec_properties that it fails on the start because of the amplitude. Or move the waveform claim to p2p and keep the RMS check as an f2p amplitude check."
+    }
+   ]
+  }
+ }
+}

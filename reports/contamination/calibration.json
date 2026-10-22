@@ -1,0 +1,194 @@
+{
+ "adjudicated_pairs": [
+  {
+   "cluster_id": "cbsc_0001",
+   "decision": "DUPLICATE",
+   "embed": 0.9428,
+   "id_a": "q_3c977116dd649049",
+   "id_b": "q_4223e88109137d6f",
+   "tfidf": 0.7301
+  },
+  {
+   "cluster_id": "cbsc_0002",
+   "decision": "KEEP_BOTH",
+   "embed": 0.9369,
+   "id_a": "q_5d98eadd9b6d2c84",
+   "id_b": "q_ac873512e0eba4c0",
+   "tfidf": 0.5995
+  },
+  {
+   "cluster_id": "sc_0001",
+   "decision": "KEEP_BOTH",
+   "embed": 0.9593,
+   "id_a": "q_6e78c3a698ab7298",
+   "id_b": "q_f909ec449cda1419",
+   "tfidf": 0.833
+  },
+  {
+   "cluster_id": "sc_0002",
+   "decision": "DUPLICATE",
+   "embed": 0.9848,
+   "id_a": "q_83fcfdf465853804",
+   "id_b": "q_f89943bcf8aa41b0",
+   "tfidf": 0.8825
+  },
+  {
+   "cluster_id": "sc_0003",
+   "decision": "DUPLICATE",
+   "embed": 0.9981,
+   "id_a": "q_87abde3985042b8f",
+   "id_b": "q_f6d5605206d24cd4",
+   "tfidf": 1.0
+  },
+  {
+   "cluster_id": "sc_0004",
+   "decision": "DUPLICATE",
+   "embed": 0.9972,
+   "id_a": "q_1c97b33c84985de4",
+   "id_b": "q_e60d7c15c379ee58",
+   "tfidf": 0.8215
+  },
+  {
+   "cluster_id": "sc_0005",
+   "decision": "DUPLICATE",
+   "embed": 0.9729,
+   "id_a": "q_0d72d56446a67ac4",
+   "id_b": "q_c6b01015c18e2d65",
+   "tfidf": 0.745
+  },
+  {
+   "cluster_id": "sc_0006",
+   "decision": "DUPLICATE",
+   "embed": 0.9437,
+   "id_a": "q_0612c25f3cb028b4",
+   "id_b": "q_f1af1c5ec9484f70",
+   "tfidf": 0.6698
+  },
+  {
+   "cluster_id": "sc_0007",
+   "decision": "KEEP_BOTH",
+   "embed": 0.9803,
+   "id_a": "q_898b4c50b590475b",
+   "id_b": "q_abd58d8a7f97e83f",
+   "tfidf": 0.8416
+  },
+  {
+   "cluster_id": "sc_0008",
+   "decision": "KEEP_BOTH",
+   "embed": 0.947,
+   "id_a": "q_9878d9c7df18b08e",
+   "id_b": "q_c6c3e087145778e2",
+   "tfidf": 0.8365
+  },
+  {
+   "cluster_id": "sc_0009",
+   "decision": "KEEP_BOTH",
+   "embed": 0.9951,
+   "id_a": "q_23ce874680cc161f",
+   "id_b": "q_fb16a320bb753131",
+   "tfidf": 0.819
+  },
+  {
+   "cluster_id": "sc_0010",
+   "decision": "KEEP_BOTH",
+   "embed": 0.9517,
+   "id_a": "q_935c26a6d7804641",
+   "id_b": "q_a9ebf3d005b4d6c7",
+   "tfidf": 0.6609
+  },
+  {
+   "cluster_id": "sc_0011",
+   "decision": "DUPLICATE",
+   "embed": 0.9663,
+   "id_a": "q_7188faaac43b24d8",
+   "id_b": "q_940a28924a06ee27",
+   "tfidf": 0.8473
+  },
+  {
+   "cluster_id": "sc_0012",
+   "decision": "KEEP_BOTH",
+   "embed": 0.9489,
+   "id_a": "q_7f09008706430e3c",
+   "id_b": "q_ba85f5db83eb4729",
+   "tfidf": 0.8902
+  },
+  {
+   "cluster_id": "sc_0013",
+   "decision": "KEEP_BOTH",
+   "embed": 0.9651,
+   "id_a": "q_b7cbc22397d3a5e4",
+   "id_b": "q_f49157279a1d58b1",
+   "tfidf": 0.9425
+  }
+ ],
+ "embedding_status": "done",
+ "purpose": "Training-side calibration of the TF-IDF and embedding thresholds. Uses only the 1,668 training questions and the dataset's adjudicated dedupe pairs; no test item.",
+ "random_train_pairs": {
+  "description": "2000 sha256-sampled training-question pairs (background)",
+  "embedding": {
+   "quantiles": {
+    "max": 0.8276,
+    "min": 0.4406,
+    "p10": 0.5457,
+    "p25": 0.5777,
+    "p50": 0.6098,
+    "p75": 0.6467,
+    "p90": 0.6857,
+    "p95": 0.7093,
+    "p99": 0.7577
+   },
+   "share_ge_threshold": 0.0
+  },
+  "pairs": 2000,
+  "tfidf": {
+   "quantiles": {
+    "max": 0.3933,
+    "min": 0.0,
+    "p10": 0.0079,
+    "p25": 0.0184,
+    "p50": 0.036,
+    "p75": 0.0602,
+    "p90": 0.0988,
+    "p95": 0.1286,
+    "p99": 0.2152
+   },
+   "share_ge_threshold": 0.0
+  }
+ },
+ "thresholds": {
+  "embed": 0.88,
+  "tfidf": 0.55
+ },
+ "train_8gram_twin_pairs": {
+  "description": "training-question pairs sharing a word 8-gram (template twins)",
+  "embedding": {
+   "quantiles": {
+    "max": 0.9951,
+    "min": 0.6665,
+    "p10": 0.7145,
+    "p25": 0.7434,
+    "p50": 0.7768,
+    "p75": 0.847,
+    "p90": 0.9062,
+    "p95": 0.941,
+    "p99": 0.9697
+   },
+   "share_ge_threshold": 0.1521
+  },
+  "pairs": 447,
+  "tfidf": {
+   "quantiles": {
+    "max": 0.9537,
+    "min": 0.1541,
+    "p10": 0.2344,
+    "p25": 0.2693,
+    "p50": 0.3557,
+    "p75": 0.5042,
+    "p90": 0.6839,
+    "p95": 0.7783,
+    "p99": 0.8991
+   },
+   "share_ge_threshold": 0.2058
+  }
+ }
+}

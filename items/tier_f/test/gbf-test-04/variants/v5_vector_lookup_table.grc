@@ -1,0 +1,22 @@
+options:
+  parameters: {id: dac_test_v5, generate_options: no_gui, output_language: python}
+blocks:
+- name: import_math
+  id: import
+  parameters: {imports: import math}
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: table
+  id: blocks_vector_source_x
+  parameters: {type: float, vector: '[0.55 + 0.4*math.cos(2*math.pi*1250*n/48000) for n in range(192)]'}
+- name: thr
+  id: blocks_throttle2
+  parameters: {type: float}
+- name: dac
+  id: blocks_file_sink
+  parameters: {type: float, file: dac_test.dat}
+connections:
+- [table, '0', thr, '0']
+- [thr, '0', dac, '0']
+metadata: {file_format: 1}
