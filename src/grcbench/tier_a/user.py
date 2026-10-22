@@ -10,7 +10,9 @@ the agent's reply text to `ScriptedUser.respond`:
   2. The rules are tried in order. A rule fires when its regular expression matches the reply, it
      has uses left (`max_uses`, default 1), and either the reply is asking the user something or
      the rule sets `"require_question": false`. The first rule that fires gives the reply.
-  3. Otherwise, if the reply is asking the user something, the reply is DEFAULT_REPLY.
+  3. Otherwise, if the reply is asking the user something, the reply is DEFAULT_REPLY. A script
+     with `"default_reply": null` (adhoc.py, never a benchmark task) sends nothing instead: the
+     episode ends with `waiting` set, so the caller can answer with a resumed episode.
   4. Otherwise the agent has finished without asking: the episode ends.
 Everything is deterministic: the same agent reply always gets the same user reply.
 
@@ -97,12 +99,13 @@ class UserTurn:
 @dataclass
 class ScriptedUser:
     rules: list[Rule] = field(default_factory=list)
-    default_reply: str = DEFAULT_REPLY
+    default_reply: str | None = DEFAULT_REPLY
     max_turns: int = DEFAULT_MAX_TURNS
     asking_pattern: str | None = None
     turns_sent: int = 0
     uses: dict[int, int] = field(default_factory=dict)
     exhausted: bool = False          # the agent asked again after max_turns replies
+    waiting: bool = False            # the agent asked and the script has no reply (default_reply None)
 
     @classmethod
     def from_spec(cls, spec: dict[str, Any] | None) -> "ScriptedUser":
@@ -110,7 +113,8 @@ class ScriptedUser:
         rules = [Rule(pattern=r["pattern"], reply=r["reply"], max_uses=int(r.get("max_uses", 1)),
                       require_question=bool(r.get("require_question", True)), flags=str(r.get("flags", "i")))
                  for r in spec.get("rules", [])]
-        user = cls(rules=rules, default_reply=str(spec.get("default_reply", DEFAULT_REPLY)),
+        default = spec.get("default_reply", DEFAULT_REPLY)
+        user = cls(rules=rules, default_reply=None if default is None else str(default),
                    max_turns=int(spec.get("max_turns", DEFAULT_MAX_TURNS)),
                    asking_pattern=spec.get("asking_pattern"))
         user.check()
@@ -120,7 +124,7 @@ class ScriptedUser:
         """Raise ValueError on an unusable script (bad regex, empty reply, negative limits)."""
         if self.max_turns < 0:
             raise ValueError("scripted_user.max_turns must be >= 0")
-        if not self.default_reply.strip():
+        if self.default_reply is not None and not self.default_reply.strip():
             raise ValueError("scripted_user.default_reply must not be empty")
         for i, rule in enumerate(self.rules):
             try:
@@ -134,13 +138,16 @@ class ScriptedUser:
 
     def replies(self) -> list[str]:
         """Every text this user can send (checked for the canary by the task loader)."""
-        return [r.reply for r in self.rules] + [self.default_reply]
+        return [r.reply for r in self.rules] + ([self.default_reply] if self.default_reply is not None else [])
 
     def respond(self, agent_reply: str) -> UserTurn | None:
         """The user's next message after an agent turn, or None when the episode should end."""
         asking = is_asking(agent_reply, self.asking_pattern)
         if self.turns_sent >= self.max_turns:
-            self.exhausted = asking
+            if self.default_reply is None:
+                self.waiting = asking            # the caller answers (adhoc.py), the script is done
+            else:
+                self.exhausted = asking
             return None
         for i, rule in enumerate(self.rules):
             if self.uses.get(i, 0) >= rule.max_uses:
@@ -151,6 +158,9 @@ class ScriptedUser:
                 self.uses[i] = self.uses.get(i, 0) + 1
                 self.turns_sent += 1
                 return UserTurn(rule.reply, f"rule:{i}")
+        if asking and self.default_reply is None:
+            self.waiting = True
+            return None
         if asking:
             self.turns_sent += 1
             return UserTurn(self.default_reply, "default")

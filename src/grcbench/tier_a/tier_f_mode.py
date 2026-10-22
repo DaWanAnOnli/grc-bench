@@ -59,6 +59,8 @@ call, the model requests used and the final graph; after grading also the rungs 
 
 from __future__ import annotations
 
+import contextlib
+import dataclasses
 import hashlib
 import json
 import re
@@ -560,20 +562,30 @@ def run_tier_f_sample(task_dir: Path | str, model_factory: ModelSpec | str | Cal
     if run_dir.exists():
         shutil.rmtree(run_dir)
     run_dir.mkdir(parents=True)
-    env = isolation.make_run_env(run_dir, base_url=spec_model.base_url, model_name=spec_model.model_name)
-    compact, start_rule = start_graph_text(task)
-    write_text(run_dir / STATE_DIR / "start_compact.grc", compact)
-    record = {k: v for k, v in task.items() if not k.startswith("_")}
-    episode = {"kind": "tier_f", "run_id": run_id_for(task["id"], config_id, f"tier_f-{setting}", sample),
-               "task": {"record": record, "task_dir": task["_dir"]}, "model": spec_model.to_dict(),
-               "setting": setting, "caps": caps.to_dict(), "config_id": config_id, "sample": sample, "mode": mode,
-               "invalid_gate": invalid_gate, "run_log_entry": run_log_entry,
-               "tier_f": {"prefill_id": prefill_call_id(task["id"]), "start": start_rule,
-                          "start_compact": str(run_dir / STATE_DIR / "start_compact.grc")}}
-    write_json(run_dir / SPEC_FILE, episode)
-    t0 = time.monotonic()
-    proc = isolation.run_episode_process(run_dir, "grcbench.tier_a.runner", ["episode", "--spec", str(run_dir / SPEC_FILE)],
-                                         env, timeout=caps.episode_seconds + PROCESS_MARGIN, network=spec_model.network())
+    with contextlib.ExitStack() as stack:
+        binds: list[Path] = []
+        if spec_model.relay is not None:                  # a hosted API (runner.py, "a relay")
+            from .relay import LOCAL_BASE_URL, Relay
+            relay = stack.enter_context(Relay(spec_model.relay["upstream"], spec_model.relay["api_key_env"],
+                                              allow_http_loopback=bool(spec_model.relay.get("allow_http_loopback"))))
+            spec_model = dataclasses.replace(spec_model, base_url=LOCAL_BASE_URL, uds_path=str(relay.socket_path))
+            binds.append(relay.dir)
+        env = isolation.make_run_env(run_dir, base_url=spec_model.base_url, model_name=spec_model.model_name)
+        compact, start_rule = start_graph_text(task)
+        write_text(run_dir / STATE_DIR / "start_compact.grc", compact)
+        record = {k: v for k, v in task.items() if not k.startswith("_")}
+        episode = {"kind": "tier_f", "run_id": run_id_for(task["id"], config_id, f"tier_f-{setting}", sample),
+                   "task": {"record": record, "task_dir": task["_dir"]}, "model": spec_model.to_dict(),
+                   "setting": setting, "caps": caps.to_dict(), "config_id": config_id, "sample": sample, "mode": mode,
+                   "invalid_gate": invalid_gate, "run_log_entry": run_log_entry,
+                   "tier_f": {"prefill_id": prefill_call_id(task["id"]), "start": start_rule,
+                              "start_compact": str(run_dir / STATE_DIR / "start_compact.grc")}}
+        write_json(run_dir / SPEC_FILE, episode)
+        t0 = time.monotonic()
+        proc = isolation.run_episode_process(run_dir, "grcbench.tier_a.runner",
+                                             ["episode", "--spec", str(run_dir / SPEC_FILE)], env,
+                                             timeout=caps.episode_seconds + PROCESS_MARGIN,
+                                             network=spec_model.network(), extra_ro_binds=binds)
     write_text(run_dir / STDERR_FILE, proc.stderr or "")
     process = {"returncode": proc.returncode, "timed_out": proc.timed_out, "seconds": round(time.monotonic() - t0, 3),
                "network": spec_model.network(), "stderr_tail": (proc.stderr or "")[-4000:]}

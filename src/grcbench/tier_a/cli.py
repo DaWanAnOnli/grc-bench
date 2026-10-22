@@ -130,11 +130,17 @@ def _batch_args(prog: str, argv: list[str]) -> tuple[Any, Any]:
     p.add_argument("--base-url", default=DEFAULT_BASE_URL)
     p.add_argument("--model", default=DEFAULT_MODEL)
     p.add_argument("--uds", default=None)
+    p.add_argument("--api-base", default=None, help="hosted OpenAI-compatible API (through relay.py; needs --model)")
+    p.add_argument("--api-key-env", default=None, help="NAME of the environment variable holding the API key")
     p.add_argument("--scripted", default=None, help="JSON file with scripted turns (plumbing only)")
     p.add_argument("--no-stream", action="store_true", help="do not stream the model requests (models.py)")
     a = p.parse_args(argv)
     if a.scripted:
         spec = models.scripted(json.loads(Path(a.scripted).read_text(encoding="utf-8")))
+    elif a.api_base or a.api_key_env:
+        if not (a.api_base and a.api_key_env and a.model != DEFAULT_MODEL):
+            p.error("a hosted model needs --api-base, --api-key-env and --model")
+        spec = models.hosted(a.api_base, a.model, a.api_key_env, stream=False if a.no_stream else None)
     else:
         spec = models.openai_compatible(a.base_url, a.model, uds_path=a.uds, stream=False if a.no_stream else None)
     return a, spec
@@ -144,6 +150,7 @@ def _run(argv: list[str]) -> int:
     from pathlib import Path
 
     from ..runlog.log import RunRefused
+    from .relay import RelayError
     from .runner import run_tasks
     from .task import TaskError
     a, spec = _batch_args("gb tier-a run", argv)
@@ -160,7 +167,7 @@ def _run(argv: list[str]) -> int:
                             setting=a.setting, samples=a.samples, mode=a.mode,
                             run_root=Path(a.run_root) if a.run_root else None, on_result=show,
                             grade_episodes=not a.no_grade)
-    except (RunRefused, TaskError) as exc:
+    except (RunRefused, TaskError, RelayError) as exc:
         print(f"refused: {exc}")
         return 2
     return 0 if all(r.valid for r in results) else 1
@@ -170,6 +177,7 @@ def _tier_f(argv: list[str]) -> int:
     from pathlib import Path
 
     from ..runlog.log import RunRefused
+    from .relay import RelayError
     from .tier_f_mode import TierFTaskError, run_tier_f_samples
     a, spec = _batch_args("gb tier-a tier-f", argv)
 
@@ -181,7 +189,7 @@ def _tier_f(argv: list[str]) -> int:
         results = run_tier_f_samples([Path(t) for t in a.tasks], spec, config_id=a.config_id, reason=a.reason,
                                      samples=a.samples, setting=a.setting, mode=a.mode,
                                      run_root=Path(a.run_root) if a.run_root else None, on_result=show)
-    except (RunRefused, TierFTaskError) as exc:
+    except (RunRefused, TierFTaskError, RelayError) as exc:
         print(f"refused: {exc}")
         return 2
     return 0 if all(r.valid for r in results) else 1

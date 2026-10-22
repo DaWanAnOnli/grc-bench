@@ -63,12 +63,25 @@ Run directory (on the WSL filesystem):
     Tier F adds    tier_f/start_compact.grc, tier_f/start_full.grc (the start graph before and after
                    GRC's writer) and final.grc (the graded end state); wire.jsonl holds the request
                    bodies when the model is models.wire_scripted.
+
+Options used outside the benchmark (adhoc.py, `./gb agent`); a benchmark run sets none of them:
+    export_state   at the end, the active page is exported: state/live.grc (the graph in GRC's
+                   memory, written by GRC's own writer, saved or not) and state/page.json (its file
+                   path relative to project/ or null for an untitled graph, its saved flag and the
+                   conversation id)
+    resume_from    a finished run directory that was run with export_state: its project/ and
+                   .grc_agent/ are copied in, its message history becomes the start of this one
+                   (resume/messages.json) and its exported page is opened as it was (same file path,
+                   same saved flag: unsaved edits carry over); the conversation id is kept
+    a relay        models.hosted(...): relay.Relay runs on the host for the episode and the model
+                   goes over its UNIX socket (the API key never enters the sandbox)
 """
 
 from __future__ import annotations
 
 import argparse
 import asyncio
+import contextlib
 import dataclasses
 import json
 import re
@@ -92,6 +105,7 @@ from .user import reply_text
 HARNESS_VERSION = "grcbench.tier_a.runner/1"
 SPEC_FILE, RESULT_FILE, MESSAGES_FILE, TOOLS_FILE = "episode.json", "result.json", "messages.json", "tools.json"
 TRACE_FILE, STDERR_FILE = "trace.jsonl", "episode.log"
+STATE_DIR, LIVE_GRC, PAGE_FILE, RESUME_DIR = "state", "live.grc", "page.json", "resume"
 PROCESS_MARGIN = 300.0          # seconds the episode process gets beyond the episode cap (setup, teardown)
 STATUSES = ("completed", "cap_failure", "agent_error", "infrastructure_error")
 _SAFE = re.compile(r"[^A-Za-z0-9._-]+")
@@ -205,12 +219,33 @@ def prepare_run_dir(task: Task, run_dir: Path, spec: ModelSpec) -> tuple[Path, d
     return run_dir, env
 
 
+def _carry_over(parent: Path, run_dir: Path) -> dict[str, Any]:
+    """Copy a finished run's end state into the fresh `run_dir` (module docstring, resume_from)."""
+    parent = isolation.check_run_dir(parent)
+    page_file, live = parent / STATE_DIR / PAGE_FILE, parent / STATE_DIR / LIVE_GRC
+    if not (page_file.is_file() and live.is_file() and (parent / MESSAGES_FILE).is_file()):
+        raise ValueError(f"{parent} has no exported end state (it must be run with export_state)")
+    page = read_json(page_file)
+    if page.get("error"):
+        raise ValueError(f"{parent}: its end state could not be exported ({page['error']})")
+    lay, old = isolation.RunLayout(run_dir), isolation.RunLayout(parent)
+    shutil.rmtree(lay.project)
+    shutil.copytree(old.project, lay.project, symlinks=True)
+    if old.state_dir.is_dir():
+        shutil.copytree(old.state_dir, lay.state_dir, symlinks=True, dirs_exist_ok=True)
+    (run_dir / RESUME_DIR).mkdir()
+    shutil.copyfile(parent / MESSAGES_FILE, run_dir / RESUME_DIR / MESSAGES_FILE)
+    shutil.copyfile(live, run_dir / RESUME_DIR / LIVE_GRC)
+    return {"parent": str(parent), "page": page}
+
+
 def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callable[..., Any],
                 setting: str = "benchmark", run_root: Path | None = None, *, config_id: str = "adhoc",
                 sample: int = 0, caps: Caps | None = None, mode: str = "evaluation", reason: str = "",
                 invalid_gate: str = "pinned", run_log_entry: dict[str, Any] | None = None,
                 log_path: Path = runlog.LOG, run_list: Path = runlog.RUN_LIST, items_root: Path = ITEMS,
-                include_thinking: bool = True, grade_episode: bool = False) -> EpisodeResult:
+                include_thinking: bool = True, grade_episode: bool = False, export_state: bool = False,
+                resume_from: Path | None = None, run_dir: Path | None = None) -> EpisodeResult:
     """Run one episode of `task` with the model `model_factory` (module docstring).
 
     task           a Task or a task directory
@@ -224,6 +259,10 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
                    episode is guarded (and, on the test split, logged) on its own
     grade_episode  grade the end state (grader.grade) into result.grade; the trace verdict then
                    says whether the task's acceptance passed
+    export_state, resume_from   module docstring (used by adhoc.py, never by the benchmark);
+                   with resume_from the task must have no start files and no start graph
+    run_dir        an explicit run directory under ~/grc-bench-work (adhoc.py's session layout)
+                   instead of <run_root>/<config>/<task>/<setting>-sNN
     Raises runlog.RunRefused (nothing is started) when the guard refuses the run.
     """
     task = task if isinstance(task, Task) else load_task(task)
@@ -231,6 +270,8 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
     caps = caps or Caps.for_setting(setting)
     if invalid_gate not in ("pinned", "intended"):
         raise ValueError("invalid_gate must be 'pinned' or 'intended'")
+    if resume_from is not None and (task.start_files or task.active_graph is not None):
+        raise ValueError("a resumed episode starts from its parent's state: the task must have no start files")
     if run_log_entry is None:
         run_log_entry = runlog.start_run(
             split=task.split, config_id=config_id, model=spec.describe(),
@@ -239,16 +280,29 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
             run_list=run_list, items_root=items_root)
     run_id = run_id_for(task.id, config_id, setting, sample)
     root = Path(run_root) if run_root is not None else isolation.RUNS_ROOT
-    run_dir, env = prepare_run_dir(task, root / _safe(config_id) / _safe(task.id) / f"{setting}-s{sample:02d}", spec)
-    episode = {"run_id": run_id, "task": task.to_dict(), "model": spec.to_dict(), "setting": setting,
-               "caps": caps.to_dict(), "config_id": config_id, "sample": sample, "mode": mode,
-               "invalid_gate": invalid_gate, "run_log_entry": run_log_entry}
-    write_json(run_dir / SPEC_FILE, episode)
-    t0 = time.monotonic()
-    proc = isolation.run_episode_process(run_dir, "grcbench.tier_a.runner",
-                                         ["episode", "--spec", str(run_dir / SPEC_FILE)], env,
-                                         timeout=caps.episode_seconds + PROCESS_MARGIN,
-                                         network=spec.network())
+    with contextlib.ExitStack() as stack:
+        binds: list[Path] = []
+        if spec.relay is not None:
+            from .relay import LOCAL_BASE_URL, Relay
+            relay = stack.enter_context(Relay(spec.relay["upstream"], spec.relay["api_key_env"],
+                                              allow_http_loopback=bool(spec.relay.get("allow_http_loopback"))))
+            spec = dataclasses.replace(spec, base_url=LOCAL_BASE_URL, uds_path=str(relay.socket_path))
+            binds.append(relay.dir)
+        target = Path(run_dir) if run_dir is not None else root / _safe(config_id) / _safe(task.id) / f"{setting}-s{sample:02d}"
+        run_dir, env = prepare_run_dir(task, target, spec)
+        episode = {"run_id": run_id, "task": task.to_dict(), "model": spec.to_dict(), "setting": setting,
+                   "caps": caps.to_dict(), "config_id": config_id, "sample": sample, "mode": mode,
+                   "invalid_gate": invalid_gate, "run_log_entry": run_log_entry}
+        if export_state:
+            episode["export_state"] = True
+        if resume_from is not None:
+            episode["resume"] = _carry_over(Path(resume_from), run_dir)
+        write_json(run_dir / SPEC_FILE, episode)
+        t0 = time.monotonic()
+        proc = isolation.run_episode_process(run_dir, "grcbench.tier_a.runner",
+                                             ["episode", "--spec", str(run_dir / SPEC_FILE)], env,
+                                             timeout=caps.episode_seconds + PROCESS_MARGIN,
+                                             network=spec.network(), extra_ro_binds=binds)
     elapsed = round(time.monotonic() - t0, 3)
     write_text(run_dir / STDERR_FILE, proc.stderr or "")
     process = {"returncode": proc.returncode, "timed_out": proc.timed_out, "seconds": elapsed,
@@ -421,6 +475,8 @@ async def _conversation(agent: Any, deps: Any, task: Task, state: _State, meter:
             return f"cap:{meter.hits[0].cap}"
         nxt = user.respond(reply)
         if nxt is None:
+            if user.waiting:
+                return "agent_asked"            # no scripted reply (adhoc.py: answer by resuming)
             return "user_turns_exhausted" if user.exhausted else "agent_finished"
         prompt, source = nxt.message, nxt.source
 
@@ -451,6 +507,25 @@ def _unknown_calls(history: list[Any], known: set[str]) -> list[dict[str, Any]]:
                     out.append({"tool_call_id": part.tool_call_id, "tool": part.tool_name,
                                 "raw_args": part.args if isinstance(part.args, str) else json.dumps(part.args)})
     return out
+
+
+def _export_state(lay: isolation.RunLayout, page: Any, conversation_id: str) -> None:
+    """state/live.grc + state/page.json (module docstring, export_state). A failure is written into
+    page.json as "error"; the episode's result stands either way."""
+    out = lay.run_dir / STATE_DIR
+    out.mkdir(exist_ok=True)
+    record: dict[str, Any] = {"file": None, "saved": False, "conversation_id": conversation_id}
+    try:
+        if page is None:
+            raise RuntimeError("no active page")
+        fg = page.flow_graph
+        fg.parent_platform.save_flow_graph(str(out / LIVE_GRC), fg)
+        if page.file_path and isolation.is_inside(Path(page.file_path), lay.project):
+            record["file"] = Path(page.file_path).resolve().relative_to(lay.project.resolve()).as_posix()
+            record["saved"] = bool(page.saved)
+    except Exception as exc:                # noqa: BLE001 - recorded in page.json
+        record["error"] = f"{type(exc).__name__}: {exc}"[:2000]
+    write_json(out / PAGE_FILE, record)
 
 
 def _error(exc: BaseException) -> dict[str, Any]:
@@ -493,8 +568,17 @@ async def _episode(spec: dict[str, Any]) -> dict[str, Any]:
             tier_f_mode.materialise_start_graph(spec, lay)
             capability.policy = tier_f_mode.TierFBudget(prefill_id=spec["tier_f"]["prefill_id"], meter=meter)
             meter.prefilled_ids.add(spec["tier_f"]["prefill_id"])
-        proxy = (HeadlessFlowgraphProxy.open(lay.project / active, **kwargs) if active is not None
-                 else HeadlessFlowgraphProxy.new_untitled(**kwargs))
+        resume = spec.get("resume")
+        if resume is not None:
+            page = resume["page"]
+            proxy = HeadlessFlowgraphProxy.restore(
+                lay.run_dir / RESUME_DIR / LIVE_GRC, saved=bool(page.get("saved")),
+                file_path=str(lay.project / page["file"]) if page.get("file") else "", **kwargs)
+            state.history = list(ModelMessagesTypeAdapter.validate_json(
+                (lay.run_dir / RESUME_DIR / MESSAGES_FILE).read_bytes()))
+        else:
+            proxy = (HeadlessFlowgraphProxy.open(lay.project / active, **kwargs) if active is not None
+                     else HeadlessFlowgraphProxy.new_untitled(**kwargs))
         meter.flowgraph_cap_probe = lambda: next((r for r in proxy.runs if r.get("hard_cap_hit")), None)
         agent, info = agent_build.build_benchmark_agent(model, proxy, lay.project, setting)
         # key order kept (name, description, parameters; schemas as GRC-Agent builds them)
@@ -503,13 +587,14 @@ async def _episode(spec: dict[str, Any]) -> dict[str, Any]:
         timing["setup_seconds"] = round(time.monotonic() - t0, 3)
     except Exception as exc:                 # noqa: BLE001 - the harness could not start the episode
         status, end_reason, error = "infrastructure_error", "setup failed", _error(exc)
+    conversation_id = (spec.get("resume") or {}).get("page", {}).get("conversation_id") or f"grcbench-{spec['run_id']}"
     if status == "completed":
         t1 = time.monotonic()
         try:
             async with asyncio.timeout(caps.episode_seconds):
                 converse = tier_f_mode.conversation if tier_f else _conversation
                 end_reason = await converse(agent, proxy, task, state, meter, capability,
-                                            f"grcbench-{spec['run_id']}", t0)
+                                            conversation_id, t0)
         except Exception as exc:             # noqa: BLE001 - classified below
             hit = classify_exception(exc, caps, meter.usage.requests)
             if hit is not None:
@@ -535,6 +620,8 @@ async def _episode(spec: dict[str, Any]) -> dict[str, Any]:
                 sample_record = tier_f_mode.episode_record(spec, state, meter, lay, proxy, capability.policy)
             except Exception as exc:        # noqa: BLE001 - recorded; the host grades what exists
                 sample_record = {"record_error": _error(exc)}
+        if spec.get("export_state"):
+            _export_state(lay, page, conversation_id)
         path = (page.file_path or None) if page is not None else None
         final = {"final_graph_path": path, "final_graph_saved": bool(page.saved) if page is not None else None,
                  "final_graph_sha256": sha256_file(Path(path)) if path and Path(path).is_file() else None,

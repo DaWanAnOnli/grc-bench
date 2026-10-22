@@ -370,6 +370,20 @@ class HeadlessFlowgraphProxy:
         return cls(page, project_dir=project_dir or path.parent, **kwargs)
 
     @classmethod
+    def restore(cls, state_grc: str | Path, *, file_path: str, saved: bool, project_dir: str | Path | None,
+                **kwargs: Any) -> "HeadlessFlowgraphProxy":
+        """The page as an earlier episode left it (runner `resume_from`): the graph that episode's
+        GRC memory held (exported with GRC's writer to `state_grc`), under its own file path ("" =
+        untitled, as File > New leaves it) and with its saved flag, so unsaved edits carry over."""
+        from grc_agent.adapter import load_flow_graph
+        fg = load_flow_graph(str(Path(state_grc).resolve()))
+        file_path = str(Path(file_path).resolve()) if file_path else ""
+        fg.grc_file_path = file_path
+        page = HeadlessPage(fg, file_path)
+        page.saved = bool(saved and file_path)
+        return cls(page, project_dir=project_dir, **kwargs)
+
+    @classmethod
     def new_untitled(cls, *, project_dir: str | Path | None, **kwargs: Any) -> "HeadlessFlowgraphProxy":
         """GRC's File > New: the default flowgraph (options id 'default', samp_rate), never saved."""
         from grc_agent.adapter import get_platform
@@ -926,14 +940,19 @@ class HeadlessFlowgraphProxy:
 
     # ------------------------------------------------------------------ the sandboxed run
     def _bwrap_argv(self, cwd: Path, writable: list[Path], readable: list[Path]) -> list[str]:
-        """The grcbench.common.sandbox.run invocation, with these writable paths and working dir."""
+        """The grcbench.common.sandbox.run invocation, with these writable paths and working dir.
+        The user's files (sandbox.hidden_view_args), the run folders and the cache
+        (sandbox.agent_hidden_roots) are hidden first; the paths below come back on top."""
+        agent_hidden = sandbox.agent_hidden_roots(hide_src=False)
         args = [sandbox.BWRAP, "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc",
-                "--tmpfs", "/tmp"]
+                "--tmpfs", "/tmp", *sandbox.hidden_view_args(sandbox.sandbox_env(self._sandbox_root)),
+                *sandbox.hide_args(agent_hidden)]
         for path in writable:
             args += ["--bind", str(path), str(path)]
         for path in readable:
             args += ["--ro-bind", str(path), str(path)]
-        args += ["--chdir", str(cwd), "--unshare-pid", "--die-with-parent", "--new-session",
+        args += [*sandbox.readonly_args(sandbox.hidden_roots() + agent_hidden),
+                 "--chdir", str(cwd), "--unshare-pid", "--die-with-parent", "--new-session",
                  "--unshare-net", "--"]
         return args
 

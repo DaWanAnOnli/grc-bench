@@ -8,6 +8,10 @@ episode a Python model object; it hands it a ModelSpec, and the episode builds t
                      itself from the run's .env (provider openai_compatible -> OpenAIChatModel with
                      GRC-Agent's retrying HTTP client); with `uds_path` the same construction goes
                      over a UNIX socket (agent_build.make_openai_compatible_model).
+                     `hosted(...)` is the same path to a hosted OpenAI-compatible API: the spec
+                     carries `relay` = {"upstream": <https base URL>, "api_key_env": <variable
+                     NAME>}, and the runner starts relay.Relay for the episode and points the model
+                     at its socket. The key itself is never part of a spec.
   scripted           a pydantic-ai FunctionModel that replays fixed turns (tests, golden-sequence
                      replays). Each model request takes the next turn:
                          {"text": str, "thinking": str,
@@ -70,10 +74,17 @@ class ModelSpec:
     factory: str | None = None
     kwargs: dict[str, Any] = field(default_factory=dict)
     stream: bool | None = None          # None = the kind's default (module docstring, "Streaming")
+    relay: dict[str, Any] | None = None  # hosted API through relay.Relay (`hosted`)
 
     def __post_init__(self) -> None:
         if self.kind == "scripted" and self.stream:
             raise ValueError("scripted models do not stream (FunctionModel without a stream function)")
+        if self.relay is not None:
+            if self.kind != "openai_compatible":
+                raise ValueError("a relay serves openai_compatible models only")
+            unknown = set(self.relay) - {"upstream", "api_key_env", "allow_http_loopback"}
+            if unknown or not self.relay.get("upstream") or not self.relay.get("api_key_env"):
+                raise ValueError("relay needs 'upstream' and 'api_key_env' (the variable's name)")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -95,8 +106,11 @@ class ModelSpec:
     def describe(self) -> dict[str, Any]:
         """What the run log and results record about the model (no secrets exist to leak)."""
         if self.kind == "openai_compatible":
-            return {"kind": self.kind, "base_url": self.base_url, "model_name": self.model_name,
-                    "uds_path": self.uds_path, "stream": self.streams()}
+            out = {"kind": self.kind, "base_url": self.base_url, "model_name": self.model_name,
+                   "uds_path": self.uds_path, "stream": self.streams()}
+            if self.relay is not None:
+                out["relay"] = {"upstream": self.relay["upstream"], "api_key_env": self.relay["api_key_env"]}
+            return out
         if self.kind in ("scripted", "wire_scripted"):
             return {"kind": self.kind, "turns": len(self.turns), "on_exhausted": self.on_exhausted,
                     **({"model_name": self.model_name, "stream": self.streams()}
@@ -108,6 +122,15 @@ def openai_compatible(base_url: str = DEFAULT_BASE_URL, model_name: str = DEFAUL
                       uds_path: str | None = None, stream: bool | None = None) -> ModelSpec:
     return ModelSpec("openai_compatible", base_url=base_url, model_name=model_name, uds_path=uds_path,
                      stream=stream)
+
+
+def hosted(api_base: str, model_name: str, api_key_env: str, stream: bool | None = None) -> ModelSpec:
+    """A hosted OpenAI-compatible API (OpenAI, OpenRouter, DeepSeek, ...) through relay.Relay: the
+    key is read on the host from the environment variable `api_key_env` when the episode starts."""
+    from .relay import Upstream
+    Upstream.parse(api_base)                  # https only; fails early on a bad URL
+    return ModelSpec("openai_compatible", model_name=model_name, stream=stream,
+                     relay={"upstream": api_base, "api_key_env": api_key_env})
 
 
 def scripted(turns: list[dict[str, Any]], on_exhausted: Literal["text", "repeat_last"] = "text") -> ModelSpec:

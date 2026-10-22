@@ -26,8 +26,9 @@ The lexical knowledge databases are copied once into ~/grc-bench-cache/grc-agent
 read-only by every episode (GRC_AGENT_VECTORS_DIR); ~/grc-agent itself is never written.
 
 Inside an episode, the shell tools' commands run in a second, nested sandbox (`shell_sandbox_argv`):
-the episode project folder is the only writable path, HOME and /tmp are empty scratch tmpfs, and
-there is no network at all.
+the episode project folder is the only writable path, HOME and /tmp are empty scratch tmpfs, the
+rest of the run folder (episode.json holds the task record), the other runs, the cache and the
+grcbench source are hidden, and there is no network at all.
 """
 
 from __future__ import annotations
@@ -278,19 +279,21 @@ def copy_start_graph(run_dir: Path, start_graph: Path, name: str | None = None) 
 
 def run_episode_process(run_dir: Path, module: str, args: list[str], env: dict[str, str], *,
                         timeout: float = 1800.0, network: Literal["host", "none"] = "host",
-                        cpu_seconds: int = 3600, mem_bytes: int = 8 << 30) -> sandbox.Result:
+                        cpu_seconds: int = 3600, mem_bytes: int = 8 << 30,
+                        extra_ro_binds: list[Path] | None = None) -> sandbox.Result:
     """Run `python -m <module> <args>` as one episode process inside bubblewrap.
 
     The whole filesystem is read-only except `run_dir`; HOME/XDG point into it (env from
-    make_run_env). network="host" shares the host network namespace, which a llama-server on a
-    TCP port needs; network="none" unshares it (for a llama-server listening on a UNIX socket).
-    Commands the agent runs through its shell tools additionally get a no-network sandbox of their
-    own (shell_sandbox_argv).
+    make_run_env); the user's files are hidden (sandbox.hidden_view_args). network="host" shares
+    the host network namespace, which a llama-server on a TCP port needs; network="none" unshares it
+    (for a model server on a UNIX socket: a llama-server, or the relay of a hosted API, whose socket
+    directory comes in through `extra_ro_binds`). Commands the agent runs through its shell tools
+    additionally get a no-network sandbox of their own (shell_sandbox_argv).
     """
     run_dir = check_run_dir(run_dir)
     cmd = [sys.executable, "-m", module, *args]
     return sandbox.run(cmd, run_dir, timeout=timeout, cpu_seconds=cpu_seconds, mem_bytes=mem_bytes,
-                       env=env, network=(network == "host"))
+                       env=env, network=(network == "host"), extra_ro_binds=extra_ro_binds)
 
 
 # --------------------------------------------------------------------------------------------
@@ -306,8 +309,11 @@ def shell_sandbox_argv(command: str, cwd: Path) -> list[str]:
     """argv that runs `command` with /bin/sh inside a no-network bubblewrap sandbox.
 
     Writable: only the episode project folder `cwd` (registered by install_shell_sandbox). HOME
-    and /tmp are fresh tmpfs scratch that disappears with the command. CPU-time and address-space
-    limits come from prlimit; GrcShell's own wall-clock timeout and process-group kill still apply.
+    and /tmp are fresh tmpfs scratch that disappears with the command. The rest of the run folder,
+    the other runs, the cache and the grcbench source are hidden (sandbox.agent_hidden_roots), on
+    top of the episode sandbox's hidden view, and stay read-only (a write there fails with
+    "Read-only file system", as before). CPU-time and address-space limits come from prlimit;
+    GrcShell's own wall-clock timeout and process-group kill still apply.
     """
     if not isinstance(command, str):
         raise PermissionError("GRC-Bench shell sandbox: only shell command strings can be run")
@@ -317,13 +323,15 @@ def shell_sandbox_argv(command: str, cwd: Path) -> list[str]:
                               "project directory")
     args = [PRLIMIT, f"--cpu={SHELL_CPU_SECONDS}", f"--as={SHELL_MEM_BYTES}", "--",
             sandbox.BWRAP, "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc",
-            "--tmpfs", "/tmp"]
+            "--tmpfs", "/tmp", *sandbox.hidden_view_args(dict(os.environ))]
+    agent_hidden = sandbox.agent_hidden_roots(hide_src=True)
+    args += sandbox.hide_args(agent_hidden)
     home = os.environ.get("HOME")
     if home and Path(home).is_dir() and not is_inside(project, Path(home)) \
             and not is_inside(Path(home), project):
         args += ["--tmpfs", str(Path(home).resolve())]
-    args += ["--bind", str(project), str(project), "--chdir", str(project),
-             "--unshare-pid", "--unshare-net", "--die-with-parent", "--new-session",
+    args += ["--bind", str(project), str(project), *sandbox.readonly_args(sandbox.hidden_roots() + agent_hidden),
+             "--chdir", str(project), "--unshare-pid", "--unshare-net", "--die-with-parent", "--new-session",
              "--", "/bin/sh", "-c", command]
     return args
 

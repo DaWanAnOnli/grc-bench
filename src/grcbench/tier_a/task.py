@@ -52,6 +52,8 @@ def _schema_for(split: Any) -> dict[str, Any]:
         return TIER_A
     relaxed = copy.deepcopy(TIER_A)
     relaxed["allOf"][0]["properties"]["split"] = {"enum": ["train"]}
+    # a training-side request may be short ("add a throttle"); benchmark instructions keep minLength 20
+    relaxed["allOf"][1]["properties"]["instruction"] = {"type": "string", "minLength": 1}
     return relaxed
 
 

@@ -16,7 +16,7 @@ No row is failing.
 
 | Check | Result |
 |---|---|
-| `./gb test` | 1,173 tests in 29 files, all pass; `./gb stats selfcheck` 37/37; `./gb score-k --selftest` 85/85 |
+| `./gb test` | 1,184 tests in 31 files, all pass; `./gb stats selfcheck` 37/37; `./gb score-k --selftest` 85/85 |
 | `./gb audit` | 8/8 checks pass on 557 item records: schema, canary, licence, unique ids, Tier-K/F/A splits, reserved list (`reports/audit.json`) |
 | `./gb baseline check` | read-only inputs (now including `new_data/`) unchanged except the two 18 Oct changes (`~/grc-agent/.git/index`, `~/.cache/gnuradio/fftw_wisdom`); retaking the baseline waits for Joel |
 | `./gb build-all` | every generated output is deterministic and identical to the repository, including `./gb traces` and the execution-derived `./gb blockq` (23 Oct) |
@@ -47,6 +47,7 @@ No row is failing.
 | **eval §6** Contamination: 8-gram, embedding and paraphrase detector; rate per tier | `contamination/audit.py`; `reports/contamination.md` | contamination tests | partial: the language-model paraphrase detector needs API access (blocked) |
 | **eval §6** Near-twins reported separately; teachers never see test items; canary on every released file | `near_twin_in_train` on Tier-K items; collection-mode guard; `common/canary.py` | audit "canary" (1,067 records, 39 start files); guard tests | done |
 | **eval §6** Task-level check of further Qoherent sessions against dev and test tasks | `./gb traces` (`contamination/agent_traces.py`): the 1,853 agent traces of 15-18 Oct against every Tier-F and Tier-A start, reference and golden graph; the traces are a corpus of the contamination audit; collection-mode guard | 0 traces share a task's goal or start graph; contamination: 6 items flagged by repeated-number 8-grams only | done for the 15-18 Oct traces; later sessions get the same check |
+| **eval §4.4, §6** A model under test sees only its own task: from inside the sandbox no task record, answer key, other run, repository file or secret can be read | `common/sandbox.py` (the user's files hidden in every sandbox; the run folders, cache and source hidden from code the agent starts), `tier_a/isolation.py`, `tier_a/headless_proxy.py`; hosted models' keys stay on the host (`tier_a/relay.py`) | `tests/test_sandbox_masks.py` probes all three sandboxes; `tests/test_agent_adhoc.py` checks that a key reaches the provider and no run file; conformance check: a write outside the project fails with "Read-only file system" | done |
 | **eval §6, §13** Flowgraph signatures of test and dev tasks kept out of training | `handoff/training_team/flowgraph_reserved_signatures.txt` (61, Tier F and Tier A) | audit "reserved list" | done |
 | **eval §7.1** llama.cpp for every open model; recommended sampling; answer limits; thinking removed | llama.cpp b10333 pinned (CPU build and CUDA build for the RTX 5090); `rules.strip_reasoning` | smoke tests; judge prompt hash covers reasoning removal | done |
 | **eval §7.2** Declared run list (Table 6), published with the pre-registration | `docs/preregistration/run_list.yaml` (42 configurations, `status: draft`) | pre-registration tests | team: sign-off at G2 sets `status: declared` |
