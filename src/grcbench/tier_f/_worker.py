@@ -45,7 +45,7 @@ def _normalise(data: dict) -> dict:
     opts["parameters"] = dict(opts.get("parameters") or {})
     # GRC's own default. GRC looks up an unknown block id as a hier block on this path while it loads;
     # in the isolated episode process the parameter otherwise reads None and import_data raises
-    # TypeError, so a start graph whose fault is an unknown block (gbf-dev-08, gbf-test-10) never loads.
+    # TypeError, so a graph that holds an unknown block id never loads.
     opts["parameters"].setdefault("hier_block_src_path", ".:")
     opts.setdefault("states", {})
     data["options"] = opts

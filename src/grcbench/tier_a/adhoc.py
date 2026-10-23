@@ -49,7 +49,6 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from ..common.canary import CANARY
 from ..common.io import read_json, sha256_file, write_json, write_text
 from ..common.paths import WORK
 from . import isolation, models
@@ -117,8 +116,8 @@ def write_task(task_dir: Path, task_id: str, message: str, *, graph: Path | None
         else:
             shutil.copyfile(graph, start / graph.name)
             active = graph.name
-    record = {
-        "id": task_id, "tier": "A", "split": "train", "version": 1, "canary": CANARY,
+    record = {                              # no canary: this is a training-side record (task.py)
+        "id": task_id, "tier": "A", "split": "train", "version": 1,
         "license": "not for release (ad-hoc request)", "source": {"kind": "adhoc_request"},
         "cluster_id": task_id, "provenance": {"drafted_by": "the requester", "generator": "grcbench.tier_a.adhoc"},
         "review": {"status": "not-required"}, "category": "modify" if active else "build",
@@ -192,7 +191,8 @@ def run(message: str, *, graph: Path | str | None = None, files: Path | str | No
     session = _session(root, name or _new_name())
     if _calls(session):
         raise AgentRunError(f"session {session.name} already exists: continue it, or pick another --name")
-    return _call(session, message, graph=Path(graph) if graph else None, files=Path(files) if files else None,
+    return _call(session, message, graph=Path(graph).expanduser() if graph else None,
+                 files=Path(files).expanduser() if files else None,
                  then=then, replies=replies, auto_reply=auto_reply, max_user_turns=max_user_turns,
                  model=model or model_spec(), preset=preset, caps=caps, parent=None)
 
@@ -203,7 +203,7 @@ def continue_run(run_dir: Path | str, message: str, *, then: list[str] = (),
                  preset: str | None = None, caps: dict[str, Any] | None = None) -> dict[str, Any]:
     """The next message of a session, from the end state of its call in `run_dir` (any earlier
     call works too: the session then branches). Model and limits default to that call's."""
-    parent = isolation.check_run_dir(Path(run_dir))
+    parent = isolation.check_run_dir(Path(run_dir).expanduser())
     session = parent.parent
     previous = next((c for c in _calls(session) if Path(c["run_dir"]).resolve() == parent), None)
     if previous is None:
@@ -352,6 +352,115 @@ def write_outputs(run_dir: Path, *, session: Path, call: int, parent: Path | Non
 
 
 # --------------------------------------------------------------------------------------------
+# Self-test (no model server needed)
+# --------------------------------------------------------------------------------------------
+
+SELFTEST_BUILD = {"name": "change_graph", "args": {
+    "reason": "Build a 1 kHz tone into a file.",
+    "add_blocks": [
+        {"block_id": "analog_sig_source_x", "instance_name": "src",
+         "params": {"type": "float", "samp_rate": "samp_rate", "waveform": "analog.GR_COS_WAVE",
+                    "freq": "1000", "amp": "1"}},
+        {"block_id": "blocks_throttle2", "instance_name": "thr",
+         "params": {"type": "float", "samples_per_second": "samp_rate"}},
+        {"block_id": "blocks_file_sink", "instance_name": "out", "params": {"type": "float", "file": "selftest.dat"}}],
+    "add_connections": ["src:0->thr:0", "thr:0->out:0"]}}
+
+
+def _fake_provider() -> tuple[Any, list[dict[str, Any]]]:
+    """A local OpenAI-compatible stand-in on 127.0.0.1 (one streamed reply per request), for the
+    relay check; returns (server, requests seen: path and whether a bearer token arrived)."""
+    import http.server
+    import threading
+    seen: list[dict[str, Any]] = []
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_POST(self) -> None:
+            self.rfile.read(int(self.headers.get("content-length") or 0))
+            seen.append({"path": self.path, "bearer": (self.headers.get("authorization") or "").startswith("Bearer ")})
+            wire = models.WireScript([{"text": "Relay works."}], "text", "fake", Path("/dev/null"))
+            body = ("".join(f"data: {json.dumps(c)}\n\n" for c in wire.stream_chunks(wire.completion(0)))
+                    + "data: [DONE]\n\n").encode("utf-8")
+            self.send_response(200)
+            self.send_header("content-type", "text/event-stream")
+            self.send_header("content-length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *args: Any) -> None:
+            pass
+
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server, seen
+
+
+def selftest(*, keep: bool = False, root: Path = AGENT_ROOT) -> int:
+    """Check the whole setup with scripted models: GRC-Agent's executor in the sandbox, GNU Radio,
+    a real flowgraph run, the output files, `continue`, and the hosted-model relay (against a local
+    stand-in, with a throwaway key). Prints one line per check; the session folders are removed
+    unless `keep` or a check failed."""
+    import os
+    results: list[tuple[bool, str]] = []
+
+    def check(ok: Any, what: str) -> None:
+        results.append((bool(ok), what))
+        print(f"{'ok  ' if ok else 'FAIL'}  {what}", flush=True)
+
+    name = "selftest-" + _new_name()
+    sessions = [root / name, root / (name + "-relay")]
+    try:
+        first = run("Build a 1 kHz tone into a file, save it and run it.", name=name, root=root, model=models.scripted([
+            {"tool_calls": [SELFTEST_BUILD]}, {"tool_calls": [{"name": "save_graph", "args": {}}]},
+            {"tool_calls": [{"name": "run_flowgraph", "args": {"action": "start", "stop_after_seconds": 1}}]},
+            {"text": "Done."}]))
+        one = Path(first["run_dir"])
+        check(first["status"] == "completed", f"GRC-Agent ran headless in the sandbox (status {first['status']})")
+        check([c["execution"] for c in first["tool_calls"]] == ["ok", "ok", "ok"],
+              "change_graph, save_graph and run_flowgraph executed")
+        runs = first["flowgraph_runs"]
+        check(runs and not runs[0].get("spawn_error") and not runs[0].get("hard_cap_hit"),
+              f"the flowgraph ran in GNU Radio, sandboxed (return code {runs[0].get('return_code') if runs else None})")
+        data = one / "project" / "selftest.dat"
+        check(data.is_file() and data.stat().st_size > 0, "the flowgraph wrote project/selftest.dat")
+        check(first["graph"]["valid"] and first["graph"]["file_matches_graph"],
+              "graph.grc / graph_view.json: valid, the saved file matches GRC's memory")
+        check(all((one / f).is_file() for f in (SUMMARY_FILE, TRANSCRIPT_FILE, "trace.jsonl", GRAPH_FILE, VIEW_FILE)),
+              "summary.json, transcript.md, trace.jsonl, graph.grc and graph_view.json written")
+        second = continue_run(one, "Thanks.", model=models.scripted([{"text": "You're welcome."}]))
+        row = json.loads((Path(second["run_dir"]) / "trace.jsonl").read_text(encoding="utf-8").splitlines()[0])
+        users = [m["content"] for m in row["messages"] if m["role"] == "user"]
+        check(second["status"] == "completed" and len(users) == 2 and users[1] == "Thanks.",
+              "continue: the next call has the whole conversation")
+        key_env = "GRC_AGENT_HEADLESS_SELFTEST_KEY"
+        os.environ[key_env] = "selftest-" + uuid.uuid4().hex
+        server, seen = _fake_provider()
+        try:
+            hosted = ModelSpec("openai_compatible", model_name="fake", relay={
+                "upstream": f"http://127.0.0.1:{server.server_port}/v1", "api_key_env": key_env,
+                "allow_http_loopback": True})
+            third = run("Say something.", name=name + "-relay", root=root, model=hosted)
+        finally:
+            server.shutdown()
+        check(third["final_reply"] == "Relay works." and seen and all(s["bearer"] for s in seen),
+              "hosted-model relay: the request went out with the key and the reply came back")
+        leaked = [p for p in (root / (name + "-relay")).rglob("*")
+                  if p.is_file() and os.environ[key_env].encode() in p.read_bytes()]
+        check(not leaked, "hosted-model relay: the key is in no output file")
+        os.environ.pop(key_env, None)
+    except Exception as exc:                # noqa: BLE001 - reported as a failed check
+        check(False, f"self-test stopped: {type(exc).__name__}: {exc}")
+    failed = [w for ok, w in results if not ok]
+    if failed or keep:
+        print(f"session folders kept: {', '.join(str(s) for s in sessions if s.exists())}")
+    else:
+        for s in sessions:
+            shutil.rmtree(s, ignore_errors=True)
+    print(f"self-test: {len(results) - len(failed)}/{len(results)} checks passed")
+    return 1 if failed else 0
+
+
+# --------------------------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------------------------
 
@@ -400,7 +509,7 @@ _CAP_OPTIONS = {"max_requests": "requests", "context_tokens": "context_tokens",
 
 def _request(a: argparse.Namespace) -> dict[str, Any]:
     """The request: the --request JSON file, then every option given on the command line."""
-    req: dict[str, Any] = read_json(Path(a.request)) if a.request else {}
+    req: dict[str, Any] = read_json(Path(a.request).expanduser()) if a.request else {}
     for key in ("message", "graph", "files", "name", "run_dir", "then", "reply", "auto_reply", "max_user_turns",
                 "base_url", "uds", "model", "api_base", "api_key_env", "preset"):
         value = getattr(a, key, None)
@@ -436,7 +545,7 @@ def _report(summary: dict[str, Any]) -> str:
     lines = [f"session {summary['session']}, call {summary['call']}: {summary['status']} ({summary['end_reason']})",
              f"run folder: {summary['run_dir']}"]
     if summary["waiting_for_reply"]:
-        lines.append("the agent asked a question; answer with: ./gb agent continue <run folder> \"<answer>\"")
+        lines.append("the agent asked a question; answer with: continue <run folder> \"<answer>\"")
     g = summary["graph"]
     where = (f"project/{g['file_in_project']}" + ("" if g["file_matches_graph"] else " (differs from the graph in memory)")
              if g["file_in_project"] else "untitled, never saved")
@@ -456,7 +565,8 @@ def _report(summary: dict[str, Any]) -> str:
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     p = argparse.ArgumentParser(prog="gb agent", description="Run GRC-Agent headless on a request; every "
-                                "output is written to the call's run folder (handoff/agent_runner.md).")
+                                "output is written to the call's run folder (TUTORIAL.md of grc-agent-headless; "
+                                "in GRC-Bench: handoff/agent_package/TUTORIAL.md).")
     sub = p.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="start a session with a message")
     r.add_argument("message", nargs="?", default=None)
@@ -471,12 +581,16 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("show", help="print a call's summary")
     s.add_argument("run_dir")
     s.add_argument("--transcript", action="store_true", help="print transcript.md instead")
+    t = sub.add_parser("selftest", help="check the setup with scripted models (no model server needed)")
+    t.add_argument("--keep", action="store_true", help="keep the self-test's session folders")
     a = p.parse_args(argv)
+    if a.cmd == "selftest":
+        return selftest(keep=a.keep)
     from ..runlog.log import RunRefused
     from .relay import RelayError
     try:
         if a.cmd == "show":
-            run_dir = Path(a.run_dir)
+            run_dir = Path(a.run_dir).expanduser()
             print((run_dir / TRANSCRIPT_FILE).read_text(encoding="utf-8") if a.transcript
                   else json.dumps(read_json(run_dir / SUMMARY_FILE), indent=1, ensure_ascii=False))
             return 0

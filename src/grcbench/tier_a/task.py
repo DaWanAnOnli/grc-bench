@@ -18,8 +18,10 @@ regular file inside it; the active graph is one of them and parses as a .grc (V1
 is well-formed; and the canary string appears in no text the agent can see (instruction, start
 files, scripted replies), since the canary stays out of prompts (eval plan §6).
 
-Training-session collection (proposal §4.4) uses the same directory format with "split": "train";
-those specs live outside items/ and are validated against the same schema with the split relaxed.
+Training-session collection (proposal §4.4) and `./gb agent` (adhoc.py) use the same directory format
+with "split": "train"; those specs live outside items/ and are validated against the same schema with
+the split relaxed, a short instruction allowed and no canary (the canary marks benchmark data, so a
+training-side record must not carry it).
 """
 
 from __future__ import annotations
@@ -52,6 +54,9 @@ def _schema_for(split: Any) -> dict[str, Any]:
         return TIER_A
     relaxed = copy.deepcopy(TIER_A)
     relaxed["allOf"][0]["properties"]["split"] = {"enum": ["train"]}
+    # the canary marks benchmark data: a training-side record never carries it
+    relaxed["allOf"][0]["required"] = [k for k in relaxed["allOf"][0]["required"] if k != "canary"]
+    relaxed["allOf"][0]["properties"]["canary"] = False
     # a training-side request may be short ("add a throttle"); benchmark instructions keep minLength 20
     relaxed["allOf"][1]["properties"]["instruction"] = {"type": "string", "minLength": 1}
     return relaxed

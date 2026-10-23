@@ -16,7 +16,7 @@ No row is failing.
 
 | Check | Result |
 |---|---|
-| `./gb test` | 1,184 tests in 31 files, all pass; `./gb stats selfcheck` 37/37; `./gb score-k --selftest` 85/85 |
+| `./gb test` | 1,187 tests in 32 files, all pass; `./gb stats selfcheck` 37/37; `./gb score-k --selftest` 85/85 |
 | `./gb audit` | 8/8 checks pass on 557 item records: schema, canary, licence, unique ids, Tier-K/F/A splits, reserved list (`reports/audit.json`) |
 | `./gb baseline check` | read-only inputs (now including `new_data/`) unchanged except the two 18 Oct changes (`~/grc-agent/.git/index`, `~/.cache/gnuradio/fftw_wisdom`); retaking the baseline waits for Joel |
 | `./gb build-all` | every generated output is deterministic and identical to the repository, including `./gb traces` and the execution-derived `./gb blockq` (23 Oct) |

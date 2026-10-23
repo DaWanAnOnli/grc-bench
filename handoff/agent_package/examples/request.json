@@ -1,0 +1,10 @@
+{
+  "message": "Build a flowgraph: a 1 kHz cosine Signal Source at 48 kHz sample rate, a Throttle, and a File Sink that writes float samples to tone.bin. Save it as tone.grc and run it for two seconds.",
+  "name": "example-tone",
+  "then": ["How many bytes did tone.bin get?"],
+  "replies": [{"pattern": "which (window|type|amplitude)", "reply": "Use amplitude 0.5; anything else is your choice."}],
+  "auto_reply": null,
+  "base_url": "http://127.0.0.1:8080/v1",
+  "preset": "gui",
+  "caps": {"requests": 60}
+}

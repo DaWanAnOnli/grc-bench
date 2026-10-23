@@ -20,7 +20,7 @@ from grcbench.common.paths import ITEMS, REPO, WORK
 from grcbench.runlog.log import RunRefused
 from grcbench.tier_a import adhoc, models, relay, runner
 from grcbench.tier_a.caps import Caps
-from grcbench.tier_a.task import load_task
+from grcbench.tier_a.task import TaskError, load_task
 from grcbench.tier_a.user import ScriptedUser
 
 TONE = REPO / "tests" / "fixtures" / "tier_a" / "tasks" / "fx-a-modify-tone" / "start" / "tone.grc"
@@ -36,11 +36,23 @@ def root():
 
 # ---------------------------------------------------------------- requests, users, limits
 
+def _with_canary(task_dir: Path) -> Path:
+    """The same train-split record with the benchmark canary added (which the schema refuses)."""
+    from grcbench.common.canary import CANARY
+    rec = json.loads((task_dir / "task.json").read_text(encoding="utf-8"))
+    (task_dir / "task.json").write_text(json.dumps({**rec, "canary": CANARY}), encoding="utf-8")
+    return task_dir
+
+
 def test_a_request_becomes_a_train_task_with_its_follow_ups(root):
     task_dir = adhoc.write_task(root / "t", "agent-x-c01", "Add a throttle", graph=TONE,
                                 then=["Now save it."], replies=[("which rate", "32 kHz")])
     task = load_task(task_dir)
     assert task.split == "train" and str(task.active_graph) == "tone.grc" and task.category == "modify"
+    assert "canary" not in task.record                                           # training-side: never the canary
+    canaried = _with_canary(adhoc.write_task(root / "t2", "agent-x-c02", "Hello"))
+    with pytest.raises(TaskError):
+        load_task(canaried)
     assert [str(p) for p in task.start_files] == ["tone.grc"]
     user = ScriptedUser.from_spec(task.scripted_user)
     assert user.respond("Which rate should I use?").message == "32 kHz"          # a matching answer

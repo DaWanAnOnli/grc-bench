@@ -39,6 +39,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     # Tier A
     "tier-a": ("grcbench.tier_a.cli:main", "Tier-A runner, gates and smoke test"),
     "agent": ("grcbench.tier_a.adhoc:main", "run GRC-Agent headless on any request; outputs as files"),
+    "agent-package": ("grcbench.tier_a.agent_package:main", "zip of the headless runner for a teammate (no benchmark content)"),
     # Tier E, analysis, run log
     "tier-e": ("grcbench.tier_e.bench:main", "llama-bench speed/memory protocol"),
     "stats": ("grcbench.stats.cli:main", "analysis functions (self-check)"),

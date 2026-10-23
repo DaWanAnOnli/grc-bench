@@ -1,0 +1,4 @@
+{
+  "run_dir": "~/grc-bench-work/agent/example-tone/call-01",
+  "message": "Now add a Low Pass Filter after the Signal Source with a 5 kHz cutoff, save, and run it again."
+}

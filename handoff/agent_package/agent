@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# grc-agent-headless: run GRC-Agent headless on a request; every output is written as files.
+#   ./agent run "message" [options]       start a session
+#   ./agent continue <run folder> "msg"   the next message of a session
+#   ./agent show <run folder>             print a call's summary (--transcript: the conversation)
+#   ./agent selftest                      check the setup (no model server needed)
+# See TUTORIAL.md.
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+case "$HERE" in
+  /tmp/*|/mnt/*) echo "grc-agent-headless must live in your Linux home folder (not /tmp or /mnt): move $HERE to ~/" >&2
+                 exit 2 ;;
+esac
+export GRC_AGENT_REPO="${GRC_AGENT_REPO:-$HOME/grc-agent}"
+PY="$GRC_AGENT_REPO/.venv/bin/python"
+if [ ! -x "$PY" ]; then
+  echo "GRC-Agent's Python was not found at $PY: run ./setup.sh (TUTORIAL.md, step 4)" >&2
+  exit 2
+fi
+export PYTHONPATH="$HERE/src${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONDONTWRITEBYTECODE=1
+export GRC_BENCH_CACHE="${GRC_BENCH_CACHE:-$HOME/grc-bench-cache}"
+export GRC_BENCH_WORK="${GRC_BENCH_WORK:-$HOME/grc-bench-work}"
+export TIKTOKEN_CACHE_DIR="$GRC_BENCH_CACHE/tiktoken"
+export QT_QPA_PLATFORM=offscreen
+exec "$PY" -m grcbench agent "$@"
