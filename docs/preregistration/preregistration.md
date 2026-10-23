@@ -152,11 +152,11 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   model may make at most one `query_knowledge` call and must then submit one atomic `change_graph`
   call, within 3 model turns. GRC-Agent applies the edit; a rejected edit is not retried.
 - **Validity ladder.** V1 a well-formed `change_graph` call; V2 the graph loads with only real blocks;
-  V3 it validates; V4 code is generated; V5 it runs and every observation point receives data; V6 the
-  task's oracle passes (signal checks and structural checks). Each check runs only if the previous one
+  V3 it compiles (it validates and its Python code is generated); V4 it runs and every observation
+  point receives data; V5 the task's oracle passes (signal checks and structural checks). Each check runs only if the previous one
   passed.
-- **Metrics.** The pass rate at each rung, shown as a funnel; Exec@1 (reaching V5) and Func@1
-  (reaching V6, over the tasks that have a V6 oracle), with the unbiased pass@k estimator; the
+- **Metrics.** The pass rate at each rung, shown as a funnel; Exec@1 (reaching V4) and Func@1
+  (reaching V5, over the tasks that have a V5 oracle), with the unbiased pass@k estimator; the
   hallucinated-block rate (the share of samples whose edit names a block that does not exist in the
   pinned GNU Radio catalog); a partial-credit score over blocks, parameters and connections. Answers
   are limited to 8K tokens, reasoning included.
@@ -332,7 +332,7 @@ Approved, pre-registered definitions (implementation plan, Phase 5 WS7):
 - **majority-mcnemar**: McNemar's per-item pass: the majority of the item's n samples pass; a tie fails.
 - **split-half**: split-half: samples {1,2} vs {3,4} of n = 5, the 5th dropped, plus a random-half bootstrap.
 - **h1c-size-matched**: H1c: Tier K subsampled to Tier F's 150 items, repeated, and the distribution reported.
-- **func-denominator**: Func@1's denominator: the tasks that have a V6 oracle.
+- **func-denominator**: Func@1's denominator: the tasks that have a V5 oracle.
 - **holm-families**: Holm-Bonferroni within each research question.
 
 Proposals for G2 (deviation = changes a stated definition; extension = decides an open point):

@@ -21,7 +21,7 @@
   },
   {
    "id": "item-quality/F4-do-not-limit-unchecked",
-   "change": "Applies to the new content. The item uses the R5 run sentence. spec_properties records the requirement as V5 liveness only (4096 items at both points), and review.notes records the limit."
+   "change": "Applies to the new content. The item uses the R5 run sentence. spec_properties records the requirement as V4 liveness only (4096 items at both points), and review.notes records the limit."
   },
   {
    "id": "item-quality/F5-train-split-near-twin-signatures",
@@ -43,7 +43,7 @@
  "rejected": [],
  "other_changes": [
   "This stage: two mutants behaved the same: 'threshold high = 8' and 'bypass corr' both give an all-zero flags.dat. 'bypass corr' was replaced by 'rewire flags_out <- src', the brief's 'detector bypassed: raw bits written'. A wrong-rate mutant was added (FIR decim 2). There are 11 distinct mutants, each killed by the check named in its 'breaks' label; this was verified mutant by mutant.",
-  "This stage: new variant v4 (correlator - 7, clamped by a Rail to 0..1): a genuinely different decision stage in the same dev cell. A first version failed V3 because GRC blacklists the block name 'match'; the block was renamed and the variant now passes V6.",
+  "This stage: new variant v4 (correlator - 7, clamped by a Rail to 0..1): a genuinely different decision stage in the same dev cell. A first version failed V3 because GRC blacklists the block name 'match'; the block was renamed and the variant now passes V5.",
   "This stage: the instruction's sample-rate sentence follows R3. It now reads 'The sample rate does not affect the result, so you can leave the samp_rate variable as it is', so the model knows what to do with the samp_rate variable and nothing unobservable is required. spec_properties: 'sample rate: stated as irrelevant; not checked'.",
   "This stage: the path check also accepts rational_resampler_xxx (1:1 with correlator taps is an FIR), so every catalog block that can realise the correlator passes.",
   "Observation points bits.dat and flags.dat are matched with params.type = float, and the instruction names both file names and item types (R9).",
@@ -51,7 +51,7 @@
   "review.notes records the known limits: the path check can be cheated on purpose with a one-tap FIR; run length is checked as liveness only; samples 192-3903 are not compared. It also records the relation to gbf-dev-03 and the deviation from the plan.",
   "Level L1: 5 functional blocks (Vector Source, two File Sinks, FIR, Threshold), single rate. Family build. Version 2. build.py regenerates every file deterministically: two consecutive builds gave byte-identical output."
  ],
- "gates": "passed (18 Oct, after this stage's edits; multi-point task re-gated after tooling T7): solvability 10/10, size 480 tokens, variants 4/4 reach V6, start_fails n/a (build), mutation 11 valid with kill rate 1.0; build.py --probes gives 5/5 verdicts as expected",
+ "gates": "passed (18 Oct, after this stage's edits; multi-point task re-gated after tooling T7): solvability 10/10, size 480 tokens, variants 4/4 reach V5, start_fails n/a (build), mutation 11 valid with kill rate 1.0; build.py --probes gives 5/5 verdicts as expected",
  "round2": {
   "reviewer_findings": [
    "G1-dev01-delay-line-correlator-rejected"

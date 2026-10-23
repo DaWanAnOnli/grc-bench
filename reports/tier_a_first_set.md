@@ -28,22 +28,22 @@ Each task passes four gates: the golden tool-call sequence replays 10 of 10 time
 
 | Task | Category | Start | Golden calls | Gates | Wrong end state rejected by |
 |---|---|---|--:|---|---|
-| gba-dev-01 | build | File > New | 10 | PASS | ladder: fails at V6: out band_fraction = 0.0 |
-| gba-dev-02 | build | File > New | 10 | PASS | ladder: fails at V6: clean mean = 0.501148; clean rms = 0.539525; graph check path: no such path; blocks_present[0]: 0 matching block(s) [] |
-| gba-dev-03 | repair | gbf-dev-04/reference.grc | 10 | PASS | ladder: fails at V6: if rms = 0.011814; blocks_present[0]: 0 matching block(s) []; candidates: ["if_filter (enabled): cutoff_freq='1500' (1500) vs 4000"] |
-| gba-dev-04 | repair | gbf-dev-03/reference.grc | 10 | PASS | ladder: fails at V6: mf rms = 1.63936; mf max = 2.0; mf min = -2.0; blocks_present[0]: 0 matching block(s) []; candidates: ["mf (enabled): scale='0.25' (0.25) v |
-| gba-dev-05 | param | gbf-dev-06/reference.grc | 10 | PASS | ladder: fails at V6: audio band_fraction = 0.0; ssb band_fraction = 0.0 |
-| gba-dev-06 | epy | gbf-dev-05/reference.grc | 10 | PASS | ladder: fails at V6: clip mean = 0.20885 |
-| gba-dev-07 | modify | gbf-dev-02/reference.grc | 10 | PASS | ladder: fails at V6: ph rms = 103.521149; ph mean = -0.229893; ph min = -179.999832; ph max = 179.987488 |
+| gba-dev-01 | build | File > New | 10 | PASS | ladder: fails at V5: out band_fraction = 0.0 |
+| gba-dev-02 | build | File > New | 10 | PASS | ladder: fails at V5: clean mean = 0.501148; clean rms = 0.539525; graph check path: no such path; blocks_present[0]: 0 matching block(s) [] |
+| gba-dev-03 | repair | gbf-dev-04/reference.grc | 10 | PASS | ladder: fails at V5: if rms = 0.011814; blocks_present[0]: 0 matching block(s) []; candidates: ["if_filter (enabled): cutoff_freq='1500' (1500) vs 4000"] |
+| gba-dev-04 | repair | gbf-dev-03/reference.grc | 10 | PASS | ladder: fails at V5: mf rms = 1.63936; mf max = 2.0; mf min = -2.0; blocks_present[0]: 0 matching block(s) []; candidates: ["mf (enabled): scale='0.25' (0.25) v |
+| gba-dev-05 | param | gbf-dev-06/reference.grc | 10 | PASS | ladder: fails at V5: audio band_fraction = 0.0; ssb band_fraction = 0.0 |
+| gba-dev-06 | epy | gbf-dev-05/reference.grc | 10 | PASS | ladder: fails at V5: clip mean = 0.20885 |
+| gba-dev-07 | modify | gbf-dev-02/reference.grc | 10 | PASS | ladder: fails at V5: ph rms = 103.521149; ph mean = -0.229893; ph min = -179.999832; ph max = 179.987488 |
 | gba-dev-08 | knowledge | gbf-dev-08/reference.grc | 8 | PASS | graph_unchanged: bits.value: '6' != '8' |
 | gba-dev-09 | save_block | gbf-dev-02/reference.grc | 9 | PASS | hier_block: complex_magnitude.block.yml is not in the run's block library; complex_magnitude.py is not in the run's block library; GNU Radio's catalog does not  |
 | gba-dev-10 | file_ops | gbf-dev-07/reference.grc | 8 | PASS | files[1]: mux.json: regex '\\"num_inputs\\"\\s*:\\s*3\\b' does not match; regex '\\"lengths\\"\\s*:\\s*\\[\\s*2\\s*,\\s*4\\s*,\\s*3\\s*\\]' does not match |
 | gba-dev-11 | run_verify | gbf-dev-05/reference.grc | 8 | PASS | files[0]: limited.dat does not exist; answer[0]: positive clip level: expects 0.784 |
 | gba-dev-12 | refusal | gbf-dev-09/reference.grc | 8 | PASS | answer[0]: RRC output file: expects 'rrc.dat' |
-| gba-test-01 | build | File > New | 9 | PASS | ladder: fails at V6: out band_fraction = 0.0; out band_fraction = 0.0 |
+| gba-test-01 | build | File > New | 9 | PASS | ladder: fails at V5: out band_fraction = 0.0; out band_fraction = 0.0 |
 | gba-test-02 | repair | gbf-test-12/reference.grc | 10 | PASS | blocks_present[0]: 0 matching block(s) []; candidates: ["channels_channel_model_0 (enabled): noise_voltage='0.0' (0) vs 0.05"] |
-| gba-test-03 | param | gbf-test-11/reference.grc | 10 | PASS | ladder: fails at V6: rx rms = 0.100264; rx rms = 0.330119; rx band_fraction = 0.978143; rx rms = 3.86722; rx rms = 1.126037; rx band_fraction = 0.881911; rx rms |
-| gba-test-04 | epy | gbf-test-01/reference.grc | 11 | PASS | ladder: fails at V6: peak max = 2.0 |
+| gba-test-03 | param | gbf-test-11/reference.grc | 10 | PASS | ladder: fails at V5: rx rms = 0.100264; rx rms = 0.330119; rx band_fraction = 0.978143; rx rms = 3.86722; rx rms = 1.126037; rx band_fraction = 0.881911; rx rms |
+| gba-test-04 | epy | gbf-test-01/reference.grc | 11 | PASS | ladder: fails at V5: peak max = 2.0 |
 | gba-test-05 | modify | gbf-test-13/reference.grc | 10 | PASS | blocks_present[0]: 0 matching block(s) []; candidates: ["rrc (enabled): alpha='0.5' (0.5) vs 0.35"] |
 | gba-test-06 | knowledge | gbf-test-16/reference.grc | 8 | PASS | graph_unchanged: pfb_channelizer_hier_ccf_0.nchans: '4' != '3'; connection pfb_channelizer_hier_ccf_0:3->ch3_sink:0 only in the first graph |
 | gba-test-07 | save_block | gbf-test-07/reference.grc | 9 | PASS | hier_block: sample_delay.block.yml is not in the run's block library; sample_delay.py is not in the run's block library; GNU Radio's catalog does not load it fr |

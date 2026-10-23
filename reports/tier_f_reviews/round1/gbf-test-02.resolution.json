@@ -3,7 +3,7 @@
  "action": "retheme",
  "rethemed": true,
  "relabel": {},
- "new_theme": "BUILD L1 (test): carrier recovery with a phase-locked loop. In the empty flowgraph at 32 kHz: a complex tone at +2.4 kHz (amplitude 1) plus complex white Gaussian noise of amplitude 0.7 (carrier 3.1 dB above the noise) written to received.dat (complex); a phase-locked loop recovers a clean reference carrier, written to carrier.dat (complex). V6 from 0.5 s on: received.dat peak 2.4 kHz (1 %), RMS 1.22 (5 %), carrier-to-noise ratio 3.1 dB (0.5 dB); carrier.dat peak 2.4 kHz (1 %), >= 90 % of the power within 50 Hz, RMS 1.0 (2 %), max |x| <= 1.05; graph check path noise generator -> PLL block -> File Sink. Reference: Signal Source -> Channel Model (noise 0.7) -> PLL Carrier Regeneration (w 0.02) -> File Sinks (5 functional blocks). v2 signature carrier_sync|channel_model|tone (test); cluster_id chain:carrier_sync|channel_model|tone.",
+ "new_theme": "BUILD L1 (test): carrier recovery with a phase-locked loop. In the empty flowgraph at 32 kHz: a complex tone at +2.4 kHz (amplitude 1) plus complex white Gaussian noise of amplitude 0.7 (carrier 3.1 dB above the noise) written to received.dat (complex); a phase-locked loop recovers a clean reference carrier, written to carrier.dat (complex). V5 from 0.5 s on: received.dat peak 2.4 kHz (1 %), RMS 1.22 (5 %), carrier-to-noise ratio 3.1 dB (0.5 dB); carrier.dat peak 2.4 kHz (1 %), >= 90 % of the power within 50 Hz, RMS 1.0 (2 %), max |x| <= 1.05; graph check path noise generator -> PLL block -> File Sink. Reference: Signal Source -> Channel Model (noise 0.7) -> PLL Carrier Regeneration (w 0.02) -> File Sinks (5 functional blocks). v2 signature carrier_sync|channel_model|tone (test); cluster_id chain:carrier_sync|channel_model|tone.",
  "resolved_by": "Claude (Anthropic), fixer group G8, 18 Oct 2026 (pending team review). Completes an earlier, interrupted G8 run whose build.py and generated files were consistent (byte-identical regeneration) but whose gates.json was still that of the old theme.",
  "accepted": [
   {
@@ -50,5 +50,5 @@
   "Known limits recorded in review.notes: block-level graph check (a loop into an unrelated third File Sink, or a second noiseless loop input, would pass; implausible); frequency lock rather than phase lock is checked (v5 is accepted); Costas loops are accepted by the graph check but none meets the purity; the received amplitudes are checked only through RMS and carrier-to-noise ratio, which the instruction states.",
   "Probe scripts (scratch, not part of the item): probe_t02.py, probe_t02b.py and probe_t02c.py in the G8 scratchpad. They cover a 14-bandwidth x 4-seed sweep, the alternative designs, the near misses and the PLL range limits."
  ],
- "gates": "ALL PASS (18 Oct, after the final change): solvability 10/10 at 8 workers; reference 279 tokens; variants 5/5 at V6; start_fails n/a (build); mutation 16/16 valid, kill rate 1.0, no survivors."
+ "gates": "ALL PASS (18 Oct, after the final change): solvability 10/10 at 8 workers; reference 279 tokens; variants 5/5 at V5; start_fails n/a (build); mutation 16/16 valid, kill rate 1.0, no survivors."
 }

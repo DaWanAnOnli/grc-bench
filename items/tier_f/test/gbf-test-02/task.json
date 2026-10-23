@@ -328,7 +328,7 @@
    "text": "complex samples written to the File Sinks received.dat and carrier.dat"
   },
   {
-   "checked_by": "V5 liveness: at least 32,000 items (1 s) at both File Sinks",
+   "checked_by": "V4 liveness: at least 32,000 items (1 s) at both File Sinks",
    "id": "run",
    "text": "the flowgraph keeps producing samples until it is stopped (no sample limit)"
   }

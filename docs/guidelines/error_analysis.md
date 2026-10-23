@@ -2,7 +2,7 @@
 
 Implements eval plan §9 ("Error analysis. Two annotators label failures with a set list of error
 types ... We report their agreement (κ)"), with §8.2 (Table 7: about 17 person-hours, two team
-members), §4.3 (the validity ladder V1–V6) and the 16 Oct decision in
+members), §4.3 (the validity ladder V1–V5) and the 16 Oct decision in
 [the approved plan](../implementation_plan.md) (Tier F as "one lookup + one edit" in GRC-Agent's
 harness).
 
@@ -189,32 +189,33 @@ real GNU Radio 3.10 ids unless the example says they are invented.
   - `decim` and `interp`;
   - resampler ratios.
 
-  This takes priority over `parameter_error`. The evidence is usually a V6 check on frequency or
+  This takes priority over `parameter_error`. The evidence is usually a V5 check on frequency or
   rate that is off by the rate factor.
 - **Example.** A Rational Resampler (`rational_resampler_xxx`) with `interp` 1 and `decim` 3 is
   added, but the Low Pass Filter after it still uses `samp_rate` instead of `samp_rate/3`. Its taps
   are designed for three times the real rate, so its real cutoff is a third of the intended one.
-  V6 finds the wanted signal attenuated.
+  V5 finds the wanted signal attenuated.
 
 ### `parameter_error`: parameter error
 
 - **Definition.** A block parameter that is not about rates has a wrong value, an invalid value, a
   name that does not exist, or refers to an undefined variable.
 - **Decision rule.** Use it when:
-  - the block types and connections are right but a value is wrong (a V6 check fails on a level, a
+  - the block types and connections are right but a value is wrong (a V5 check fails on a level, a
     frequency or a cutoff);
   - or V2/V3 reports an invalid value, an unknown parameter or an undefined name.
 - **Example.** The instruction asks for 16 dB of amplitude gain. The Multiply Const
-  (`blocks_multiply_const_vxx`) is set to `16` instead of `10**(16/20)` (about 6.31). V6 finds the
+  (`blocks_multiply_const_vxx`) is set to `16` instead of `10**(16/20)` (about 6.31). V5 finds the
   amplitude 2.5 times too high.
 
 ### `runtime_error`: runtime error
 
-- **Definition.** The graph passes V1–V4 but fails V5. Examples:
+- **Definition.** The graph validates but fails later: at V4 (the run), or at V3's code generation
+  (its error starts with "code generation:"). Examples:
   - an exception during the run;
   - not stopping cleanly within the grace period;
   - too few samples reaching an observation sink (liveness);
-  - a code-generation failure at V4 that no earlier code explains.
+  - a code-generation failure that no earlier code explains.
 - **Decision rule.** Use it only when no more specific code explains the failure. A parameter that
   makes the run crash is `parameter_error`.
   - **Run length:** if the run stops early because the model limited it (for example with a Head
@@ -223,21 +224,21 @@ real GNU Radio 3.10 ids unless the example says they are invented.
   - If the instruction did **not** say so, the item hid a requirement. Use
     `item_defect_suspected`.
 - **Example.** The edit adds a File Source (`blocks_file_source`) that reads `input.dat`, which does
-  not exist in the run folder. V5 fails with a "No such file" error.
+  not exist in the run folder. V4 fails with a "No such file" error.
 
 ### `wrong_behaviour`: wrong behaviour
 
-- **Definition.** The graph runs (V1–V5 pass) but does the wrong thing (V6 fails). No more specific
+- **Definition.** The graph runs (V1–V4 pass) but does the wrong thing (V5 fails). No more specific
   code explains it. Examples:
   - a wrong choice of block or design;
   - a filter that does not meet the specification;
   - the output observed at the wrong point.
-- **Decision rule.** V6 is the first failed rung, and no specific wrong parameter, rate or
+- **Decision rule.** V5 is the first failed rung, and no specific wrong parameter, rate or
   connection explains it.
   - For Tier-A knowledge tasks, a wrong answer is `wrong_behaviour`.
   - For Tier-A refusal tasks, acting when the task called for a refusal is `wrong_behaviour`.
 - **Example.** The task asks to remove high-frequency noise. The model inserts a High Pass Filter
-  (`high_pass_filter`) instead of a low-pass one. The graph runs, and V6 finds the tone removed and
+  (`high_pass_filter`) instead of a low-pass one. The graph runs, and V5 finds the tone removed and
   the noise kept.
 
 ## Tier-A process errors
@@ -317,7 +318,7 @@ one rule:
 | No call within the 3 turns (V1: `no change_graph call`) | `none` | `no_output` |
 | Its raw arguments are malformed, or GRC-Agent refused them at argument validation (first failed rung V1) | `malformed_call` | the error in the call's content, or `none` if the content is right |
 | GRC-Agent rejected the batch and rolled it back (rejection rung V2 or V3) | `rejected_batch` | the reason for the rejection |
-| The call was well formed, the edit was applied, and the final graph fails V2–V6 | `none` | the output error |
+| The call was well formed, the edit was applied, and the final graph fails V2–V5 | `none` | the output error |
 
 A rejected or refused call is **never** `no_output`: the model did produce an edit, and the edit is
 what gets labelled.
@@ -335,7 +336,7 @@ what gets labelled.
     was made.
   - For `primary`, judge the **content** of the edit:
     - If GRC-Agent applied the edit after repairing it, the record has the ladder result of the
-      final graph. If V2–V6 pass, the content is right: `primary` = `none`. Otherwise label the
+      final graph. If V2–V5 pass, the content is right: `primary` = `none`. Otherwise label the
       final graph's error as for any applied edit.
     - If GRC-Agent refused the call, read the intended edit from the raw arguments. If it contains
       an error from "Output errors" (an invented block id, an unknown parameter, ...), use that
@@ -445,7 +446,7 @@ failure:
 |---|---|---|
 | `failure_id` | coordinator | opaque id, for example `err-001` |
 | `tier`, `item_id`, `split` | coordinator | `F` or `A`; the item; `test` or `dev` |
-| `first_failed_rung` | coordinator | `V1`–`V6`, or `cap` for a Tier-A cap |
+| `first_failed_rung` | coordinator | `V1`–`V5`, or `cap` for a Tier-A cap |
 | `auto_facts` | coordinator | facts from the logs (see above) |
 | `trace_ref` | coordinator | where the output, trace and ladder result are |
 | `primary_1`, `secondary_1`, `process_1`, `lookup_1`, `evidence_1` | annotator 1 | codes and evidence |

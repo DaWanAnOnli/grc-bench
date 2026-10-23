@@ -690,7 +690,7 @@ def test_tier_f_checklist_lists_every_graph_check_kind():
     """F4: the checklist lists every structural check the oracle supports."""
     from grcbench.tier_f import graph_checks
     doc = _text(CHECKLISTS / "tier_f_task_review.md")
-    section = _section(doc, "### C. Every stated requirement is checked by V6")
+    section = _section(doc, "### C. Every stated requirement is checked by V5")
     listed = re.findall(r"^  - `([a-z_]+)`: ", section, re.MULTILINE)
     assert listed == list(graph_checks.KINDS)
     flat = " ".join(section.split())

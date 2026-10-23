@@ -1231,7 +1231,7 @@
   "ref.dat keeps the cosine's amplitude 0.8 (RMS 0.565685 within 1 %)",
   "out.dat unchanged: the start graph's FIR output sample for sample (signed correlation at lag 0 over its first 512 samples, incl. the filter transient, >= 0.9999); this also keeps the Signal Source's 1.5 kHz and the 48 kHz rate, and rejects a delay before the split",
   "out.dat level unchanged (RMS 0.567488 within 1 %)",
-  "float samples written to the File Sinks ref.dat and out.dat (sink type float), running continuously (V5 liveness: at least 8192 items at each)"
+  "float samples written to the File Sinks ref.dat and out.dat (sink type float), running continuously (V4 liveness: at least 8192 items at each)"
  ],
  "split": "test",
  "start_grc": "start.grc",

@@ -11,7 +11,7 @@ source.kind "test_fixture"; `fixture_tasks` refuses anything else):
   1. golden replays   every Tier-A fixture task with a golden_calls.json, replayed by a FunctionModel
                       through the real runner and graded (grader.grade); every Tier-F fixture task
                       with a golden_calls.json, replayed in the Tier-F setting (run_tier_f_sample)
-                      and graded V1-V6. All must pass.
+                      and graded V1-V5. All must pass.
   2. grammar probe    (with start_server) three short-lived llama-servers with the smoke flags and full
                       logging (-lv 5): the DEFAULT one, a CONTROL with --skip-chat-parsing (a pure
                       content parser: no tool-call parsing, no tool grammar) and one with --no-jinja.
@@ -1265,12 +1265,12 @@ def render_report(summary: dict[str, Any]) -> str:
     out += ["", "## Step 3, Tier F: the \"one lookup + one edit\" setting with the real model", "",
             "Each sample: the history holds the instruction and one prefilled full `inspect_graph` call with its "
             "real result; at most one `query_knowledge`, then one atomic `change_graph`; 3 model requests; other "
-            "calls get the fixed reply; graded V1 (well-formed edit) + ladder V2-V6.", "",
+            "calls get the fixed reply; graded V1 (well-formed edit) + ladder V2-V5.", "",
             "| Task | Sample | Lookup used? (query) | Edit called? | Well formed (V1) | Accepted? | Ladder verdict | "
             "Requests | End reason | Wall time |",
             "|---|--:|---|---|---|---|---|--:|---|--:|"]
     for f in fs:
-        verdict = ("PASS (V1-V6)" if f.get("passed") else
+        verdict = ("PASS (V1-V5)" if f.get("passed") else
                    f"fail: {f.get('failure') or 'n/a'} (highest {f.get('highest_passed') or 'none'})")
         query = f" ({_cell(f.get('lookup_query'), 60)}, {f.get('lookup_domain')}, k={f.get('lookup_k')})" if f.get("lookup_used") else ""
         out.append(f"| {f['task']} | {f['sample']} | {_yn(f.get('lookup_used'))}{query} | {_yn(f.get('edit_called'))} | "

@@ -455,8 +455,8 @@ SHARED_UPSTREAM_TASK = {
 def test_full_tap_does_not_stall_a_shared_upstream_block():
     from grcbench.tier_f.ladder import check
     res = check(SHARED_UPSTREAM_GRC, SHARED_UPSTREAM_TASK)
-    v5 = res["rungs"]["V5"]
-    assert res["first_failed"] is None, (v5.get("errors"), v5.get("items"), res["rungs"].get("V6"))
+    v5 = res["rungs"]["V4"]
+    assert res["first_failed"] is None, (v5.get("errors"), v5.get("items"), res["rungs"].get("V5"))
     assert v5["items"] == {"fast": 8192, "slow": 8192}       # each tap keeps exactly n_items
 
 
@@ -471,8 +471,8 @@ def test_taps_keep_liveness_and_capture_vectors():
     task = {**SHARED_UPSTREAM_TASK, "observation": {**SHARED_UPSTREAM_TASK["observation"],
                                                     "run": {"n_items": 8192, "min_items": 8192, "timeout_s": 3}}}
     res = check(grcfile.dump(data), task)
-    assert res["first_failed"] == "V5" and any("liveness" in e for e in res["rungs"]["V5"]["errors"])
-    assert res["rungs"]["V5"]["items"]["fast"] == 8192 and res["rungs"]["V5"]["items"]["slow"] < 8192
+    assert res["first_failed"] == "V4" and any("liveness" in e for e in res["rungs"]["V4"]["errors"])
+    assert res["rungs"]["V4"]["items"]["fast"] == 8192 and res["rungs"]["V4"]["items"]["slow"] < 8192
     # complex vector items: an edge point on a stream_to_vector output (vlen 4) is captured as (n, 4)
     vec = yaml.safe_load(SHARED_UPSTREAM_GRC)
     vec["blocks"] = [b for b in vec["blocks"] if b["name"] not in ("keep", "slow_sink")]

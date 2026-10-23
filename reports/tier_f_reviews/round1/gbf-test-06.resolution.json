@@ -42,16 +42,16 @@
   },
   {
    "id": "compliance/F6-showports-silent-drop",
-   "change": "Documented in review.notes as a known harness limit (dropping showports hides the cmd port and GRC omits the message connection silently, so such an answer fails at V6, not V2). The V2 lint itself is outside this task directory (not changed in this stage)."
+   "change": "Documented in review.notes as a known harness limit (dropping showports hides the cmd port and GRC omits the message connection silently, so such an answer fails at V5, not V2). The V2 lint itself is outside this task directory (not changed in this stage)."
   }
  ],
  "rejected": [],
  "notes": "Variants (all values only): v1 PMT dict API; v2 single-quoted keys in the other order with float literals (round-1 alternative); v3 retune as an expression of samp_rate with the File Sink renamed and a ./ path (round-1 alternative). 14 mutants, each verified to die for its labelled reason (near misses: 4260 Hz, ampl 1.1, initial 1540 Hz, initial amp 0.9). Run sentence added (R5); observation sink params include type complex (R9). Convention for parameter-tune shared with gbf-test-19: no variables added or removed (value_only).",
- "gates": "PASS (18 Oct): solvability 10/10, 467 tokens, variants 3/3, start fails at V6 (f2p fails, p2p passes), mutation 14/14 valid, kill rate 1.0",
+ "gates": "PASS (18 Oct): solvability 10/10, 467 tokens, variants 3/3, start fails at V5 (f2p fails, p2p passes), mutation 14/14 valid, kill rate 1.0",
  "round2": {
   "accepted": [],
   "rejected": [],
-  "notes": "No round-2 finding for this task. The round-2 reviewer's probes were re-run against the current task: rand_mean_400 passes V6 (switch inside the stated 0.45-0.95 s window, as recorded in round 1); period_250 fails V6 (switch before 0.45 s, outside the stated window); with_phase_key fails V6 (adding 'phase': 0.0 to the retune dict makes the Random-Delay strobe reset the phase of the 4.2 kHz tone about every 100 ms after the switch, so the stated >= 99 % purity fails at 0.974). All three results follow the instruction.",
-  "gates": "PASS (re-run 18 Oct): solvability 10/10, 467 tokens, variants 3/3, start fails at V6 (f2p fails, p2p passes), mutation 14/14 valid, kill rate 1.0; build.py regenerates every file byte-identically"
+  "notes": "No round-2 finding for this task. The round-2 reviewer's probes were re-run against the current task: rand_mean_400 passes V5 (switch inside the stated 0.45-0.95 s window, as recorded in round 1); period_250 fails V5 (switch before 0.45 s, outside the stated window); with_phase_key fails V5 (adding 'phase': 0.0 to the retune dict makes the Random-Delay strobe reset the phase of the 4.2 kHz tone about every 100 ms after the switch, so the stated >= 99 % purity fails at 0.974). All three results follow the instruction.",
+  "gates": "PASS (re-run 18 Oct): solvability 10/10, 467 tokens, variants 3/3, start fails at V5 (f2p fails, p2p passes), mutation 14/14 valid, kill rate 1.0; build.py regenerates every file byte-identically"
  }
 }

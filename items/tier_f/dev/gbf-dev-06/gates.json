@@ -27,23 +27,23 @@
    "passed": true,
    "results": {
     "v1_hilbert_at_8k_rotator.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_zero_stuff_classic_phasing.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_interp_fir_rotator.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_pfb_multiply_conjugate.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_interp_lpf_xlating_shift.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

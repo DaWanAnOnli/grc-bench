@@ -419,11 +419,11 @@ P2P_MEANING = ("p2p here means properties carried by the blocks the fault does n
 spec_properties = [
     {"id": "loads", "text": "every block exists in GNU Radio 3.10 (the Missing Block is replaced, not left behind "
                             "even disabled), and the flowgraph validates, generates and runs",
-     "checked_by": "ladder V2-V5 (V2 rejects unknown block ids, including disabled ones)"},
+     "checked_by": "ladder V2-V4 (V2 rejects unknown block ids, including disabled ones)"},
     {"id": "outputs", "text": "float samples are written to the File Sinks quantized.dat and codes.dat",
-     "checked_by": "observation contract (file name and item type float; a missing or differently typed sink fails V6)"},
+     "checked_by": "observation contract (file name and item type float; a missing or differently typed sink fails V5)"},
     {"id": "run_length", "text": "the flowgraph keeps producing samples until it is stopped",
-     "checked_by": f"V5 liveness: at least {N_ITEMS} items at each observation point"},
+     "checked_by": f"V4 liveness: at least {N_ITEMS} items at each observation point"},
     {"id": "rounded_to_step", "text": "every quantized.dat sample is a multiple of 1/32",
      "checked_by": "f2p max_int_dev (scale 32) <= 1e-4 on quantized.dat (a mid-rise quantizer or added noise fails)"},
     {"id": "codes_integer", "text": "codes.dat holds the integer quantization levels",
@@ -501,7 +501,7 @@ mutations = [
 
 REVIEW_NOTES = (
     "Revised 18 Oct after review round 1 (see reports/tier_f_reviews/round1/gbf-dev-08.resolution.json). "
-    "The instruction states only what V6 checks: it no longer describes the filter's window and transition width, "
+    "The instruction states only what V5 checks: it no longer describes the filter's window and transition width, "
     "the noise as Gaussian, the tone as a cosine or the Throttle (none of them is observable at the outputs; the "
     "start graph shows them). The band edges are checked by the power within +-0.4 kHz of 6 and 18 kHz, which an "
     "edge moved by 0.1 kHz changes by ~15 % and by 0.2 kHz by 28-33 % (tolerance +-20 %), while the window and "

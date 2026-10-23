@@ -513,7 +513,7 @@
   "the Signal Source (complex, 1.2 kHz, amplitude 0.5) and the Vector Source (complex, envelope [0.1] * 4000 + [3.0] * 4000) are unchanged, and the tone reaches the File Sink",
   "automatic gain control: the bursts reach the File Sink through a gain-control block (AGC, AGC2, AGC3, Feed-Forward AGC, a Divide-based normaliser or an Embedded Python block)",
   "sample rate 48 kHz (frequencies are measured on the sample index at 48 kHz)",
-  "complex samples written to the File Sink rx.dat (sink type complex), running continuously (V5 liveness: at least 24000 items, 3 envelope periods)"
+  "complex samples written to the File Sink rx.dat (sink type complex), running continuously (V4 liveness: at least 24000 items, 3 envelope periods)"
  ],
  "split": "test",
  "start_grc": "start.grc",

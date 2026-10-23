@@ -16,7 +16,7 @@ old block-by-block recipe contradicted the accepted variants); every tolerance i
 
 All checks run on the samples written from 0.1 s on (skip 4800 of 16384 captured items), so a correct
 design whose filter or start-up transient settles within 0.1 s is not penalised. The run sentence
-(fix plan R5) is recorded as a V5 liveness condition (16384 items), nothing more.
+(fix plan R5) is recorded as a V4 liveness condition (16384 items), nothing more.
 
 Signature v2: the reference and every variant except v5/v6 are {tone} -> test (cluster chain:tone).
 v5 (Vector Source lookup table, {data_source}) and v6 (sine with a phase offset through a Rail clamp,
@@ -63,7 +63,7 @@ PURITY_MIN = 0.99                           # >= 99 % of the AC power in the ton
 PURITY_HALF_BAND = 50                       # Hz: everything within 50 Hz of 1.25 kHz counts as the tone
 SETTLE_S = 0.1                              # checks start 0.1 s after the start
 SKIP = int(SETTLE_S * FS)                   # 4800 samples
-N_ITEMS = 16384                             # captured items (V5 liveness); 11584 are measured
+N_ITEMS = 16384                             # captured items (V4 liveness); 11584 are measured
 
 INSTRUCTION = (
     "In this empty flowgraph, set the sample rate to 48 kHz and build a test signal for a DAC input that only accepts values "
@@ -198,7 +198,7 @@ def _source_only(gid: str, **src) -> dict:
 
 
 def probes() -> dict[str, tuple[dict, bool, str]]:
-    """name -> (flowgraph, expected to pass V6, what it shows)."""
+    """name -> (flowgraph, expected to pass V5, what it shows)."""
     lpf = C.chain("probe_lpf", [
         C.sig_source("src", "float", freq="1250", amp="0.4", offset="0.55"),
         C.low_pass("lpf", "float", cutoff="3000", width="1000"),
@@ -224,7 +224,7 @@ def probes() -> dict[str, tuple[dict, bool, str]]:
         "lowpass_cleanup": (lpf, True, "a correct tone through a 3 kHz low-pass: the filter's start-up "
                             "transient lies inside the first 0.1 s, so it passes"),
         "head_8192": (head, False, "item-quality c3: a Head of 8192 items stops before the 16384 captured "
-                      "items (V5 liveness). A Head of more than 16384 items would pass (documented limit)"),
+                      "items (V4 liveness). A Head of more than 16384 items would pass (documented limit)"),
     }
 
 
@@ -241,7 +241,7 @@ def record(sig: tuple[str, ...], variant_sigs: dict[str, tuple[str, ...]]) -> di
         "Old twins gbf-dev-03 and gbf-test-11 were re-themed in the same round; gbf-dev-01 too. "
         "Known limits: (1) the sample rate is observable only through the frequency/sample-rate ratio "
         "(a graph at another samp_rate with the tone moved proportionally passes); (2) 'do not limit the "
-        "number of samples' is enforced only as V5 liveness (16384 items): a Head of more than 16384 items "
+        "number of samples' is enforced only as V4 liveness (16384 items): a Head of more than 16384 items "
         "passes; (3) the first 0.1 s is not checked. Variant signatures that differ from the cell, for "
         "the reserved-signature step (R1/R2): "
         + "; ".join(f"{k}: {v}" for k, v in sorted(other.items()))
@@ -297,7 +297,7 @@ def record(sig: tuple[str, ...], variant_sigs: dict[str, tuple[str, ...]]) -> di
             f"target signal for reference: sqrt(0.55^2 + 0.4^2/2) = {rms_note:.4f} (not checked separately)",
             "observation point: the File Sink dac_test.dat with item type float (a sink of another type "
             "does not match the observation point)",
-            "run condition: the flowgraph keeps producing samples; checked only as V5 liveness (16384 "
+            "run condition: the flowgraph keeps producing samples; checked only as V4 liveness (16384 "
             "items must arrive at the observation point)",
         ],
         "mutations": [
@@ -365,8 +365,8 @@ def run_probes() -> int:
     bad = 0
     for name, (g, expect, why) in probes().items():
         res = check(grcfile.dump(compact(g)), task)
-        ok = res["first_failed"] is None and res["highest_passed"] == "V6"
-        failed = [f"{c['feature']}={c['value']}" for c in (res["rungs"].get("V6") or {}).get("checks", [])
+        ok = res["first_failed"] is None and res["highest_passed"] == "V5"
+        failed = [f"{c['feature']}={c['value']}" for c in (res["rungs"].get("V5") or {}).get("checks", [])
                   if not c["passed"]]
         verdict = "as expected" if ok == expect else "UNEXPECTED"
         bad += ok != expect

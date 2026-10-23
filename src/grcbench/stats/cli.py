@@ -85,17 +85,17 @@ def _c_item_scores():
 
 
 def _c_exec_func():
-    highest = {"a": ["V6", "V5", "V2", None, "V6"], "b": ["V5"] * 5, "c": ["V3"] * 5}
+    highest = {"a": ["V5", "V4", "V2", None, "V5"], "b": ["V4"] * 5, "c": ["V3"] * 5}
     e = fn.exec_at_1(highest)
     f = fn.func_at_1(highest, {"a"})
     fu = fn.funnel(highest, {"a"})
     ok = _close(e["value"], (0.6 + 1.0 + 0.0) / 3) and _close(f["value"], 0.4) \
         and f["n_tasks"] == 1 and f["excluded_no_oracle"] == 2
-    ok &= _close(fu["rates"]["V6"], f["value"]) and _close(fu["rates"]["V5"], e["value"]) \
-        and fu["n_tasks"]["V6"] == 1 and fu["n_tasks"]["V1"] == 3 and fn.reached("V6", "V5")
-    return "Exec@1 0.5333; Func@1 0.4 over 1 oracle task; funnel V6 = Func@1", \
+    ok &= _close(fu["rates"]["V5"], f["value"]) and _close(fu["rates"]["V4"], e["value"]) \
+        and fu["n_tasks"]["V5"] == 1 and fu["n_tasks"]["V1"] == 3 and fn.reached("V5", "V4")
+    return "Exec@1 0.5333; Func@1 0.4 over 1 oracle task; funnel V5 = Func@1", \
         f"Exec@1 {e['value']:.4f}; Func@1 {f['value']:.4f} over {f['n_tasks']}; " \
-        f"funnel V6 {fu['rates']['V6']:.4f} (n {fu['n_tasks']['V6']})", ok
+        f"funnel V5 {fu['rates']['V5']:.4f} (n {fu['n_tasks']['V5']})", ok
 
 
 def _c_cluster_se():

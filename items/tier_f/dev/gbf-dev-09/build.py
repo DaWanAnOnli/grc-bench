@@ -384,7 +384,7 @@ SPEC = {
     "no_rewire": "no rewiring: the connections equal the starting flowgraph's up to block renaming (graph check "
                  "same_connections_as_start, isomorphic)",
     "run": "run condition: the flowgraph keeps producing samples until it is stopped (no sample limit); checked "
-           "only by V5 liveness (at least 266240 items at every observation point), not by V6",
+           "only by V4 liveness (at least 266240 items at every observation point), not by V5",
     "obs": "observation points and rate: float samples written to the File Sinks lowpass.dat, highpass.dat, "
            "bandpass.dat, bandreject.dat and rrc.dat, read as 48 kHz (a graph at another sample rate puts every "
            "band elsewhere, so 'keep the 48 kHz sample rate' is checked by the band checks), 262144 samples after "
@@ -545,7 +545,7 @@ REVIEW_NOTES = (
     "to each output's own power, so the wide high-pass tolerates a -6 dB point 25 Hz above the channel edge and the "
     "low-pass one 100 Hz below it). (2) Renaming a non-variable block (e.g. a FIR filter) is neither forbidden by the "
     "instruction nor checked; variables must keep their names (value_only). (3) 'Keep producing samples until "
-    "stopped' is checked only by V5 liveness (266240 items per observation point). (4) 'The same samples as now' on "
+    "stopped' is checked only by V4 liveness (266240 items per observation point). (4) 'The same samples as now' on "
     "rrc.dat is checked with a numerical tolerance (signed zero-lag correlation >= 0.99999 against the start graph's "
     "samples 4096-8191, RMS within 1 %), which relies on the Fast Noise Source with seed 0 being deterministic in "
     "GNU Radio 3.10.12 (build.py asserts two runs are identical). Licence: derived from the GNU Radio 3.10.12 "
@@ -556,13 +556,13 @@ REVIEW_NOTES = (
 
 def start_rrc_reference(start_text: str) -> tuple[list[float], float]:
     """rrc.dat samples SKIP..SKIP+REF_LEN of the start graph and its RMS over the measured window, from two
-    bounded ladder runs (V2-V5, the harness's own taps) that must be identical."""
+    bounded ladder runs (V2-V4, the harness's own taps) that must be identical."""
     arrays = []
     for _ in range(2):
-        res = check(start_text, {"observation": OBS}, max_rung=5, keep=True)
+        res = check(start_text, {"observation": OBS}, max_rung=4, keep=True)
         run_dir = Path(res["run_dir"])
         try:
-            assert res["first_failed"] is None and res["highest_passed"] == "V5", res["rungs"]
+            assert res["first_failed"] is None and res["highest_passed"] == "V4", res["rungs"]
             arrays.append(np.load(run_dir / "obs" / "rrc.npy"))
         finally:
             shutil.rmtree(run_dir, ignore_errors=True)

@@ -43,7 +43,7 @@ Rules:
 4. **Cap of 3 model turns.** If no `change_graph` has been applied by then, the task fails.
 5. Calls in the same reply (lookup + edit) both run, and the edit cannot use the lookup's result. This is the model's choice and is recorded.
 
-The final graph is graded by the ladder V2–V6. V1 means "a well-formed `change_graph` call matching the tool schema".
+The final graph is graded by the ladder V2–V5. V1 means "a well-formed `change_graph` call matching the tool schema".
 
 **Diagnostics:**
 - whether the lookup was used;
@@ -57,7 +57,7 @@ The final graph is graded by the ladder V2–V6. V1 means "a well-formed `change
 - B1 for Tier F is redefined as oracle grounding: catalog entries for every reference block.
 - The Tier-F text in the evaluation plan is to be updated.
 
-**Oracle policy:** V6 = signal checks + **structural graph checks** (`tier_f/graph_checks.py`: block_present / block_absent / path / same_blocks_as_start / max_functional_blocks).
+**Oracle policy:** V5 = signal checks + **structural graph checks** (`tier_f/graph_checks.py`: block_present / block_absent / path / same_blocks_as_start / max_functional_blocks).
 - Every requirement the instruction states must be checked.
 - Structural wording ("filter the square wave", "only change parameter values") needs a graph check.
 - Otherwise, phrase the instruction behaviourally so any valid structure passes.
@@ -176,7 +176,7 @@ Agents own disjoint modules. Each output is checked by a separate verifier agent
   - `variable_qtgui_*` widgets become plain variables;
   - audio sinks become file sinks;
   - `no_gui` / `run` options, and Head-bounded sources.
-- Keep the graphs that pass V1–V5, and measure the yield.
+- Keep the graphs that pass V1–V4, and measure the yield.
 - **Inventory table** in `reports/seed_inventory.md`.
 - **Seed split** (test / dev / train) at source-file level:
   - Qoherent's and GRC-Agent's seeds are forced to train;
@@ -187,10 +187,9 @@ Agents own disjoint modules. Each output is checked by a separate verifier agent
 - **Rungs:**
   - V1: YAML and `.grc` schema.
   - V2: Platform load. Fails on dummy blocks, dangling connections, invalid enum values (linted against the YAML) or a catalog-hash mismatch.
-  - V3: `validate()`.
-  - V4: `grcc` in the sandbox.
-  - V5: bounded subprocess run. Fails on a traceback, on not stopping cleanly within a grace period, or on the liveness check (≥ N items reaching every observation sink).
-  - V6: the task oracle.
+  - V3: compile: `validate()`, then `grcc` in the sandbox.
+  - V4: bounded subprocess run. Fails on a traceback, on not stopping cleanly within a grace period, or on the liveness check (≥ N items reaching every observation sink).
+  - V5: the task oracle.
 - **Fixtures:** one per failure class (unconnected port, IO-size mismatch, failed assert, undefined variable, double upstream, unknown block, dangling connection, bad enum), plus the 28 examples that are invalid as shipped as negative cases.
 - **Compact `.grc` form:** no `states`, only non-default parameters; GRC fills in the rest, which is verified. Reference answers must be ≤ 3K tokens. The 8K Tier-F answer cap includes reasoning.
 - **Prompt and extraction:** the Tier-F prompt format and the answer-extraction rule (the first fenced `.grc` YAML block).
@@ -212,9 +211,9 @@ Pipeline per task: draft spec → build the reference and oracle → gates → a
   - spec-based tolerances;
   - numpy seeded in the runner.
 - **Gates:**
-  - the reference passes V1–V6 in 10 of 10 runs, under evaluation concurrency (8 workers);
+  - the reference passes V1–V5 in 10 of 10 runs, under evaluation concurrency (8 workers);
   - ≥ 2 equivalent valid variants pass;
-  - ≥ 5 mutants that break the spec (wrong frequency, bypassed filter, wrong sample rate, wrong gain, wrong-tap rewiring) all reach V5, and the oracle rejects ≥ 90%;
+  - ≥ 5 mutants that break the spec (wrong frequency, bypassed filter, wrong sample rate, wrong gain, wrong-tap rewiring) all reach V4, and the oracle rejects ≥ 90%;
   - equivalent mutants are excluded from the denominator;
   - failing tasks are tightened or dropped, and the drops are counted.
 - **Team review sheet:** `handoff/review_sheets/tier_f_first_set.csv`. Scaling to 150 happens after the team's decision.

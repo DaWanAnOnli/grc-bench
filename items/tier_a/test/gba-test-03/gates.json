@@ -5,7 +5,7 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V6: rx rms = 0.051707; rx rms = 0.060754; rx rms = 2.008537; rx rms = 1.773369; rx rms = 0.054505; rx rms = 0.063517; rx rms = 2.086645; rx rms = 1.833439; rx rms = 0.05601; rx rms = 0.065003; rx rms = 2.128666; rx rms = 1.865762"
+    "ladder: fails at V5: rx rms = 0.051707; rx rms = 0.060754; rx rms = 2.008537; rx rms = 1.773369; rx rms = 0.054505; rx rms = 0.063517; rx rms = 2.086645; rx rms = 1.833439; rx rms = 0.05601; rx rms = 0.065003; rx rms = 2.128666; rx rms = 1.865762"
    ],
    "status": "completed"
   },
@@ -29,7 +29,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: rx rms = 0.100264; rx rms = 0.330119; rx band_fraction = 0.978143; rx rms = 3.86722; rx rms = 1.126037; rx band_fraction = 0.881911; rx rms = 0.084572; rx rms = 0.319317; rx band_fraction = 0.975776; rx rms = 3.807823; rx rms = 1.122925; rx band_fraction = 0.884794; rx rms = 0.084572; rx rms = 0.319317; rx band_fraction = 0.975776; rx rms = 3.807824; rx rms = 1.122925; rx band_fraction = 0.884794"
+      "ladder: fails at V5: rx rms = 0.100264; rx rms = 0.330119; rx band_fraction = 0.978143; rx rms = 3.86722; rx rms = 1.126037; rx band_fraction = 0.881911; rx rms = 0.084572; rx rms = 0.319317; rx band_fraction = 0.975776; rx rms = 3.807823; rx rms = 1.122925; rx band_fraction = 0.884794; rx rms = 0.084572; rx rms = 0.319317; rx band_fraction = 0.975776; rx rms = 3.807824; rx rms = 1.122925; rx band_fraction = 0.884794"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc"

@@ -15757,7 +15757,7 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Revised 18 Oct after review round 1 (see reports/tier_f_reviews/round1/gbf-test-09.resolution.json). The 'keep the Peak Detector2 settings' clause was removed: settings the oracle cannot see do not change the behaviour, and the behaviour they set is checked (exact flag count and positions, the 0.95-1.05 band of the running average); alpha 0.001 (the example's value) or threshold factors 0.05-0.65 still pass because the outputs stay within the stated behaviour. Flag positions are compared sample by sample over the whole 192-period window (15360 samples). Known oracle limits: (1) a deliberate cheat that writes peaks.dat from a Vector Source pattern while the detector still feeds average.dat would pass (the path graph check only requires the detector between the sawtooth and some File Sink); (2) the 'saw' point is an edge point on the block named analog_sig_source_x_0, so renaming the Signal Source fails V6. Licence: derived from the GNU Radio 3.10.12 example blocks/peak_detector2.grc (GPL-3.0-or-later, GNU Radio project); the licence decision is the team's.",
+  "notes": "Revised 18 Oct after review round 1 (see reports/tier_f_reviews/round1/gbf-test-09.resolution.json). The 'keep the Peak Detector2 settings' clause was removed: settings the oracle cannot see do not change the behaviour, and the behaviour they set is checked (exact flag count and positions, the 0.95-1.05 band of the running average); alpha 0.001 (the example's value) or threshold factors 0.05-0.65 still pass because the outputs stay within the stated behaviour. Flag positions are compared sample by sample over the whole 192-period window (15360 samples). Known oracle limits: (1) a deliberate cheat that writes peaks.dat from a Vector Source pattern while the detector still feeds average.dat would pass (the path graph check only requires the detector between the sawtooth and some File Sink); (2) the 'saw' point is an edge point on the block named analog_sig_source_x_0, so renaming the Signal Source fails V5. Licence: derived from the GNU Radio 3.10.12 example blocks/peak_detector2.grc (GPL-3.0-or-later, GNU Radio project); the licence decision is the team's.",
   "reviewers": [],
   "status": "pending-team-review"
  },
@@ -15769,17 +15769,17 @@
  },
  "spec_properties": [
   {
-   "checked_by": "ladder V3-V5",
+   "checked_by": "ladder V3-V4",
    "id": "validates",
    "text": "the repaired flowgraph passes GRC validation (the IO types of every connection match), generates and runs"
   },
   {
-   "checked_by": "observation contract (file name and item type float; a missing or differently typed sink fails V6)",
+   "checked_by": "observation contract (file name and item type float; a missing or differently typed sink fails V5)",
    "id": "outputs",
    "text": "float items are written to the File Sinks peaks.dat and average.dat"
   },
   {
-   "checked_by": "V5 liveness: at least 16384 items at each observation point",
+   "checked_by": "V4 liveness: at least 16384 items at each observation point",
    "id": "run_length",
    "text": "the flowgraph keeps producing samples until it is stopped"
   },

@@ -1,4 +1,4 @@
-"""Structural checks on the final flowgraph, evaluated in V6 next to the signal checks.
+"""Structural checks on the final flowgraph, evaluated in V5 next to the signal checks.
 
 Signal checks alone accept any flowgraph that produces the right output. When an instruction
 requires a structure ("filter the square wave", "only change parameter values"), that requirement

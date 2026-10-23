@@ -62,7 +62,7 @@ def rewire_input(data: dict, dst: str, dst_port: str, new_src: str, new_src_port
     """Feed `dst:dst_port` from a different block output (the "wrong tap" mutation).
 
     If the block that used to feed it is left with an unconnected output, that output is parked on a
-    Null Sink of the destination's type, so the mutant stays a valid flowgraph (it must reach V5)."""
+    Null Sink of the destination's type, so the mutant stays a valid flowgraph (it must reach V4)."""
     d = copy.deepcopy(data)
     old = [c for c in d["connections"] if c[2] == dst and str(c[3]) == str(dst_port)]
     d["connections"] = [c for c in d["connections"] if not (c[2] == dst and str(c[3]) == str(dst_port))]

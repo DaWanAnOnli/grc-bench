@@ -125,8 +125,8 @@ SPEC_PROPERTIES = [
     "P8 observation: the filtered signal is written as float samples to the File Sink whose file name is "
     "bandnoise.dat (the observation point requires that file name and item type); P2-P6 are measured "
     "after its first 4096 samples",
-    "P9 run condition (V5): the flowgraph keeps producing samples until it is stopped; V5 liveness needs "
-    f"{N_ITEMS} items at bandnoise.dat (1.64 s at 40 kHz), so a graph that stops itself earlier fails V5",
+    "P9 run condition (V4): the flowgraph keeps producing samples until it is stopped; V4 liveness needs "
+    f"{N_ITEMS} items at bandnoise.dat (1.64 s at 40 kHz), so a graph that stops itself earlier fails V4",
 ]
 
 
@@ -379,10 +379,10 @@ def _default_seed() -> dict:
 
 
 def probes() -> dict[str, tuple[dict, bool, str]]:
-    """name -> (graph, expected to pass V6, why)."""
+    """name -> (graph, expected to pass V5, why)."""
     return {
         "head_40000": (_with_head(40000), False,
-                       "review F1: a 1 s file (Head of 40000) fails V5 liveness; the instruction now says "
+                       "review F1: a 1 s file (Head of 40000) fails V4 liveness; the instruction now says "
                        "not to limit the number of samples"),
         "head_100000": (_with_head(100000), True,
                         "documented limit: a Head larger than the 65536-item capture is not detected"),
@@ -408,12 +408,12 @@ def run_probes() -> int:
     for name, (g, expect, why) in probes().items():
         cg = compact(g, KEEP)
         res = check(grcfile.dump(cg), task)
-        ok = res["first_failed"] is None and res["highest_passed"] == "V6"
-        v6 = res["rungs"].get("V6") or {}
+        ok = res["first_failed"] is None and res["highest_passed"] == "V5"
+        v6 = res["rungs"].get("V5") or {}
         failed = [f"{c['feature']}[{c['spec'].get('lo', '')}-{c['spec'].get('hi', '')}]={c['value']}"
                   for c in v6.get("checks", []) if not c["passed"]] + \
                  [f"graph:{g_['kind']}" for g_ in v6.get("graph_checks", []) if not g_["passed"]]
-        if res["first_failed"] and res["first_failed"] != "V6":
+        if res["first_failed"] and res["first_failed"] != "V5":
             failed = (res["rungs"].get(res["first_failed"]) or {}).get("errors", [])[:1]
         verdict = "as expected" if ok == expect else "UNEXPECTED"
         bad += ok != expect

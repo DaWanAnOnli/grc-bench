@@ -20,9 +20,9 @@
   },
   "start_fails": {
    "expected": null,
-   "first_failed": "V6",
+   "first_failed": "V5",
    "passed": true,
-   "v6_groups": {
+   "v5_groups": {
     "f2p": false,
     "p2p": true
    }
@@ -32,19 +32,19 @@
    "passed": true,
    "results": {
     "v1_quantile_expressions.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_rounded_levels_new_seed.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_exact_quantile.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_renamed_instances.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

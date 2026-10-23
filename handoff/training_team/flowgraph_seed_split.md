@@ -6,14 +6,7 @@ come from **other** seed files: the train seeds below, permissively licensed com
 or hand-written chains. Never derive training items from a test or dev seed file, including by
 editing or fault-injecting it. Full detail: splits/flowgraph_seed_split.json, reports/seed_inventory.md.
 
-**Hand-written or programmatically composed chains (rule v2, 18 Oct 2026):** emit such a graph only
-if `compose.signature_split(compose.signature(graph)) == "train"` and its `compose.signature_digest`
-is not in `flowgraph_reserved_signatures.txt`; never emit a functional twin of a GRC-Bench test or
-dev task. The signature is functional, so throttles, sinks, gains, block order and equivalent blocks
-do not change it. Details: `flowgraph_composed_chains.md`. The v1 chain rule (ordered block ids) is
-withdrawn.
-
-## Held out for GRC-Bench (30 files): do not use
+## Held out for GRC-Bench (31 files): do not use
 
 - analog/sig_source_msg_ports.grc
 - blocks/burst_to_stream.grc
@@ -37,6 +30,7 @@ withdrawn.
 - fec/fecapi_decoders.grc
 - fec/fecapi_polar_decoders.grc
 - fec/fecapi_polar_encoders.grc
+- fec/polar_code_example.grc
 - filter/filter_taps.grc
 - filter/polyphase_channelizer_demo.grc
 - pdu/pdu_lambda_chirp_demo.grc
@@ -46,7 +40,7 @@ withdrawn.
 - trellis/sccc.grc
 - trellis/tcm.grc
 
-## Train seeds (31 files)
+## Train seeds (32 files)
 
 - analog/noise_power.grc
 - audio/dial_tone.grc
@@ -64,6 +58,7 @@ withdrawn.
 - digital/ofdm/tx_ofdm.grc
 - digital/packet/example_corr_est_and_clock_sync.grc
 - digital/packet/example_corr_est_and_phase_sync.grc
+- fec/ber_test.grc
 - fec/fecapi_async_encoders.grc
 - fec/fecapi_async_ldpc_encoders.grc
 - fec/fecapi_encoders.grc

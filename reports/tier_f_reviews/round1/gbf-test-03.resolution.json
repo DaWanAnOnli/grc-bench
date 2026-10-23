@@ -7,7 +7,7 @@
  "accepted": [
   {
    "id": "compliance/F1-unstated-run-length",
-   "change": "The instruction now carries the R5 sentence 'The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.' The phrase 'so that every run writes the same samples' is gone. spec_properties P9 records it as a V5 run condition only (65536 items). Probe head_40000 (the reviewer's Head of 40000) fails at V5 as intended. A Head of more than 65536 items still passes (probe head_100000); review.notes (6) records this limit."
+   "change": "The instruction now carries the R5 sentence 'The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.' The phrase 'so that every run writes the same samples' is gone. spec_properties P9 records it as a V4 run condition only (65536 items). Probe head_40000 (the reviewer's Head of 40000) fails at V4 as intended. A Head of more than 65536 items still passes (probe head_100000); review.notes (6) records this limit."
   },
   {
    "id": "compliance/F2-design-numbers-unenforced",
@@ -31,7 +31,7 @@
   },
   {
    "id": "item-quality/F1-hidden-liveness-requirement",
-   "change": "Same fix as compliance F1: R5 sentence, P9 run condition, probe head_40000 fails at V5."
+   "change": "Same fix as compliance F1: R5 sentence, P9 run condition, probe head_40000 fails at V4."
   },
   {
    "id": "item-quality/F2-transition-width-not-enforced",
@@ -57,5 +57,5 @@
   "R12: the band_fraction thresholds were re-derived from the stated spec with the corrected (18 Oct) oracle. Zero-mean real noise has no DC line, so the correction changes only the denominator."
  ],
  "variant_signatures_v2": "reference and v1-v9: filter|noise (test)",
- "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 235 tokens, variants 9/9 reach V6, start_fails n/a (build), mutation 10 valid with kill rate 1.0; build.py --probes 9/9 verdicts as expected"
+ "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 235 tokens, variants 9/9 reach V5, start_fails n/a (build), mutation 10 valid with kill rate 1.0; build.py --probes 9/9 verdicts as expected"
 }

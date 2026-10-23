@@ -29,7 +29,7 @@ APPROVED = (
      "where": ("functions.SPLIT_HALVES", "functions.split_half_tau", "functions.random_half_tau")},
     {"id": "h1c-size-matched", "definition": "H1c: Tier K subsampled to Tier F's 150 items, "
      "repeated, and the distribution reported", "where": ("functions.size_matched_separation",)},
-    {"id": "func-denominator", "definition": "Func@1's denominator: the tasks that have a V6 oracle",
+    {"id": "func-denominator", "definition": "Func@1's denominator: the tasks that have a V5 oracle",
      "where": ("functions.func_at_1", "functions.funnel")},
     {"id": "holm-families", "definition": "Holm-Bonferroni within each research question",
      "where": ("functions.holm_bonferroni",)},

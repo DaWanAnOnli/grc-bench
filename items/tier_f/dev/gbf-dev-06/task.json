@@ -365,7 +365,7 @@
   "phasing method: GNU Radio's Hilbert block forms the analytic signal on the path from the audio sources to a File Sink",
   "the SSB signal is made from the 8 kHz audio: a rate-increasing block (8 kHz -> 48 kHz) lies on a path from the audio sources to the block that shifts the signal to the carrier (Multiply, Multiply Conjugate, Rotator, Frequency Xlating filter or Embedded Python)",
   "outputs: float items to the File Sink audio.dat (8 kHz) and float items to the File Sink ssb.dat (48 kHz)",
-  "run condition: the flowgraph keeps producing samples until stopped (V5 liveness: at least 14400 items at every observation point)"
+  "run condition: the flowgraph keeps producing samples until stopped (V4 liveness: at least 14400 items at every observation point)"
  ],
  "split": "dev",
  "start_grc": null,

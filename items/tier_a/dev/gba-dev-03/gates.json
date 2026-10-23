@@ -29,7 +29,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: if rms = 0.011814",
+      "ladder: fails at V5: if rms = 0.011814",
       "blocks_present[0]: 0 matching block(s) []; candidates: [\"if_filter (enabled): cutoff_freq='1500' (1500) vs 4000\"]"
      ],
      "rejected": true,

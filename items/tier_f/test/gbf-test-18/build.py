@@ -25,7 +25,7 @@ Version 2 (18 Oct 2026, round-1 fix stage)
     passed: a free-running 700 Hz oscillator wired to audio.dat with the faulty BFO left in place, or a
     graph with the neighbours zeroed and the filter replaced by Keep 1 in N. The beacon is now keyed by a
     5 Hz square-wave Signal Source (NOT a Vector Source: that would add the data_source class and move
-    the cell to dev; fix_plan), and V6 checks the keying in both outputs: the level inside two "on" and
+    the cell to dev; fix_plan), and V5 checks the keying in both outputs: the level inside two "on" and
     two "off" periods of channel.dat and audio.dat. A free-running oscillator is never silent and
     fails. The channel filter the instruction names ("low-pass filtered and decimated by 8") is a graph
     check (p2p): a path Signal Source -> filter -> File Sink, accepting every GNU Radio 3.10 block that
@@ -34,12 +34,12 @@ Version 2 (18 Oct 2026, round-1 fix stage)
     channelizers / IIR / single-pole IIR / Moving Average / Integrate); whether it filters well enough is
     left to the signal checks (variant v12 uses an FFT Filter). To stay within 15 functional blocks (L2),
     the audio gain 1.6 moved from a Multiply Const into the BFO amplitude. Authoring probes: the
-    reviewers' graphs now fail V6 (a free-running 700 Hz oscillator on audio.dat with the faulty BFO
+    reviewers' graphs now fail V5 (a free-running 700 Hz oscillator on audio.dat with the faulty BFO
     left in place: audio rms 0.567 in the off windows; neighbours zeroed and the filter replaced by Keep
     1 in N: no filter path; two oscillators straight into the two File Sinks: off windows and no filter
     path). A graph that rebuilds the keyed tone from its own oscillator times a copy of the key still
     passes (review.notes limit 1).
-  * item-quality F2 (run length): the set run sentence is in the instruction (V5 liveness: 8400 items).
+  * item-quality F2 (run length): the set run sentence is in the instruction (V4 liveness: 8400 items).
   * F2 compliance (split follows one path): moot under signature v2 (a set of functional classes of all
     blocks, independent of paths and connection order); the reference and every variant are printed
     below with their v2 signature. The keying source sits on the keying Multiply's port 1 and is
@@ -48,10 +48,10 @@ Version 2 (18 Oct 2026, round-1 fix stage)
   * F4 compliance / F3 item-quality (disjointness incomplete): t05_qam_debug and t12_fivegnalizer_modify
     added.
 
-Fault (rate_mismatch, expected rung V6): the BFO Signal Source, which runs after the decimate-by-8
+Fault (rate_mismatch, expected rung V5): the BFO Signal Source, which runs after the decimate-by-8
 filter and so produces samples at 12 kHz, has its Sample Rate set to samp_rate (96 kHz) instead of
 samp_rate/decim. Its -800 Hz setting then advances the phase as -100 Hz does at 12 kHz, so the beacon
-comes out of audio.dat at 1.4 kHz instead of 700 Hz. The graph validates and runs (V1-V5 pass); only
+comes out of audio.dat at 1.4 kHz instead of 700 Hz. The graph validates and runs (V1-V4 pass); only
 the behaviour is wrong. In start.grc every Signal Source and the Low Pass Filter state their Sample Rate
 explicitly (samp_rate), so that the faulty block does not stand out by formatting; apart from the
 fault this is exactly the reference (checked with grc.compact_equivalent).
@@ -393,7 +393,7 @@ P_AU_CLEAN = "audio.dat: clean tone (>= 98 % of the audio power within 200 Hz of
 P_AU_AMP = "audio.dat: real-valued (float) audio with peak amplitude 0.8 (RMS 0.566) while the beacon is keyed on"
 P_AU_KEYED = "audio.dat: silent (below 5 % of the on level) while the beacon is keyed off: the audio follows the beacon's keying"
 P_OBS = "outputs: complex items to the File Sink channel.dat and float items to the File Sink audio.dat"
-P_RUN = ("run condition: the flowgraph keeps producing samples until stopped (V5 liveness: at least "
+P_RUN = ("run condition: the flowgraph keeps producing samples until stopped (V4 liveness: at least "
          f"{RUN_ITEMS} items at both observation points)")
 P2P_NOTE = ("p2p checks hold in the start graph (its fault only changes the audio frequency) and must still hold; "
             "f2p checks are the audio frequency and purity")
@@ -476,7 +476,7 @@ MUTATIONS = [
 
 REVIEW_NOTES = (
     "Version 2: round-1 fixes (resolution in reports/tier_f_reviews/round1/gbf-test-18.resolution.json); the beacon "
-    "is now keyed by a 5 Hz square wave and V6 checks the keyed levels. Composed L2 item: the approved plan says L2 "
+    "is now keyed by a 5 Hz square wave and V5 checks the keyed levels. Composed L2 item: the approved plan says L2 "
     "tasks come from converted examples and eval plan 4.3 lists only hand-written L1 chains, so composed L2 items "
     "need the team's sign-off (fix_plan team_decisions); the brief's seed qt-gui/qtgui_multi_input.grc was not used "
     "(single-rate, no place for a rate fault). Known oracle limits: (1) the recording is generated inside the graph "
@@ -523,7 +523,7 @@ def record(sig: tuple[str, ...]) -> dict:
                                   "Sample Rate set to samp_rate (96 kHz) instead of samp_rate/decim; its shift acts "
                                   "as -100 Hz, so the beacon comes out of audio.dat at 1.4 kHz instead of 700 Hz. "
                                   "The graph validates and runs; only its behaviour is wrong."),
-                  "expected_rung": "V6"},
+                  "expected_rung": "V5"},
         "disjointness": ("A composed CW-beacon receiver (keyed three-carrier test recording, tuning mixer, decimating "
                          "channel filter, beat-frequency oscillator, real-part audio) whose BFO runs at the "
                          "pre-decimation rate. The training-side rate tasks are a 48k-to-44.1k resampler ratio fix "

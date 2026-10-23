@@ -108,7 +108,7 @@ I checked these risks with concrete graphs:
    * Thresholds come from the spec.
    * Where structure is the point, graph checks accept every legitimate block.
    * Every "keep X" clause is either checked or removed.
-4. **Run length:** use the set sentence, and record it as a V5 liveness run condition.
+4. **Run length:** use the set sentence, and record it as a V4 liveness run condition.
 5. **Family boundary:**
    * Modify is a structural or functional change.
    * Parameter-tune changes values only. The instruction says so, and `same_blocks_as_start` enforces it, plus the connection check from tooling T1 once it exists. Variants must obey the same rule.

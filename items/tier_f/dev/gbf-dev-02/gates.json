@@ -27,19 +27,19 @@
    "passed": true,
    "results": {
     "v1_fast_noise_source.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_two_real_noise_sources_iq.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_mag_squared_then_sqrt.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_channel_model_awgn.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

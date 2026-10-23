@@ -1,10 +1,10 @@
-"""V6 behavioural oracles (eval plan §4.3; proposal Table 5).
+"""V5 behavioural oracles (eval plan §4.3; proposal Table 5).
 
 An oracle is a list of checks on the signals captured at a task's observation points. Each check
 computes one feature and compares it with the value the task specification requires (its
 tolerance comes from the specification, not from run-to-run noise). Repair, modify and
 parameter-tune tasks group their checks into "f2p" (the requested behaviour now holds) and "p2p"
-(behaviour that held in the starting flowgraph still holds) [46]; the task passes V6 only if every
+(behaviour that held in the starting flowgraph still holds) [46]; the task passes V5 only if every
 check in every group passes.
 
 A check is {"point", "feature", <feature options>, <comparison>, "group", "skip", "n"}. Every

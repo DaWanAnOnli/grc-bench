@@ -19,7 +19,7 @@
   },
   {
    "id": "compliance/F1-mutation-gate-misses-stated-requirements",
-   "change": "The five survivors are now mutants: noise_amp 0, interpratio 1, interpratio 1.002, rolloff 0.35, channel taps 1j. Also added: 45-degree rotation, frequency offset 1e-4, shared nfilts 64, sym_rate 10000 at both ends, transmitter resampler rate 4.8, timing_rate.dat renamed, the tx_signal.dat sink bypassed, a wrong tap and osps 2. Deleting a single timing sink is not a valid mutant: pfb_clock_sync_ccf accepts 1 or 4 connected outputs and fails V5. Sink deletion is covered by the rename and tx-sink mutants and by the three-sink deletion probe. 25 mutants, all valid, all killed."
+   "change": "The five survivors are now mutants: noise_amp 0, interpratio 1, interpratio 1.002, rolloff 0.35, channel taps 1j. Also added: 45-degree rotation, frequency offset 1e-4, shared nfilts 64, sym_rate 10000 at both ends, transmitter resampler rate 4.8, timing_rate.dat renamed, the tx_signal.dat sink bypassed, a wrong tap and osps 2. Deleting a single timing sink is not a valid mutant: pfb_clock_sync_ccf accepts 1 or 4 connected outputs and fails V4. Sink deletion is covered by the rename and tx-sink mutants and by the three-sink deletion probe. 25 mutants, all valid, all killed."
   },
   {
    "id": "compliance/F2-inaccurate-recorded-claims",
@@ -32,5 +32,5 @@
   "Known limits in review.notes: (1) channel keep checked at string level; (2) File Sink checks pin file name and type, not which clock-sync output feeds each; (3) any timing-recovery block satisfies the path check; (4) the GNU Radio 3.10.12 Polyphase Clock Sync is not reproducible just below an integer samples-per-symbol, so the wrong-direction answer 4.99 passes in most but not all runs. The matched 5 and the compensating 5.01 are deterministic.",
   "Probe scripts (scratch, not part of the item): probe_t17.py and probe_t17_reps.py in the G8 scratchpad."
  ],
- "gates": "ALL PASS (18 Oct, after the final change; two observation points, after T7): solvability 10/10 at 8 workers; reference 975 tokens; variants 7/7 at V6; start fails at V3 = fault.expected_rung; mutation 25/25 valid, kill rate 1.0, no survivors."
+ "gates": "ALL PASS (18 Oct, after the final change; two observation points, after T7): solvability 10/10 at 8 workers; reference 975 tokens; variants 7/7 at V5; start fails at V3 = fault.expected_rung; mutation 25/25 valid, kill rate 1.0, no survivors."
 }

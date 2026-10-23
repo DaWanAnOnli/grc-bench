@@ -5,7 +5,7 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V6: tx peak_freq = 3597.65625",
+    "ladder: fails at V5: tx peak_freq = 3597.65625",
     "connections[0]: 0 matching connection(s) []"
    ],
    "status": "completed"

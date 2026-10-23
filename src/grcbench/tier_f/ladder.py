@@ -1,13 +1,12 @@
-"""The Tier-F validity ladder V1-V6 (proposal Table 5; eval plan §4.3).
+"""The Tier-F validity ladder V1-V5 (proposal Table 5; eval plan §4.3).
 
 Each rung is evaluated only if the previous rung passed, so a result shows exactly where a
 flowgraph fails:
   V1 Parse     YAML parses and conforms to the .grc schema            (in-process, grcfile.v1_parse)
   V2 Load      GRC loads it; every block id exists in the pinned catalog (sandboxed worker)
-  V3 Validate  GRC validation passes                                  (sandboxed worker)
-  V4 Codegen   GRC generates the Python top block                     (sandboxed worker)
-  V5 Run       headless bounded run with liveness                     (sandboxed worker)
-  V6 Behave    the task's oracle: signal checks on the captured signals (oracles.evaluate) and
+  V3 Compile   GRC validation passes and GRC generates the Python top block (sandboxed worker)
+  V4 Run       headless bounded run with liveness                     (sandboxed worker)
+  V5 Behave    the task's oracle: signal checks on the captured signals (oracles.evaluate) and
                structural checks on the final graph (graph_checks.evaluate), in-process
 
     ./gb ladder <file.grc> [--task task.json] [--keep]
@@ -34,7 +33,7 @@ from . import graph_checks, grcfile, oracles
 from ..common.paths import GNURADIO_CATALOG_SHA256
 from .grc import catalog_hash, install_warm_cache
 
-RUNGS = ["V1", "V2", "V3", "V4", "V5", "V6"]
+RUNGS = ["V1", "V2", "V3", "V4", "V5"]
 DEFAULT_RUN = {"n_items": 8192, "min_items": 8192, "timeout_s": 10.0, "grace_s": 5.0}
 _CATALOG_HASH: str | None = None
 
@@ -51,7 +50,7 @@ def catalog_matches_pin() -> bool:
     return pinned_catalog_hash() == GNURADIO_CATALOG_SHA256
 
 
-def check(grc_text: str, task: dict[str, Any] | None = None, *, max_rung: int = 6,
+def check(grc_text: str, task: dict[str, Any] | None = None, *, max_rung: int = 5,
           keep: bool = False, run_root: Path | None = None, timeout: float = 120.0) -> dict[str, Any]:
     """Run the ladder on one flowgraph (as .grc YAML text). Returns per-rung results."""
     task = task or {}
@@ -79,19 +78,19 @@ def check(grc_text: str, task: dict[str, Any] | None = None, *, max_rung: int = 
             else:
                 result["rungs"].update(wres.get("rungs", {}))
                 result["hallucinated_blocks"] = wres.get("hallucinated_blocks", [])
-                v5 = result["rungs"].get("V5")
-                if v5 is not None:
-                    errs5 = _stderr_errors(res.stderr)
-                    if errs5:
-                        v5["passed"] = False
-                        v5.setdefault("errors", []).extend(errs5)
+                v4 = result["rungs"].get("V4")
+                if v4 is not None:
+                    errs4 = _stderr_errors(res.stderr)
+                    if errs4:
+                        v4["passed"] = False
+                        v4.setdefault("errors", []).extend(errs4)
                     if res.timed_out:
-                        v5["passed"] = False
-                        v5.setdefault("errors", []).append("harness timeout during the run")
-                if max_rung >= 6 and v5 and v5.get("passed") and task.get("oracle"):
+                        v4["passed"] = False
+                        v4.setdefault("errors", []).append("harness timeout during the run")
+                if max_rung >= 5 and v4 and v4.get("passed") and task.get("oracle"):
                     oracle = task["oracle"]
                     obs = {p.stem: np.load(p) for p in (run_dir / "obs").glob("*.npy")}
-                    obs_errs = v5.get("observation_errors") or []
+                    obs_errs = v4.get("observation_errors") or []
                     if oracle.get("checks"):
                         ev = oracles.evaluate(oracle, obs)
                     else:
@@ -102,10 +101,10 @@ def check(grc_text: str, task: dict[str, Any] | None = None, *, max_rung: int = 
                         groups[g["group"]] = groups.get(g["group"], True) and g["passed"]
                     has_checks = bool(oracle.get("checks") or oracle.get("graph_checks"))
                     passed = has_checks and ev["passed"] and all(g["passed"] for g in g_res) and not obs_errs
-                    result["rungs"]["V6"] = {**ev, "passed": passed, "errors": obs_errs,
+                    result["rungs"]["V5"] = {**ev, "passed": passed, "errors": obs_errs,
                                              "graph_checks": g_res, "groups": groups}
-                elif max_rung >= 6 and v5 and v5.get("passed"):
-                    result["rungs"]["V6"] = {"passed": None, "errors": [], "note": "task has no V6 oracle"}
+                elif max_rung >= 5 and v4 and v4.get("passed"):
+                    result["rungs"]["V5"] = {"passed": None, "errors": [], "note": "task has no V5 oracle"}
             if keep:
                 result["run_dir"] = str(run_dir)
         finally:
@@ -174,7 +173,7 @@ def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="gb ladder")
     ap.add_argument("grc")
     ap.add_argument("--task", help="task.json with observation and oracle")
-    ap.add_argument("--max-rung", type=int, default=6)
+    ap.add_argument("--max-rung", type=int, default=5)
     ap.add_argument("--keep", action="store_true", help="keep the sandbox run directory")
     args = ap.parse_args(argv)
     task = load_task_file(args.task) if args.task else None

@@ -1,4 +1,4 @@
-"""The V1-V6 ladder must fail each known failure class at exactly the right rung.
+"""The V1-V5 ladder must fail each known failure class at exactly the right rung.
 
 Failure classes come from proposal Table 5 and from the GRC behaviour verified on GNU Radio 3.10.12
 (unknown block ids load as silent "dummy" blocks; dangling connections are only reported by
@@ -78,7 +78,7 @@ def _rungs(res):
 def test_good_graph_passes_all_rungs():
     res = check(grcfile.dump(BASE), TASK)
     assert res["first_failed"] is None, res
-    assert res["highest_passed"] == "V6"
+    assert res["highest_passed"] == "V5"
 
 
 CASES = {
@@ -94,8 +94,8 @@ CASES = {
     "double_upstream": ("V3", lambda d: (d["blocks"].append({"name": "src2", "id": "analog_sig_source_x",
                                                               "parameters": {"type": "float", "samp_rate": "samp_rate"}}),
                                          d["connections"].append(["src2", "0", "gain", "0"]))),
-    # rung V6
-    "wrong_frequency": ("V6", lambda d: _block(d, "src")["parameters"].__setitem__("freq", "1500")),
+    # rung V5
+    "wrong_frequency": ("V5", lambda d: _block(d, "src")["parameters"].__setitem__("freq", "1500")),
 }
 
 
@@ -116,8 +116,8 @@ def test_liveness_failure_at_v5():
         d["connections"].remove(["gain", "0", "out", "0"])
         d["connections"] += [["gain", "0", "hd", "0"], ["hd", "0", "out", "0"]]
     res = check(_variant(mutate), TASK)
-    assert res["first_failed"] == "V5", _rungs(res)
-    assert any("liveness" in e for e in res["rungs"]["V5"]["errors"])
+    assert res["first_failed"] == "V4", _rungs(res)
+    assert any("liveness" in e for e in res["rungs"]["V4"]["errors"])
 
 
 @pytest.mark.gnuradio

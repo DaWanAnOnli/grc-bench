@@ -170,7 +170,7 @@ SPEC_PROPERTIES = [
     {"id": "outputs", "text": "float items to the File Sink pam.dat",
      "checked_by": "observation contract (file name and item type)"},
     {"id": "run", "text": "the flowgraph keeps producing samples until it is stopped",
-     "checked_by": f"V5 liveness: at least {RUN_ITEMS} items at the observation point"},
+     "checked_by": f"V4 liveness: at least {RUN_ITEMS} items at the observation point"},
 ]
 
 CHECKS = [

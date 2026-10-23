@@ -86,8 +86,8 @@ SPEC_PROPERTIES = [
     "P5 observation: the magnitudes are written as float samples to the File Sink whose file name is "
     f"envelope.dat (the observation point requires that file name and item type); P2-P3 use its first "
     f"{N_ITEMS} samples",
-    f"P6 run condition (V5): the flowgraph keeps producing samples until it is stopped; V5 liveness needs "
-    f"{N_ITEMS} items at envelope.dat, so a graph that stops itself earlier fails V5",
+    f"P6 run condition (V4): the flowgraph keeps producing samples until it is stopped; V4 liveness needs "
+    f"{N_ITEMS} items at envelope.dat, so a graph that stops itself earlier fails V4",
 ]
 
 NOISE_IDS = ["analog_noise_source_x", "analog_fastnoise_source_x", "channels_channel_model",
@@ -242,7 +242,7 @@ def _rate_expression() -> dict:
 
 
 def probes() -> dict[str, tuple[dict, bool, str]]:
-    """name -> (graph, expected to pass V6, why)."""
+    """name -> (graph, expected to pass V5, why)."""
     sine = C.block("tone", "analog_sig_source_x", type="float", samp_rate="samp_rate",
                    waveform="analog.GR_SIN_WAVE", freq="1000", amp=f"{RMS_MAG * 2 ** 0.5:.6f}", offset="0")
     half = C.block("noise", "analog_noise_source_x", type="float", noise_type="analog.GR_GAUSSIAN",
@@ -253,7 +253,7 @@ def probes() -> dict[str, tuple[dict, bool, str]]:
                            "|sin| of RMS 0.8 meets both moments (mean +1.6 %) and fails the P4 path check"),
         "half_normal": (_real_to_mag(half, "half_normal"), False,
                         "|real Gaussian| of RMS 0.8 (one component only) fails the P3 mean (-10 %)"),
-        "head_40000": (_with_head(40000), False, "a fixed-length file (Head 40000) fails V5 liveness"),
+        "head_40000": (_with_head(40000), False, "a fixed-length file (Head 40000) fails V4 liveness"),
         "fastnoise_seed_777": (C.chain("fading_fast_seed", [fast, C.block("mag", "blocks_complex_to_mag"),
                                                             C.file_sink("snk", "float", OUT_FILE)],
                                        {"samp_rate": str(FS)}), True,
@@ -261,7 +261,7 @@ def probes() -> dict[str, tuple[dict, bool, str]]:
         "complex_to_magphase": (_magphase(True), True,
                                 "Complex to Mag/Phase, magnitude to the file and phase to a Null Sink, passes"),
         "magphase_phase_open": (_magphase(False), False,
-                                "the same with the phase output left open fails at V5: GNU Radio's runtime "
+                                "the same with the phase output left open fails at V4: GNU Radio's runtime "
                                 "needs both outputs connected (GRC marks the port optional; not an oracle "
                                 "decision)"),
         "fading_model_jakes": (_fading_model(), False,
@@ -280,11 +280,11 @@ def run_probes() -> int:
     for name, (g, expect, why) in probes().items():
         cg = compact(g, KEEP)
         res = check(grcfile.dump(cg), task)
-        ok = res["first_failed"] is None and res["highest_passed"] == "V6"
-        v6 = res["rungs"].get("V6") or {}
+        ok = res["first_failed"] is None and res["highest_passed"] == "V5"
+        v6 = res["rungs"].get("V5") or {}
         info = [f"{c['feature']}={c['value']}{'' if c['passed'] else ' FAIL'}" for c in v6.get("checks", [])] + \
                [f"graph:{g_['kind']} FAIL" for g_ in v6.get("graph_checks", []) if not g_["passed"]]
-        if res["first_failed"] and res["first_failed"] != "V6":
+        if res["first_failed"] and res["first_failed"] != "V5":
             info = (res["rungs"].get(res["first_failed"]) or {}).get("errors", [])[:1]
         verdict = "as expected" if ok == expect else "UNEXPECTED"
         bad += ok != expect

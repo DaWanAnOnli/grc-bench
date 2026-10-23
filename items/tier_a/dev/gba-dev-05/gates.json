@@ -5,7 +5,7 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V6: audio band_fraction = 0.0; ssb peak_freq = 10700.0; ssb band_fraction = 0.0"
+    "ladder: fails at V5: audio band_fraction = 0.0; ssb peak_freq = 10700.0; ssb band_fraction = 0.0"
    ],
    "status": "completed"
   },
@@ -29,7 +29,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: audio band_fraction = 0.0; ssb band_fraction = 0.0"
+      "ladder: fails at V5: audio band_fraction = 0.0; ssb band_fraction = 0.0"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc"

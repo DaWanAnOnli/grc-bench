@@ -6,7 +6,7 @@
  "accepted": [
   {
    "id": "compliance/F1",
-   "change": "Applies to the new content (the oracle needs 6144 items at each point). The instruction ends with the set run sentence (R5), and spec_properties has 'run' (V5 liveness at both points)."
+   "change": "Applies to the new content (the oracle needs 6144 items at each point). The instruction ends with the set run sentence (R5), and spec_properties has 'run' (V4 liveness at both points)."
   },
   {
    "id": "compliance/F2",
@@ -30,7 +30,7 @@
   },
   {
    "id": "item-quality/F3-nondeterministic-failure-rung",
-   "change": "Resolved by tooling T7 (taps never back-pressure the graph) and verified on the new two-rate design (if.dat at 32 kHz, symbols.dat at 4 kHz). Three wrong answers were each run 8 times at 8-way concurrency: interpolation 4, no Repeat (if.dat at 4 kHz), and symbols.dat taken after the Repeat. All 24 runs failed at V6 (highest V5), with no flips to V5."
+   "change": "Resolved by tooling T7 (taps never back-pressure the graph) and verified on the new two-rate design (if.dat at 32 kHz, symbols.dat at 4 kHz). Three wrong answers were each run 8 times at 8-way concurrency: interpolation 4, no Repeat (if.dat at 4 kHz), and symbols.dat taken after the Repeat. All 24 runs failed at V5 (highest V4), with no flips to V4."
   },
   {
    "id": "item-quality/F4-variant-v1-contradicts-instruction",
@@ -55,5 +55,5 @@
   "Mutants (13): low-pass bypassed (rectangular pulses), cutoff 4.5 kHz, filter gain 8, LO amplitude 0.5, IF 6 kHz, IF 8.1 kHz, IF -8 kHz, no upconversion, interpolation 4, one symbol flipped, symbols reversed, samp_rate 48000, symbols.dat renamed.",
   "start_grc stays null (build task, R3); the old start-less directory had no start.grc, and build.py removes a stale one if present."
  ],
- "gates": "PASS (18 Oct, ./gb tier-f gates on the final files): solvability 10/10 at 8 workers; size 494 tokens; variants 4/4 reach V6 and pass; start_fails n/a (build task); mutation 13 valid mutants, kill rate 1.0, no survivors. build.py regenerates task.json, reference.grc and all variants byte-identically."
+ "gates": "PASS (18 Oct, ./gb tier-f gates on the final files): solvability 10/10 at 8 workers; size 494 tokens; variants 4/4 reach V5 and pass; start_fails n/a (build task); mutation 13 valid mutants, kill rate 1.0, no survivors. build.py regenerates task.json, reference.grc and all variants byte-identically."
 }

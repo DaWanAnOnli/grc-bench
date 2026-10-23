@@ -56,5 +56,5 @@
   "build.py: --probes mode, and variant v4. Stale variant files are removed only after a successful save. Two consecutive builds are byte-identical. The canary is in task.json only."
  ],
  "variant_signatures_v2": "start, reference and v1-v4: noise|nonlinear (dev)",
- "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 263 tokens, variants 4/4 reach V6, start fails at V6 (f2p false, p2p true), mutation 10 valid with kill rate 1.0; build.py --probes 8/8 verdicts as expected"
+ "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 263 tokens, variants 4/4 reach V5, start fails at V5 (f2p false, p2p true), mutation 10 valid with kill rate 1.0; build.py --probes 8/8 verdicts as expected"
 }

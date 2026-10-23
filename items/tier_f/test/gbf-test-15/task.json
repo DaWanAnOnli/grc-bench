@@ -459,12 +459,12 @@
    "text": "the meters keep averaging with alpha 0.0005: the tone meter's first 4000 samples average 0.3639 +-5 % (0.5 * sqrt(1 - (1 - alpha)^(n+1)); the example's alpha 0.0001 gives 0.1989)"
   },
   {
-   "checked_by": "V5 liveness: at least 32768 items at every observation point",
+   "checked_by": "V4 liveness: at least 32768 items at every observation point",
    "id": "run_length",
    "text": "the flowgraph keeps producing samples until it is stopped"
   },
   {
-   "checked_by": "observation contract (a missing sink fails V6)",
+   "checked_by": "observation contract (a missing sink fails V5)",
    "id": "outputs",
    "text": "the four File Sinks keep their file names and item types"
   }

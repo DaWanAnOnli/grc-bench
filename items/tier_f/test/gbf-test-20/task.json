@@ -2138,7 +2138,7 @@
    "text": "float items to the File Sink pam.dat"
   },
   {
-   "checked_by": "V5 liveness: at least 2560 items at the observation point",
+   "checked_by": "V4 liveness: at least 2560 items at the observation point",
    "id": "run",
    "text": "the flowgraph keeps producing samples until it is stopped"
   }

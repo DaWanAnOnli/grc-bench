@@ -131,7 +131,7 @@ def test_acceptance_errors():
     cases = {
         "no assertion": {"graph": {"path": "a.grc"}, "note": "x"},
         "unknown acceptance keys": {"blocks_absent": [{"id": "x"}], "rubric": "looks good"},
-        "needs an oracle": {"ladder": {"rung": "V6"}},
+        "needs an oracle": {"ladder": {"rung": "V5"}},
         "ladder.rung": {"ladder": {"rung": "V7"}},
         "names no block id": {"connections": [{"src": {"id": "a"}, "dst": {}}]},
         "relative path": {"files": [{"path": "../escape.txt"}]},
@@ -300,13 +300,13 @@ def test_build_grading_reruns_the_graph_and_ignores_instance_names(root):
     files = {"run.json": "{\"tone_hz\": 1000, \"samp_rate\": 32000}\n"}
     calls = []
 
-    def spy(text, task_like, max_rung=6, **kw):
+    def spy(text, task_like, max_rung=5, **kw):
         from grcbench.tier_f import ladder
         calls.append((max_rung, "writer" in text))
         return ladder.check(text, task_like, max_rung=max_rung, **kw)
     g = grader.grade(task, synthetic(task, root, "renamed", graph, final_text="built", files=files), ladder_check=spy)
     assert g["passed"], g["reasons"]
-    assert calls == [(6, True)]                           # the saved file itself went through V1-V6
+    assert calls == [(5, True)]                           # the saved file itself went through V1-V5
     bad = grader.grade(task, synthetic(task, root, "badjson", graph, final_text="built",
                                        files={"run.json": "{\"tone_hz\": 1000}"}))
     assert not bad["passed"] and len(bad["reasons"]) == 1
@@ -320,14 +320,14 @@ def test_build_grading_reruns_the_graph_and_ignores_instance_names(root):
     graph2.write_text(yaml.safe_dump(direct, sort_keys=False))
     g2 = grader.grade(task, synthetic(task, root, "unthrottled", graph2, final_text="built", files=files))
     assert not g2["passed"] and any(r.startswith("connections[0]: 0 matching") for r in g2["reasons"])
-    assert any(r.startswith("ladder: fails at V6") for r in g2["reasons"])          # the path check
+    assert any(r.startswith("ladder: fails at V5") for r in g2["reasons"])          # the path check
 
 
 @pytest.mark.slow
 @pytest.mark.gnuradio
 def test_wrong_end_states_are_rejected_with_reasons(root):
-    expect = {"fx-a-modify-tone": "ladder: fails at V6", "fx-a-repair-type": "ladder: fails at V6",
-              "fx-a-build-file": "ladder: fails at V6", "fx-a-knowledge-tone": "graph_unchanged: src.freq",
+    expect = {"fx-a-modify-tone": "ladder: fails at V5", "fx-a-repair-type": "ladder: fails at V5",
+              "fx-a-build-file": "ladder: fails at V5", "fx-a-knowledge-tone": "graph_unchanged: src.freq",
               "fx-a-save-block": "hier_block: triple_gain.block.yml is not in the run's block library"}
     for d, needle in expect.items():
         task = load_task(TASKS / d)

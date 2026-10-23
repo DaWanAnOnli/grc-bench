@@ -2,7 +2,7 @@
  "task": "gbf-test-08",
  "action": "retheme",
  "rethemed": true,
- "new_theme": "REPAIR L1 phase comparator (fault deleted_connection, expected V3): at 8 kHz, reference oscillator 1 kHz and test oscillator 1.005 kHz (complex, amplitude 1) -> Multiply Conjugate (test x conj(ref)) -> Complex To Arg -> File Sink phase.dat (float); the reference -> Multiply Conjugate input 1 connection is deleted. V6 f2p: signed corr_ref with one 0.2 s period of the ideal rising ramp (tooling T2), peak_freq 5 Hz, max_abs pi; p2p graph checks: both oscillators present with their frequency, amplitude and type, path Signal Source -> Complex To Arg/MagPhase -> File Sink. v2 signature mix|phase|tone (test). Sample rate 8 kHz instead of the planned 48 kHz keeps the corr_ref reference at 1,600 values.",
+ "new_theme": "REPAIR L1 phase comparator (fault deleted_connection, expected V3): at 8 kHz, reference oscillator 1 kHz and test oscillator 1.005 kHz (complex, amplitude 1) -> Multiply Conjugate (test x conj(ref)) -> Complex To Arg -> File Sink phase.dat (float); the reference -> Multiply Conjugate input 1 connection is deleted. V5 f2p: signed corr_ref with one 0.2 s period of the ideal rising ramp (tooling T2), peak_freq 5 Hz, max_abs pi; p2p graph checks: both oscillators present with their frequency, amplitude and type, path Signal Source -> Complex To Arg/MagPhase -> File Sink. v2 signature mix|phase|tone (test). Sample rate 8 kHz instead of the planned 48 kHz keeps the corr_ref reference at 1,600 values.",
  "accepted": [
   {
    "id": "item-quality/F1-max-abs-stricter-than-stated-spec",
@@ -32,9 +32,9 @@
  "rejected": [],
  "notes": [
   "Old content (square-to-sine shaper repair) is gone; every finding was a real problem of it and its general concern was re-checked on the new content (above).",
-  "Variants (3, all at V6): inputs swapped + Multiply Const -1; explicit Conjugate + Multiply; Complex to Mag/Phase (phase output). Extra probes passing: GRC-writer export of the reference, the repair through a Throttle. Failing as intended: inverted repair (corr -0.94 only), phase in degrees, Head 4000 (V5).",
+  "Variants (3, all at V5): inputs swapped + Multiply Const -1; explicit Conjugate + Multiply; Complex to Mag/Phase (phase output). Extra probes passing: GRC-writer export of the reference, the repair through a Throttle. Failing as intended: inverted repair (corr -0.94 only), phase in degrees, Head 4000 (V4).",
   "Variant v3 classifies as mix|other:blocks_complex_to_magphase|tone (train) because compose's class map lacks blocks_complex_to_magphase (it should be envelope+phase). Tooling gap for the owner of compose.py; not edited here (rule R13).",
   "Mutants: 9 valid, all killed; labels verified per mutant. The amplitude mutant is killed only by the 'keep the oscillators' graph check, as intended (Complex To Arg ignores amplitude)."
  ],
- "gates": "ALL PASS: solvability 10/10, reference 303 tokens, variants 3/3 at V6, start fails at V3 (expected V3), mutants 9 valid / kill rate 1.0 / 0 survivors / 0 invalid"
+ "gates": "ALL PASS: solvability 10/10, reference 303 tokens, variants 3/3 at V5, start fails at V3 (expected V3), mutants 9 valid / kill rate 1.0 / 0 survivors / 0 invalid"
 }

@@ -5,7 +5,7 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V6: observation 'clip': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'clipped.dat', 'type': 'float'}}; clip max_int_dev = observation missing; clip min = observation missing; clip max = observation missing; clip mean = observation missing; graph check path: no such path",
+    "ladder: fails at V5: observation 'clip': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'clipped.dat', 'type': 'float'}}; clip max_int_dev = observation missing; clip min = observation missing; clip max = observation missing; clip mean = observation missing; graph check path: no such path",
     "blocks_present[0]: 0 matching block(s) []",
     "blocks_present[1]: 0 matching block(s) []; candidates: [\"sink_in (enabled): file='noise_in.dat'\", \"sink_out (enabled): file='limited.dat'\"]"
    ],
@@ -31,7 +31,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: clip mean = 0.20885"
+      "ladder: fails at V5: clip mean = 0.20885"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc"

@@ -1,7 +1,7 @@
 """Tier-F task directories: items/tier_f/<split>/<task_id>/
 
     task.json          the item record (schema grcbench.common.schemas.TIER_F) incl. instruction,
-                       observation contract and V6 oracle
+                       observation contract and V5 oracle
     start.grc          starting flowgraph for modify / repair / parameter-tune tasks (absent for build)
     reference.grc      the golden solution, in compact form (eval plan §7.1: answers fit the 8K cap)
     variants/*.grc     at least two further valid solutions (equivalent-variant acceptance tests)

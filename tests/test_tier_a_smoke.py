@@ -320,7 +320,7 @@ def test_report_says_plumbing_and_lists_every_episode():
     text = smoke.render_report(summary)
     assert smoke.BANNER in text and "not a model result" in text
     assert "| fx-a-modify-tone | yes (completed) | agent_finished | 7 | 6 | 1 (0) | 0 | 0 | none | fail | 10.0 min |" in text
-    assert "| fx-modify-tone | 0 | yes (signal source, catalog, k=3) | yes | yes | yes | PASS (V1-V6) | 2 |" in text
+    assert "| fx-modify-tone | 0 | yes (signal source, catalog, k=3) | yes | yes | yes | PASS (V1-V5) | 2 |" in text
     assert "grader: blocks_present[0]: freq expects 2000" in text and "- a note" in text
     assert "The grammar probe did not run" in text
     assert smoke.render_report(summary) == text

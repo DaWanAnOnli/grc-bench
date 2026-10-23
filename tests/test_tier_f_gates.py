@@ -64,4 +64,4 @@ def test_all_gates_pass_on_fixture_task():
     res = gates.run(FX, reps=10, workers=8)
     assert res["passed"], res["gates"]
     assert res["gates"]["mutation"]["valid_mutants"] >= 5
-    assert res["gates"]["start_fails"]["first_failed"] == "V6"
+    assert res["gates"]["start_fails"]["first_failed"] == "V5"

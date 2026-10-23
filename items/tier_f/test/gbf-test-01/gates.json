@@ -27,19 +27,19 @@
    "passed": true,
    "results": {
     "v1_float_to_complex_mag.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_mag_squared_sqrt.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_max_x_minus_x.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_gain_throttle_abs.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

@@ -55,7 +55,7 @@ def test_pass_hat_k_with_n_equal_k_is_share_solved_in_all_runs():
 
 
 def test_exec_and_func_at_1_use_the_preregistered_denominators():
-    highest = {"a": ["V6", "V5", "V2", None, "V6"], "b": ["V5"] * 5, "c": ["V3"] * 5}
+    highest = {"a": ["V5", "V4", "V2", None, "V5"], "b": ["V4"] * 5, "c": ["V3"] * 5}
     e = fn.exec_at_1(highest)
     assert e["value"] == pytest.approx((0.6 + 1.0 + 0.0) / 3) and e["n_tasks"] == 3
     f = fn.func_at_1(highest, ["a"])
@@ -66,21 +66,21 @@ def test_exec_and_func_at_1_use_the_preregistered_denominators():
         fn.func_at_1(highest, [])
     funnel = fn.funnel(highest, ["a"])
     vals = [funnel["rates"][r] for r in fn.RUNGS[:-1]]
-    assert vals == sorted(vals, reverse=True) and funnel["rates"]["V5"] == e["value"]
-    assert fn.reached("V6", "V5") and not fn.reached("V4", "V5") and not fn.reached(None, "V1")
+    assert vals == sorted(vals, reverse=True) and funnel["rates"]["V4"] == e["value"]
+    assert fn.reached("V5", "V4") and not fn.reached("V3", "V4") and not fn.reached(None, "V1")
     with pytest.raises(ValueError):
-        fn.reached("V7", "V5")
+        fn.reached("V7", "V4")
 
 
 def test_funnel_v6_uses_the_oracle_denominator_like_func_at_1():
-    # reviewer probe P4: one oracle task at V6 x5, one task without an oracle at V5 x5
-    highest = {"oracle_task": ["V6"] * 5, "no_oracle_task": ["V5"] * 5}
+    # reviewer probe P4: one oracle task at V5 x5, one task without an oracle at V4 x5
+    highest = {"oracle_task": ["V5"] * 5, "no_oracle_task": ["V4"] * 5}
     f = fn.func_at_1(highest, {"oracle_task"})
     fu = fn.funnel(highest, {"oracle_task"})
-    assert f["value"] == 1.0 and fu["rates"]["V6"] == f["value"]          # not 0.5
-    assert fu["n_tasks"] == {"V1": 2, "V2": 2, "V3": 2, "V4": 2, "V5": 2, "V6": 1}
-    assert fu["excluded_from_V6"] == 1 and fu["rates"]["V5"] == 1.0
-    assert math.isnan(fn.funnel(highest, [])["rates"]["V6"])
+    assert f["value"] == 1.0 and fu["rates"]["V5"] == f["value"]          # not 0.5
+    assert fu["n_tasks"] == {"V1": 2, "V2": 2, "V3": 2, "V4": 2, "V5": 1}
+    assert fu["excluded_from_V6"] == 1 and fu["rates"]["V4"] == 1.0
+    assert math.isnan(fn.funnel(highest, [])["rates"]["V5"])
     with pytest.raises(ValueError):
         fn.funnel(highest, ["missing_task"])
 

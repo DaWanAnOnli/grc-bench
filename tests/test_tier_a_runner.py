@@ -578,7 +578,7 @@ def test_tier_f_lookup_then_edit_passes_the_ladder(root, guard):
     returns = tool_returns(res)
     assert returns[rec["blocked_calls"][0]["tool_call_id"]].content == tier_f_mode.BLOCKED_TEXT
     grade = rec["grade"]
-    assert grade["passed"] and grade["highest_passed"] == "V6" and grade["first_failed"] is None
+    assert grade["passed"] and grade["highest_passed"] == "V5" and grade["first_failed"] is None
     assert all(grade["rungs"][r]["passed"] for r in tier_f_mode.RUNGS)
     assert yaml.safe_load(Path(rec["final_graph"]).read_text())["blocks"]
     row = json.loads((Path(res.run_dir) / runner.TRACE_FILE).read_text())
@@ -644,7 +644,7 @@ def test_tier_f_repaired_but_malformed_edit_fails_v1(root, guard):
     assert edit["accepted"] and edit["raw_args"] == raw and edit["repair_changed_args"] is True
     assert edit["well_formed"] is False and edit["schema_errors"]
     grade = res.tier_f["grade"]
-    assert grade["passed"] is False and grade["first_failed"] == "V1" and grade["ladder"]["highest_passed"] == "V6"
+    assert grade["passed"] is False and grade["first_failed"] == "V1" and grade["ladder"]["highest_passed"] == "V5"
 
 
 @pytest.mark.slow

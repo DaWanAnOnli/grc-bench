@@ -11,11 +11,11 @@
   },
   {
    "id": "item-quality:F2-brickwall-spec-vs-reference",
-   "change": "The impossible brick-wall sentence and the false 'as the current channelizer does' were removed. The instruction now states what every valid design achieves and what the oracle checks: 'Signals within 2 kHz of a channel's centre must keep their frequency offset and their amplitude, and signals 10 kHz or more from it must be filtered out of that channel ... Measured on each channel file over 3072 samples after skipping its first 1024 ...'. The reviewer's very sharp C3 design (2181 taps) now passes. The near-brick-wall hierarchical setting (bw 0.495, tb 0.005) fails at V5 inside GNU Radio's remez ('insufficient extremals'); NOTES records it as not a valid answer. How much leakage 'filtered out' tolerates is measured and recorded in review.notes (1). Prototype low_pass(.., 9500, 2000), which leaks the 13.92 kHz tone into ch2 at -7 dB, fails. Designs whose stopband starts at 10 kHz (low_pass 9000/2000 and 6000/8000) pass."
+   "change": "The impossible brick-wall sentence and the false 'as the current channelizer does' were removed. The instruction now states what every valid design achieves and what the oracle checks: 'Signals within 2 kHz of a channel's centre must keep their frequency offset and their amplitude, and signals 10 kHz or more from it must be filtered out of that channel ... Measured on each channel file over 3072 samples after skipping its first 1024 ...'. The reviewer's very sharp C3 design (2181 taps) now passes. The near-brick-wall hierarchical setting (bw 0.495, tb 0.005) fails at V4 inside GNU Radio's remez ('insufficient extremals'); NOTES records it as not a valid answer. How much leakage 'filtered out' tolerates is measured and recorded in review.notes (1). Prototype low_pass(.., 9500, 2000), which leaks the 13.92 kHz tone into ch2 at -7 dB, fails. Designs whose stopband starts at 10 kHz (low_pass 9000/2000 and 6000/8000) pass."
   },
   {
    "id": "item-quality:F3-p2p-noise-unchecked",
-   "change": "The reviewer's ch2 RMS floor no longer works: the compliance:F4 fix puts a tone in ch2, so the noise cannot be measured there. The noise is instead checked p2p on spectrum.dat: the power share in the tone-free band 3-11 kHz (Hann window, tooling T5) must be within 30 % of the nominal 6.533e-05 for complex noise of amplitude 0.02. The noise source is deterministic from run to run (the reference gives 6.60e-05). Over 40 noise seeds in GNU Radio the share varies by 5.1 % relative std (numpy model 5.3 %, 1e-4 quantiles -17.5 % / +18.6 %), so 30 % is more than 5.7 sigma. Verified: the noise source and Throttle deleted (share 0), amplitudes 0.08, 0.03 and 0.013, and uniform noise of the same amplitude (a third of the power) all fail V6 p2p. The reference, all 21 variants and 5 extra valid designs pass, using at most 3.4 % of the tolerance."
+   "change": "The reviewer's ch2 RMS floor no longer works: the compliance:F4 fix puts a tone in ch2, so the noise cannot be measured there. The noise is instead checked p2p on spectrum.dat: the power share in the tone-free band 3-11 kHz (Hann window, tooling T5) must be within 30 % of the nominal 6.533e-05 for complex noise of amplitude 0.02. The noise source is deterministic from run to run (the reference gives 6.60e-05). Over 40 noise seeds in GNU Radio the share varies by 5.1 % relative std (numpy model 5.3 %, 1e-4 quantiles -17.5 % / +18.6 %), so 30 % is more than 5.7 sigma. Verified: the noise source and Throttle deleted (share 0), amplitudes 0.08, 0.03 and 0.013, and uniform noise of the same amplitude (a third of the power) all fail V5 p2p. The reference, all 21 variants and 5 extra valid designs pass, using at most 3.4 % of the tolerance."
   },
   {
    "id": "compliance:F1-noise-p2p-unchecked",
@@ -27,7 +27,7 @@
   },
   {
    "id": "compliance:F3-samp-rate-unobservable",
-   "change": "The tone frequencies in the start graph are now absolute Hz values (1200, 13920, 34560, plus the added 23040) instead of fractions of samp_rate, and the perturbation record says so. A mutant sets samp_rate to 32000 (breaks the wideband property). Verified: samp_rate 32000 and 12000 now fail V6 in both groups (spectrum peak 1804.7 / 4804.7 Hz instead of 1200)."
+   "change": "The tone frequencies in the start graph are now absolute Hz values (1200, 13920, 34560, plus the added 23040) instead of fractions of samp_rate, and the perturbation record says so. A mutant sets samp_rate to 32000 (breaks the wideband property). Verified: samp_rate 32000 and 12000 now fail V5 in both groups (spectrum peak 1804.7 / 4804.7 Hz instead of 1200)."
   },
   {
    "id": "compliance:F4-ch2-rate-unchecked",
@@ -35,7 +35,7 @@
   },
   {
    "id": "plan:R4-R5-R9-R11-R12-T7",
-   "change": "Every stated requirement maps to a check (build.py asserts it). The run sentence is stated: 4096 items per point, checked by V5 liveness. All five observation points name file and item type (complex). Known limits, the discrimination question and the GPL attribution are in review.notes. R12: all band_fraction checks are on complex signals (two-sided spectrum), so the 18 Oct one-sided fix does not change them. The tone-share and noise-share expectations were re-derived from the stated amplitudes and measured with the current oracle. Five observation points: re-gated on 18 Oct with the non-back-pressuring taps of tooling T7. Before this fixer's edits, build.py regenerated every file byte-identically, checked against the files left by the interrupted earlier fixer run."
+   "change": "Every stated requirement maps to a check (build.py asserts it). The run sentence is stated: 4096 items per point, checked by V4 liveness. All five observation points name file and item type (complex). Known limits, the discrimination question and the GPL attribution are in review.notes. R12: all band_fraction checks are on complex signals (two-sided spectrum), so the 18 Oct one-sided fix does not change them. The tone-share and noise-share expectations were re-derived from the stated amplitudes and measured with the current oracle. Five observation points: re-gated on 18 Oct with the non-back-pressuring taps of tooling T7. Before this fixer's edits, build.py regenerated every file byte-identically, checked against the files left by the interrupted earlier fixer run."
   }
  ],
  "rejected": [
@@ -44,7 +44,7 @@
    "reason": "Not a defect; per fix_plan it is a team decision. Part of the concern is resolved: the instruction no longer states the 'channel k at k x 12 kHz' output numbering and names the channels only by frequency, so the model has to know the channelizer's output order. The file assignment still follows that native order, so the reference edit stays small (nchans 4, one File Sink, one connection). Changing to a non-native order (needing outchans or rewiring) would change the item's difficulty and wording, so it is left to the team; review.notes (4) records it."
   }
  ],
- "gates": "PASS (18 Oct, after tooling T7): solvability 10/10, size 775 tokens, variants 21/21 at V6, start fails at V6 (f2p fails, p2p passes), mutation 15/15 valid mutants killed (kill rate 1.0).",
+ "gates": "PASS (18 Oct, after tooling T7): solvability 10/10, size 775 tokens, variants 21/21 at V5, start fails at V5 (f2p fails, p2p passes), mutation 15/15 valid mutants killed (kill rate 1.0).",
  "round2": {
   "reviewer_findings": [
    "G10R-2"
@@ -52,7 +52,7 @@
   "accepted": [
    {
     "id": "G10R-2",
-    "change": "Each channel gets an f2p noise check: band_fraction (Hann window, 12 kHz, samples 1024-4095) in a tone-free 1.8 kHz band within 2 kHz of the centre, at least half the share of the original noise (amplitude 0.02). The instruction states it ('the noise within 2 kHz of the centre keeps at least half of its original power'). The reviewer's synthetic-channel answers (all four channels, or ch1-ch3) fail at V6 on these checks only; build.py --probes builds both and checks them. Version 3."
+    "change": "Each channel gets an f2p noise check: band_fraction (Hann window, 12 kHz, samples 1024-4095) in a tone-free 1.8 kHz band within 2 kHz of the centre, at least half the share of the original noise (amplitude 0.02). The instruction states it ('the noise within 2 kHz of the centre keeps at least half of its original power'). The reviewer's synthetic-channel answers (all four channels, or ch1-ch3) fail at V5 on these checks only; build.py --probes builds both and checks them. Version 3."
    }
   ],
   "rejected": [],

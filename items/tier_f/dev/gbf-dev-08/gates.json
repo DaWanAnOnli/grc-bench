@@ -22,34 +22,34 @@
    "expected": "V2",
    "first_failed": "V2",
    "passed": true,
-   "v6_groups": null
+   "v5_groups": null
   },
   "variants": {
    "n": 6,
    "passed": true,
    "results": {
     "v1_float_short_converters.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_int_levels_first.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_char_converters.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_literal_bits_no_throttle.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_epy_rounding_quantizer.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v6_codes_parallel_path.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

@@ -20,9 +20,9 @@
   },
   "start_fails": {
    "expected": null,
-   "first_failed": "V6",
+   "first_failed": "V5",
    "passed": true,
-   "v6_groups": {
+   "v5_groups": {
     "f2p": false,
     "p2p": true
    }
@@ -32,23 +32,23 @@
    "passed": true,
    "results": {
     "v1_bt025_rate_from_samp_rate.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_bt03_gmsk_demod_gain_idiom.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_bt035_literal_gain.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_bt04_band_edge.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_bt015_narrow_gaussian.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

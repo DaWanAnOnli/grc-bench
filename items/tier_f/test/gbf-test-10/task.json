@@ -104,7 +104,7 @@
  ],
  "notes": "v2 signature of the reference: filter|tone; variants: v1_taps_variable_fir: filter|tone; v2_dc_blocker: filter|tone; v3_gain_in_filter: filter|tone; v4_scale_then_band_pass: filter|tone; v5_fft_filter: filter|tone; v6_kaiser_abs_path: filter|tone; v7_iir_first_order: filter|tone",
  "observation": {
-  "contract": "'out': the float samples written to the File Sink whose file name is clean_tone.dat (item type float; the first 1024 samples, which cover the filter's start-up transient, are skipped); 'src': the output of the Signal Source block tone (edge tap, no extra block). V5 liveness: 8192 items at each point.",
+  "contract": "'out': the float samples written to the File Sink whose file name is clean_tone.dat (item type float; the first 1024 samples, which cover the filter's start-up transient, are skipped); 'src': the output of the Signal Source block tone (edge tap, no extra block). V4 liveness: 8192 items at each point.",
   "points": [
    {
     "name": "out",
@@ -256,7 +256,7 @@
  },
  "spec_properties": [
   {
-   "checked_by": "observation 'out' (sink matched by file name and type float; a missing or mistyped point fails V6)",
+   "checked_by": "observation 'out' (sink matched by file name and type float; a missing or mistyped point fails V5)",
    "id": "output_point",
    "text": "float samples are written by a File Sink to clean_tone.dat"
   },
@@ -281,7 +281,7 @@
    "text": "the Signal Source tone and the 32 kHz sample rate are kept: 1.2 kHz cosine, amplitude 0.4, DC offset 0.75"
   },
   {
-   "checked_by": "V5 liveness: at least 8192 items at both observation points; nothing more is claimed",
+   "checked_by": "V4 liveness: at least 8192 items at both observation points; nothing more is claimed",
    "id": "run_length",
    "text": "the flowgraph keeps producing samples until it is stopped"
   },

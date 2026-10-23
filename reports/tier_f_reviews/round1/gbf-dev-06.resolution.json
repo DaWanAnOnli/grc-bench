@@ -16,11 +16,11 @@
   },
   {
    "id": "compliance/F3-run-length-unstated-head-answers-fail-v5",
-   "change": "Applies. The instruction ends with the set sentence: 'The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.' The V5 liveness condition (14400 items at both observation points) is recorded in spec_properties."
+   "change": "Applies. The instruction ends with the set sentence: 'The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.' The V4 liveness condition (14400 items at both observation points) is recorded in spec_properties."
   },
   {
    "id": "compliance/F4-stated-requirements-unchecked",
-   "change": "Old filter-parameter wording is moot. Lesson applied: the new instruction states no filter design numbers. Every stated number is checked by V6: the tone frequencies and amplitudes, both rates, the carrier, 99 % purity, 30 dB LSB and carrier suppression, and the 1 % and 5 % tolerances. Both stated structural requirements are graph checks. The 'real (float)' outputs are checked through the sink type in the observation points."
+   "change": "Old filter-parameter wording is moot. Lesson applied: the new instruction states no filter design numbers. Every stated number is checked by V5: the tone frequencies and amplitudes, both rates, the carrier, 99 % purity, 30 dB LSB and carrier suppression, and the 1 % and 5 % tolerances. Both stated structural requirements are graph checks. The 'real (float)' outputs are checked through the sink type in the observation points."
   },
   {
    "id": "compliance/F5-mutation-property-mislabel",
@@ -48,11 +48,11 @@
   },
   {
    "id": "fixer/zoh-false-accept",
-   "change": "Own finding during calibration. With the planner's 1.9 kHz upper tone, a Repeat x6 (zero-order hold) + low-pass + Hilbert answer passed V6, although its droop leaves the 1.9 kHz tone 9 % low, against the stated 5 %. Shares 0.249 vs min 0.242; rms -3.4 %. The upper tone was moved to 2.4 kHz, where the droop is -14 %. Now share 0.230 < 0.2422 and 0.770 > 0.7578, so it fails V6 (probe against the final task.json). Every answer with both amplitudes within 5 % still passes. The remaining looseness of the share + rms bounds is review.notes limit (5)."
+   "change": "Own finding during calibration. With the planner's 1.9 kHz upper tone, a Repeat x6 (zero-order hold) + low-pass + Hilbert answer passed V5, although its droop leaves the 1.9 kHz tone 9 % low, against the stated 5 %. Shares 0.249 vs min 0.242; rms -3.4 %. The upper tone was moved to 2.4 kHz, where the droop is -14 %. Now share 0.230 < 0.2422 and 0.770 > 0.7578, so it fails V5 (probe against the final task.json). Every answer with both amplitudes within 5 % still passes. The remaining looseness of the share + rms bounds is review.notes limit (5)."
   },
   {
    "id": "fixer/variants",
-   "change": "Variants v1-v4 kept, plus new v5: an interpolating Low Pass Filter as the only rate changer, a Blackman Hilbert, and a Frequency Xlating FIR (taps [1], centre -10 kHz) as the up-shift. The other variants are: v1 Hilbert at 8 kHz + complex Rational Resampler + Rotator; v2 zero-stuffing + LPF + the classic I*cos - Q*sin phasing modulator; v3 Interpolating FIR + 129-tap Hilbert + Rotator; v4 PFB arbitrary resampler + 401-tap Kaiser Hilbert + Multiply Conjugate + Throttle + absolute paths. All 5 pass V6 and share the reference's v2 signature."
+   "change": "Variants v1-v4 kept, plus new v5: an interpolating Low Pass Filter as the only rate changer, a Blackman Hilbert, and a Frequency Xlating FIR (taps [1], centre -10 kHz) as the up-shift. The other variants are: v1 Hilbert at 8 kHz + complex Rational Resampler + Rotator; v2 zero-stuffing + LPF + the classic I*cos - Q*sin phasing modulator; v3 Interpolating FIR + 129-tap Hilbert + Rotator; v4 PFB arbitrary resampler + 401-tap Kaiser Hilbert + Multiply Conjugate + Throttle + absolute paths. All 5 pass V5 and share the reference's v2 signature."
   },
   {
    "id": "fixer/records",
@@ -62,14 +62,14 @@
  "rejected": [
   {
    "id": "plan/variant-repeat-lowpass-hilbert",
-   "reason": "The plan's suggested variant 'Repeat + low-pass + Hilbert' is not a correct answer under the stated 5 % amplitude tolerance. A zero-order hold droops by sinc(f/8 kHz): -9.0 % at 1.9 kHz and -14.2 % at 2.4 kHz. It is not added as a variant, and the oracle now rejects it (authoring probe: V6 fails on both share checks)."
+   "reason": "The plan's suggested variant 'Repeat + low-pass + Hilbert' is not a correct answer under the stated 5 % amplitude tolerance. A zero-order hold droops by sinc(f/8 kHz): -9.0 % at 1.9 kHz and -14.2 % at 2.4 kHz. It is not added as a variant, and the oracle now rejects it (authoring probe: V5 fails on both share checks)."
   },
   {
    "id": "plan/mutant-hilbert-9-taps",
    "reason": "Not added as a separate mutant: the near miss 'num_taps 65 at 48 kHz' (the block default) tests the same Hilbert-length requirement closer to the threshold (LSB share 7.2e-3 against 3.23e-4). A 9-tap Hilbert would only be a coarser copy of that mutant."
   }
  ],
- "gates": "./gb tier-f gates items/tier_f/dev/gbf-dev-06: PASSED. Solvability 10/10 (8 workers). Reference 508 tokens. Variants 5/5 reach V6. Start: build task. Mutation: 13 valid mutants, kill rate 1.0, no survivors. build.py is deterministic (two rebuilds byte-identical).",
+ "gates": "./gb tier-f gates items/tier_f/dev/gbf-dev-06: PASSED. Solvability 10/10 (8 workers). Reference 508 tokens. Variants 5/5 reach V5. Start: build task. Mutation: 13 valid mutants, kill rate 1.0, no survivors. build.py is deterministic (two rebuilds byte-identical).",
  "round2": {
   "reviewer_findings": [
    "gbf-dev-06/R2-F1-rate-change-check-bypassed-by-decimator"

@@ -17,7 +17,7 @@
   "resampler_demo",
   "run_test_null_sink"
  ],
- "rule": "usable seeds (ladder V1-V5 pass after headless conversion) split by largest remainder per directory, ranked by sha256(seed + NUL + file); forced-train stems always train; unusable examples get no split",
+ "rule": "usable seeds (ladder V1-V4 pass after headless conversion) split by largest remainder per directory, ranked by sha256(seed + NUL + file); forced-train stems always train; unusable examples get no split",
  "seed": "grc-bench-seeds-v1-2026-10-14",
  "seeds": {
   "analog/noise_power.grc": {

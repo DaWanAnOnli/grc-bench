@@ -405,9 +405,9 @@ graph_checks = (
 
 spec_properties = [
     {"id": "loads", "text": "the flowgraph validates (every parameter evaluates), generates and runs",
-     "checked_by": "ladder V3-V5"},
+     "checked_by": "ladder V3-V4"},
     {"id": "run", "text": "the flowgraph keeps producing samples until it is stopped (no sample limit)",
-     "checked_by": "V5 liveness: at least 8,192 items at rx_symbols.dat and at tx_signal.dat"},
+     "checked_by": "V4 liveness: at least 8,192 items at rx_symbols.dat and at tx_signal.dat"},
     {"id": "output", "text": "the recovered symbols, one complex item per symbol, are written to the File Sink "
                              "rx_symbols.dat",
      "checked_by": "observation contract (file name and item type complex); oversampled output or a wrong tap fails "
@@ -490,7 +490,7 @@ mutations = [
      "note": "clock offset in the other direction"},
     {"op": "set_param", "block": "timing_rate_sink", "param": "file", "value": "rate.dat", "breaks": "file_sinks",
      "note": ("the timing-rate File Sink writes rate.dat instead of timing_rate.dat. (Deleting a single timing sink "
-              "is not a valid mutant: pfb_clock_sync_ccf accepts 1 or 4 connected outputs and fails at V5 otherwise; "
+              "is not a valid mutant: pfb_clock_sync_ccf accepts 1 or 4 connected outputs and fails at V4 otherwise; "
               "deleting all three is rejected by the File Sink checks, see the round-1 probe del_4_other_sinks.)")},
     {"op": "bypass", "block": TX_SINK, "breaks": "file_sinks",
      "note": "the tx_signal.dat File Sink deleted"},

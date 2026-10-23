@@ -5,7 +5,7 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V6: observation 'peak': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'peak.dat', 'type': 'float'}}; peak min = observation missing; peak max = observation missing; peak min = observation missing; peak max = observation missing; graph check path: no such path",
+    "ladder: fails at V5: observation 'peak': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'peak.dat', 'type': 'float'}}; peak min = observation missing; peak max = observation missing; peak min = observation missing; peak max = observation missing; graph check path: no such path",
     "blocks_present[0]: 0 matching block(s) []",
     "blocks_present[1]: 0 matching block(s) []; candidates: [\"out (enabled): file='rectified.dat'\"]"
    ],
@@ -31,7 +31,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: peak max = 2.0"
+      "ladder: fails at V5: peak max = 2.0"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc"

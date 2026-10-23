@@ -69,9 +69,9 @@ TIER_K = {
     }],
 }
 
-# V6 oracle vocabulary (must equal grcbench.tier_f.oracles.FEATURES and graph_checks.KINDS; a test
+# V5 oracle vocabulary (must equal grcbench.tier_f.oracles.FEATURES and graph_checks.KINDS; a test
 # checks this). A typo in a feature or check kind is a schema error at taskio.save time instead of a
-# check that silently fails at V6.
+# check that silently fails at V5.
 TIER_F_FEATURES = ["peak_freq", "band_fraction", "rms", "mean", "max_abs", "min", "max", "corr_ref",
                    "equal_prefix", "max_int_dev", "int_fraction"]
 TIER_F_GRAPH_CHECKS = ["block_present", "block_absent", "path", "same_blocks_as_start",

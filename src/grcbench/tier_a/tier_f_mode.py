@@ -34,12 +34,12 @@ Grading (host side, `grade`)
   V1       the in-budget change_graph call is well formed: its arguments, as the model emitted them
            (before GRC-Agent's JSON repair), are a JSON object valid against the change_graph tool
            schema (caps.schema_check).
-  V2-V6    the final graph (exported from GRC's memory with GRC's writer to <run>/final.grc) goes
+  V2-V5    the final graph (exported from GRC's memory with GRC's writer to <run>/final.grc) goes
            through grcbench.tier_f.ladder.check(final_text, task), graph_checks included.
   rejected a rejected edit fails at the rung its error codes map to (REJECTION_RUNG: an unknown
            block or port at V2, a validation error at V3); arguments GRC-Agent refused to validate
            fail at V1.
-  A sample passes when V1-V6 all pass.
+  A sample passes when V1-V5 all pass.
 
 Build-task start graph rule (`start_graph_text`): options {id: default, generate_options: no_gui,
 output_language: python} plus one variable `samp_rate`. Its value is the task's sample rate when
@@ -101,7 +101,7 @@ REJECTION_RUNG = {
     "update_states_failed": "V3", "auto_resolve_failed": "V3", "mutation_failed": "V3",
 }
 HARNESS_CODES = ("save_failed", "rollback_failed")
-RUNGS = ("V1", "V2", "V3", "V4", "V5", "V6")
+RUNGS = ("V1", "V2", "V3", "V4", "V5")
 
 _NUM = r"(?P<num>\d[\d,]*(?:\.\d+)?(?:[eE][+-]?\d+)?)"
 _UNIT = r"(?P<unit>[kKM]?)(?:Hz|S/s|sps|Sps)\b"
@@ -469,7 +469,7 @@ def rejection_rung(codes: list[str]) -> str | None:
 
 def grade(record: dict[str, Any], task: dict[str, Any], *, ladder_check: Callable[..., dict] | None = None
           ) -> dict[str, Any]:
-    """V1 (well-formed edit) + V2-V6 (ladder on the final graph); returns the grading record."""
+    """V1 (well-formed edit) + V2-V5 (ladder on the final graph); returns the grading record."""
     from ..tier_f import ladder
     check = ladder_check or ladder.check
     edit = record.get("edit") or {}
@@ -519,8 +519,8 @@ def grade(record: dict[str, Any], task: dict[str, Any], *, ladder_check: Callabl
             break
         highest = rung
     out["highest_passed"] = highest
-    out["first_failed"] = None if highest == "V6" else first_failed
-    out["passed"] = highest == "V6"
+    out["first_failed"] = None if highest == "V5" else first_failed
+    out["passed"] = highest == "V5"
     if not out["passed"] and out["failure"] is None:
         out["failure"] = f"failed_{out['first_failed']}"
     return out

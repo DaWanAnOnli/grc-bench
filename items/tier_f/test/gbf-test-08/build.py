@@ -117,7 +117,7 @@ P_PATH = ("P5 the phase is computed from the oscillators: a path Signal Source -
           "Complex to Mag/Phase) -> File Sink exists (rules out a sawtooth Signal Source written "
           "straight to phase.dat)")
 P_OBS = ("P6 observation and run: float samples (8 kHz) written to the File Sink phase.dat (the sink's "
-         "type is part of the observation point); the flowgraph runs until stopped, checked only by V5 "
+         "type is part of the observation point); the flowgraph runs until stopped, checked only by V4 "
          "liveness (at least 8,000 items)")
 P_GROUPS = ("Groups (fix plan R8): the start graph fails at V3 and never runs, so every signal check "
             "depends on the repaired connection and is f2p; p2p holds the structural properties of the "

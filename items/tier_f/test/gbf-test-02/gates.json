@@ -27,23 +27,23 @@
    "passed": true,
    "results": {
     "v1_noise_source_adder.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_fastnoise_throttle_narrow_loop.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_bandpass_prefilter.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_wide_loop.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_freqdet_nco.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

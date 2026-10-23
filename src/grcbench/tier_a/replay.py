@@ -35,7 +35,7 @@ synthetic end state built from the start files plus wrong_end_state.grc as the f
 The Tier-F setting's gate (`tier_f_gates`, build plan Decision 16 Oct "Solvability becomes golden
 replay 10/10 through the real runner"): the Tier-F task's golden_calls.json (tier_f.golden: one
 query_knowledge + one change_graph) is replayed through run_tier_f_sample by a FunctionModel (the
-lookup, then the edit) and must pass V1-V6 in 10 of 10 samples; a do-nothing model must fail.
+lookup, then the edit) and must pass V1-V5 in 10 of 10 samples; a do-nothing model must fail.
 
 Gate replays use scripted models only, never a model under test, so they skip the run-log guard
 (their run-log entry says so); nothing here ever sends a benchmark item to a model.

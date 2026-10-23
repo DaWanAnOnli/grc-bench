@@ -22,22 +22,22 @@
    "expected": "V3",
    "first_failed": "V3",
    "passed": true,
-   "v6_groups": null
+   "v5_groups": null
   },
   "variants": {
    "n": 3,
    "passed": true,
    "results": {
     "v1_swapped_inputs_negated.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_conjugate_then_multiply.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_mag_phase_block.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

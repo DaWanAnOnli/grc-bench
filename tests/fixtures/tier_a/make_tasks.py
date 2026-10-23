@@ -126,7 +126,7 @@ TASK_SPECS = {
                         "with the keys \"tone_hz\" and \"samp_rate\" holding those two numbers."),
         "start_state": {"active_graph": None}, "scripted_user": {"max_turns": 1},
         "acceptance": {
-            "ladder": {"rung": "V6", "observation": tone_obs("tone.dat"), "oracle": tone_oracle(1000, graph_checks=[
+            "ladder": {"rung": "V5", "observation": tone_obs("tone.dat"), "oracle": tone_oracle(1000, graph_checks=[
                 {"kind": "path", "from_ids": ["analog_sig_source_x"], "to_ids": ["blocks_file_sink"],
                  "via_ids": THROTTLES}])},
             "blocks_present": [
@@ -172,7 +172,7 @@ TASK_SPECS = {
         "start": ("tone.grc", named(setp(TONE, "out", "type", "complex"), "repair_tone")),
         "scripted_user": {"max_turns": 1},
         "acceptance": {
-            "ladder": {"rung": "V6", "observation": tone_obs("output.dat"),
+            "ladder": {"rung": "V5", "observation": tone_obs("output.dat"),
                        "oracle": tone_oracle(1000, graph_checks=[{"kind": "same_blocks_as_start"}])},
             "blocks_present": [{"id": "blocks_file_sink", "params": {"file": "output.dat"}},
                                {"id": "blocks_multiply_const_vxx", "params": {"const": 2}}]},
@@ -234,7 +234,7 @@ TASK_SPECS = {
             "hier_block": {"block_id": "triple_gain", "label": "Triple Gain", "inputs": 1, "outputs": 1,
                            "params": ["gain"]},
             "graph_unchanged": True,
-            "ladder": {"rung": "V4"}},
+            "ladder": {"rung": "V3"}},
         "golden": {"calls": [
             c("inspect_graph"),
             c("inspect_graph", {"targets": ["triple"]}),
@@ -253,7 +253,7 @@ TASK_SPECS = {
 
 MODIFY = {
     "acceptance": {
-        "ladder": {"rung": "V6", "observation": tone_obs("output.dat"),
+        "ladder": {"rung": "V5", "observation": tone_obs("output.dat"),
                    "oracle": tone_oracle(2000, graph_checks=[{"kind": "same_blocks_as_start"}])},
         "blocks_present": [{"id": "analog_sig_source_x", "params": {"freq": {"value": 2000, "tol": 1e-6}, "amp": 0.5}}],
         "connections": [{"src": {"id": "analog_sig_source_x"}, "dst": {"id": "blocks_throttle2"}},

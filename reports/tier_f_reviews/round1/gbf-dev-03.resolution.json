@@ -29,7 +29,7 @@
   },
   {
    "id": "compliance/F2-continuous-run-not-enforced",
-   "change": "Applies to the new content. The item uses the R5 run sentence. spec_properties records the requirement as V5 liveness only (4096 items at mf.dat and at nrz.dat), and review.notes records the limit."
+   "change": "Applies to the new content. The item uses the R5 run sentence. spec_properties records the requirement as V4 liveness only (4096 items at mf.dat and at nrz.dat), and review.notes records the limit."
   },
   {
    "id": "compliance/F3-variant-v3-test-signature-and-structure",
@@ -45,7 +45,7 @@
   },
   {
    "id": "compliance/F6-waveform-check-group-label",
-   "change": "Applies. Every mf.dat check is f2p (mf.dat is absent from the start) and the nrz.dat check is p2p (it holds in the start). The start_fails gate confirms this: first_failed V6, with f2p false and p2p true."
+   "change": "Applies. Every mf.dat check is f2p (mf.dat is absent from the start) and the nrz.dat check is p2p (it holds in the start). The start_fails gate confirms this: first_failed V5, with f2p false and p2p true."
   }
  ],
  "rejected": [],
@@ -55,7 +55,7 @@
   "Observation points mf.dat and nrz.dat are matched with params.type = float, and the instruction names both (R9).",
   "Level L1: 5 functional blocks (Vector Source, Throttle, two File Sinks, filter), single rate. Family modify. Version 2. build.py regenerates every file deterministically: two consecutive builds gave byte-identical output."
  ],
- "gates": "passed (18 Oct, after this stage's edits; multi-point task re-gated after tooling T7): solvability 10/10, size 365 tokens, variants 3/3 reach V6, start fails at V6 (f2p false, p2p true), mutation 10 valid with kill rate 1.0; build.py --probes gives 7/7 verdicts as expected",
+ "gates": "passed (18 Oct, after this stage's edits; multi-point task re-gated after tooling T7): solvability 10/10, size 365 tokens, variants 3/3 reach V5, start fails at V5 (f2p false, p2p true), mutation 10 valid with kill rate 1.0; build.py --probes gives 7/7 verdicts as expected",
  "round2": {
   "reviewer_findings": [
    "G1-dev03-train-hash-alternative-not-reserved"

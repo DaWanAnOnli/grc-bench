@@ -436,9 +436,9 @@ graph_checks = [
 
 spec_properties = [
     {"id": "validates", "text": "the repaired flowgraph passes GRC validation (the IO types of every connection match), "
-                                "generates and runs", "checked_by": "ladder V3-V5"},
+                                "generates and runs", "checked_by": "ladder V3-V4"},
     {"id": "run", "text": "the flowgraph keeps producing samples until it is stopped (no sample limit)",
-     "checked_by": "V5 liveness: at least 8,192 items at symbols.dat, at freq.dat and at the modulator's output"},
+     "checked_by": "V4 liveness: at least 8,192 items at symbols.dat, at freq.dat and at the modulator's output"},
     {"id": "transmitter", "text": "the transmitter is kept: the packet (preamble 2E A4 AF 33 1F 22 F1 F7, 4 zero bytes, "
                                   "120 bytes from numpy.random.RandomState(7)), MSB first, BPSK with bit 0 -> +1 and "
                                   "bit 1 -> -1, no differential coding, 5 samples per symbol, root-raised-cosine pulses "
@@ -448,7 +448,7 @@ spec_properties = [
                     "phase-invariant, so excess bandwidth and the bit mapping are only visible here")},
     {"id": "outputs", "text": "complex samples are written to the File Sink symbols.dat and float samples to the File "
                               "Sink freq.dat, both at one sample per symbol",
-     "checked_by": "observation contract (file name and item type; a missing or differently typed sink fails V6)"},
+     "checked_by": "observation contract (file name and item type; a missing or differently typed sink fails V5)"},
     {"id": "silence", "text": "the Null Source supplies complex zeros: between bursts the output is silent, RMS below "
                               "0.01 over the middle 500 of the 800 silent symbol periods",
      "checked_by": "f2p rms <= 0.01 after bursts 0, 1, 2 and 3 (the repaired element)"},
@@ -510,7 +510,7 @@ mutations = [
     {"op": "set_id", "block": NULLSRC, "new_id": "analog_noise_source_x", "breaks": "silence",
      "note": ("the gap source replaced by a complex Noise Source (amplitude 1) instead of a source of zeros. (Feeding "
               "the gap input from the modulator instead is not a valid mutant: both Stream Mux inputs then read one "
-              "buffer alternately and the graph crawls, failing V5 liveness.)")},
+              "buffer alternately and the graph crawls, failing V4 liveness.)")},
     {"op": "set_param", "block": "noise", "param": "value", "value": "0.05", "breaks": "channel",
      "note": "channel noise 0.05 (gap RMS 0.022)"},
     {"op": "set_param", "block": "time_offset", "param": "value", "value": "1.002", "breaks": "channel",
@@ -553,8 +553,8 @@ record = {
         "(5) The Costas loop's bandwidth is not a requirement (bandwidths 0.01-0.5 give the same symbols and carrier "
         "estimate); only its presence, its order 2 and its place in the receive chain are, which is what the "
         "instruction's keep sentence now says. (6) Round-1 F1 (tap stall) is fixed by tooling T7: the wrong repair "
-        "'Costas loop ahead of a float clock sync' now reaches V6 and fails the carrier checks (freq.dat 0.00314) "
-        "instead of failing V5 liveness. (7) GPL-3.0-or-later attribution: derived from the GNU Radio 3.10.12 "
+        "'Costas loop ahead of a float clock sync' now reaches V5 and fails the carrier checks (freq.dat 0.00314) "
+        "instead of failing V4 liveness. (7) GPL-3.0-or-later attribution: derived from the GNU Radio 3.10.12 "
         "example digital/demod/test_corr_est.grc (GNU Radio project); the licence decision for seed-derived items "
         "is the team's.")},
     "family": "repair", "level": "L2",

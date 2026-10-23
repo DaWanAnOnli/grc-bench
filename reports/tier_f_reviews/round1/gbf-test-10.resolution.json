@@ -49,13 +49,13 @@
  ],
  "mutants": "11 mutants, each verified to fail a check carrying its 'breaks' property: bypass hpf; output rewired to the raw source; near miss Rectangular window (mean -0.097); cutoff 2500; near miss hpf gain 1.06; gain 2.0; near miss tone 1224 Hz; tone offset 0 (output unchanged, caught at the source); tone amp 0.5; samp_rate 48000; output file renamed.",
  "notes": "No hum source added (fix plan: it would move the v2 cell to combine|filter|tone = train). cluster_id chain:filter|tone (v2); version 2. build.py regenerates every file byte-identically and removes stale variant files. Two observation points; gated with the T7 worker (non-blocking taps).",
- "gates": "PASSED (18 Oct 2026, re-run after the round-2 rebuild): solvability 10/10, size 229 tokens, variants 7/7 reach V6, start fails at V2 as expected, mutation 11/11 valid mutants, kill rate 1.0",
+ "gates": "PASSED (18 Oct 2026, re-run after the round-2 rebuild): solvability 10/10, size 229 tokens, variants 7/7 reach V5, start fails at V2 as expected, mutation 11/11 valid mutants, kill rate 1.0",
  "round2": {
   "resolved_by": "Claude (Anthropic), fixer group G3, 18 Oct 2026 (review round 2); pending team review",
   "reviewer_findings": [],
   "accepted": [],
   "rejected": [],
   "notes": "No round-2 finding for this task; no change (version 2 kept). Checked: (1) build.py regenerates every file byte-identically (md5 before and after); (2) the reviewer's probe test10_dc_blocker_long (DC Blocker, long form) passes against the current task.json, as a valid alternative should; (3) the two round-2 issue classes of the group do not apply. test-10 has no band_fraction check (its frequency check is peak_freq, which uses a Hann window), so the off-grid leakage of G3-dev04 cannot occur. Its filter-path via set holds only filter blocks, and the analogous pass-through limit (an all-pass filter plus a subtracted constant) is already recorded in review.notes limit (1); (4) the L1 repair conventions shared with gbf-dev-04 are unchanged (symptom-only wording, R8 p2p semantics, edge observation of the kept source). Gates re-run alongside the round-2 rebuilds of gbf-dev-04 and gbf-test-05.",
-  "gates": "PASSED (18 Oct 2026, re-run after the round-2 rebuild): solvability 10/10, size 229 tokens, variants 7/7 reach V6, start fails at V2 as expected, mutation 11/11 valid mutants, kill rate 1.0"
+  "gates": "PASSED (18 Oct 2026, re-run after the round-2 rebuild): solvability 10/10, size 229 tokens, variants 7/7 reach V5, start fails at V2 as expected, mutation 11/11 valid mutants, kill rate 1.0"
  }
 }

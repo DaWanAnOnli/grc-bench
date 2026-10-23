@@ -117,7 +117,7 @@
    "block": "blocks_null_source_0_0",
    "breaks": "silence",
    "new_id": "analog_noise_source_x",
-   "note": "the gap source replaced by a complex Noise Source (amplitude 1) instead of a source of zeros. (Feeding the gap input from the modulator instead is not a valid mutant: both Stream Mux inputs then read one buffer alternately and the graph crawls, failing V5 liveness.)",
+   "note": "the gap source replaced by a complex Noise Source (amplitude 1) instead of a source of zeros. (Feeding the gap input from the modulator instead is not a valid mutant: both Stream Mux inputs then read one buffer alternately and the graph crawls, failing V4 liveness.)",
    "op": "set_id"
   },
   {
@@ -9509,7 +9509,7 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Round-1 review applied 18 Oct 2026 (see reports/tier_f_reviews/round1/gbf-dev-10.resolution.json). The fault moved from the Polyphase Clock Sync (type fff) to the Null Source (type float) so that this dev item and gbf-test-17 (test) no longer repair the same block (fix plan G8; review C1); the team may move it back. Known limits: (1) freq.dat is required to hold the Costas loop's frequency output, but graph checks are block-level and cannot tie the freq.dat File Sink to Costas output port 1: an answer that feeds freq.dat from a Constant Source of 0.0157 while the Costas loop stays on the symbol path would pass (implausible in a one-edit repair). (2) The channel 'keep' is checked at string level for the timing offset: the Channel Model must still refer to freq_offset / time_offset / noise and a variable must hold 1; noise and the carrier offset are also checked by behaviour. (3) Timing recovery is not pinned to the Polyphase Clock Sync: Symbol Sync or M&M receivers pass (variants v4, v5). (4) The transmitter is observed by an internal edge tap on the block digital_constellation_modulator_0 (the start graph's name): a repair that deletes and re-creates the Constellation Modulator under another name fails that observation. A one-edit repair of the Null Source never touches it. (5) The Costas loop's bandwidth is not a requirement (bandwidths 0.01-0.5 give the same symbols and carrier estimate); only its presence, its order 2 and its place in the receive chain are, which is what the instruction's keep sentence now says. (6) Round-1 F1 (tap stall) is fixed by tooling T7: the wrong repair 'Costas loop ahead of a float clock sync' now reaches V6 and fails the carrier checks (freq.dat 0.00314) instead of failing V5 liveness. (7) GPL-3.0-or-later attribution: derived from the GNU Radio 3.10.12 example digital/demod/test_corr_est.grc (GNU Radio project); the licence decision for seed-derived items is the team's.",
+  "notes": "Round-1 review applied 18 Oct 2026 (see reports/tier_f_reviews/round1/gbf-dev-10.resolution.json). The fault moved from the Polyphase Clock Sync (type fff) to the Null Source (type float) so that this dev item and gbf-test-17 (test) no longer repair the same block (fix plan G8; review C1); the team may move it back. Known limits: (1) freq.dat is required to hold the Costas loop's frequency output, but graph checks are block-level and cannot tie the freq.dat File Sink to Costas output port 1: an answer that feeds freq.dat from a Constant Source of 0.0157 while the Costas loop stays on the symbol path would pass (implausible in a one-edit repair). (2) The channel 'keep' is checked at string level for the timing offset: the Channel Model must still refer to freq_offset / time_offset / noise and a variable must hold 1; noise and the carrier offset are also checked by behaviour. (3) Timing recovery is not pinned to the Polyphase Clock Sync: Symbol Sync or M&M receivers pass (variants v4, v5). (4) The transmitter is observed by an internal edge tap on the block digital_constellation_modulator_0 (the start graph's name): a repair that deletes and re-creates the Constellation Modulator under another name fails that observation. A one-edit repair of the Null Source never touches it. (5) The Costas loop's bandwidth is not a requirement (bandwidths 0.01-0.5 give the same symbols and carrier estimate); only its presence, its order 2 and its place in the receive chain are, which is what the instruction's keep sentence now says. (6) Round-1 F1 (tap stall) is fixed by tooling T7: the wrong repair 'Costas loop ahead of a float clock sync' now reaches V5 and fails the carrier checks (freq.dat 0.00314) instead of failing V4 liveness. (7) GPL-3.0-or-later attribution: derived from the GNU Radio 3.10.12 example digital/demod/test_corr_est.grc (GNU Radio project); the licence decision for seed-derived items is the team's.",
   "reviewers": [],
   "status": "pending-team-review"
  },
@@ -9521,12 +9521,12 @@
  },
  "spec_properties": [
   {
-   "checked_by": "ladder V3-V5",
+   "checked_by": "ladder V3-V4",
    "id": "validates",
    "text": "the repaired flowgraph passes GRC validation (the IO types of every connection match), generates and runs"
   },
   {
-   "checked_by": "V5 liveness: at least 8,192 items at symbols.dat, at freq.dat and at the modulator's output",
+   "checked_by": "V4 liveness: at least 8,192 items at symbols.dat, at freq.dat and at the modulator's output",
    "id": "run",
    "text": "the flowgraph keeps producing samples until it is stopped (no sample limit)"
   },
@@ -9536,7 +9536,7 @@
    "text": "the transmitter is kept: the packet (preamble 2E A4 AF 33 1F 22 F1 F7, 4 zero bytes, 120 bytes from numpy.random.RandomState(7)), MSB first, BPSK with bit 0 -> +1 and bit 1 -> -1, no differential coding, 5 samples per symbol, root-raised-cosine pulses of excess bandwidth 0.4: the modulator's output stays exactly as it is"
   },
   {
-   "checked_by": "observation contract (file name and item type; a missing or differently typed sink fails V6)",
+   "checked_by": "observation contract (file name and item type; a missing or differently typed sink fails V5)",
    "id": "outputs",
    "text": "complex samples are written to the File Sink symbols.dat and float samples to the File Sink freq.dat, both at one sample per symbol"
   },

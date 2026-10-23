@@ -22,38 +22,38 @@
    "expected": "V3",
    "first_failed": "V3",
    "passed": true,
-   "v6_groups": null
+   "v5_groups": null
   },
   "variants": {
    "n": 7,
    "passed": true,
    "results": {
     "v1_literal_spb.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_inline_rx_rate.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_64_filter_bank.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_no_throttle.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_textbook_taps.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v6_spb_compensates_offset.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v7_int_spb_init_phase.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

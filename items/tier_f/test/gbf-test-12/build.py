@@ -146,7 +146,7 @@ P_VALUES = ("P5 parameter values only: the same blocks (variables may be added, 
             "renaming (graph checks same_blocks_as_start, same_connections_as_start isomorphic)")
 P_OBS = ("P6 observation and run: complex samples at 48 kHz written to the File Sinks tx.dat and rx.dat "
          "(the sinks' type is part of the observation points); the flowgraph runs until stopped, "
-         f"checked only by V5 liveness (at least {N_ITEMS} items at each point)")
+         f"checked only by V4 liveness (at least {N_ITEMS} items at each point)")
 P_TIMING = ("P7 no timing offset: the Channel Model keeps Epsilon 1.0 (graph check block_present "
             "channels_channel_model with epsilon 1.0, numeric comparison, so '1' or '1.00' also pass); "
             "epsilon resamples the tone, and epsilon 1.2 alone would also put it at 3.6 kHz")
@@ -281,7 +281,7 @@ VARIANTS = {
 }
 
 # Value-only answers that fake the carrier offset with the timing offset (review round 2, finding
-# G4R-test12-F1; the reviewer's probes reached V6 before the timing check). They need two parameter
+# G4R-test12-F1; the reviewer's probes reached V5 before the timing check). They need two parameter
 # changes, so they cannot be single-edit mutants; main() asserts that the graph checks reject them.
 # (Tone after the Channel Model: 3000 Hz * epsilon + carrier offset.)
 NEGATIVE_PROBES = {

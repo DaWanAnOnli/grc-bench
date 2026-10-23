@@ -2899,7 +2899,7 @@
    "text": "complex items to the File Sink if.dat, float items to the File Sink symbols.dat"
   },
   {
-   "checked_by": "V5 liveness: at least 6144 items at each observation point",
+   "checked_by": "V4 liveness: at least 6144 items at each observation point",
    "id": "run",
    "text": "the flowgraph keeps producing samples until it is stopped"
   }

@@ -19,7 +19,7 @@
   },
   {
    "id": "item-quality:F1",
-   "change": "Same fix as compliance:F2 (lattice checks on both outputs). Verified with the real ladder: the uniform-noise fake (alt_fake_noise) and the Embedded-Python mid-rise quantizer reach V5 and fail f2p (max_int_dev 0.5). Embedded-Python rounding passes, with both round-half-even and round-half-up; it is variant v5, which also saturates to the 6-bit range."
+   "change": "Same fix as compliance:F2 (lattice checks on both outputs). Verified with the real ladder: the uniform-noise fake (alt_fake_noise) and the Embedded-Python mid-rise quantizer reach V4 and fail f2p (max_int_dev 0.5). Embedded-Python rounding passes, with both round-half-even and round-half-up; it is variant v5, which also saturates to the 6-bit range."
   },
   {
    "id": "item-quality:F2",
@@ -35,11 +35,11 @@
   },
   {
    "id": "plan:R4-oracle-policy",
-   "change": "The instruction says 'repair the flowgraph so that it works as described', which makes every described property a requirement. The descriptions that V6 cannot observe were therefore removed: 'Gaussian' noise (after the band-pass filter any noise looks Gaussian), the 'cosine' phase, 'After a Throttle' (v4 drops it), and the 'Hann window, 2.4 kHz transition width'. The keep clause now reads 'the sample rate, the noise level and its 6-18 kHz band, the tone, the 6-bit resolution and both output files', and every item in it is checked. The floor statement now covers only the bands that are checked: 'Below 4 kHz and above 20 kHz ... (power (1/32)^2/12 in quantized.dat)'. No graph check is needed, because the repair is fully specified by behaviour; channels_quantizer, type-converter chains and an Embedded-Python quantizer all pass."
+   "change": "The instruction says 'repair the flowgraph so that it works as described', which makes every described property a requirement. The descriptions that V5 cannot observe were therefore removed: 'Gaussian' noise (after the band-pass filter any noise looks Gaussian), the 'cosine' phase, 'After a Throttle' (v4 drops it), and the 'Hann window, 2.4 kHz transition width'. The keep clause now reads 'the sample rate, the noise level and its 6-18 kHz band, the tone, the 6-bit resolution and both output files', and every item in it is checked. The floor statement now covers only the bands that are checked: 'Below 4 kHz and above 20 kHz ... (power (1/32)^2/12 in quantized.dat)'. No graph check is needed, because the repair is fully specified by behaviour; channels_quantizer, type-converter chains and an Embedded-Python quantizer all pass."
   },
   {
    "id": "plan:R8-p2p-semantics",
-   "change": "spec_properties.codes_scale states what p2p means for this V2 start. Re-proved with the final oracle: the start graph with the Missing Block bypassed (parked) reaches V5 and passes every p2p check (codes RMS 7.4905, tone 12600 Hz, level 0.2341, noise shares 0.0303 / 0.0222, edge shares 0.001569 / 0.001685), and it fails all six f2p checks."
+   "change": "spec_properties.codes_scale states what p2p means for this V2 start. Re-proved with the final oracle: the start graph with the Missing Block bypassed (parked) reaches V4 and passes every p2p check (codes RMS 7.4905, tone 12600 Hz, level 0.2341, noise shares 0.0303 / 0.0222, edge shares 0.001569 / 0.001685), and it fails all six f2p checks."
   },
   {
    "id": "plan:R12-band-fraction",
@@ -47,10 +47,10 @@
   },
   {
    "id": "plan:R5-R10-R11-records",
-   "change": "The instruction gives the run sentence and the tolerances (tone 1 %, levels 5 %, band edges about 0.1 kHz, floor about 0.6 dB, judged after 512 samples). spec_properties.run_length is recorded as V5 liveness at 65536 items per point. perturbation.changes records the widget-to-variable conversions, the Qt sink conversion, the quantizer rename and the stripped options (author 'mettus'). The GPL attribution and the known oracle limits are in review.notes. A mutant for the 'both output files' keep clause renames quantized.dat. Variants from the reviewers' alternatives: v5 (Embedded-Python rounding quantizer, saturating), v6 (codes from a separate Float To Short path) and v2 (Float To Int levels). Kept variants: v1 (Float To Short / Short To Float), v3 (Char converters) and v4 (literal numbers, no Throttle, noise seed 7)."
+   "change": "The instruction gives the run sentence and the tolerances (tone 1 %, levels 5 %, band edges about 0.1 kHz, floor about 0.6 dB, judged after 512 samples). spec_properties.run_length is recorded as V4 liveness at 65536 items per point. perturbation.changes records the widget-to-variable conversions, the Qt sink conversion, the quantizer rename and the stripped options (author 'mettus'). The GPL attribution and the known oracle limits are in review.notes. A mutant for the 'both output files' keep clause renames quantized.dat. Variants from the reviewers' alternatives: v5 (Embedded-Python rounding quantizer, saturating), v6 (codes from a separate Float To Short path) and v2 (Float To Int levels). Kept variants: v1 (Float To Short / Short To Float), v3 (Char converters) and v4 (literal numbers, no Throttle, noise seed 7)."
   }
  ],
  "rejected": [],
  "notes": "Second fixer pass (G9, after the tooling stage): the first pass's build.py regenerated byte-identically and passed its gates, but the window/edge confound and the unverifiable descriptive claims above were found and fixed. The partial records from the first pass were superseded.",
- "gates": "PASS (18 Oct, current tooling incl. T7): solvability 10/10, size 711 tokens, variants 6/6 at V6, start fails at V2 (expected V2), mutation 22/22 valid mutants killed (kill rate 1.0, no survivors)."
+ "gates": "PASS (18 Oct, current tooling incl. T7): solvability 10/10, size 711 tokens, variants 6/6 at V5, start fails at V2 (expected V2), mutation 22/22 valid mutants killed (kill rate 1.0, no survivors)."
 }

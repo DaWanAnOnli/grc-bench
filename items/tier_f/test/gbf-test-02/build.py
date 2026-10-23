@@ -274,7 +274,7 @@ SPEC_PROPERTIES = [
     {"id": "outputs", "text": "complex samples written to the File Sinks received.dat and carrier.dat",
      "checked_by": "observation contract (file name and item type complex)"},
     {"id": "run", "text": "the flowgraph keeps producing samples until it is stopped (no sample limit)",
-     "checked_by": f"V5 liveness: at least {N_ITEMS:,} items (1 s) at both File Sinks"},
+     "checked_by": f"V4 liveness: at least {N_ITEMS:,} items (1 s) at both File Sinks"},
 ]
 
 CHECKS = [

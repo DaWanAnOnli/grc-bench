@@ -155,7 +155,7 @@
   "P3 Rayleigh envelope of complex Gaussian noise: the mean of envelope.dat is 0.709 within 3 % (mean / RMS = sqrt(pi)/2 = 0.886; the power |z|^2, the magnitude of one real Gaussian component, uniform complex noise and a constant all miss it)",
   "P4 the envelope is made from noise (structural, graph check): envelope.dat is reached from a noise generator (Noise Source, Fast Noise Source, or the AWGN of a Channel Model block); a deterministic shape with similar moments, such as a rectified sine (mean / RMS 0.900), would otherwise pass P2-P3",
   "P5 observation: the magnitudes are written as float samples to the File Sink whose file name is envelope.dat (the observation point requires that file name and item type); P2-P3 use its first 65536 samples",
-  "P6 run condition (V5): the flowgraph keeps producing samples until it is stopped; V5 liveness needs 65536 items at envelope.dat, so a graph that stops itself earlier fails V5"
+  "P6 run condition (V4): the flowgraph keeps producing samples until it is stopped; V4 liveness needs 65536 items at envelope.dat, so a graph that stops itself earlier fails V4"
  ],
  "split": "dev",
  "start_grc": null,

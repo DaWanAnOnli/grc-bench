@@ -27,39 +27,39 @@
    "passed": true,
    "results": {
     "v1_hpf_lpf_cascade.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_fir_filter_firdes_hann.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_fastnoise_blackman.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_fft_filter_band_pass_2.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_rectangular_window.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v6_kaiser_100hz_fullpath.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v7_fft_filter_blackman_harris_100hz.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v8_fastnoise_rectangular.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v9_hamming_50hz.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

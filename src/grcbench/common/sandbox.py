@@ -1,6 +1,6 @@
 """Run untrusted code (model-written flowgraphs, agent shell commands) in a bubblewrap sandbox.
 
-GNU Radio evaluates block parameters as Python, Embedded-Python blocks run on load, and V5 runs
+GNU Radio evaluates block parameters as Python, Embedded-Python blocks run on load, and V4 runs
 generated code, so every rung from V2 up and every agent tool that executes code runs here:
   * the whole filesystem is read-only (the repo, data/ and ~/grc-agent cannot be touched);
   * the user's files are hidden (`hidden_view_args`): the real home directory and /mnt (the

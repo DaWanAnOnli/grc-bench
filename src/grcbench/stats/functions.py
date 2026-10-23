@@ -40,7 +40,7 @@ Pre-registered definitions (approved implementation plan, Phase 5 WS7):
     (2 of 4 runs) counts as a fail (majority_pass).
   * Split-half: samples {1, 2} vs {3, 4} of n = 5, the 5th dropped (SPLIT_HALVES), plus a
     random-half bootstrap (random_half_tau / random_half_panel).
-  * Func@1's denominator: the tasks that have a V6 oracle (func_at_1; the funnel's V6 rung too).
+  * Func@1's denominator: the tasks that have a V5 oracle (func_at_1; the funnel's V5 rung too).
   * Holm-Bonferroni families: one per research question (holm_bonferroni takes family -> p-values).
   * H1c: Tier K is subsampled, without replacement, to Tier F's item count (150 in v1.0), repeated
     H1C_REPEATS times, and the distribution is reported.
@@ -104,9 +104,9 @@ H1C_REPEATS = 1_000             # size-matched Tier-K subsamples (pre-registered
 H1C_BOOT_B = 1_000              # PROPOSAL H1c-decision: bootstrap replicates of F minus K
 H1C_TEST = "wilcoxon"           # PROPOSAL H1c-test: the same test on both tiers
 SOLVABILITY_RUNS = 10           # eval plan §5.4: the reference passes 10 of 10 harness runs
-RUNGS = ("V1", "V2", "V3", "V4", "V5", "V6")
-EXEC_RUNG = "V5"                # Exec@1: the flowgraph runs
-FUNC_RUNG = "V6"                # Func@1: it runs and behaves correctly
+RUNGS = ("V1", "V2", "V3", "V4", "V5")
+EXEC_RUNG = "V4"                # Exec@1: the flowgraph runs
+FUNC_RUNG = "V5"                # Func@1: it runs and behaves correctly
 OUTCOMES = ("pass_fail", "score")
 TIER_OUTCOME = {"K": "score", "F": "pass_fail", "A": "pass_fail"}    # PROPOSAL (module docstring)
 PRIMARY_TEST = {"pass_fail": "mcnemar", "score": "wilcoxon"}        # eval plan §9 "Comparisons"
@@ -250,9 +250,9 @@ def _rung_outcomes(highest: Mapping[str, Sequence[str | None]], rung: str,
 
 
 def exec_at_1(highest: Mapping[str, Sequence[str | None]]) -> dict:
-    """Exec@1 (eval plan §4.3): pass@1 of "the flowgraph runs" (ladder rung V5 reached), all tasks.
+    """Exec@1 (eval plan §4.3): pass@1 of "the flowgraph runs" (ladder rung V4 reached), all tasks.
 
-    `highest` maps task id -> the ladder's `highest_passed` ("V1".."V6" or None) of each sample.
+    `highest` maps task id -> the ladder's `highest_passed` ("V1".."V5" or None) of each sample.
     """
     tasks = sorted(highest)
     if not tasks:
@@ -271,15 +271,15 @@ def _oracle_list(highest: Mapping, oracle_tasks: Collection[str]) -> list[str]:
 
 
 def func_at_1(highest: Mapping[str, Sequence[str | None]], oracle_tasks: Collection[str]) -> dict:
-    """Func@1 (eval plan §4.3): pass@1 of "runs and behaves correctly" (rung V6 reached).
+    """Func@1 (eval plan §4.3): pass@1 of "runs and behaves correctly" (rung V5 reached).
 
-    Pre-registered denominator: only the tasks that have a V6 oracle (`oracle_tasks`); tasks without
-    one are scored up to V5 (§4.3 "Coverage") and are excluded here, not counted as failures. Every
+    Pre-registered denominator: only the tasks that have a V5 oracle (`oracle_tasks`); tasks without
+    one are scored up to V4 (§4.3 "Coverage") and are excluded here, not counted as failures. Every
     oracle task must have samples.
     """
     oracle = _oracle_list(highest, oracle_tasks)
     if not oracle:
-        raise ValueError("no task has a V6 oracle")
+        raise ValueError("no task has a V5 oracle")
     per = _rung_outcomes(highest, FUNC_RUNG, oracle)
     excluded = sorted(set(highest) - set(oracle))
     return {"value": mean_pass_at_k(per, 1), "n_tasks": len(oracle),
@@ -290,11 +290,11 @@ def func_at_1(highest: Mapping[str, Sequence[str | None]], oracle_tasks: Collect
 def funnel(highest: Mapping[str, Sequence[str | None]], oracle_tasks: Collection[str]) -> dict:
     """pass@1 of reaching each rung (§4.3: "The pass rate at each rung shown as a funnel").
 
-    Rungs V1-V5 are computed over all tasks; V6 only over the tasks with a V6 oracle, because §4.3
-    scores tasks without an oracle "up to V5" and Func@1's pre-registered denominator is the oracle
-    tasks (so rates["V6"] == func_at_1(...)["value"] and rates["V5"] == exec_at_1(...)["value"]).
-    The V6 bar therefore has its own denominator (n_tasks["V6"]) and is not bounded by V5's. With no
-    oracle task, V6 is NaN.
+    Rungs V1-V4 are computed over all tasks; V5 only over the tasks with a V5 oracle, because §4.3
+    scores tasks without an oracle "up to V4" and Func@1's pre-registered denominator is the oracle
+    tasks (so rates["V5"] == func_at_1(...)["value"] and rates["V4"] == exec_at_1(...)["value"]).
+    The V5 bar therefore has its own denominator (n_tasks["V5"]) and is not bounded by V4's. With no
+    oracle task, V5 is NaN.
     """
     tasks = sorted(highest)
     if not tasks:

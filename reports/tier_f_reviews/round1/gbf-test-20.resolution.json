@@ -18,7 +18,7 @@
   },
   {
    "id": "item-quality/IQ2-run-length-unstated",
-   "change": "Applies; fixed. The instruction ends with the set run sentence (R5), and spec_properties has 'run' (V5 liveness, 2560 items)."
+   "change": "Applies; fixed. The instruction ends with the set run sentence (R5), and spec_properties has 'run' (V4 liveness, 2560 items)."
   }
  ],
  "rejected": [
@@ -32,5 +32,5 @@
   "Mutants (12): natural-binary table, reversed table order, inverted polarity, levels scaled by 1/2, LSB first, 1 bit per chunk, Repeat 24 (2 kBd), Repeat 48 (start rate), one data bit changed, samp_rate 57600, Throttle bypassed, output file renamed.",
   "Oracle limit in review.notes: no output sample depends on samp_rate, so the sample rate is checked as a graph fact; the Throttle's own rate parameter is not checked."
  ],
- "gates": "PASS (18 Oct, ./gb tier-f gates on the final files): solvability 10/10 at 8 workers; size 380 tokens; variants 3/3 reach V6 and pass; start fails at V6 (f2p false, p2p true); mutation 12 valid mutants, kill rate 1.0, no survivors. build.py regenerates task.json, start.grc, reference.grc and all variants byte-identically."
+ "gates": "PASS (18 Oct, ./gb tier-f gates on the final files): solvability 10/10 at 8 workers; size 380 tokens; variants 3/3 reach V5 and pass; start fails at V5 (f2p false, p2p true); mutation 12 valid mutants, kill rate 1.0, no survivors. build.py regenerates task.json, start.grc, reference.grc and all variants byte-identically."
 }

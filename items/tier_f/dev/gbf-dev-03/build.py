@@ -288,7 +288,7 @@ def record(sig: tuple[str, ...], start_sig: tuple[str, ...]) -> dict:
         "Known limits: (1) the path check accepts any of the listed filter blocks (and Add, for delay-line "
         "designs) between a Vector Source and a File Sink, so a deliberate cheat that routes a hard-coded "
         "output through a one-tap filter or an Add would pass; "
-        "(2) 'do not limit the number of samples' is enforced only as V5 liveness (4096 items at both "
+        "(2) 'do not limit the number of samples' is enforced only as V4 liveness (4096 items at both "
         "points); (3) samples 391-4095 are checked for the 1/8 lattice and the +-1 range, not exactly. "
         "Concept relations: gbf-test-13 shapes NRZ data for transmission (low-pass interpolation x8), the "
         "receive-side counterpart; gbf-dev-01 (same fixer group) correlates a 0/1 bit stream with a 16-bit "
@@ -352,8 +352,8 @@ def record(sig: tuple[str, ...], start_sig: tuple[str, ...]) -> dict:
             "matched filter added: graph check path Vector Source -> filter block -> File Sink (a "
             "hard-coded output pattern fails)",
             "observation points: File Sinks mf.dat and nrz.dat with item type float (sinks of another type "
-            "do not match); the start graph has no mf.dat, so it fails V6",
-            "run condition: the flowgraph keeps producing samples; checked only as V5 liveness (4096 items "
+            "do not match); the start graph has no mf.dat, so it fails V5",
+            "run condition: the flowgraph keeps producing samples; checked only as V4 liveness (4096 items "
             "at both observation points)",
         ],
         "mutations": [
@@ -426,8 +426,8 @@ def run_probes() -> int:
         cg = compact(g)
         s = C.signature(cg)
         res = check(grcfile.dump(cg), task)
-        ok = res["first_failed"] is None and res["highest_passed"] == "V6"
-        v6 = res["rungs"].get("V6") or {}
+        ok = res["first_failed"] is None and res["highest_passed"] == "V5"
+        v6 = res["rungs"].get("V5") or {}
         failed = [f"{c['feature']}={c['value']}" for c in v6.get("checks", []) if not c["passed"]] + \
                  [f"graph:{g_['kind']}" for g_ in v6.get("graph_checks", []) if not g_["passed"]]
         verdict = "as expected" if ok == expect else "UNEXPECTED"

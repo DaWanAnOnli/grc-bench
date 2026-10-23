@@ -48,7 +48,7 @@ directories live outside the repository, in `~/grc-bench-cache` and `~/grc-bench
 | `labels/` | §4.2 task-type labels | `labels` |
 | `contamination/` | §6 8-gram, TF-IDF and embedding overlap; audit of Qoherent's agent traces | `contamination`, `traces` |
 | `tier_k/` | §4.2, §5.2 knowledge items, GNU Radio behaviour questions, question prompt, rubrics, rule-cascade scoring, B1 retriever | `tier-k-items`, `blocks`, `blockq`, `calc`, `rubrics`, `score-k`, `retriever` |
-| `tier_f/` | §4.3, §5.4 validity ladder V1–V6, seeds, tasks, gates | `ladder`, `seeds`, `tier-f` |
+| `tier_f/` | §4.3, §5.4 validity ladder V1–V5, seeds, tasks, gates | `ladder`, `seeds`, `tier-f` |
 | `tier_a/` | §4.4 headless GRC-Agent runner, tasks, grader; the same runner for any request and its shareable zip (`handoff/agent_runner.md`) | `tier-a`, `agent`, `agent-package` |
 | `tier_e/` | §4.5 speed and memory protocol | `tier-e` |
 | `stats/` | §9 analysis functions; the pre-registration's generated appendices | `stats`, `prereg` |

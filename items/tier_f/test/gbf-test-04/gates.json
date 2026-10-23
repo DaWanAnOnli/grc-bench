@@ -27,27 +27,27 @@
    "passed": true,
    "results": {
     "v1_source_amp_offset.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_offset_then_scale_sine.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_const_source_adder.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_complex_real_legacy_throttle.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_vector_lookup_table.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v6_sine_phase_rail_guard.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

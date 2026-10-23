@@ -33,7 +33,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "score-k": ("grcbench.tier_k.rules:main", "rule-cascade scorer for Tier-K answers"),
     "retriever": ("grcbench.tier_k.retriever:main", "B1 documentation-search retriever"),
     # Tier F
-    "ladder": ("grcbench.tier_f.ladder:main", "run the V1-V6 validity ladder on a .grc file"),
+    "ladder": ("grcbench.tier_f.ladder:main", "run the V1-V5 validity ladder on a .grc file"),
     "seeds": ("grcbench.tier_f.seeds:main", "convert GNU Radio examples to headless seeds; seed split"),
     "tier-f": ("grcbench.tier_f.cli:main", "build and gate Tier-F tasks"),
     # Tier A

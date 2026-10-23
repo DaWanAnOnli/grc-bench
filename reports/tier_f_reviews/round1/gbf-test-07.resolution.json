@@ -44,11 +44,11 @@
   }
  ],
  "notes": "Oracle is tolerance-based on purpose (corr_ref signed, max_lag 0, >= 0.9999; zeros <= 1e-6; levels within 1 %): an FFT-filter delay (~1e-7 rounding) is valid and passes, and FIR outputs are not bit-identical across VOLK machines. Variants: Delay with (len(lpf_taps) - 1) // 2; a second FIR with pure-delay taps [0.0]*20 + [1.0]; an FFT Filter with the same taps (both filter|tone, gbf-test-10's cell, test split, listed in task notes for the reserved set). 10 mutants incl. delay before the split (p2p out.dat), ref.dat fed a filtered copy (zeros check: transient 0.35), changed taps, changed source, source level +5 % (the correlations are scale-free, the level checks catch it).",
- "gates": "PASS (18 Oct): solvability 10/10, 514 tokens, variants 3/3, start fails at V6 (f2p fails, p2p passes), mutation 10/10 valid, kill rate 1.0",
+ "gates": "PASS (18 Oct): solvability 10/10, 514 tokens, variants 3/3, start fails at V5 (f2p fails, p2p passes), mutation 10/10 valid, kill rate 1.0",
  "round2": {
   "accepted": [],
   "rejected": [],
-  "notes": "No round-2 finding for this task. The round-2 reviewer's probes (delay_len_floordiv2, interp_fir_delay, throttle_plus_delay) all pass V6. Checked for the G5 problem: their v2 signatures are delay|filter|tone or filter|tone, both test and both already reserved through the reference and the variants, so no accepted alternative found so far hashes to train.",
-  "gates": "PASS (re-run 18 Oct): solvability 10/10, 514 tokens, variants 3/3, start fails at V6 (f2p fails, p2p passes), mutation 10/10 valid, kill rate 1.0; build.py regenerates every file byte-identically"
+  "notes": "No round-2 finding for this task. The round-2 reviewer's probes (delay_len_floordiv2, interp_fir_delay, throttle_plus_delay) all pass V5. Checked for the G5 problem: their v2 signatures are delay|filter|tone or filter|tone, both test and both already reserved through the reference and the variants, so no accepted alternative found so far hashes to train.",
+  "gates": "PASS (re-run 18 Oct): solvability 10/10, 514 tokens, variants 3/3, start fails at V5 (f2p fails, p2p passes), mutation 10/10 valid, kill rate 1.0; build.py regenerates every file byte-identically"
  }
 }

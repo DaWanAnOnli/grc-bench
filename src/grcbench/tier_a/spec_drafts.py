@@ -45,7 +45,7 @@ SPECS: list[dict[str, Any]] = [
          "equal power (a signal-to-noise ratio of 0 dB over the full 32 kHz band). Throttle it to real time and write "
          "it as complex samples to a File Sink with the file name tone_in_noise.dat. Save the flowgraph. It should keep "
          "producing samples until it is stopped."),
-     "graded": ["V6 on tone_in_noise.dat (complex, fs 32 kHz): peak_freq 5000 Hz (tol 10); band_fraction 4.9-5.1 kHz "
+     "graded": ["V5 on tone_in_noise.dat (complex, fs 32 kHz): peak_freq 5000 Hz (tol 10); band_fraction 4.9-5.1 kHz "
                 "= 0.50 (rel 0.1); rms 0.1414 (rel 0.05)",
                 "graph: a path from a signal source through a throttle to the file sink",
                 "blocks_present: File Sink file=tone_in_noise.dat type=complex"],
@@ -65,7 +65,7 @@ SPECS: list[dict[str, Any]] = [
          "decimates by 4 (cutoff 4 kHz, transition width 1 kHz). Write the filter's output as complex samples to a File "
          "Sink with the file name narrow.dat. Save the flowgraph. It should keep producing samples until it is "
          "stopped."),
-     "graded": ["V6 on narrow.dat (complex, read at fs 12 kHz): peak_freq 2000 Hz (tol 10); band_fraction "
+     "graded": ["V5 on narrow.dat (complex, read at fs 12 kHz): peak_freq 2000 Hz (tol 10); band_fraction "
                 "1.9-2.1 kHz >= 0.99; rms 0.5 (rel 0.03)",
                 "blocks_present: Low Pass Filter decim=4 cutoff_freq=4000 width=1000 (the instruction names the block)",
                 "blocks_present: File Sink file=narrow.dat type=complex"],
@@ -85,7 +85,7 @@ SPECS: list[dict[str, Any]] = [
          "amplify it by 2.5, so that clean_tone.dat holds a 1.2 kHz tone with amplitude 1.0 and no DC level. It stops "
          "with an error as soon as it starts. Find out why and fix it, keeping the tone, the gain and the output file "
          "as they are, and save the flowgraph. It should keep producing samples until it is stopped."),
-     "graded": ["V6 on clean_tone.dat: mean 0 (tol 0.01); rms 0.7071 (rel 0.03); peak_freq 1200 Hz (tol 10)",
+     "graded": ["V5 on clean_tone.dat: mean 0 (tol 0.01); rms 0.7071 (rel 0.03); peak_freq 1200 Hz (tol 10)",
                 "graph: same blocks as the start graph (parameter values may change)"],
      "golden_outline": ["inspect_graph", "run_flowgraph (fails)", "get_run_log (firdes: cutoff above fs/2)",
                         "inspect_graph hpf", "query_knowledge catalog 'high pass filter cutoff'",
@@ -106,7 +106,7 @@ SPECS: list[dict[str, Any]] = [
          "carrier.dat. The PLL never locks. Find the receiver setting that is wrong and fix it without changing the "
          "carrier, the noise, the PLL's loop bandwidth or the file names, and save the flowgraph. It should keep "
          "producing samples until it is stopped."),
-     "graded": ["V6: the carrier.dat checks of the Tier-F task gbf-test-02 (peak_freq, band_fraction, rms and max_abs "
+     "graded": ["V5: the carrier.dat checks of the Tier-F task gbf-test-02 (peak_freq, band_fraction, rms and max_abs "
                 "after 0.5 s); the received.dat checks as pass-to-pass",
                 "graph: same blocks and connections as the start graph"],
      "golden_outline": ["inspect_graph", "inspect_graph pll", "query_knowledge catalog 'pll refout max_freq min_freq'",
@@ -129,9 +129,9 @@ SPECS: list[dict[str, Any]] = [
          "with a peak deviation of 2.5 kHz (fm_iq.dat) and demodulated again (recovered.dat, at 8 kHz). Double the peak "
          "deviation to 5 kHz, and adjust the receiver so that the recovered tone has an amplitude of exactly 1.0. "
          "Change parameter values only. Save the flowgraph. It should keep producing samples until it is stopped."),
-     "graded": ["V6 on fm_iq.dat: band_fraction within +/-6.2 kHz >= 0.98 (Carson bandwidth for 5 kHz deviation) and "
+     "graded": ["V5 on fm_iq.dat: band_fraction within +/-6.2 kHz >= 0.98 (Carson bandwidth for 5 kHz deviation) and "
                 "band_fraction within +/-3.7 kHz <= 0.9 (proves the wider deviation)",
-                "V6 on recovered.dat (fs 8 kHz): peak_freq 1200 Hz (tol 12); rms 0.7071 (rel 0.03)",
+                "V5 on recovered.dat (fs 8 kHz): peak_freq 1200 Hz (tol 12); rms 0.7071 (rel 0.03)",
                 "graph: same blocks and connections as the start graph"],
      "golden_outline": ["inspect_graph", "inspect_graph fm_mod + fm_demod + variables",
                         "query_knowledge catalog 'frequency modulator sensitivity'",
@@ -153,8 +153,8 @@ SPECS: list[dict[str, Any]] = [
          "average. Retune it for a 400 Hz sawtooth, so that it still flags exactly one peak per period, and make the "
          "running average react five times faster than now (its alpha from 0.002 to 0.01). Change parameter values "
          "only. Save the flowgraph. It should keep producing samples until it is stopped."),
-     "graded": ["V6 on peaks.dat: mean 400/48000 = 0.008333 (rel 0.02), i.e. one peak per period; max_abs 1",
-                "V6 on the saw edge: band_fraction around 400 Hz (the source was retuned)",
+     "graded": ["V5 on peaks.dat: mean 400/48000 = 0.008333 (rel 0.02), i.e. one peak per period; max_abs 1",
+                "V5 on the saw edge: band_fraction around 400 Hz (the source was retuned)",
                 "blocks_present: Peak Detector2 alpha=0.01 (the instruction states the value)",
                 "graph: same blocks and connections as the start graph"],
      "golden_outline": ["inspect_graph", "inspect_graph saw_freq, lookahead, alpha, detector",
@@ -176,9 +176,9 @@ SPECS: list[dict[str, Any]] = [
          "0 to 255, and outputs it as a float; write its output as float samples to a new File Sink with the file name "
          "codes.dat. Keep dac_test.dat as it is. Save the flowgraph. It should keep producing samples until it is "
          "stopped."),
-     "graded": ["V6 on codes.dat: max_int_dev (scale 1) <= 1e-6; min >= 38 and max <= 242; mean 140.25 (tol 0.15); "
+     "graded": ["V5 on codes.dat: max_int_dev (scale 1) <= 1e-6; min >= 38 and max <= 242; mean 140.25 (tol 0.15); "
                 "peak_freq 1250 Hz",
-                "V6 on dac_test.dat as pass-to-pass (the Tier-F checks)",
+                "V5 on dac_test.dat as pass-to-pass (the Tier-F checks)",
                 "graph: a path through an epy_block to the codes.dat sink; blocks_present epy_block"],
      "golden_outline": ["inspect_graph", "query_knowledge docs 'embedded python block'",
                         "change_graph: add epy_block (source) + File Sink, wire after the offset block",
@@ -197,8 +197,8 @@ SPECS: list[dict[str, Any]] = [
          "that unwraps this phase into a continuous value (no jumps; the phase keeps growing by 2*pi every 0.2 s) and "
          "write its output as float samples to a new File Sink with the file name unwrapped.dat. Keep phase.dat as it "
          "is. Save the flowgraph. It should keep producing samples until it is stopped."),
-     "graded": ["V6 on unwrapped.dat (first 8000 samples = 1 s): min 0 (tol 0.01); max 31.412 (tol 0.05)",
-                "V6 on phase.dat as pass-to-pass (the Tier-F checks)",
+     "graded": ["V5 on unwrapped.dat (first 8000 samples = 1 s): min 0 (tol 0.01); max 31.412 (tol 0.05)",
+                "V5 on phase.dat as pass-to-pass (the Tier-F checks)",
                 "graph: a path through an epy_block to the unwrapped.dat sink"],
      "golden_outline": ["inspect_graph", "inspect_graph complex_to_arg + phase sink",
                         "query_knowledge docs 'embedded python block keep state between work calls'",
@@ -218,9 +218,9 @@ SPECS: list[dict[str, Any]] = [
          "themselves as float samples in a new file decisions.dat: +1.0 for every 1 bit and -1.0 for every 0 bit, one "
          "sample per decision, in order. Keep bits.dat as it is. Save the flowgraph. It should keep producing samples "
          "until it is stopped."),
-     "graded": ["V6 on decisions.dat: equal_prefix against the 32 expected decisions (2*bit-1, repeating); max_abs 1; "
+     "graded": ["V5 on decisions.dat: equal_prefix against the 32 expected decisions (2*bit-1, repeating); max_abs 1; "
                 "max_int_dev (scale 1) <= 1e-6",
-                "V6 on bits.dat as pass-to-pass (the Tier-F equal_prefix check)"],
+                "V5 on bits.dat as pass-to-pass (the Tier-F equal_prefix check)"],
      "golden_outline": ["inspect_graph", "inspect_graph slicer + pack", "query_knowledge catalog 'char to float'",
                         "change_graph: add Char To Float, Multiply Const 2, Add Const -1, File Sink after the slicer",
                         "inspect_graph", TAIL],
@@ -238,9 +238,9 @@ SPECS: list[dict[str, Any]] = [
          "neighbouring carrier at +25 kHz: shift it to 0 Hz, filter and decimate it the same way as the beacon "
          "channel, and write it as complex samples at 12 kHz to a new File Sink with the file name neighbour.dat. Keep "
          "the existing outputs as they are. Save the flowgraph. It should keep producing samples until it is stopped."),
-     "graded": ["V6 on neighbour.dat (fs 12 kHz): peak_freq 0 Hz (tol 20); band_fraction -100..100 Hz >= 0.95; rms "
+     "graded": ["V5 on neighbour.dat (fs 12 kHz): peak_freq 0 Hz (tol 20); band_fraction -100..100 Hz >= 0.95; rms "
                 "1.0 (rel 0.05)",
-                "V6 on channel.dat and audio.dat as pass-to-pass (the Tier-F checks)"],
+                "V5 on channel.dat and audio.dat as pass-to-pass (the Tier-F checks)"],
      "golden_outline": ["inspect_graph", "inspect_graph mixer + low_pass_filter_0", "query_knowledge catalog "
                         "'frequency xlating fir filter'", "change_graph: add a -25 kHz source, Multiply, Low Pass "
                         "Filter (decim 8), File Sink, wired from the Add block", "inspect_graph", TAIL],
@@ -293,7 +293,7 @@ SPECS: list[dict[str, Any]] = [
          "Soft Limiter, keeping its drive parameter. Do not change the flowgraph itself."),
      "graded": ["hier_block: soft_limiter, label Soft Limiter, 1 input, 1 output, parameter drive; loads from the run's "
                 "library",
-                "graph_unchanged; ladder up to V4"],
+                "graph_unchanged; ladder up to V3"],
      "golden_outline": ["inspect_graph", "inspect_graph the epy block", "query_knowledge docs 'save embedded python "
                         "block to library'", "generate_python", "list_directory", "save_graph",
                         "save_block soft_limiter", "run_flowgraph", "get_run_log"],
@@ -311,9 +311,9 @@ SPECS: list[dict[str, Any]] = [
          "id db_level and the label dB Level. Keep dac_test.dat as it is, and save the flowgraph. It should keep "
          "producing samples until it is stopped."),
      "graded": ["hier_block: db_level, label dB Level, 1 input, 1 output",
-                "V6 on level_db.dat: max <= -0.44 and >= -0.46 (0.95 -> -0.446 dB); min >= -16.5 and <= -16.4 "
+                "V5 on level_db.dat: max <= -0.44 and >= -0.46 (0.95 -> -0.446 dB); min >= -16.5 and <= -16.4 "
                 "(0.15 -> -16.48 dB)",
-                "V6 on dac_test.dat as pass-to-pass"],
+                "V5 on dac_test.dat as pass-to-pass"],
      "golden_outline": ["inspect_graph", "query_knowledge docs 'embedded python block'",
                         "change_graph: add epy_block + File Sink after the offset block", "inspect_graph",
                         "generate_python", "save_graph", "save_block db_level", "run_flowgraph", "get_run_log"],
@@ -321,7 +321,7 @@ SPECS: list[dict[str, Any]] = [
      "disjointness": ("Builds and saves a dB-level block. Nearest training spec: t13_epy_save_block (builds and saves "
                       "a duty-cycle gating block): the same kind of request with a different block. The team should "
                       "decide whether build-and-save is too close to t13."),
-     "build_notes": "Combines an oracle (V6) with the hier_block check."},
+     "build_notes": "Combines an oracle (V5) with the hier_block check."},
 
     {"id": "gba-test-25", "category": "file_ops", "start": "gbf-test-17",
      "start_change": "none (the Tier-F reference graph)",
@@ -332,7 +332,7 @@ SPECS: list[dict[str, Any]] = [
          "files appear in the new folder."),
      "graded": ["files: data/ exists and holds the five .dat files after the agent's run",
                 "blocks_present: each of the five File Sinks with file=data/<name>",
-                "V5 on the saved graph (the grader's own run writes all five files under data/)"],
+                "V4 on the saved graph (the grader's own run writes all five files under data/)"],
      "golden_outline": ["inspect_graph", "list_directory", "create_directory data",
                         "change_graph: update the file parameter of the five sinks", "inspect_graph", "save_graph",
                         "run_flowgraph (1 s)", "get_run_log", "list_directory data"],

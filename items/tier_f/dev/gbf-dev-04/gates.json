@@ -22,30 +22,30 @@
    "expected": "V3",
    "first_failed": "V3",
    "passed": true,
-   "v6_groups": null
+   "v5_groups": null
   },
   "variants": {
    "n": 5,
    "passed": true,
    "results": {
     "v1_high_side_lo.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_literal_swapped_throttle.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_parameter_block_fir.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_expression_variables.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_lo_within_tolerance.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

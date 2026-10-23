@@ -288,7 +288,7 @@ def build_variants(ref: dict) -> dict[str, dict]:
     d = setp(ref, CHAN, nchans="n_chans", bw="0.4", atten="80", n_filterbanks="1")
     d["blocks"].insert(1, {"name": "n_chans", "id": "variable", "parameters": {"value": "int(samp_rate // 12e3)"}})
     v["v3_hier_variables"] = d
-    # round-1 reviewers' alternatives (all correct; several used to fail V5 liveness or the old 128-item skip)
+    # round-1 reviewers' alternatives (all correct; several used to fail V4 liveness or the old 128-item skip)
     for name, params in [("alt_hier_bw045_tb005", {"bw": "0.45", "tb": "0.05"}),
                          ("alt_hier_bw048_tb002", {"bw": "0.48", "tb": "0.02"}),
                          ("alt_hier_bw05_tb002", {"bw": "0.5", "tb": "0.02"})]:
@@ -426,7 +426,7 @@ SPEC = {
               f"Gaussian and uniform noise of the same power cannot be told apart"),
     "ch0": _ch_spec(0), "ch1": _ch_spec(1), "ch2": _ch_spec(2), "ch3": _ch_spec(3),
     "run": ("run condition: the flowgraph keeps producing samples until it is stopped (no sample limit); checked only "
-            "by V5 liveness (at least 4096 items at every observation point), not by V6"),
+            "by V4 liveness (at least 4096 items at every observation point), not by V5"),
     "obs": ("observation points: complex samples written to the File Sinks spectrum.dat (48 kHz) and ch0.dat - "
             "ch3.dat (12 kHz), 4096 items each"),
 }
@@ -466,7 +466,7 @@ def build_oracle() -> dict:
 
 
 def probes(ref: dict) -> dict[str, dict]:
-    """Wrong answers a single edit operator cannot express; build.py --probes checks that each fails V6.
+    """Wrong answers a single edit operator cannot express; build.py --probes checks that each fails V5.
     s1: the channelizer deleted and four Signal Sources at 12 kHz (each channel's tone offset and amplitude)
     written straight to ch0-ch3. s2: the channelizer kept for ch0 only, ch1-ch3 synthetic."""
     def tones(ks):
@@ -493,11 +493,11 @@ def run_probes(ref: dict) -> int:
     bad = 0
     for name, g in probes(ref).items():
         res = check(dump(tidy(g)), task)
-        passes = res["first_failed"] is None and res["highest_passed"] == "V6"
-        v6 = res["rungs"].get("V6") or {}
+        passes = res["first_failed"] is None and res["highest_passed"] == "V5"
+        v6 = res["rungs"].get("V5") or {}
         failed = [f"{c['point']}:{c['feature']}" for c in v6.get("checks", []) if not c["passed"]]
         bad += passes
-        print(f"{name:26s} passes V6: {passes!s:5s} (expected False); first failed {res['first_failed']}; {failed}")
+        print(f"{name:26s} passes V5: {passes!s:5s} (expected False); first failed {res['first_failed']}; {failed}")
     return 1 if bad else 0
 
 
@@ -559,7 +559,7 @@ NOTES = (
     "prototype filters of 1091 and 2181 taps, plus a 4363-tap one, Polyphase Decimators with and without FFT, "
     "FFT-based translating filters, "
     "Rotator + FFT filter, Rotator + FIR filter, the Throttle moved behind the Add). A near-brick-wall hierarchical "
-    "setting (bw 0.495, tb 0.005) fails at V5 inside GNU Radio's remez design ('insufficient extremals'), so it is "
+    "setting (bw 0.495, tb 0.005) fails at V4 inside GNU Radio's remez design ('insufficient extremals'), so it is "
     "not a valid answer."
 )
 
@@ -572,7 +572,7 @@ REVIEW_NOTES = (
     "at -20 / -18 dB relative to it) pass. "
     "(2) Gaussian and uniform noise of the same power cannot be told apart (the noise check is a power share within "
     "30 %; uniform noise with the same amplitude has a third of the power and fails). (3) 'Keep producing samples "
-    "until stopped' is checked only by V5 liveness (4096 items per "
+    "until stopped' is checked only by V4 liveness (4096 items per "
     "observation point). (4) Discrimination (round-1 item-quality F4, team decision): the instruction now names the "
     "channels by frequency only, so the model must know that output 3 of a 4-channel polyphase channelizer is the "
     "-12 kHz channel; the file assignment still follows the channelizer's own output order, so the reference edit is "

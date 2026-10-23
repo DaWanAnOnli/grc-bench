@@ -21,9 +21,9 @@ Version 2 (18 Oct 2026, round-1 fix stage):
     Receive, WBFM Receive PLL, PLL Freq Det, or a hand-built discriminator ending in Complex to Arg;
     variant v9 is such a discriminator and passes). No noise source was added (that would move the
     signature cell to train; fix_plan). Authoring probes: the tone copied to recovered.dat, a graph
-    without a demodulator and a second 1.2 kHz source of amplitude 2.5 all fail V6; NBFM Receive with
+    without a demodulator and a second 1.2 kHz source of amplitude 2.5 all fail V5; NBFM Receive with
     its 75 us de-emphasis fails the amplitude check (rms 1.54 against 1.77 +-5 %).
-  * F2 (run length): the set run sentence is in the instruction; V5 liveness needs 9000 items at both
+  * F2 (run length): the set run sentence is in the instruction; V4 liveness needs 9000 items at both
     points (with the non-blocking taps of tooling T7, n_items = min_items = 9000).
   * F3 (tolerances): every tolerance and the measurement window are stated in the instruction.
   * F4 (8 kHz tone stage unobservable): the instruction now allows either generating the tone at 8 kHz
@@ -338,7 +338,7 @@ P_AU_CLEAN = "recovered audio: clean tone (>= 98 % of the power within 50 Hz of 
 P_DEMOD = ("recovered audio obtained by demodulating the FM signal: a path from an FM modulator through an FM "
            "demodulator to a File Sink")
 P_OBS = "observation points: File Sink fm_iq.dat (complex, 40 kHz) and File Sink recovered.dat (float, 8 kHz)"
-P_RUN = ("run condition: the flowgraph keeps producing samples until stopped (V5 liveness: at least "
+P_RUN = ("run condition: the flowgraph keeps producing samples until stopped (V4 liveness: at least "
          f"{RUN_ITEMS} items at both observation points)")
 
 

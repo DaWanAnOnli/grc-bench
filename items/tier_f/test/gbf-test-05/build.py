@@ -207,7 +207,7 @@ def variant_hard_limiter() -> dict:
 
 # ---- probes: wrong answers and documented limits that are not single-edit mutants ---------------
 def probes() -> dict[str, tuple[dict, bool, str]]:
-    """name -> (flowgraph, expected to pass V6, what it shows)."""
+    """name -> (flowgraph, expected to pass V5, what it shows)."""
     var = {"samp_rate": str(FS)}
     bits_float = "[" + ", ".join(str(b) for b in BITS) + "]"
     pm1_slicer = "[" + ", ".join("1" if b else "-1" for b in BITS) + "]"     # +1 <-> bit 1 (slicer polarity)
@@ -266,7 +266,7 @@ def probes() -> dict[str, tuple[dict, bool, str]]:
             "open item (review.notes): Unpacked to Packed (MSB first) without an Import of gr fails GRC "
             "validation in 3.10.12 (V3: name 'gr' is not defined); variant v5 adds the Import block"),
         "no_repeat": (
-            no_repeat, False, "Vector Source with repeat off: 4 bytes only, V5 liveness (1024 bytes) fails"),
+            no_repeat, False, "Vector Source with repeat off: 4 bytes only, V4 liveness (1024 bytes) fails"),
     }
 
 
@@ -284,13 +284,13 @@ def run_probes() -> int:
     bad = 0
     with ThreadPoolExecutor(max_workers=6) as ex:
         for name, expect, why, res in ex.map(one, todo):
-            ok = res["first_failed"] is None and res["highest_passed"] == "V6"
-            v6 = res["rungs"].get("V6") or {}
+            ok = res["first_failed"] is None and res["highest_passed"] == "V5"
+            v6 = res["rungs"].get("V5") or {}
             failed = [f"{c['feature']}" for c in v6.get("checks", []) if not c["passed"]]
             failed += [f"graph:{c['kind']}" for c in v6.get("graph_checks", []) if not c["passed"]]
             failed += [str(e)[:90] for e in v6.get("errors") or []]
             ff = res["first_failed"]
-            if ff and ff != "V6":
+            if ff and ff != "V5":
                 failed += [str(e)[:90] for e in (res["rungs"].get(ff) or {}).get("errors") or []]
             verdict = "as expected" if ok == expect else "UNEXPECTED"
             bad += ok != expect
@@ -310,7 +310,7 @@ def compact(data: dict) -> dict:
 # ---- task record ---------------------------------------------------------------------------------
 SPEC = [
     {"id": "output_point", "text": "bytes are written by a File Sink to bits.dat with item type byte",
-     "checked_by": "observation 'out' (sink matched by file name and type byte; a missing or mistyped point fails V6)"},
+     "checked_by": "observation 'out' (sink matched by file name and type byte; a missing or mistyped point fails V5)"},
     {"id": "bit_stream",
      "text": "the listed soft values in order, repeating; bit 0 for positive, bit 1 for negative; 8 bits per byte, "
              "most significant bit first; 4 bytes per pass (0xB4 0x2E 0xD9 0x63)",
@@ -322,7 +322,7 @@ SPEC = [
                    "Soft Decoder or Embedded Python block; pure type converters (Float To Char/UChar/Short/Int) do "
                    "not count. Remaining limit (review.notes): a decision block applied to hard-coded data passes"},
     {"id": "run_length", "text": "the flowgraph keeps producing samples until it is stopped",
-     "checked_by": "V5 liveness: at least 1024 bytes at 'out'; nothing more is claimed"},
+     "checked_by": "V4 liveness: at least 1024 bytes at 'out'; nothing more is claimed"},
     {"id": "samp_rate_untouched", "text": "the sample rate plays no role; leaving samp_rate as it is is a "
                                           "convenience, not a graded requirement",
      "checked_by": "not checked (no oracle depends on it)"},
@@ -408,7 +408,7 @@ def record(sig: tuple[str, ...], variant_sigs: dict[str, tuple[str, ...]]) -> di
                                                 "params": {"file": OUT_FILE, "type": "byte"}}}],
             "run": {"n_items": N_ITEMS, "min_items": N_ITEMS, "timeout_s": 10.0},
             "contract": ("the bytes (item type byte, captured as int8) written to the File Sink whose file name "
-                         "is bits.dat; V5 liveness: 1024 bytes"),
+                         "is bits.dat; V4 liveness: 1024 bytes"),
         },
         "oracle": {"checks": checks, "graph_checks": graph_checks},
         "mutations": mutations,

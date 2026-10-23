@@ -26,7 +26,7 @@ Why 2.4 kHz and not the classic 1.9 kHz of the two-tone test (fix stage, calibra
   The oracle bounds each tone's share of the power plus the total rms (there is no per-band absolute
   power feature), so it can only see an amplitude RATIO error beyond about +-10 %. A Repeat x6 (zero-
   order-hold) interpolator droops by sinc(f/8 kHz): -1.25 % at 700 Hz and -9.0 % at 1.9 kHz, which
-  violates "amplitudes within 5 %" but passed V6 (authoring probe). At 2.4 kHz the droop is -14.2 %:
+  violates "amplitudes within 5 %" but passed V5 (authoring probe). At 2.4 kHz the droop is -14.2 %:
   share 0.228 against the minimum 0.242, so the zero-order hold (with or without a low-pass after it) is
   rejected, while every answer with both amplitudes within 5 % still passes.
 
@@ -40,7 +40,7 @@ Graph checks (structural requirements stated in the instruction)
     carrier (Multiply, Multiply Conjugate, Rotator, Frequency Xlating filter, Embedded Python). Every
     correct design raises the rate before that stage, because a 10 kHz carrier does not exist at 8 kHz.
     Without this check a graph that writes the 8 kHz audio to audio.dat but builds the SSB from a second
-    copy of the tones generated at 48 kHz passed V6 (authoring probe; its cell combine|hilbert|mix|tone is
+    copy of the tones generated at 48 kHz passed V5 (authoring probe; its cell combine|hilbert|mix|tone is
     a test cell). Ending the path at the shift stage, not at any File Sink, also rejects the same graph
     when a decimator on the audio.dat branch is the only rate-changing block. The id list holds every
     GNU Radio 3.10 block that can raise the rate (resamplers, interpolating FIR / Low Pass / Band Pass /
@@ -338,7 +338,7 @@ P_FROM_AUDIO = ("the SSB signal is made from the 8 kHz audio: a rate-increasing 
                 "path from the audio sources to the block that shifts the signal to the carrier (Multiply, Multiply "
                 "Conjugate, Rotator, Frequency Xlating filter or Embedded Python)")
 P_OBS = "outputs: float items to the File Sink audio.dat (8 kHz) and float items to the File Sink ssb.dat (48 kHz)"
-P_RUN = ("run condition: the flowgraph keeps producing samples until stopped (V5 liveness: at least "
+P_RUN = ("run condition: the flowgraph keeps producing samples until stopped (V4 liveness: at least "
          f"{RUN_ITEMS} items at every observation point)")
 
 

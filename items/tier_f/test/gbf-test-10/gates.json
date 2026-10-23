@@ -22,38 +22,38 @@
    "expected": "V2",
    "first_failed": "V2",
    "passed": true,
-   "v6_groups": null
+   "v5_groups": null
   },
   "variants": {
    "n": 7,
    "passed": true,
    "results": {
     "v1_taps_variable_fir.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_dc_blocker.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_gain_in_filter.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_scale_then_band_pass.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_fft_filter.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v6_kaiser_abs_path.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v7_iir_first_order.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

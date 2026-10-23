@@ -291,7 +291,7 @@
   "recovered audio: clean tone (>= 98 % of the power within 50 Hz of 1.2 kHz)",
   "recovered audio obtained by demodulating the FM signal: a path from an FM modulator through an FM demodulator to a File Sink",
   "observation points: File Sink fm_iq.dat (complex, 40 kHz) and File Sink recovered.dat (float, 8 kHz)",
-  "run condition: the flowgraph keeps producing samples until stopped (V5 liveness: at least 9000 items at both observation points)"
+  "run condition: the flowgraph keeps producing samples until stopped (V4 liveness: at least 9000 items at both observation points)"
  ],
  "split": "test",
  "start_grc": null,

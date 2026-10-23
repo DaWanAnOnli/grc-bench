@@ -15,7 +15,7 @@ to know that a linear-phase FIR with N taps delays by (N - 1) / 2 samples (here 
 lpf_taps = firdes.low_pass(1, 48000, 4000, 2820, Hamming) rounded to 6 decimals: 41 taps, exactly
 symmetric, gain 1.003 at 1.5 kHz, edge tap -0.0011.
 
-V6 oracle (two observation points, both float File Sinks):
+V5 oracle (two observation points, both float File Sinks):
   f2p  ref.dat zeros      max |x| over the first 20 samples <= 1e-6 (the delay's zero samples; a
                           shorter delay puts the cosine there, a filtered copy puts the FIR transient
                           there: |x[0]| = 0.8 * 0.0011)
@@ -176,7 +176,7 @@ def record(sig: tuple[str, ...], start_sig: tuple[str, ...], variant_sigs: dict[
                      "also keeps the Signal Source's 1.5 kHz and the 48 kHz rate, and rejects a delay before the split"),
         "out_level": f"out.dat level unchanged (RMS {out_rms:.6f} within 1 %)",
         "observation": ("float samples written to the File Sinks ref.dat and out.dat (sink type float), "
-                        f"running continuously (V5 liveness: at least {N_ITEMS} items at each)"),
+                        f"running continuously (V4 liveness: at least {N_ITEMS} items at each)"),
     }
     return {
         "id": TASK_ID, "tier": "F", "split": SPLIT, "version": 2, "canary": CANARY,

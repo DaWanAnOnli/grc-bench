@@ -30,7 +30,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: out band_fraction = 0.0; out band_fraction = 0.0"
+      "ladder: fails at V5: out band_fraction = 0.0; out band_fraction = 0.0"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc"

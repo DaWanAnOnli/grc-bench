@@ -136,11 +136,11 @@ def build(today: str | None = None) -> str:
 
     L += ["## 4. Gates", "",
           "`./gb tier-f gates all` runs five gates on every task:",
-          "- **solvability**: the reference passes V1–V6 in 10 of 10 runs, 8 at a time;",
+          "- **solvability**: the reference passes V1–V5 in 10 of 10 runs, 8 at a time;",
           "- **size**: the reference fits in 3,000 tokens;",
-          "- **variants**: other valid solutions pass V6 (at least two);",
+          "- **variants**: other valid solutions pass V5 (at least two);",
           "- **start state**: a modify, repair or parameter-tune task's start graph fails;",
-          "- **mutation**: at least 90 % of the broken versions of the reference fail V6.", "",
+          "- **mutation**: at least 90 % of the broken versions of the reference fail V5.", "",
           "| task | gates | solvable | tokens | variants | start graph | mutants / kill rate |",
           "|---|---|---|---|---|---|---|"]
     L += [_gate_row(t, gates[t["id"]]) for t in tasks]

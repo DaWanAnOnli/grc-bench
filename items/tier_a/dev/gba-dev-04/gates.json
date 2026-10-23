@@ -30,7 +30,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: mf rms = 1.63936; mf max = 2.0; mf min = -2.0",
+      "ladder: fails at V5: mf rms = 1.63936; mf max = 2.0; mf min = -2.0",
       "blocks_present[0]: 0 matching block(s) []; candidates: [\"mf (enabled): scale='0.25' (0.25) vs 0.125\"]"
      ],
      "rejected": true,

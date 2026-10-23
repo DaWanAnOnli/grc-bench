@@ -21,12 +21,12 @@
   },
   {
    "id": "item-quality/F3-prescribed-design-numbers-unenforced",
-   "change": "The lesson applies: every number the new instruction states is checked. RMS 0.8 (rms, 3 %), mean 0.709 (mean, 3 %), 48 kHz (variable value), the file name and float type (observation point), and the run sentence (V5). 'Complex Gaussian noise' is checked by the P4 path plus the mean/RMS ratio (0.886): uniform and single-component noise fail, and GNU Radio's complex Laplacian and impulse types fail at run time. There are no unobservable design numbers such as filter edges or a gain split. The two remaining equivalences, a non-Gaussian source with the same two moments and a samp_rate written as an expression (probe samp_rate_expression), are recorded in review.notes."
+   "change": "The lesson applies: every number the new instruction states is checked. RMS 0.8 (rms, 3 %), mean 0.709 (mean, 3 %), 48 kHz (variable value), the file name and float type (observation point), and the run sentence (V4). 'Complex Gaussian noise' is checked by the P4 path plus the mean/RMS ratio (0.886): uniform and single-component noise fail, and GNU Radio's complex Laplacian and impulse types fail at run time. There are no unobservable design numbers such as filter edges or a gain split. The two remaining equivalences, a non-Gaussian source with the same two moments and a samp_rate written as an expression (probe samp_rate_expression), are recorded in review.notes."
   }
  ],
  "rejected": [],
  "other_changes": [
-  "Variants: v1 Fast Noise Source (default pool and seed, no Throttle, rate 48e3); v2 two float noise sources (sd 0.8/sqrt 2) -> Float To Complex; v3 |z|^2 then Transcendental sqrt; v4 Channel Model AWGN on a Null Source. All pass. Probes: complex_to_magphase (phase output to a Null Sink) and fastnoise_seed_777 pass. magphase_phase_open fails at V5, because GNU Radio's runtime needs both outputs connected (not an oracle decision). half_normal, rectified_sine, head_40000, fading_model_jakes and samp_rate_expression fail as documented: 8/8 verdicts as expected.",
+  "Variants: v1 Fast Noise Source (default pool and seed, no Throttle, rate 48e3); v2 two float noise sources (sd 0.8/sqrt 2) -> Float To Complex; v3 |z|^2 then Transcendental sqrt; v4 Channel Model AWGN on a Null Source. All pass. Probes: complex_to_magphase (phase output to a Null Sink) and fastnoise_seed_777 pass. magphase_phase_open fails at V4, because GNU Radio's runtime needs both outputs connected (not an oracle decision). half_normal, rectified_sine, head_40000, fading_model_jakes and samp_rate_expression fail as documented: 8/8 verdicts as expected.",
   "Variant signatures (v2): v1, v2 envelope|noise (dev); v3 envelope|noise|nonlinear (train) and v4 channel_model|envelope (test) are genuine structural alternatives, for the reserved list (R1/R2). The magphase probe is other:blocks_complex_to_magphase|noise.",
   "Instruction per R3 (a request about the open, empty flowgraph; the stated rate seeds the harness start graph). The R5 run sentence is stated, and P6 records it as liveness only. The observation point matches file name and type (R9).",
   "Disjointness names t08_run_verify_probe (noise to file plus a level probe) and explains the difference. Known limits are in review.notes (R11).",
@@ -39,5 +39,5 @@
   "v3": "envelope|noise|nonlinear (train)",
   "v4": "channel_model|envelope (test)"
  },
- "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 203 tokens, variants 4/4 reach V6, start_fails n/a (build), mutation 6 valid with kill rate 1.0; build.py --probes 8/8 verdicts as expected"
+ "gates": "passed (18 Oct, after this stage's edits and tooling T1-T7): solvability 10/10, size 203 tokens, variants 4/4 reach V5, start_fails n/a (build), mutation 6 valid with kill rate 1.0; build.py --probes 8/8 verdicts as expected"
 }

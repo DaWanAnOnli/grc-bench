@@ -27,27 +27,27 @@
    "passed": true,
    "results": {
     "v1_pack_k_bits.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_invert_packed_bytes.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_threshold_uchar.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_constellation_decoder.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_map_inversion.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v6_hard_limiter.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

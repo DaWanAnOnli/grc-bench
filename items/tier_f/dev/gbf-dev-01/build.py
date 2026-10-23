@@ -295,7 +295,7 @@ class blk(gr.sync_block):
 
 def alternative_probes() -> dict[str, tuple[dict, str]]:
     """Correct designs that are not shipped as variants (their v2 cell differs from the reference's):
-    name -> (flowgraph, what it shows). All must pass V6; build() asserts that none hashes to train
+    name -> (flowgraph, what it shows). All must pass V5; build() asserts that none hashes to train
     (a train-hash alternative would have to be shipped as a variant so the reserved list includes it)."""
     slicer = C.graph("probe_slicer", [
         _vsrc("src", _seq(BITS)),
@@ -369,7 +369,7 @@ def alternative_probes() -> dict[str, tuple[dict, str]]:
 
 
 def probes() -> dict[str, tuple[dict, bool, str, bool]]:
-    """name -> (flowgraph, expected to pass V6, what it shows, write in compact form)."""
+    """name -> (flowgraph, expected to pass V5, what it shows, write in compact form)."""
     flags_period = ideal(P)[1]
     bb = C.graph("probe_bb", [
         _vsrc("src", _seq(BITS), typ="byte"),
@@ -481,7 +481,7 @@ def record(sig: tuple[str, ...], alt_sigs: dict[str, tuple[str, ...]]) -> dict:
         "multiplied by a stored copy of the expected flags would pass (probe stored_flags_times_bits). "
         "Known limits: (1) a deliberate cheat that routes a hard-coded flags pattern through a block with "
         "memory (e.g. a one-tap FIR or a Delay of 0) passes the path check; (2) 'do not limit the number "
-        "of samples' is enforced only as V5 liveness (4096 items at both points); (3) samples 192-3903 are "
+        "of samples' is enforced only as V4 liveness (4096 items at both points); (3) samples 192-3903 are "
         "not compared (a periodic source cannot deviate there without also failing the late window or the "
         "slip check, but an adversarial time-varying design could); (4) the stream holds one near-miss copy "
         "(bit 9 wrong), so a detector that checks only part of the word including bit 9 (e.g. only its "
@@ -555,7 +555,7 @@ def record(sig: tuple[str, ...], alt_sigs: dict[str, tuple[str, ...]]) -> dict:
             "observation points: File Sinks bits.dat and flags.dat with item type float (sinks of another "
             "type do not match)",
             "sample rate: stated as irrelevant; not checked",
-            "run condition: the flowgraph keeps producing samples; checked only as V5 liveness (4096 items "
+            "run condition: the flowgraph keeps producing samples; checked only as V4 liveness (4096 items "
             "at both observation points)",
         ],
         "mutations": [
@@ -633,8 +633,8 @@ def run_probes() -> int:
             s = C.signature(form)
             why += f" [v2 {'|'.join(s)} -> {C.signature_split(s)}]"
         res = check(text, task)
-        ok = res["first_failed"] is None and res["highest_passed"] == "V6"
-        v6 = res["rungs"].get("V6") or {}
+        ok = res["first_failed"] is None and res["highest_passed"] == "V5"
+        v6 = res["rungs"].get("V5") or {}
         failed = [f"{c['feature']}" for c in v6.get("checks", []) if not c["passed"]] + \
                  [f"graph:{g_['kind']}" for g_ in v6.get("graph_checks", []) if not g_["passed"]]
         verdict = "as expected" if ok == expect else "UNEXPECTED"

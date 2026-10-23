@@ -92,7 +92,7 @@ SPEC_PROPERTIES = [
     "of block instances",
     "P6 observation: both files are float File Sinks (the observation points require file name and item "
     "type); P1 is measured on noise_in.dat and P2 on limited.dat, each over its first 65536 samples",
-    f"P7 run condition (V5): the flowgraph keeps producing samples until it is stopped; V5 liveness needs "
+    f"P7 run condition (V4): the flowgraph keeps producing samples until it is stopped; V4 liveness needs "
     f"{N_ITEMS} items at both files",
     "Groups: f2p = the requested operating point (the start graph fails P1-P3); p2p = what the start graph "
     "already satisfies and must keep (P4, P5)",
@@ -217,7 +217,7 @@ def _laplacian() -> dict:
 
 
 def probes() -> dict[str, tuple[dict, bool, str]]:
-    """name -> (graph, expected to pass V6, why)."""
+    """name -> (graph, expected to pass V5, why)."""
     return {
         "renamed_blocks": (_renamed(REFERENCE, {"noise_src": "src", "throttle": "thr", "limiter": "rail",
                                                 "sink_in": "f_in", "sink_out": "f_out"}), True,
@@ -247,11 +247,11 @@ def run_probes() -> int:
     for name, (g, expect, why) in probes().items():
         cg = compact(g, KEEP)
         res = check(grcfile.dump(cg), task)
-        ok = res["first_failed"] is None and res["highest_passed"] == "V6"
-        v6 = res["rungs"].get("V6") or {}
+        ok = res["first_failed"] is None and res["highest_passed"] == "V5"
+        v6 = res["rungs"].get("V5") or {}
         info = [f"{c['feature']}={c['value']}{'' if c['passed'] else ' FAIL'}" for c in v6.get("checks", [])] + \
                [f"graph:{g_['kind']} FAIL ({g_['detail']})" for g_ in v6.get("graph_checks", []) if not g_["passed"]]
-        if res["first_failed"] and res["first_failed"] != "V6":
+        if res["first_failed"] and res["first_failed"] != "V5":
             info = (res["rungs"].get(res["first_failed"]) or {}).get("errors", [])[:1]
         verdict = "as expected" if ok == expect else "UNEXPECTED"
         bad += ok != expect

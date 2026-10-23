@@ -27,19 +27,19 @@
    "passed": true,
    "results": {
     "v1_interp_fir_rotator.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_rational_resampler_default_taps.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_rrc_pulse_shaping.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_interpolating_low_pass_rotator.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

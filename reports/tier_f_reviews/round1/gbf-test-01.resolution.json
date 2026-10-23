@@ -2,15 +2,15 @@
  "task": "gbf-test-01",
  "action": "retheme",
  "rethemed": true,
- "new_theme": "BUILD L1 full-wave rectifier: in the empty flowgraph at 48 kHz, Signal Source 50 Hz sinusoid (peak 2.0) -> |x| -> File Sink rectified.dat (float). V6: mean 1.273 / RMS 1.414 / max 2.0 (2 %), min >= 0, peak_freq 100 Hz (1 %), AC-shape band_fraction at 200 Hz (remove_mean, Hann), graph check path Signal Source -> rectifying block -> File Sink. v2 signature envelope|tone (test), cluster_id chain:envelope|tone.",
+ "new_theme": "BUILD L1 full-wave rectifier: in the empty flowgraph at 48 kHz, Signal Source 50 Hz sinusoid (peak 2.0) -> |x| -> File Sink rectified.dat (float). V5: mean 1.273 / RMS 1.414 / max 2.0 (2 %), min >= 0, peak_freq 100 Hz (1 %), AC-shape band_fraction at 200 Hz (remove_mean, Hann), graph check path Signal Source -> rectifying block -> File Sink. v2 signature envelope|tone (test), cluster_id chain:envelope|tone.",
  "accepted": [
   {
    "id": "compliance/F1-shortcut-passes",
-   "change": "Applies to any output-only oracle. The instruction now names the structure ('use a Signal Source', 'full-wave rectify it') and V6 checks it with a path graph check (analog_sig_source_x -> one of Abs / Complex To Mag(/Phase) / Mag^2 / Transcendental / Max / Min / RMS / Embedded Python -> File Sink). Probes: a Vector Source holding one period of |2cos| passes every signal check but fails the path check; a 100 Hz cosine with a DC offset through Abs fails RMS and the 200 Hz shape check; a half-wave rectifier fails mean/RMS/shape."
+   "change": "Applies to any output-only oracle. The instruction now names the structure ('use a Signal Source', 'full-wave rectify it') and V5 checks it with a path graph check (analog_sig_source_x -> one of Abs / Complex To Mag(/Phase) / Mag^2 / Transcendental / Max / Min / RMS / Embedded Python -> File Sink). Probes: a Vector Source holding one period of |2cos| passes every signal check but fails the path check; a 100 Hz cosine with a DC offset through Abs fails RMS and the 200 Hz shape check; a half-wave rectifier fails mean/RMS/shape."
   },
   {
    "id": "compliance/F2-unstated-run-length",
-   "change": "Instruction states the window ('the first second of output (48,000 samples)', no skip), the tolerances (2 % levels, 1 % frequency) and the run sentence of rule R5. Probes: Head 48000 passes, Head 24000 fails V5 liveness as the instruction warns."
+   "change": "Instruction states the window ('the first second of output (48,000 samples)', no skip), the tolerances (2 % levels, 1 % frequency) and the run sentence of rule R5. Probes: Head 48000 passes, Head 24000 fails V4 liveness as the instruction warns."
   },
   {
    "id": "compliance/F3-near-duplicate-in-test",
@@ -26,7 +26,7 @@
   },
   {
    "id": "item-quality/F1-shortcut-accepted",
-   "change": "Same resolution as compliance/F1 (structural path check; Vector Source shortcut probe fails V6)."
+   "change": "Same resolution as compliance/F1 (structural path check; Vector Source shortcut probe fails V5)."
   },
   {
    "id": "item-quality/F2-theme-redundancy-cluster",
@@ -40,9 +40,9 @@
  "rejected": [],
  "notes": [
   "Old content (square/sawtooth low-pass to sine) is gone; every finding was a real problem of it and its general concern was re-checked on the new content (above).",
-  "Variants (4, all at V6): Float To Complex + Complex To Mag with a sine waveform; Mag^2 + Transcendental sqrt; max(x, -x); unit source + gain 2 + Throttle + Abs. Extra probes passing: RMS block with alpha 1, x*x + sqrt, -min(x,-x), full GRC-writer export of the reference, a 49.6 Hz source (inside 1 %).",
+  "Variants (4, all at V5): Float To Complex + Complex To Mag with a sine waveform; Mag^2 + Transcendental sqrt; max(x, -x); unit source + gain 2 + Throttle + Abs. Extra probes passing: RMS block with alpha 1, x*x + sqrt, -min(x,-x), full GRC-writer export of the reference, a 49.6 Hz source (inside 1 %).",
   "All 10 mutants verified per mutant; their 'breaks' labels list every property whose check fails. A half-wave mutant needs two edits; the probe shows it is rejected.",
   "band_fraction is used with remove_mean + Hann (tooling T5) and calibrated after the 18 Oct correction (rule R12): ideal 200 Hz share 0.0380, bounds 0.02-0.06."
  ],
- "gates": "ALL PASS: solvability 10/10, reference 165 tokens, variants 4/4 at V6, build (no start graph), mutants 10 valid / kill rate 1.0 / 0 survivors / 0 invalid"
+ "gates": "ALL PASS: solvability 10/10, reference 165 tokens, variants 4/4 at V5, build (no start graph), mutants 10 valid / kill rate 1.0 / 0 survivors / 0 invalid"
 }

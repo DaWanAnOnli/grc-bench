@@ -20,9 +20,9 @@
   },
   "start_fails": {
    "expected": null,
-   "first_failed": "V6",
+   "first_failed": "V5",
    "passed": true,
-   "v6_groups": {
+   "v5_groups": {
     "f2p": false,
     "p2p": true
    }
@@ -32,39 +32,39 @@
    "passed": true,
    "results": {
     "v1_agc2.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_agc3.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_feedforward_agc.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_magnitude_normaliser.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_rms_normaliser.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v6_power_sqrt_normaliser.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v7_instant_power_sqrt.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v8_magnitude_limiter.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v9_epy_agc.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

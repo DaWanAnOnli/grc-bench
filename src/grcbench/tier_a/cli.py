@@ -37,7 +37,7 @@
                        one Tier-F sample ("one lookup + one edit"), graded; prints its record
     tier-f <task_dir>... --config-id ID --reason TEXT [model] [--setting S] [--samples N]
                        Tier-F samples in the "one lookup + one edit" setting (tier_f_mode), graded
-                       by V1 (well-formed edit) + the ladder V2-V6
+                       by V1 (well-formed edit) + the ladder V2-V5
     trace <run_dir> [--no-thinking]
                        print the episode's SFT-format row (trace.export_run_dir)
 

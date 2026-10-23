@@ -19,7 +19,7 @@
   },
   {
    "id": "compliance/F4-stated-but-unchecked-requirements",
-   "change": "The instruction states the outcome only and says 'How you generate the signal is up to you', so variant v1 (amplitude and offset set on the source) agrees with it. Dropped '32-bit float samples throughout'. Only the File Sink's item type is stated, and the observation point requires type float. The run requirement uses the R5 sentence. spec_properties records it as a V5 liveness condition only (16384 items). Probe head_8192 fails at V5. A Head of more than 16384 items still passes; review.notes records this limit. No Head-limited answer is described as correct."
+   "change": "The instruction states the outcome only and says 'How you generate the signal is up to you', so variant v1 (amplitude and offset set on the source) agrees with it. Dropped '32-bit float samples throughout'. Only the File Sink's item type is stated, and the observation point requires type float. The run requirement uses the R5 sentence. spec_properties records it as a V4 liveness condition only (16384 items). Probe head_8192 fails at V4. A Head of more than 16384 items still passes; review.notes records this limit. No Head-limited answer is described as correct."
   },
   {
    "id": "compliance/F5-role-table-declaration-missing",
@@ -39,11 +39,11 @@
   },
   {
    "id": "item-quality/F3",
-   "change": "Uses the R5 run sentence. The capture is 16384 items, and the checks start at sample 4800 (0.1 s), so the reviewer's Head-8192 probe c3 fails at V5. spec_properties claims liveness only. review.notes records the remaining limit: a Head of more than 16384 items passes."
+   "change": "Uses the R5 run sentence. The capture is 16384 items, and the checks start at sample 4800 (0.1 s), so the reviewer's Head-8192 probe c3 fails at V4. spec_properties claims liveness only. review.notes records the remaining limit: a Head of more than 16384 items passes."
   },
   {
    "id": "item-quality/F4",
-   "change": "The instruction states the target output and its tolerances only; the method is free. Every alternative the reviewers showed is a variant and passes V6: v4 (complex source -> Complex to Real -> blocks_multiply_const_xx -> Add Const, legacy Throttle, a quoted absolute file-name expression), v5 (Vector Source lookup table) and v6 (a sine with a phase offset through a Rail clamp). The signatures of v5 ({data_source}) and v6 ({nonlinear, tone}) hash to train. review.notes lists both for the reserved-signature step (R1/R2)."
+   "change": "The instruction states the target output and its tolerances only; the method is free. Every alternative the reviewers showed is a variant and passes V5: v4 (complex source -> Complex to Real -> blocks_multiply_const_xx -> Add Const, legacy Throttle, a quoted absolute file-name expression), v5 (Vector Source lookup table) and v6 (a sine with a phase offset through a Rail clamp). The signatures of v5 ({data_source}) and v6 ({nonlinear, tone}) hash to train. review.notes lists both for the reserved-signature step (R1/R2)."
   }
  ],
  "rejected": [],
@@ -56,5 +56,5 @@
   "Known limit kept in review.notes: the 48 kHz sample rate is visible only through the frequency-to-sample-rate ratio, because the samples are identical at any rate. A graph check on the samp_rate expression was not added, because correct answers such as '48*1000' would fail it.",
   "build.py regenerates every file deterministically: two consecutive builds gave byte-identical output, and stale variant files are removed."
  ],
- "gates": "passed (18 Oct, after this stage's edits): solvability 10/10, size 204 tokens, variants 6/6 reach V6, start_fails n/a (build), mutation 14 valid with kill rate 1.0; build.py --probes gives 6/6 verdicts as expected"
+ "gates": "passed (18 Oct, after this stage's edits): solvability 10/10, size 204 tokens, variants 6/6 reach V5, start_fails n/a (build), mutation 14 valid with kill rate 1.0; build.py --probes gives 6/6 verdicts as expected"
 }

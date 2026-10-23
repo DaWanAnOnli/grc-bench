@@ -236,7 +236,7 @@ instruction = (
 
 # ---------------------------------------------------------------- observation and oracle
 # The File Sink item type is part of each observation point: a sink of another type does not match,
-# so the point is missing and V6 fails (e.g. a byte File Sink fed straight from the detector).
+# so the point is missing and V5 fails (e.g. a byte File Sink fed straight from the detector).
 # The "saw" point taps the Signal Source's output directly (an edge point adds no block).
 observation = {
     "points": [{"name": "peaks", "sink": {"block_id": "blocks_file_sink", "params": {"file": PEAKS_FILE, "type": "float"}}},
@@ -295,11 +295,11 @@ P2P_MEANING = ("p2p here means properties of the parts the fault does not touch 
                "removed) every p2p check passes and the f2p checks fail")
 spec_properties = [
     {"id": "validates", "text": "the repaired flowgraph passes GRC validation (the IO types of every connection "
-                                "match), generates and runs", "checked_by": "ladder V3-V5"},
+                                "match), generates and runs", "checked_by": "ladder V3-V4"},
     {"id": "outputs", "text": "float items are written to the File Sinks peaks.dat and average.dat",
-     "checked_by": "observation contract (file name and item type float; a missing or differently typed sink fails V6)"},
+     "checked_by": "observation contract (file name and item type float; a missing or differently typed sink fails V5)"},
     {"id": "run_length", "text": "the flowgraph keeps producing samples until it is stopped",
-     "checked_by": f"V5 liveness: at least {N_ITEMS} items at each observation point"},
+     "checked_by": f"V4 liveness: at least {N_ITEMS} items at each observation point"},
     {"id": "peak_rate", "text": "exactly one detected peak per period of the 600 Hz sawtooth at 48 kHz: 192 flags in "
                                 "192 whole periods (mean 0.0125 +-0.2 %, so no extra or missing flag)",
      "checked_by": "f2p mean on peaks.dat (also catches a wrong sample rate or sawtooth frequency)"},
@@ -372,7 +372,7 @@ REVIEW_NOTES = (
     "192-period window (15360 samples). Known oracle limits: (1) a deliberate cheat that writes "
     "peaks.dat from a Vector Source pattern while the detector still feeds average.dat would pass (the path graph "
     "check only requires the detector between the sawtooth and some File Sink); (2) the 'saw' point is an edge "
-    "point on the block named analog_sig_source_x_0, so renaming the Signal Source fails V6. Licence: derived "
+    "point on the block named analog_sig_source_x_0, so renaming the Signal Source fails V5. Licence: derived "
     "from the GNU Radio 3.10.12 example blocks/peak_detector2.grc (GPL-3.0-or-later, GNU Radio project); the "
     "licence decision is the team's."
 )

@@ -334,7 +334,7 @@ spec_properties = [
     {"id": "outputs", "text": "complex items to the File Sink gmsk_iq.dat and float items to the File Sink "
                               "freq_trace.dat", "checked_by": "observation contract (file name and item type)"},
     {"id": "run", "text": "the flowgraph keeps producing samples until it is stopped",
-     "checked_by": f"V5 liveness: at least {RUN_ITEMS} items at each observation point"},
+     "checked_by": f"V4 liveness: at least {RUN_ITEMS} items at each observation point"},
 ]
 
 mutations = [

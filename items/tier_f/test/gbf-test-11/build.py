@@ -22,7 +22,7 @@ r + 0.4 i overestimates the magnitude by up to 8 %); magnitude / moving average 
 A single RMS over the whole stretch would not see the settling time (rate 0.1 gives 0.986), hence
 the separate first-240-samples window.
 
-V6 oracle on rx.dat (6 stretches, 3 envelope periods; stretch k starts at sample 4000 k):
+V5 oracle on rx.dat (6 stretches, 3 envelope periods; stretch k starts at sample 4000 k):
   f2p  rms over [4000k + 240, 4000k + 480)    1.0 +- 10 %   (settled within 5 ms)
   f2p  rms over [4000k + 480, 4000k + 4000)   1.0 +- 10 %   (stays there)
   p2p  peak_freq over [4000k + 240, 4000k + 4000)   +1200 Hz +- 1 %   (94 periods: on an FFT bin)
@@ -272,7 +272,7 @@ def record(sig: tuple[str, ...], start_sig: tuple[str, ...], variant_sigs: dict[
                 "Feed-Forward AGC, a Divide-based normaliser or an Embedded Python block)"),
         "rate": "sample rate 48 kHz (frequencies are measured on the sample index at 48 kHz)",
         "observation": ("complex samples written to the File Sink rx.dat (sink type complex), running continuously "
-                        f"(V5 liveness: at least {N_ITEMS} items, 3 envelope periods)"),
+                        f"(V4 liveness: at least {N_ITEMS} items, 3 envelope periods)"),
     }
     checks = []
     for k in range(N_STRETCH):

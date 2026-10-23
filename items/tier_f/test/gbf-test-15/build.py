@@ -392,9 +392,9 @@ SPEC = {
                         f"gives {SETTLE_MEAN_ORIG:.4f})"),
                "checked_by": "p2p mean over the first 4000 samples of the tone meter"},
     "run": {"id": "run_length", "text": "the flowgraph keeps producing samples until it is stopped",
-            "checked_by": f"V5 liveness: at least {N_ITEMS} items at every observation point"},
+            "checked_by": f"V4 liveness: at least {N_ITEMS} items at every observation point"},
     "outputs": {"id": "outputs", "text": "the four File Sinks keep their file names and item types",
-                "checked_by": "observation contract (a missing sink fails V6)"},
+                "checked_by": "observation contract (a missing sink fails V5)"},
 }
 
 ORACLE = {"checks": [

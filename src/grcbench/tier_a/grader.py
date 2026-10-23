@@ -20,9 +20,9 @@ task.json "acceptance" (all keys optional, at least one assertion required; chec
 
   graph            {"path": "<file in the project folder>"} the graph to grade; default: the
                    episode's final active graph (its saved file, EpisodeResult.final_graph_path)
-  ladder           {"rung": "V1".."V6", "observation": {...}, "oracle": {...}}
+  ladder           {"rung": "V1".."V5", "observation": {...}, "oracle": {...}}
                    ladder.check(final graph text, max_rung=rung) must pass every rung up to `rung`
-                   (observation/oracle in the Tier-F format; V6 needs an oracle; graph_checks such
+                   (observation/oracle in the Tier-F format; V5 needs an oracle; graph_checks such
                    as same_blocks_as_start compare with the task's start graph)
   blocks_present   [{"id": str | "ids": [...], "min": 1, "max": null, "state": "enabled" | "any",
                      "params": {param: constraint}}]
@@ -84,7 +84,7 @@ ACCEPTANCE_KEYS = ("graph", "ladder", "blocks_present", "blocks_absent", "connec
                    "hier_block", "graph_unchanged", "answer")
 ASSERTIONS = ACCEPTANCE_KEYS[1:]
 GRAPH_ASSERTIONS = ("ladder", "blocks_present", "blocks_absent", "connections", "graph_unchanged")
-RUNGS = ("V1", "V2", "V3", "V4", "V5", "V6")
+RUNGS = ("V1", "V2", "V3", "V4", "V5")
 IGNORED_KEYS = ("note",)                        # free text a task may carry next to its assertions
 MATCHES = ("number", "text", "all_of", "any_of")
 REL_TOL_DEFAULT = 1e-9
@@ -151,12 +151,12 @@ def acceptance_errors(acceptance: dict[str, Any]) -> list[str]:
     if lad is not None:
         if lad.get("rung") not in RUNGS:
             errs.append(f"ladder.rung must be one of {list(RUNGS)}")
-        elif lad["rung"] == "V6":
+        elif lad["rung"] == "V5":
             oracle = lad.get("oracle") or {}
             if not oracle.get("checks") and not oracle.get("graph_checks"):
-                errs.append("ladder.rung V6 needs an oracle with checks or graph_checks")
+                errs.append("ladder.rung V5 needs an oracle with checks or graph_checks")
             if oracle.get("checks") and not (lad.get("observation") or {}).get("points"):
-                errs.append("ladder.rung V6 with signal checks needs observation points")
+                errs.append("ladder.rung V5 with signal checks needs observation points")
     for key in ("blocks_present", "blocks_absent"):
         for i, spec in enumerate(acceptance.get(key) or []):
             if not _ids(spec):

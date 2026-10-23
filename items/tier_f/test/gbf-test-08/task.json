@@ -1813,7 +1813,7 @@
   "P3 radians wrapped to -pi..pi: largest |value| is pi (within 1 %; every correct repair gives pi exactly, so the allowance only absorbs float rounding); degrees, a 0..2 pi convention or an unwrapped phase fail",
   "P4 both oscillators kept as they are: complex Signal Sources at 1 kHz and 1.005 kHz with amplitude 1 are present (graph checks on the parameters)",
   "P5 the phase is computed from the oscillators: a path Signal Source -> Complex To Arg (or Complex to Mag/Phase) -> File Sink exists (rules out a sawtooth Signal Source written straight to phase.dat)",
-  "P6 observation and run: float samples (8 kHz) written to the File Sink phase.dat (the sink's type is part of the observation point); the flowgraph runs until stopped, checked only by V5 liveness (at least 8,000 items)",
+  "P6 observation and run: float samples (8 kHz) written to the File Sink phase.dat (the sink's type is part of the observation point); the flowgraph runs until stopped, checked only by V4 liveness (at least 8,000 items)",
   "Groups (fix plan R8): the start graph fails at V3 and never runs, so every signal check depends on the repaired connection and is f2p; p2p holds the structural properties of the parts the fault does not touch (P4, P5), which pass on the start graph (asserted in build.py)"
  ],
  "split": "test",

@@ -215,7 +215,7 @@ def variant_lo_within_tolerance() -> dict:
 
 # ---- probes: alternatives and wrong answers that are not shipped variants or single-edit mutants ---
 def probes() -> dict[str, tuple[dict, bool, str]]:
-    """name -> (flowgraph, expected to pass V6, what it shows)."""
+    """name -> (flowgraph, expected to pass V5, what it shows)."""
     var = {"samp_rate": str(FS), LO_VAR: str(LO_F)}
     out = {}
     for lo, why in [("8699", "IF 2001 Hz (0.05 %)"), ("8701", "IF 1999 Hz"), ("8682", "IF 2018 Hz (0.9 %)"),
@@ -269,8 +269,8 @@ def run_probes() -> int:
     bad = 0
     with ThreadPoolExecutor(max_workers=6) as ex:
         for name, expect, why, res in ex.map(one, todo):
-            ok = res["first_failed"] is None and res["highest_passed"] == "V6"
-            v6 = res["rungs"].get("V6") or {}
+            ok = res["first_failed"] is None and res["highest_passed"] == "V5"
+            v6 = res["rungs"].get("V5") or {}
             bf = [c["value"] for c in v6.get("checks", []) if c["feature"] == "band_fraction"]
             failed = [f"{c['point']}.{c['feature']}={c['value']}" for c in v6.get("checks", []) if not c["passed"]]
             failed += [f"graph:{c['kind']}" for c in v6.get("graph_checks", []) if not c["passed"]]
@@ -288,7 +288,7 @@ def observation() -> dict:
     obs["points"].append({"name": "rf", "edge": {"block": RF, "port": "0"}})
     obs["contract"] = ("'out': the float samples written to the File Sink whose file name is if.dat (item "
                        "type float); 'rf': the output of the Signal Source block rf (edge tap, no extra "
-                       "block). Both keep producing samples (V5 liveness: 16384 items at each point).")
+                       "block). Both keep producing samples (V4 liveness: 16384 items at each point).")
     return obs
 
 
@@ -296,7 +296,7 @@ SPEC = [
     {"id": "validates", "text": "the flowgraph validates: every parameter value evaluates (the repaired fault)",
      "checked_by": "V3 (the start graph fails here)"},
     {"id": "output_point", "text": "float samples are written by a File Sink to if.dat",
-     "checked_by": "observation 'out' (sink matched by file name and type float; a missing or mistyped point fails V6)"},
+     "checked_by": "observation 'out' (sink matched by file name and type float; a missing or mistyped point fails V5)"},
     {"id": "if_frequency", "text": "the output is a 2 kHz tone (within 1 %)",
      "checked_by": "f2p peak_freq at 'out'"},
     {"id": "if_amplitude", "text": "IF amplitude 0.4 = half the RF amplitude (RMS 0.283 within 5 %)",
@@ -313,7 +313,7 @@ SPEC = [
      "checked_by": "p2p graph checks: path Signal Source -> multiplier -> File Sink and path multiplier -> "
                    "filter -> File Sink"},
     {"id": "run_length", "text": "the flowgraph keeps producing samples until it is stopped",
-     "checked_by": "V5 liveness: at least 16384 items at both observation points; nothing more is claimed"},
+     "checked_by": "V4 liveness: at least 16384 items at both observation points; nothing more is claimed"},
     {"id": "context_only",
      "text": "the low-pass filter's cutoff and width, and which side of the carrier the LO is on, are not "
              "requirements; only the stated output properties are graded",

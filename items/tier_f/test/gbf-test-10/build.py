@@ -168,7 +168,7 @@ observation["points"].append({"name": "src", "edge": {"block": TONE, "port": "0"
 observation["contract"] = (
     "'out': the float samples written to the File Sink whose file name is clean_tone.dat (item type "
     "float; the first 1024 samples, which cover the filter's start-up transient, are skipped); 'src': "
-    "the output of the Signal Source block tone (edge tap, no extra block). V5 liveness: 8192 items at "
+    "the output of the Signal Source block tone (edge tap, no extra block). V4 liveness: 8192 items at "
     "each point.")
 checks = [
     # f2p: everything at the output depends on the repaired filter block
@@ -198,7 +198,7 @@ graph_checks = [
 
 spec_properties = [
     {"id": "output_point", "text": "float samples are written by a File Sink to clean_tone.dat",
-     "checked_by": "observation 'out' (sink matched by file name and type float; a missing or mistyped point fails V6)"},
+     "checked_by": "observation 'out' (sink matched by file name and type float; a missing or mistyped point fails V5)"},
     {"id": "dc_removed", "text": "the 0.75 DC offset is removed: output mean within 0.05 of zero after 1024 samples",
      "checked_by": "f2p mean at 'out'"},
     {"id": "dc_removed_by_filter",
@@ -213,7 +213,7 @@ spec_properties = [
                    "source's freq/amp/offset values (a sample-rate change that is matched by a tone-frequency "
                    "change gives identical samples and is caught only there)"},
     {"id": "run_length", "text": "the flowgraph keeps producing samples until it is stopped",
-     "checked_by": "V5 liveness: at least 8192 items at both observation points; nothing more is claimed"},
+     "checked_by": "V4 liveness: at least 8192 items at both observation points; nothing more is claimed"},
     {"id": "context_only",
      "text": "the 300 Hz cutoff and 200 Hz transition width describe the original design; they are not graded",
      "checked_by": "not checked by design (a cutoff anywhere that blocks DC and passes 1.2 kHz is accepted)"},

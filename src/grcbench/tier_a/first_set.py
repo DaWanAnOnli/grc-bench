@@ -180,7 +180,7 @@ def _beat_note() -> dict:
                         "producing samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("out", "beat.dat", "float")], 20480, "float samples in beat.dat"),
                        "oracle": {"checks": [
                            {**win, "feature": "band_fraction", "lo": 50, "hi": 150, "expect": 0.5, "rel_tol": 0.1},
@@ -240,7 +240,7 @@ def _channel_tap_repair() -> dict:
                         "and save the flowgraph. It should keep producing samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("tx", "tx.dat", "complex"), point("rx", "rx.dat", "complex")],
                                                   12288, "complex samples in tx.dat and rx.dat"),
                        "oracle": {"checks": [
@@ -299,7 +299,7 @@ def _agc_tune() -> dict:
                         "samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("rx", "rx.dat", "complex")], 24000, "complex samples in rx.dat"),
                        "oracle": oracle},
             "blocks_present": [{"id": "analog_agc_xx"}]},
@@ -346,7 +346,7 @@ def _peak_hold_epy() -> dict:
                         "the flowgraph. It should keep producing samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("peak", "peak.dat", "float"),
                                                    point("rect", "rectified.dat", "float")], 48000,
                                                   "float samples in peak.dat and rectified.dat"),
@@ -404,7 +404,7 @@ def _rrc_modify() -> dict:
                         "until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("if", "if.dat", "complex")], 16384, "complex samples in if.dat"),
                        "oracle": {"checks": [
                            {"point": "if", "skip": 1024, "n": 8192, "feature": "band_fraction", "fs": 32000, "lo": 5300,
@@ -495,7 +495,7 @@ def _save_delay_block() -> dict:
             "hier_block": {"block_id": "sample_delay", "label": "Sample Delay", "inputs": 1, "outputs": 1,
                            "params": ["delay"]},
             "graph_unchanged": True,
-            "ladder": {"rung": "V4"}},
+            "ladder": {"rung": "V3"}},
         "golden": {"calls": [
             c("inspect_graph"),
             c("inspect_graph", {"targets": ["align"]}),
@@ -721,7 +721,7 @@ def _shifted_noise_build() -> dict:
                         "stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("out", "shifted.dat", "complex")], 20480,
                                                   "complex samples in shifted.dat"),
                        "oracle": {"checks": [{**win, "feature": "band_fraction", "lo": 7500, "hi": 12500, "min": 0.98}],
@@ -781,7 +781,7 @@ def _dc_blocker_build() -> dict:
                         "flowgraph. It should keep producing samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("raw", "raw.dat", "float"), point("clean", "clean.dat", "float")],
                                                   20480, "float samples in raw.dat and clean.dat"),
                        "oracle": {"checks": [
@@ -837,7 +837,7 @@ def _if_filter_type_repair() -> dict:
                         "producing samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("if", "if.dat", "float")], 12288, "float samples in if.dat"),
                        "oracle": {"checks": [
                            {**win, "feature": "peak_freq", "fs": 48000, "expect": 2000, "tol": 20},
@@ -884,7 +884,7 @@ def _mf_sink_type_repair() -> dict:
                         "problem without changing the pattern, the filter or the file names, and save the flowgraph. It "
                         "should keep producing samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
-        "acceptance": {"ladder": {"rung": "V6", "observation": obs, "oracle": oracle},
+        "acceptance": {"ladder": {"rung": "V5", "observation": obs, "oracle": oracle},
                        "blocks_present": [{"id": "blocks_moving_average_xx", "params": {"length": 8, "scale": 0.125}},
                                           {"id": "blocks_file_sink", "params": {"file": "mf.dat", "type": "float"}}]},
         "golden": {"calls": [
@@ -924,7 +924,7 @@ def _ssb_retune() -> dict:
                         "until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("audio", "audio.dat", "float"), point("ssb", "ssb.dat", "float")],
                                                   14400, "float samples in audio.dat (8 kHz) and ssb.dat (48 kHz)"),
                        "oracle": {"checks": [
@@ -974,7 +974,7 @@ def _clip_detector_epy() -> dict:
                         "the flowgraph. It should keep producing samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("clip", "clipped.dat", "float"),
                                                    point("lim", "limited.dat", "float")], 20480,
                                                   "float samples in clipped.dat and limited.dat"),
@@ -1029,7 +1029,7 @@ def _phase_modify() -> dict:
                         "flowgraph. It should keep producing samples until it is stopped."),
         "scripted_user": {"rules": SAVE_RULES, "max_turns": 2},
         "acceptance": {
-            "ladder": {"rung": "V6",
+            "ladder": {"rung": "V5",
                        "observation": observation([point("ph", "phase.dat", "float"),
                                                    point("env", "envelope.dat", "float")], 12288,
                                                   "float samples in phase.dat and envelope.dat"),
@@ -1114,7 +1114,7 @@ def _save_magnitude_block() -> dict:
                           "max_turns": 2},
         "acceptance": {"hier_block": {"block_id": "complex_magnitude", "label": "Complex Magnitude", "inputs": 1,
                                       "outputs": 1},
-                       "graph_unchanged": True, "ladder": {"rung": "V4"}},
+                       "graph_unchanged": True, "ladder": {"rung": "V3"}},
         "golden": {"calls": [
             c("inspect_graph"),
             c("inspect_graph", {"targets": ["mag"]}),

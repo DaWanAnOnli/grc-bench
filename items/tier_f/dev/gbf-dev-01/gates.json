@@ -27,23 +27,23 @@
    "passed": true,
    "results": {
     "v1_pm1_mapping_variables.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_fft_correlator_hysteresis.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_byte_source_uchar_to_float.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_rail_clamp_decision.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_rational_resampler_delay.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

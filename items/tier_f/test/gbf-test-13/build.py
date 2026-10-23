@@ -225,7 +225,7 @@ SPEC_PROPERTIES = [
     {"id": "outputs", "text": f"complex items to the File Sink {IF_FILE}, float items to the File Sink {SYM_FILE}",
      "checked_by": "observation contract (file name and item type)"},
     {"id": "run", "text": "the flowgraph keeps producing samples until it is stopped",
-     "checked_by": f"V5 liveness: at least {RUN_ITEMS} items at each observation point"},
+     "checked_by": f"V4 liveness: at least {RUN_ITEMS} items at each observation point"},
 ]
 
 W = {"point": "if", "skip": SKIP, "n": N}

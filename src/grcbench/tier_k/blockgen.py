@@ -14,7 +14,7 @@ a given input is not in the training data. Tier K stays closed-book: a model und
 the question text, with no GRC-Agent and no tools.
 
 How an answer is made: the generator places the block in a flowgraph (finite Vector Source(s) ->
-block -> File Sink(s)), runs it in the sandbox through the Tier-F ladder (V1-V5) and reads the
+block -> File Sink(s)), runs it in the sandbox through the Tier-F ladder (V1-V4) and reads the
 requested item from the recording; this is GNU Radio's own answer, the key. Each question also
 carries an independent model of the block's documented behaviour (`expect`): a question is kept only
 when the run and the model agree (within the key's tolerance), when two runs give identical output,
@@ -709,7 +709,7 @@ def run_once(graph_text: str, task: dict, port: int, tag: str) -> tuple[list | N
         res = ladder.check(graph_text, task, keep=True, run_root=root, timeout=180)
         run_dirs = [d for d in root.iterdir() if d.is_dir()]
         obs = run_dirs[0] / "obs" / f"out{port}.npy" if len(run_dirs) == 1 else None
-        if res.get("highest_passed") not in ("V5", "V6") or obs is None or not obs.exists():
+        if res.get("highest_passed") not in ("V4", "V5") or obs is None or not obs.exists():
             rung = res.get("first_failed") or res.get("highest_passed")
             errs = ((res.get("rungs") or {}).get(rung) or {}).get("errors") or []
             return None, f"run failed at {rung}: {'; '.join(map(str, errs))[:200]}"

@@ -1,14 +1,14 @@
-"""Sandboxed executor for ladder rungs V2-V5 (run as `python -m grcbench.tier_f._worker spec.json`).
+"""Sandboxed executor for ladder rungs V2-V4 (run as `python -m grcbench.tier_f._worker spec.json`).
 
 Runs inside bubblewrap (see common/sandbox.py) because GNU Radio evaluates parameters as Python,
-Embedded-Python blocks run on load, and V5 runs the generated program. One OS process per check.
+Embedded-Python blocks run on load, and V4 runs the generated program. One OS process per check.
 
   V2 load      GRC loads the graph; fails on unknown block ids (GRC silently makes them "dummy"
                blocks), dangling connections, enum values not in the block's options (GRC silently
                coerces them), or a block catalog that differs from the pinned one.
-  V3 validate  GRC validation: ports connected, types and vector lengths match, parameters evaluate.
-  V4 codegen   GRC generates the Python top block.
-  V5 run       Headless bounded run. GUI and audio sinks (and file sinks, to avoid disk I/O) become
+  V3 compile   GRC validation (ports connected, types and vector lengths match, parameters evaluate),
+               then GRC generates the Python top block.
+  V4 run       Headless bounded run. GUI and audio sinks (and file sinks, to avoid disk I/O) become
                null sinks of the same type; Qt widget variables become plain variables. The harness
                taps each observation point with a capture sink (_tap_block), starts the flowgraph,
                waits until every tap holds n_items, the timeout expires or the flowgraph finishes on
@@ -346,30 +346,30 @@ def main(spec_path: str) -> None:
         fg, errors, halluc = _v2(plat, data, spec.get("catalog_ok", True))
         res["hallucinated_blocks"] = halluc
         res["rungs"]["V2"] = {"passed": not errors, "errors": errors}
-        if errors or spec.get("max_rung", 6) < 3:
+        if errors or spec.get("max_rung", 5) < 3:
             done()
         fg.validate()
         v3_err = list(dict.fromkeys(fg.get_error_messages()))
-        res["rungs"]["V3"] = {"passed": fg.is_valid() and not v3_err, "errors": v3_err[:50]}
-        if not res["rungs"]["V3"]["passed"] or spec.get("max_rung", 6) < 4:
+        if not fg.is_valid() or v3_err:
+            res["rungs"]["V3"] = {"passed": False, "errors": v3_err[:50]}
             done()
-        try:
+        try:                   # V3 continues: a valid graph must also generate its Python program
             gen_path = _codegen(plat, fg, run_dir / "gen")
-            res["rungs"]["V4"] = {"passed": gen_path.exists(), "errors": [], "file": str(gen_path)}
+            res["rungs"]["V3"] = {"passed": gen_path.exists(), "errors": [], "file": str(gen_path)}
         except Exception as exc:
-            res["rungs"]["V4"] = {"passed": False, "errors": [f"{type(exc).__name__}: {exc}"]}
+            res["rungs"]["V3"] = {"passed": False, "errors": [f"code generation: {type(exc).__name__}: {exc}"]}
             done()
-        if spec.get("max_rung", 6) < 5:
+        if not res["rungs"]["V3"]["passed"] or spec.get("max_rung", 5) < 4:
             done()
         if fg.get_option("generate_options").startswith("hb"):
-            res["rungs"]["V5"] = {"passed": False, "errors": ["hierarchical block: no top block to run"]}
+            res["rungs"]["V4"] = {"passed": False, "errors": ["hierarchical block: no top block to run"]}
             done()
         meta = _sink_meta(fg)
         fed_by = _convert_headless(plat, fg)
         fed_by["__meta__"] = meta
         conv_err = list(dict.fromkeys(fg.get_error_messages()))
         if not fg.is_valid():
-            res["rungs"]["V5"] = {"passed": False, "errors": ["headless conversion produced an invalid graph"] + conv_err[:20]}
+            res["rungs"]["V4"] = {"passed": False, "errors": ["headless conversion produced an invalid graph"] + conv_err[:20]}
             done()
         try:  # a debugging aid only; never affects the verdict
             plain = json.loads(json.dumps(fg.export_data(), default=str))
@@ -393,14 +393,14 @@ def main(spec_path: str) -> None:
             errs.append("flowgraph did not stop within the grace period")
         if taps and not info["liveness"]:
             errs.append(f"liveness: an observation point received too few items {info['items']}")
-        res["rungs"]["V5"] = {"passed": not errs, "errors": errs, "observation_errors": tap_errors, **info}
+        res["rungs"]["V4"] = {"passed": not errs, "errors": errs, "observation_errors": tap_errors, **info}
         done()
     except SystemExit:
         raise
     except BaseException:
         tb_text = traceback.format_exc()
-        last = max((k for k in ("V2", "V3", "V4", "V5") if k in res["rungs"]), default=None)
-        nxt = {"None": "V2", "V2": "V3", "V3": "V4", "V4": "V5", "V5": "V5"}[str(last)]
+        last = max((k for k in ("V2", "V3", "V4") if k in res["rungs"]), default=None)
+        nxt = {"None": "V2", "V2": "V3", "V3": "V4", "V4": "V4"}[str(last)]
         res["rungs"][nxt] = {"passed": False, "errors": [tb_text.strip().splitlines()[-1]], "traceback": tb_text[-4000:]}
         done(0)
 

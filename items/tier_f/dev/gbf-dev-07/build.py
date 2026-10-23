@@ -336,7 +336,7 @@ def variants_full(start: dict) -> dict[str, dict]:
 def probes_full(start: dict) -> dict[str, dict]:
     """Wrong answers kept out of the task files; main() --probes writes them to a scratch folder and
     re-checks the oracle's verdict on each (PROBE_PASSES_V6). They need more than one edit-operator
-    call, so they cannot be mutation-gate mutants. Every one must fail V6."""
+    call, so they cannot be mutation-gate mutants. Every one must fail V5."""
     p = {}
     # the round-1 shortcut: no multiplexing at all, one Vector Source holding the 18 output values
     d = without_conns(start, lambda c: MUX in (c[0], c[2]))
@@ -385,7 +385,7 @@ def probes_full(start: dict) -> dict[str, dict]:
     return p
 
 
-# expected V6 verdict of each probe (build.py --probes re-runs them through the ladder and asserts it)
+# expected V5 verdict of each probe (build.py --probes re-runs them through the ladder and asserts it)
 PROBE_PASSES_V6 = {"x_hardcoded_output": False, "x_header_after_frame": False, "x_vector_insert_offset7": False,
                    "x_no_throttle": False, "x_doctored_copy_of_a": False, "x_hardcoded_via_1in_mux": False,
                    "x_hardcoded_via_add_zero": False}
@@ -430,7 +430,7 @@ SPEC = {
     "b": "stream B recording unchanged: stream_b.dat receives 5, 6, 7, 12, 13, 14 repeated, from its first "
          "sample",
     "run": "run condition: the flowgraph keeps producing samples until it is stopped (no sample limit); checked "
-           "only by V5 liveness (at least 8192 items at every observation point), not by V6",
+           "only by V4 liveness (at least 8192 items at every observation point), not by V5",
     "obs": "observation points: float samples written to the File Sinks mux_out.dat, stream_a.dat and "
            "stream_b.dat (8192 items each)",
 }
@@ -511,7 +511,7 @@ NOTES = (
     "(period 9, offset 0) before / after the Throttle; v7 joins tagged packets of 2 / 4 / 3 items with a Tagged "
     "Stream Mux; v8 adds a second mux after the Throttle (v5-v8 are the round-1 reviewers' alternatives); v9 inserts the header into stream A with a Vector Insert (period 6) before the mux (round-2 reviewer's design). Probes "
     "(build.py --probes, not task files): x_hardcoded_output, x_header_after_frame and x_vector_insert_offset7 "
-    "fail V6, x_no_throttle fails the Throttle graph check, and x_doctored_copy_of_a, x_hardcoded_via_1in_mux "
+    "fail V5, x_no_throttle fails the Throttle graph check, and x_doctored_copy_of_a, x_hardcoded_via_1in_mux "
     "and x_hardcoded_via_add_zero fail the multiplexing graph checks."
 )
 
@@ -525,9 +525,9 @@ REVIEW_NOTES = (
     "a merging block but takes the output values from elsewhere could pass; where the samples come from cannot "
     "be observed in a single run. Team decision (fix plan): keep this graph check or drop the sentence. "
     "(2) 'The Throttle must stay in front of mux_out.dat' is checked structurally only; its rate is not observable "
-    "and not stated. (3) 'Keep producing samples until stopped' is checked only by V5 liveness (8192 items per "
+    "and not stated. (3) 'Keep producing samples until stopped' is checked only by V4 liveness (8192 items per "
     "observation point). (4) Stream tags (tag0 / tag1) are not checked. (5) Header-after-frame cannot be made by "
-    "one mutation operator on this reference, so it is a probe (fails V6 f2p), not a gate mutant. Licence: derived "
+    "one mutation operator on this reference, so it is a probe (fails V5 f2p), not a gate mutant. Licence: derived "
     "from the GNU Radio 3.10.12 example blocks/stream_mux_demo.grc (author David Pi, GNU GPL 3.0+); the item keeps "
     "the GPL-3.0-or-later attribution (licence decision is the team's)."
 )
@@ -559,11 +559,11 @@ def main() -> int:
             text = dump(tidy(v))
             (out / f"{k}.grc").write_text(text, encoding="utf-8")
             res = check(text, task)
-            v6 = res["rungs"].get("V6") or {}
-            passes = res["first_failed"] is None and res["highest_passed"] == "V6"
+            v6 = res["rungs"].get("V5") or {}
+            passes = res["first_failed"] is None and res["highest_passed"] == "V5"
             fails = [f"{c['point']}:{c['feature']}" for c in v6.get("checks", []) if not c["passed"]]
             fails += [f"{g['kind']}: {g['detail']}" for g in v6.get("graph_checks", []) if not g["passed"]]
-            print(f"{k:28s} passes V6: {passes!s:5s} (expected {PROBE_PASSES_V6[k]}); first failed "
+            print(f"{k:28s} passes V5: {passes!s:5s} (expected {PROBE_PASSES_V6[k]}); first failed "
                   f"{res['first_failed']}; groups {v6.get('groups')}; failing {fails}")
             if passes != PROBE_PASSES_V6[k]:
                 bad.append(k)

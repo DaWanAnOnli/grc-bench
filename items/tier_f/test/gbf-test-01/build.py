@@ -110,7 +110,7 @@ P_STRUCT = ("P7 structure: the output is derived from a Signal Source through a 
             "-> File Sink")
 P_OBS = ("P8 observation and run: float samples written to the File Sink rectified.dat (the sink's "
          "type is part of the observation point); the flowgraph runs until stopped, checked only by "
-         "V5 liveness (at least 48,000 items at rectified.dat)")
+         "V4 liveness (at least 48,000 items at rectified.dat)")
 
 WINDOW = {"skip": SKIP, "n": N}
 ORACLE = {

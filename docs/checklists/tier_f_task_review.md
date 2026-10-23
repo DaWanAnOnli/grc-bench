@@ -31,7 +31,7 @@ Each task is a folder `items/tier_f/<split>/<task_id>/`.
 |---|---|---|
 | `task.json` → `instruction` | the text the model gets | sections A, B, C, I |
 | `task.json` → `observation` | where the output is measured (a File Sink), how long the run is | B |
-| `task.json` → `oracle` | the V6 checks: `checks` (signal) and `graph_checks` (structure); each has a `group`: `f2p` (the requested change), `p2p` (what already worked must still work) or `main` | C, D |
+| `task.json` → `oracle` | the V5 checks: `checks` (signal) and `graph_checks` (structure); each has a `group`: `f2p` (the requested change), `p2p` (what already worked must still work) or `main` | C, D |
 | `task.json` → `spec_properties` | the author's plain-words list of what the oracle checks and why | C, D |
 | `task.json` → `mutations` | broken versions of the reference the oracle must reject | D |
 | `task.json` → `fault` | repair tasks: the fault and the rung it should fail at | F |
@@ -44,7 +44,7 @@ Each task is a folder `items/tier_f/<split>/<task_id>/`.
 
 The automatic gates already check these things, so you do not need to repeat them:
 
-- the reference passes V1–V6 in 10 of 10 runs (solvability);
+- the reference passes V1–V5 in 10 of 10 runs (solvability);
 - at least two variants pass;
 - the start graph fails;
 - at least 90% of the mutants are rejected;
@@ -74,10 +74,9 @@ Read the instruction the way the model will meet it:
 - The final graph is graded by the ladder:
   - V1: the `change_graph` call is well-formed and matches the tool's schema;
   - V2: load;
-  - V3: validate;
-  - V4: code generation;
-  - V5: bounded run;
-  - V6: oracle.
+  - V3: compile (validate, then code generation);
+  - V4: bounded run;
+  - V5: oracle.
 
 So the model can never run the flowgraph, look at a plot, read a log or ask a question. Everything
 it needs must be in the instruction or visible in the `inspect_graph` result of the start graph.
@@ -96,7 +95,7 @@ Run these in WSL from the `grc-bench` folder:
 gnuradio-companion items/tier_f/dev/gbf-dev-04/reference.grc   # view a graph (needs a WSL display)
 ```
 
-The ladder prints, for each rung, whether it passed and why. For V6 it prints every check with its
+The ladder prints, for each rung, whether it passed and why. For V5 it prints every check with its
 measured `value`, the expected value and the tolerance.
 
 ## The checklist
@@ -121,11 +120,11 @@ Tick every box or write a problem in your edits cell. The "typical problems" lis
 
 ### B. No hidden requirement
 
-- [ ] Every V6 check matches a sentence in the instruction. A check without a sentence is a hidden
+- [ ] Every V5 check matches a sentence in the instruction. A check without a sentence is a hidden
       requirement: either add the sentence or remove the check.
 - [ ] **Run length.** If the oracle needs a long run (`observation.run.min_items`), the instruction
       says the flowgraph keeps producing samples until it is stopped. Otherwise a correct answer that
-      adds a Head block, or stops early, fails V5 for a reason it was never told.
+      adds a Head block, or stops early, fails V4 for a reason it was never told.
 - [ ] **Start-up transients.** If a correct answer may add a filter, the signal checks skip the
       filter's start-up (`skip`). Without it, correct filtered answers fail on overshoot.
 - [ ] No tolerance is stricter than the instruction states.
@@ -133,7 +132,7 @@ Tick every box or write a problem in your edits cell. The "typical problems" lis
 Typical problems: unstated run length; no `skip`, so correct filtered answers fail; a `max_abs`
 check stricter than the stated tolerance; a hidden ripple tolerance.
 
-### C. Every stated requirement is checked by V6
+### C. Every stated requirement is checked by V5
 
 Go through the instruction sentence by sentence. For each requirement, find the check that tests it
 (`oracle.checks` or `oracle.graph_checks`; `spec_properties` says which is which).
@@ -195,7 +194,7 @@ or "continuous run" is not checked.
 - [ ] `gates.json` → `start_fails` passed.
 - [ ] **Repair:** the start graph fails at the rung given in `fault.expected_rung`, with the error you
       would expect from the fault. Run `./gb ladder <task>/start.grc --task <task>/task.json`.
-- [ ] **Modify and parameter-tune:** the start graph runs (V5) and fails only the `f2p` checks. The
+- [ ] **Modify and parameter-tune:** the start graph runs (V4) and fails only the `f2p` checks. The
       `p2p` checks pass on it.
 - [ ] The fault or the starting design looks like a mistake a real user could make.
 
@@ -346,7 +345,7 @@ LibreOffice). Use this form:
 `labels` or `metadata`. Examples of the form (not taken from a real task):
 
 ```
-instruction: add "keep producing samples until stopped" at the end -- V5 needs 12288 items
+instruction: add "keep producing samples until stopped" at the end -- V4 needs 12288 items
 oracle: add skip 4096 to every check -- a correct FIR answer fails on start-up overshoot
 oracle: add graph check block_present low_pass_filter -- the instruction says "low-pass filter it"
 variants: add a solution using fir_filter_xxx with designed taps -- covers another valid design

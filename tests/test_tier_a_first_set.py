@@ -70,7 +70,7 @@ def test_wrong_end_states_are_rejected_by_a_check_not_by_a_crash():
         gates = json.loads((d / "gates.json").read_text(encoding="utf-8"))
         reasons = [r for c in gates["gates"]["wrong_end_state"]["cases"] for r in c["reasons"]]
         assert reasons, d.name
-        assert not any("Error:" in r and "fails at V5" in r for r in reasons), (d.name, reasons)
+        assert not any("Error:" in r and "fails at V4" in r for r in reasons), (d.name, reasons)
 
 
 def test_spec_records_are_test_side_and_pending_review():

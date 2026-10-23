@@ -30,7 +30,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: clean mean = 0.501148; clean rms = 0.539525; graph check path: no such path",
+      "ladder: fails at V5: clean mean = 0.501148; clean rms = 0.539525; graph check path: no such path",
       "blocks_present[0]: 0 matching block(s) []"
      ],
      "rejected": true,

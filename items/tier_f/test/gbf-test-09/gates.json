@@ -22,30 +22,30 @@
    "expected": "V3",
    "first_failed": "V3",
    "passed": true,
-   "v6_groups": null
+   "v5_groups": null
   },
   "variants": {
    "n": 5,
    "passed": true,
    "results": {
     "v1_uchar_to_float.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_char_to_short_then_short_to_float.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_throttle_and_char_to_float.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_literal_numbers_absolute_paths.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_old_converter_disabled.grc": [
-     "V6",
+     "V5",
      null
     ]
    }

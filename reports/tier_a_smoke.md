@@ -126,19 +126,19 @@ Per episode (tools in call order; the grader's first reasons when it failed):
 - **fx-a-save-block**: tools save_block, inspect_graph, save_block; median request 1.5 s (max 3.8 s); output tokens 1805; largest prompt 7491 tokens.
 - **fx-a-build-file**: tools save_graph, write_file, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph, change_graph; median request 3.4 s (max 4.4 s); output tokens 22846; largest prompt 35491 tokens.
   - grader: cap failure (requests): a run that hits a cap is a failure (eval plan §4.4)
-  - grader: ladder: fails at V6: observation 'out': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'tone.dat'}}
+  - grader: ladder: fails at V5: observation 'out': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'tone.dat'}}
   - grader: blocks_present[0]: 0 matching block(s) []
   - grader: blocks_present[1]: 0 matching block(s) []
 
 ## Step 3, Tier F: the "one lookup + one edit" setting with the real model
 
-Each sample: the history holds the instruction and one prefilled full `inspect_graph` call with its real result; at most one `query_knowledge`, then one atomic `change_graph`; 3 model requests; other calls get the fixed reply; graded V1 (well-formed edit) + ladder V2-V6.
+Each sample: the history holds the instruction and one prefilled full `inspect_graph` call with its real result; at most one `query_knowledge`, then one atomic `change_graph`; 3 model requests; other calls get the fixed reply; graded V1 (well-formed edit) + ladder V2-V5.
 
 | Task | Sample | Lookup used? (query) | Edit called? | Well formed (V1) | Accepted? | Ladder verdict | Requests | End reason | Wall time |
 |---|--:|---|---|---|---|---|--:|---|--:|
-| fx-modify-tone | 0 | no | yes | yes | yes | PASS (V1-V6) | 1 | tier_f_edit_applied | 0.1 min |
-| fx-modify-tone | 1 | no | yes | yes | yes | PASS (V1-V6) | 1 | tier_f_edit_applied | 0.1 min |
-| fx-modify-tone | 2 | no | yes | yes | yes | PASS (V1-V6) | 1 | tier_f_edit_applied | 0.1 min |
+| fx-modify-tone | 0 | no | yes | yes | yes | PASS (V1-V5) | 1 | tier_f_edit_applied | 0.1 min |
+| fx-modify-tone | 1 | no | yes | yes | yes | PASS (V1-V5) | 1 | tier_f_edit_applied | 0.1 min |
+| fx-modify-tone | 2 | no | yes | yes | yes | PASS (V1-V5) | 1 | tier_f_edit_applied | 0.1 min |
 
 What the model did in each sample:
 

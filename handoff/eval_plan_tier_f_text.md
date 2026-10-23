@@ -17,9 +17,9 @@ then look up the documentation once (`query_knowledge`, with a query of its choi
 its edit in one `change_graph` call, within three turns. GRC-Agent applies the edit as one batch; an
 edit it rejects is not retried, and any other tool answers that it is not available in this task.
 
-- **Validity ladder.** The edited flowgraph is checked in six steps: V1 a well-formed `change_graph`
-  call; V2 the flowgraph loads with only real blocks; V3 it validates; V4 code is generated; V5 it
-  runs and every observation point receives data; V6 it behaves as the task asks. Each check runs only
+- **Validity ladder.** The edited flowgraph is checked in five steps: V1 a well-formed `change_graph`
+  call; V2 the flowgraph loads with only real blocks; V3 it compiles (it validates and its Python code
+  is generated); V4 it runs and every observation point receives data; V5 it behaves as the task asks. Each check runs only
   if the previous one passed, so the ladder shows where a model fails.
 - **Sources.** The example flowgraphs that ship with GNU Radio, converted to run without a display,
   and short hand-composed chains. All flowgraphs from one source file stay in one split, and the
@@ -28,15 +28,15 @@ edit it rejects is not retried, and any other tool answers that it is not availa
   rates, frequencies, filter settings) and record where it came from, so we can report scores on
   original and perturbed tasks separately.
 - **Oracles.** Every task has a reference ("golden") flowgraph and a stored golden edit that turns the
-  start flowgraph into it. The V6 oracle checks the signals at the task's observation points and,
+  start flowgraph into it. The V5 oracle checks the signals at the task's observation points and,
   where the instruction states a structure ("filter the signal", "change parameter values only"), the
   structure of the flowgraph. Repair and modify tasks are checked both ways: the requested edit works,
   and everything that worked in the starting flowgraph still works.
 - **Quality gates.** The golden edit passes every check in 10 of 10 runs through the real harness; at
   least two other valid solutions pass; the oracle rejects at least 90 % of mutants that break the
   specification; and the start flowgraph of a repair, modify or tune task fails the oracle.
-- **Coverage.** By 7 December at least 50 tasks have V6 oracles. Tasks without an oracle are scored
-  up to V5.
+- **Coverage.** By 7 December at least 50 tasks have V5 oracles. Tasks without an oracle are scored
+  up to V4.
 - **Metrics.** The pass rate at each rung, shown as a funnel; Exec@1 and Func@1 with the unbiased
   estimator; the hallucinated-block rate over repeated samples; and a partial-credit score over
   blocks, parameters and connections. We also report whether the model used the lookup, whether the

@@ -224,7 +224,7 @@ SPEC = {
     "a1": "0.95-1.45 s of the file: the tone amplitude is 1.2 (RMS within 5 %)",
     "pure1": "0.95-1.45 s of the file: a single tone, >= 99 % of the power within 4150-4250 Hz",
     "out": f"complex output written by the File Sink to {OUT_FILE} (observation point; sink type complex)",
-    "run": (f"run condition: the flowgraph keeps producing samples (V5 liveness: at least {N_ITEMS} items, "
+    "run": (f"run condition: the flowgraph keeps producing samples (V4 liveness: at least {N_ITEMS} items, "
             "1.45 s at 48 kS/s, reach the observation point)"),
 }
 
@@ -296,7 +296,7 @@ REVIEW_NOTES = (
     "start graph's 0.6-0.8 s; timing edits that stay inside the window are accepted by design. (2) The "
     "random phase resets before the switch are part of the kept structure (no block may be removed) but "
     "their rate is not measured. (3) A model that drops showports='True' from the Signal Source hides "
-    "the cmd port; GRC then omits the message connection without an error, so that answer fails at V6, "
+    "the cmd port; GRC then omits the message connection without an error, so that answer fails at V5, "
     "not V2 (harness issue, round-1 compliance F6). "
     "Alternatives from round 1 that are now invalid by the stated rule: wiring the strobe straight to "
     "cmd (Random-Delay removed), adding a second message path, holding the retune dict or its values "

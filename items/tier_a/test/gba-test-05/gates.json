@@ -5,7 +5,7 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V6: graph check path: no such path",
+    "ladder: fails at V5: graph check path: no such path",
     "blocks_present[0]: 0 matching block(s) []",
     "blocks_absent[0]: 1 forbidden block(s) ['pulse_shaping']"
    ],

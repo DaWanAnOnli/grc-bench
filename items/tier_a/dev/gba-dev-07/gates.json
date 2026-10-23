@@ -5,7 +5,7 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V6: observation 'ph': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'phase.dat', 'type': 'float'}}; ph rms = observation missing; ph mean = observation missing; ph min = observation missing; ph max = observation missing",
+    "ladder: fails at V5: observation 'ph': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'phase.dat', 'type': 'float'}}; ph rms = observation missing; ph mean = observation missing; ph min = observation missing; ph max = observation missing",
     "blocks_present[0]: 0 matching block(s) []; candidates: [\"snk (enabled): file='envelope.dat'\"]"
    ],
    "status": "completed"
@@ -30,7 +30,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V6: ph rms = 103.521149; ph mean = -0.229893; ph min = -179.999832; ph max = 179.987488"
+      "ladder: fails at V5: ph rms = 103.521149; ph mean = -0.229893; ph min = -179.999832; ph max = 179.987488"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc"

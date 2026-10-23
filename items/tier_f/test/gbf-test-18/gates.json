@@ -19,10 +19,10 @@
    "runs": 10
   },
   "start_fails": {
-   "expected": "V6",
-   "first_failed": "V6",
+   "expected": "V5",
+   "first_failed": "V5",
    "passed": true,
-   "v6_groups": {
+   "v5_groups": {
     "f2p": false,
     "p2p": true
    }
@@ -32,51 +32,51 @@
    "passed": true,
    "results": {
     "v10_repair_two_branch_bfo_at_96k.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v11_repair_xlating_fir_as_bfo.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v12_repair_fft_channel_filter.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v1_rotator_bfo_blackman.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v2_xlating_filter_bfo_gain.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v3_rotator_tune_conjugate_bfo.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v4_repair_literal_12000.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v5_repair_freq_minus_6400_at_96k.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v6_repair_bfo_minus_2200.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v7_repair_audio_rate_variable.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v8_repair_plus_throttle.grc": [
-     "V6",
+     "V5",
      null
     ],
     "v9_repair_plus_audio_lpf.grc": [
-     "V6",
+     "V5",
      null
     ]
    }
