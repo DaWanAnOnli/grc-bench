@@ -193,6 +193,19 @@ PROPOSALS = (
                  "when the remaining data are separated.",
      "where": ("items.RASCH_SOLVED_MIN", "items.rasch_fit"),
      "evidence": "exploratory only; nothing is kept or dropped because of it."},
+    {"id": "fresh-set-gap", "kind": "extension",
+     "topic": "Memorisation check on Tier K's GNU Radio questions",
+     "approved": "",
+     "proposal": "The 100 published GNU Radio questions are the reference set. A fresh set of the same "
+                 "composition comes from a private seed whose SHA-256 is published with this document "
+                 "(tier_k.blockgen). The headline configurations (B0 and the final model of each target, "
+                 "and B3) also answer the fresh set. The gap is the reference-minus-fresh mean item score "
+                 "over paired slots, clustered by block, with the clustered t and cluster-bootstrap 95% "
+                 "intervals; memorisation is flagged when both lie above 0. The headline Tier-K score "
+                 "stays the reference set's.",
+     "where": ("functions.fresh_gap",),
+     "evidence": "./gb stats selfcheck: equal sets give a gap of 0 and no flag; a fresh set 0.5 lower on "
+                 "6 of 8 slots gives 0.375, flagged."},
 )
 
 

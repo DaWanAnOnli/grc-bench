@@ -1,7 +1,7 @@
 """GNU Radio behaviour questions for Tier K (`./gb blockq`; eval plan §4.2, Table 1).
 
-About 100 test questions on test-side blocks of splits/block_partition.json, each asking for one number
-that comes from what a block DOES, never from what its catalog entry SAYS:
+About 100 test questions, each asking for one number that comes from what a GNU Radio block DOES, never
+from what its catalog entry SAYS:
 
   output_value   a block, set as the question states, receives a stated finite input sequence; what is
                  its k-th output item?
@@ -23,16 +23,34 @@ and listed in the report. Blocks that a training trace built or ran in GNU Radio
 (splits/agent_traces.json, `./gb traces`) get no question, and a question is dropped when a bank
 question (the 1,853 frozen questions) names the same block and asks about its outputs.
 
-Settings and inputs come from SETTINGS, drawn with a seeded generator per (block, variant), so the
-output is deterministic. Claude (Anthropic) wrote the settings table and the question templates; the
-team reviews the wording (handoff/review_sheets/tier_k_block_questions.csv); the answers come from
-GNU Radio 3.10.12. Scoring: the rule cascade (numbers), no judge rubric.
+Settings and inputs come from SETTINGS, drawn with a seeded generator per (seed, block, variant), so
+the output is deterministic for a seed. Claude (Anthropic) wrote the settings table and the question
+templates; the team reviews the wording of each template (handoff/review_sheets/tier_k_block_questions.csv);
+the answers come from GNU Radio 3.10.12. Scoring: the rule cascade (numbers), no judge rubric.
 
-Outputs (`--out` root, default the repository):
+Reference set and fresh sets. The published 100 questions are the reference set, drawn from
+REFERENCE_SEED. Any other seed gives a fresh set (`--seed S --like-reference`) with exactly the
+reference set's composition: the same blocks, the same number of questions of each kind per block and
+the same difficulty labels; only the settings, the inputs and the asked item differ, and no fresh
+question repeats an instance (setting, input, asked item) of the reference set. Each fresh question is
+paired with the reference question in the same block slot, so a model's reference-minus-fresh gap
+(stats.functions.fresh_gap) shows memorisation of the published items. A fresh set is written outside
+the repository only; a private seed is read from a file and only its SHA-256 is printed or stored.
+
+    ./gb blockq                                   the reference set, into the repository
+    ./gb blockq --check                           a fresh build of the reference set equals the files
+    ./gb blockq --seed S --like-reference [--out DIR]        a fresh set (default ~/grc-bench-work/fresh/<hash>)
+    ./gb blockq --seed-file F --like-reference [--out DIR]   the same, the seed read from F
+    ./gb blockq --private-seed-init [F]           write a random private seed to F (default
+                                                  ~/grc-bench-work/private/blockq_seed.json); prints its SHA-256
+    ./gb blockq --compare N                       N public check seeds: reports/tier_k_fresh_sets.md
+
+Outputs of the reference set (`--out` root, default the repository):
   items/tier_k/test/block_questions.jsonl     the question records (no answers)
   items/tier_k/test/block_answers.jsonl       the answer key (reference for rules.score, evidence)
   handoff/review_sheets/tier_k_block_questions.csv   wording review sheet (two reviewers)
   reports/tier_k_block_questions.md           counts, drops, checks
+Outputs of a fresh set (its folder): questions.jsonl, answers.jsonl (with `pairs_with`), manifest.json.
 """
 
 from __future__ import annotations
@@ -44,9 +62,12 @@ import hashlib
 import io
 import json
 import math
+import os
 import random
 import re
+import secrets
 import shutil
+import statistics
 import sys
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
@@ -56,21 +77,27 @@ from typing import Any, Callable
 
 from grcbench.common.canary import CANARY
 from grcbench.common.io import write_text
-from grcbench.common.paths import FROZEN, REPO, SPLITS, WORK
+from grcbench.common.paths import FROZEN, GNURADIO_CATALOG_SHA256, REPO, SPLITS, WORK
 from grcbench.common.schemas import validate
 
-SEED = "grc-bench-blockq-v2-2026-10-23"
-VERSION = 2
+REFERENCE_SEED = "grc-bench-blockq-v3-2026-10-23"
+VERSION = 3
 GENERATOR = "grcbench.tier_k.blockgen"
 OUT_QUESTIONS = "items/tier_k/test/block_questions.jsonl"
 OUT_ANSWERS = "items/tier_k/test/block_answers.jsonl"
 OUT_SHEET = "handoff/review_sheets/tier_k_block_questions.csv"
 OUT_REPORT = "reports/tier_k_block_questions.md"
+OUT_FRESH_REPORT = "reports/tier_k_fresh_sets.md"
 TRACES_MANIFEST = SPLITS / "agent_traces.json"
+CATALOG_JSON = REPO / "reports" / "block_catalog.json"
+FRESH_ROOT = WORK / "fresh"
+PRIVATE_SEED = WORK / "private" / "blockq_seed.json"
+CHECK_SEED = "grc-bench-blockq-public-check-{}"       # the public seeds of `--compare`
 
 TARGET = 100                    # eval plan §4.2: "about 100" questions
 MAX_PER_BLOCK = 4
 VARIANT_ATTEMPTS = 12           # draws per variant before giving up on a new setting
+FRESH_DRAWS = (3, 2)            # a fresh set draws 3 * needed + 2 variants per block
 PAD_ZEROS = 507                 # zeros after a short stated input to a block that works on large blocks
 GR_IMPORT = {"name": "import_gr", "id": "import", "parameters": {"imports": "from gnuradio import gr"}}
 WORKERS = 8
@@ -87,13 +114,17 @@ LICENSE = ("CC-BY-4.0 for the question wording (GRC-Bench; licence to be confirm
 
 
 # --------------------------------------------------------------------------- helpers
-def _rng(block_id: str, variant: int) -> random.Random:
-    h = hashlib.sha256(f"{SEED}\0{block_id}\0{variant}".encode()).digest()
+def _rng(seed: str, block_id: str, variant: int) -> random.Random:
+    h = hashlib.sha256(f"{seed}\0{block_id}\0{variant}".encode()).digest()
     return random.Random(int.from_bytes(h[:8], "big"))
 
 
-def _qid(block_id: str, variant: int) -> str:
-    return "bq_" + hashlib.sha256(f"{SEED}\0{block_id}\0{variant}".encode()).hexdigest()[:16]
+def _qid(seed: str, block_id: str, variant: int) -> str:
+    return "bq_" + hashlib.sha256(f"{seed}\0{block_id}\0{variant}".encode()).hexdigest()[:16]
+
+
+def seed_hash(seed: str) -> str:
+    return hashlib.sha256(seed.encode()).hexdigest()
 
 
 def _code(s: str) -> str:
@@ -331,8 +362,7 @@ def _blockinterleaver(r):
 
 
 def _magphase(r):
-    pool = [3 + 4j, -1 + 0j, 0 + 2j, 1 + 1j, -2 - 2j, 0.5 - 0.5j]
-    x = _vals(r, 4, pool)
+    x = [complex(*r.choice([(a, b) for a in range(-4, 5) for b in range(-4, 5) if a or b])) for _ in range(4)]
     port = r.choice([0, 1])
     k = _pick_k(r, 4)
     return {"params": {}, "inputs": [x], "port": port, "k": k,
@@ -340,21 +370,22 @@ def _magphase(r):
 
 
 def _c2real(r):
-    x = _vals(r, 4, [1.5 - 2j, -0.5 + 1j, 3 + 0j, -2.25 - 0.75j])
+    parts = [-3.0, -2.25, -1.5, -0.5, 0.0, 0.75, 1.5, 2.5, 3.0, 4.25]
+    x = [complex(r.choice(parts), r.choice(parts)) for _ in range(4)]
     k = _pick_k(r, 4)
     return {"params": {}, "inputs": [x], "port": 0, "k": k, "expect": x[k - 1].real}
 
 
 def _float_to_int(r):
     scale = r.choice([1, 10, 100])
-    x = _vals(r, 5, [2.71, -2.71, 0.26, -1.04, 3.14, 7.49, -0.91])
+    x = _vals(r, 5, [2.71, -2.71, 0.26, -1.04, 3.14, 7.49, -0.91, 1.4, -2.6, 0.49, 12.34, -8.76])
     k = _pick_k(r, 5)
     return {"params": {"scale": str(scale)}, "inputs": [x], "port": 0, "k": k, "expect": round(x[k - 1] * scale)}
 
 
 def _float_to_short(r):
-    scale = r.choice([1, 100, 1000])
-    x = _vals(r, 5, [1.234, -0.5, 40.0, -45.5, 400.0, 0.019])
+    scale = r.choice([1, 10, 100, 1000])
+    x = _vals(r, 5, [1.234, -0.5, 40.0, -45.5, 400.0, 0.019, 7.25, -3.125, 18.6, -0.875, 250.0, -96.5])
     big = [i for i, v in enumerate(x) if abs(v * scale) > 32767]
     k = _pick_k(r, 5, big if big and r.random() < 0.5 else None)
     return {"params": {"scale": str(scale)}, "inputs": [x], "port": 0, "k": k,
@@ -373,8 +404,8 @@ def _keep_m_in_n(r):
 
 
 def _keep_one_in_n(r):
-    n = r.choice([3, 4, 5, 6])
-    x = [float(i + 1) for i in range(3 * n)]
+    n = r.randint(2, 8)
+    x = _vals(r, 3 * n, [-3.0, -1.5, -0.5, 0.0, 0.5, 1.0, 2.0, 4.5, 7.0, 9.0])
     out = [x[w * n + n - 1] for w in range(3)]
     k = _pick_k(r, 3)
     return {"params": {"type": "float", "n": str(n)}, "inputs": [x], "port": 0, "k": k, "expect": out[k - 1]}
@@ -404,7 +435,7 @@ def _multiply_matrix(r):
 
 def _not(r):
     typ = r.choice(["int", "short"])
-    x = _vals(r, 4, [5, -1, 0, 255, 1000, -32])
+    x = [r.choice([0, -1, 255]) if r.random() < 0.25 else r.randint(-1000, 1000) for _ in range(4)]
     k = _pick_k(r, 4)
     return {"params": {"type": typ}, "inputs": [x], "port": 0, "k": k, "expect": ~x[k - 1]}
 
@@ -418,8 +449,9 @@ def _or(r):
 
 
 def _patterned(r):
-    pattern = r.choice([[0, 0, 1, 2], [0, 1, 0, 2], [1, 0, 2, 0], [0, 1, 1, 2]])
-    n_in = max(pattern) + 1
+    n_in = r.choice([2, 3])
+    pattern = list(range(n_in)) + [r.randrange(n_in) for _ in range(r.randint(1, 6 - n_in))]
+    r.shuffle(pattern)                                  # every input appears at least once
     reps = 2
     xs = [[float(100 * (p + 1) + i) for i in range(reps * pattern.count(p))] for p in range(n_in)]
     pos = [0] * n_in
@@ -434,44 +466,48 @@ def _patterned(r):
 
 
 def _short_to_char(r):
-    x = _vals(r, 4, [1000, 513, 256, 32000, 4095, 300])
+    x = [r.randint(256, 32767) for _ in range(4)]
     k = _pick_k(r, 4)
     return {"params": {}, "inputs": [x], "port": 0, "k": k, "expect": x[k - 1] >> 8}
 
 
 def _short_to_float(r):
-    scale = r.choice([2, 4, 100])
-    x = _vals(r, 4, [100, -6, 250, 1, -32768])
+    scale = r.choice([2, 4, 8, 100, 1000])
+    x = [-32768 if r.random() < 0.1 else r.randint(-32000, 32000) for _ in range(4)]
     k = _pick_k(r, 4)
     return {"params": {"scale": str(scale)}, "inputs": [x], "port": 0, "k": k, "expect": x[k - 1] / scale}
 
 
 def _stream_to_vector(r):
-    n = r.choice([4, 8, 16])
-    m = r.choice([5, 10, 12])
+    n = r.choice([2, 3, 4, 5, 6, 8, 10, 16])
+    m = r.randint(3, 25)
     return {"params": {"type": "float", "num_items": str(n)}, "count_input": (n * m, 1.0), "port": 0, "expect": m,
             "vector_out": n}
 
 
 def _vector_to_stream(r):
-    n = r.choice([2, 4, 8])
-    m = r.choice([5, 10, 12])
+    n = r.choice([2, 3, 4, 5, 6, 8, 10, 16])
+    m = r.randint(3, 25)
     return {"params": {"type": "float", "num_items": str(n)}, "count_input": (n * m, 1.0), "port": 0,
             "expect": n * m, "vector_in": n}
 
 
 def _vector_to_streams(r):
-    s = r.choice([2, 3, 4])
-    x = [float(i + 1) for i in range(2 * s)]
+    s = r.randint(2, 6)
+    reps = r.choice([2, 3])
+    x = _vals(r, reps * s, [-4.0, -1.0, 0.5, 2.0, 3.5, 6.0, 8.0, 10.0])
     port = r.randrange(s)
-    k = r.choice([1, 2])
+    k = r.randint(1, reps)
     return {"params": {"type": "float", "num_streams": str(s)}, "inputs": [x], "port": port, "k": k,
             "expect": x[(k - 1) * s + port], "vector_in": s}
 
 
 def _transcendental(r):
-    name, pool, fn = r.choice([("log10", [1000.0, 0.01, 10.0, 0.5], math.log10), ("exp", [0.0, 1.0, -1.0, 2.0], math.exp),
-                               ("tanh", [0.0, 0.5, -1.0, 2.0], math.tanh), ("cos", [0.0, 1.0, 3.14159, 0.5], math.cos)])
+    name, pool, fn = r.choice([
+        ("log10", [0.001, 0.01, 0.1, 0.5, 2.0, 5.0, 10.0, 50.0, 100.0, 1000.0], math.log10),
+        ("exp", [-2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 3.0], math.exp),
+        ("tanh", [-2.0, -1.0, -0.5, -0.25, 0.0, 0.25, 0.5, 1.0, 2.0], math.tanh),
+        ("cos", [0.0, 0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 3.14159], math.cos)])
     x = _vals(r, 4, pool)
     k = _pick_k(r, 4)
     return {"params": {"type": "float", "name": name}, "inputs": [x], "port": 0, "k": k,
@@ -509,7 +545,7 @@ def _puncture(r):
         k = _pick_k(r, len(out))
         return {"params": {"type": "float", "puncsize": str(size), "puncpat": str(pat), "delay": "0"},
                 "inputs": [x], "port": 0, "k": k, "expect": out[k - 1]}
-    n = size * r.choice([20, 30])
+    n = size * r.randint(10, 60)
     return {"params": {"type": "float", "puncsize": str(size), "puncpat": str(pat), "delay": "0"},
             "count_input": (n, 1.0), "port": 0, "expect": n // size * bin(pat).count("1"), "kind": "output_count"}
 
@@ -517,8 +553,8 @@ def _puncture(r):
 def _fft_filter(r):
     """The FFT filter works on FFT-sized blocks, so the stated values are followed by zeros: without
     them a 5-item input ends before the first block and nothing comes out."""
-    taps = r.choice([[0.5, 0.25], [1.0, -1.0], [0.25, 0.5, 0.25], [2.0, 0.0, 1.0]])
-    x = _vals(r, 5, [4.0, 8.0, 0.0, -2.0, 1.0])
+    taps = r.choice([[0.5, 0.25], [1.0, -1.0], [0.25, 0.5, 0.25], [2.0, 0.0, 1.0], [1.0, 0.5], [0.5, -0.5, 0.25]])
+    x = _vals(r, 5, [4.0, 8.0, 0.0, -2.0, 1.0, 2.5, -1.0, 6.0])
     y = _iir(taps, [1.0], x, True)
     k = _pick_k(r, 5)
     return {"params": {"type": "fff", "decim": "1", "taps": str(taps), "samp_delay": "0", "nthreads": "1"},
@@ -526,35 +562,41 @@ def _fft_filter(r):
 
 
 def _iir_filter(r):
-    ff = r.choice([[1.0], [0.5, 0.5], [1.0, 1.0]])
-    a1 = r.choice([0.5, -0.5, 0.25])
+    ff = r.choice([[1.0], [0.5, 0.5], [1.0, 1.0], [0.25, 0.5, 0.25], [1.0, -0.5]])
+    a1 = r.choice([0.5, -0.5, 0.25, -0.25, 0.75])
     old = r.random() < 0.5
-    x = [1.0, 0.0, 0.0, 0.0, 0.0]
+    shape = r.randrange(3)                              # an impulse, a step, or stated values
+    x = [1.0] + [0.0] * 5 if shape == 0 else [1.0] * 6 if shape == 1 else _vals(r, 6, [-1.0, 0.0, 0.5, 1.0, 2.0])
     y = _iir(ff, [1.0, a1], x, old)
-    k = r.choice([2, 3, 4])
+    k = r.randint(2, 6)
     return {"params": {"type": "ffd", "fftaps": str(ff), "fbtaps": str([1.0, a1]), "oldstyle": str(old)},
             "inputs": [x], "port": 0, "k": k, "expect": y[k - 1]}
 
 
 def _single_pole(r):
-    alpha = r.choice([0.25, 0.5, 0.75])
-    x = r.choice([[1.0, 1.0, 1.0, 1.0], [4.0, 0.0, 0.0, 0.0], [2.0, 2.0, 0.0, 0.0]])
+    alpha = r.choice([0.1, 0.2, 0.25, 0.4, 0.5, 0.6, 0.75, 0.8])
+    x = _vals(r, 5, [-2.0, -1.0, 0.0, 1.0, 2.0, 4.0])
     y, prev = [], 0.0
     for v in x:
         prev = alpha * v + (1 - alpha) * prev
         y.append(prev)
-    k = r.choice([2, 3, 4])
+    k = r.randint(2, 5)
     return {"params": {"type": "float", "alpha": _num(alpha)}, "inputs": [x], "port": 0, "k": k, "expect": y[k - 1]}
 
 
+def _pcm(r) -> int:
+    """A 16-bit sample: an edge value now and then, else any value."""
+    return r.choice([0, 64, -8, 32767, -32768]) if r.random() < 0.3 else r.randint(-32768, 32767)
+
+
 def _alaw(r):
-    x = _vals(r, 4, [0, 1000, -1000, 32767, -32768, 64, -8])
+    x = [_pcm(r) for _ in range(4)]
     k = _pick_k(r, 4)
     return {"params": {}, "inputs": [x], "port": 0, "k": k, "expect": linear2alaw(x[k - 1])}
 
 
 def _ulaw(r):
-    x = _vals(r, 4, [0, 1000, -1000, 32767, -32768, 64, -8])
+    x = [_pcm(r) for _ in range(4)]
     k = _pick_k(r, 4)
     return {"params": {}, "inputs": [x], "port": 0, "k": k, "expect": linear2ulaw(x[k - 1])}
 
@@ -571,12 +613,13 @@ def _count(params: Callable[[random.Random], dict], n_in: Callable[[dict, random
 SETTINGS: list[Setting] = [
     Setting("analog_rail_ff", "output_value", 4, _rail, "basic"),
     Setting("analog_am_demod_cf", "output_count", 2, _count(
-        lambda r: {"chan_rate": str(r.choice([32000, 48000, 64000])), "audio_decim": str(r.choice([2, 4, 8])),
+        lambda r: {"chan_rate": str(r.choice([32000, 48000, 64000, 96000])), "audio_decim": str(r.randint(2, 8)),
                    "audio_pass": "5000", "audio_stop": "5500"},
-        lambda p, r: int(p["audio_decim"]) * r.choice([60, 120]), lambda p, n: n // int(p["audio_decim"]), 1 + 0j)),
+        lambda p, r: int(p["audio_decim"]) * r.randint(30, 200), lambda p, n: n // int(p["audio_decim"]), 1 + 0j)),
     Setting("analog_wfm_rcv", "output_count", 2, _count(
-        lambda r: {"quad_rate": str(r.choice([192000, 240000])), "audio_decimation": str(r.choice([4, 5]))},
-        lambda p, r: int(p["audio_decimation"]) * r.choice([100, 200]), lambda p, n: n // int(p["audio_decimation"]),
+        lambda r: {"quad_rate": str(r.choice([192000, 240000, 250000, 320000])),
+                   "audio_decimation": str(r.randint(2, 8))},
+        lambda p, r: int(p["audio_decimation"]) * r.randint(50, 300), lambda p, n: n // int(p["audio_decimation"]),
         1 + 0j)),
     Setting("blocks_add_const_vxx", "output_value", 3, _add_const, "basic"),
     Setting("blocks_add_xx", "output_value", 2, _add, "basic"),
@@ -603,25 +646,25 @@ SETTINGS: list[Setting] = [
     Setting("blocks_transcendental", "output_value", 3, _transcendental, "basic"),
     Setting("blocks_unpacked_to_packed_xx", "output_value", 4, _unpacked_to_packed, "advanced"),
     Setting("digital_gmskmod_bc", "output_count", 1, _count(
-        lambda r: {"samples_per_symbol": str(r.choice([2, 4, 8])), "bt": "0.3", "L": "4"},
-        lambda p, r: r.choice([64, 128]), lambda p, n: n * int(p["samples_per_symbol"]), 1)),
+        lambda r: {"samples_per_symbol": str(r.randint(2, 10)), "bt": "0.3", "L": "4"},
+        lambda p, r: r.randint(20, 300), lambda p, n: n * int(p["samples_per_symbol"]), 1)),
     Setting("dtv_catv_reed_solomon_enc_bb", "output_count", 1, _count(
-        lambda r: {}, lambda p, r: 122 * r.choice([4, 6]), lambda p, n: n // 122 * 128, 0), "advanced"),
+        lambda r: {}, lambda p, r: 122 * r.randint(2, 60), lambda p, n: n // 122 * 128, 0), "advanced"),
     Setting("fec_encode_ccsds_27_bb", "output_count", 1, _count(
-        lambda r: {}, lambda p, r: r.choice([10, 25]), lambda p, n: 16 * n, 85), "advanced"),
+        lambda r: {}, lambda p, r: r.randint(5, 60), lambda p, n: 16 * n, 85), "advanced"),
     Setting("fec_puncture_xx", "output_value", 3, _puncture, "advanced"),
     Setting("goertzel_fc", "output_count", 1, _count(
-        lambda r: {"rate": "8000", "len": str(r.choice([32, 64, 100])), "freq": "1000"},
-        lambda p, r: int(p["len"]) * r.choice([10, 20]), lambda p, n: n // int(p["len"]), 0.5)),
+        lambda r: {"rate": "8000", "len": str(r.randint(16, 128)), "freq": "1000"},
+        lambda p, r: int(p["len"]) * r.randint(5, 30), lambda p, n: n // int(p["len"]), 0.5)),
     Setting("band_reject_filter", "output_count", 1, _count(
-        lambda r: {"type": "fir_filter_fff", "decim": str(r.choice([2, 3, 4])), "gain": "1", "samp_rate": "48000",
+        lambda r: {"type": "fir_filter_fff", "decim": str(r.randint(2, 8)), "gain": "1", "samp_rate": "48000",
                    "low_cutoff_freq": "5000", "high_cutoff_freq": "8000", "width": "1000"},
-        lambda p, r: int(p["decim"]) * 200, lambda p, n: n // int(p["decim"]), 1.0)),
+        lambda p, r: int(p["decim"]) * r.randint(50, 300), lambda p, n: n // int(p["decim"]), 1.0)),
     Setting("fft_filter_xxx", "output_value", 3, _fft_filter),
     Setting("freq_xlating_fir_filter_xxx", "output_count", 1, _count(
-        lambda r: {"type": "fcf", "decim": str(r.choice([2, 4, 5, 6])), "taps": "[0.125]*8", "center_freq": "0",
+        lambda r: {"type": "fcf", "decim": str(r.randint(2, 10)), "taps": "[0.125]*8", "center_freq": "0",
                    "samp_rate": "48000"},
-        lambda p, r: int(p["decim"]) * 200, lambda p, n: n // int(p["decim"]), 1.0)),
+        lambda p, r: int(p["decim"]) * r.randint(50, 300), lambda p, n: n // int(p["decim"]), 1.0)),
     Setting("iir_filter_xxx", "output_value", 4, _iir_filter, "advanced"),
     Setting("rational_resampler_xxx", "output_count", 2, _count(
         lambda r: dict(zip(("interp", "decim"), map(str, r.choice([(3, 2), (2, 5), (4, 3), (5, 2)]))),
@@ -631,14 +674,14 @@ SETTINGS: list[Setting] = [
     Setting("pfb_channelizer_ccf", "output_count", 1, _count(
         lambda r: (lambda n: {"nchans": str(n), "taps": f"[1.0]*{n}", "osr": "1.0", "atten": "100",
                               "samp_delay": "0", "ch_map": "[]", "bus_structure_source": "[[0,],]"})(
-            r.choice([2, 4, 8])),
-        lambda p, r: int(p["nchans"]) * 100, lambda p, n: n // int(p["nchans"]), 1 + 0j), "advanced"),
+            r.choice([2, 3, 4, 5, 6, 8])),
+        lambda p, r: int(p["nchans"]) * r.randint(50, 300), lambda p, n: n // int(p["nchans"]), 1 + 0j), "advanced"),
     Setting("vocoder_alaw_encode_sb", "output_value", 3, _alaw, "advanced"),
     Setting("vocoder_ulaw_encode_sb", "output_value", 3, _ulaw, "advanced"),
     Setting("vocoder_g721_decode_bs", "output_count", 1, _count(
-        lambda r: {}, lambda p, r: r.choice([80, 160]), lambda p, n: n, 0)),
+        lambda r: {}, lambda p, r: r.randint(40, 400), lambda p, n: n, 0)),
     Setting("vocoder_gsm_fr_decode_ps", "output_count", 1, _count(
-        lambda r: {}, lambda p, r: 33 * r.choice([2, 3]), lambda p, n: n // 33 * 160, 0,
+        lambda r: {}, lambda p, r: 33 * r.randint(2, 60), lambda p, n: n // 33 * 160, 0,
         vector_in=33, frame_head=208), "advanced"),
 ]
 
@@ -815,32 +858,51 @@ def _rules_check(q: dict) -> str | None:
 
 
 # --------------------------------------------------------------------------- build
-def _candidates(grc: Grc, part: dict, executed: set[str], only: set[str] | None = None
+def _draw(s: Setting, seed: str, v: int, seen: set[str]) -> dict | None:
+    """Variant v of a setting: the first draw whose instance keys are not in `seen` (which it then joins),
+    or None after VARIANT_ATTEMPTS draws."""
+    for attempt in range(VARIANT_ATTEMPTS):
+        spec = s.make(_rng(seed, s.block, v + 1000 * attempt))
+        keys = _variant_keys(spec)
+        if not keys & seen:
+            seen |= keys
+            return spec
+    return None
+
+
+def _candidates(executed: set[str], seed: str, only: set[str] | None = None,
+                draws: dict[str, int] | None = None, exclude: dict[str, set[str]] | None = None
                 ) -> tuple[list[dict], list[dict]]:
+    """The candidate questions of every behaviour model: `draws` variants per block (default: the
+    setting's own number); no candidate repeats an instance key of `exclude` (block -> keys: the
+    reference set's, for a fresh set)."""
     out, skipped = [], []
     for s in SETTINGS:
-        if only and s.block not in only:
-            continue
-        if part.get(s.block, {}).get("split") != "test":
-            skipped.append({"block": s.block, "reason": "not a test-side block"})
+        if (only and s.block not in only) or (draws is not None and s.block not in draws):
             continue
         if s.block in executed:
             skipped.append({"block": s.block, "reason": "built or run in GNU Radio code by a training trace"})
             continue
-        seen: set[str] = set()
-        for v in range(s.variants):
-            for attempt in range(VARIANT_ATTEMPTS):     # a variant must not repeat an earlier setting and input
-                spec = s.make(_rng(s.block, v + 1000 * attempt))
-                keys = _variant_keys(spec)
-                if not keys & seen:
-                    break
-            else:
+        seen = set((exclude or {}).get(s.block, ()))
+        for v in range(draws[s.block] if draws is not None else s.variants):
+            spec = _draw(s, seed, v, seen)
+            if spec is None:
                 skipped.append({"block": s.block, "reason": f"variant {v}: no new setting in {VARIANT_ATTEMPTS} draws"})
                 continue
-            seen |= keys
             kind = spec.pop("kind", s.kind)
             out.append({"block": s.block, "variant": v, "kind": kind, "spec": spec, "difficulty": s.difficulty})
     return out, skipped
+
+
+def reference_keys() -> dict[str, set[str]]:
+    """Block -> the instance keys of every reference-seed candidate (a superset of the published set)."""
+    keys: dict[str, set[str]] = {}
+    for s in SETTINGS:
+        seen: set[str] = set()
+        for v in range(s.variants):
+            _draw(s, REFERENCE_SEED, v, seen)
+        keys[s.block] = seen
+    return keys
 
 
 def _variant_keys(spec: dict) -> set[str]:
@@ -850,6 +912,10 @@ def _variant_keys(spec: dict) -> set[str]:
     if "inputs" in spec and len(spec["inputs"]) == 1 and "k" in spec and len(spec["inputs"][0]) >= spec["k"]:
         keys.add(json.dumps([spec["params"], "item", spec["inputs"][0][spec["k"] - 1]], sort_keys=True, default=str))
     return keys
+
+
+def _stated_items(spec: dict) -> int:
+    return sum(len(x) for x in spec["inputs"]) if "inputs" in spec else int(spec["count_input"][0])
 
 
 def _prepare(grc: Grc, c: dict) -> dict:
@@ -869,7 +935,8 @@ def _run(c: dict) -> dict:
     """Two sandboxed runs of a prepared candidate (thread-safe)."""
     if c["status"] != "prepared":
         return c
-    runs = [run_once(c["graph"], c["task"], c["spec"]["port"], f"{c['block']}-{c['variant']}-{i}") for i in range(2)]
+    runs = [run_once(c["graph"], c["task"], c["spec"]["port"], f"{c['block']}-{c['variant']}-{i}-{c['tag']}")
+            for i in range(2)]
     return {**c, "runs": runs}
 
 
@@ -894,13 +961,25 @@ def _evaluate(c: dict) -> dict:
     return {**c, "status": "ok", "answer": answer, "integer": integer, "tolerance": tol, "ins": ins, "outs": outs}
 
 
-def build(workers: int = WORKERS, only: set[str] | None = None) -> dict[str, Any]:
+def build(workers: int = WORKERS, only: set[str] | None = None, seed: str = REFERENCE_SEED,
+          slots: dict[tuple[str, str], list[str]] | None = None) -> dict[str, Any]:
+    """The questions of one seed. With `slots` ((block, kind) -> the reference question ids: a fresh set)
+    the set copies that composition: it draws FRESH_DRAWS variants per needed question of a block, skips
+    every reference instance, and pairs each question with a reference id."""
     from grcbench.tier_k import catalog as cat
-    part = {b["id"]: b for b in json.loads((SPLITS / "block_partition.json").read_text(encoding="utf-8"))["blocks"]}
+    families = {b["id"]: b["family"] for b in json.loads(CATALOG_JSON.read_text(encoding="utf-8"))["blocks"]}
     grc = Grc()
     executed = _executed_blocks()
-    cands, skipped = _candidates(grc, part, executed, only)
-    prepared = [_prepare(grc, c) for c in cands]
+    draws = exclude = None
+    if slots is not None:
+        need = Counter()
+        for (block, _kind), ids in slots.items():
+            need[block] += len(ids)
+        draws = {b: FRESH_DRAWS[0] * n + FRESH_DRAWS[1] for b, n in need.items()}
+        exclude = reference_keys()
+    cands, skipped = _candidates(executed, seed, only, draws, exclude)
+    tag = seed_hash(seed)[:8]
+    prepared = [_prepare(grc, {**c, "tag": tag}) for c in cands]
     with ThreadPoolExecutor(max_workers=workers) as pool:
         ran = list(pool.map(_run, prepared))
     results = [_evaluate(c) for c in ran]
@@ -920,9 +999,9 @@ def build(workers: int = WORKERS, only: set[str] | None = None) -> dict[str, Any
                             "detail": hit})
             continue
         q = {"block": r["block"], "variant": r["variant"], "kind": r["kind"], "label": cls.label,
-             "family": part[r["block"]]["family"], "yaml_file": rec["yaml_file"], "yaml_sha256": rec["yaml_sha256"],
+             "family": families[r["block"]], "yaml_file": rec["yaml_file"], "yaml_sha256": rec["yaml_sha256"],
              "difficulty": r["difficulty"], "answer": r["answer"], "tolerance": r["tolerance"], "integer": r["integer"],
-             "setting": r["spec"]["params"],
+             "setting": r["spec"]["params"], "stated_items": _stated_items(r["spec"]),
              "question": question_text(cls, r["block"], r["kind"], r["spec"], r["ins"], r["outs"])}
         q["evidence"] = (f"GNU Radio 3.10.12 run (twice, identical): {q['answer']:g}; the reference model of the "
                          f"block's documented behaviour agrees")
@@ -932,33 +1011,71 @@ def build(workers: int = WORKERS, only: set[str] | None = None) -> dict[str, Any
                             "detail": problem})
             continue
         questions.append(q)
-    return {"questions": select(questions), "candidates": len(cands), "dropped": dropped, "skipped": skipped,
-            "executed_blocks": sorted(executed)}
+    chosen = select(questions, seed) if slots is None else select_like(questions, seed, slots)
+    return {"seed": seed, "fresh": slots is not None, "questions": chosen, "candidates": len(cands),
+            "dropped": dropped, "skipped": skipped, "executed_blocks": sorted(executed)}
 
 
-def select(questions: list[dict]) -> list[dict]:
+def _rank(seed: str, q: dict) -> str:
+    return hashlib.sha256(f"{seed}\0{_qid(seed, q['block'], q['variant'])}".encode()).hexdigest()
+
+
+def select(questions: list[dict], seed: str = REFERENCE_SEED) -> list[dict]:
     """At most MAX_PER_BLOCK questions per block (lowest variants first), then up to TARGET ranked by
-    sha256(SEED + question id)."""
+    sha256(seed + question id)."""
     per_block: dict[str, list[dict]] = {}
     for q in sorted(questions, key=lambda q: (q["block"], q["variant"])):
         if len(per_block.setdefault(q["block"], [])) < MAX_PER_BLOCK:
             per_block[q["block"]].append(q)
     pool = [q for qs in per_block.values() for q in qs]
-    pool.sort(key=lambda q: hashlib.sha256(f"{SEED}\0{_qid(q['block'], q['variant'])}".encode()).hexdigest())
+    pool.sort(key=lambda q: _rank(seed, q))
     return sorted(pool[:TARGET], key=lambda q: (q["block"], q["variant"]))
+
+
+def select_like(questions: list[dict], seed: str, slots: dict[tuple[str, str], list[str]]) -> list[dict]:
+    """For every (block, kind) of the reference set, as many questions, ranked by sha256(seed + id); the
+    i-th is paired with the i-th reference id of that slot (sorted). Every slot must be filled."""
+    by: dict[tuple[str, str], list[dict]] = {}
+    for q in questions:
+        by.setdefault((q["block"], q["kind"]), []).append(q)
+    out, short = [], []
+    for slot, ref_ids in sorted(slots.items()):
+        pool = sorted(by.get(slot, []), key=lambda q: _rank(seed, q))
+        if len(pool) < len(ref_ids):
+            short.append(f"{slot[0]}/{slot[1]}: {len(pool)} of {len(ref_ids)}")
+            continue
+        out += [{**q, "pairs_with": rid} for q, rid in zip(pool, sorted(ref_ids))]
+    if short:
+        raise RuntimeError("fresh set: slots not filled: " + "; ".join(short))
+    return sorted(out, key=lambda q: (q["block"], q["variant"]))
+
+
+def reference_slots(root: Path = REPO) -> dict[tuple[str, str], list[str]]:
+    """(block, kind) -> the reference question ids, read from the published answer key."""
+    slots: dict[tuple[str, str], list[str]] = {}
+    for line in (root / OUT_ANSWERS).read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            k = json.loads(line)
+            slots.setdefault((k["block_id"], k["kind"]), []).append(k["question_id"])
+    return slots
+
+
+def _provenance_version(doc: dict) -> str:
+    return (f"{VERSION} (fresh set, seed sha256 {seed_hash(doc['seed'])[:16]})" if doc["fresh"]
+            else f"{VERSION} ({doc['seed']})")
 
 
 def records(doc: dict) -> tuple[list[dict], list[dict]]:
     items, keys = [], []
     for q in doc["questions"]:
-        qid = _qid(q["block"], q["variant"])
+        qid = _qid(doc["seed"], q["block"], q["variant"])
         item = {"id": qid, "tier": "K", "split": "test", "version": VERSION, "canary": CANARY, "license": LICENSE,
                 "source": {"kind": "gnuradio_run", "ref": f"gnuradio-3.10.12/grc/blocks/{q['yaml_file']}",
                            "sha256": q["yaml_sha256"], "block_id": q["block"]},
                 "cluster_id": f"block_family:{q['family']}",
                 "provenance": {"drafted_by": "script (grcbench.tier_k.blockgen); settings and question templates by "
                                              "Claude (Anthropic); answers from GNU Radio runs",
-                               "generator": GENERATOR, "generator_version": f"{VERSION} ({SEED})"},
+                               "generator": GENERATOR, "generator_version": _provenance_version(doc)},
                 "review": {"status": "pending-team-review", "reviewers": [], "notes": ""},
                 "question": q["question"], "task_type": "gnuradio_usage", "difficulty": q["difficulty"],
                 "item_kind": "block_question", "block_question_kind": q["kind"]}
@@ -966,10 +1083,19 @@ def records(doc: dict) -> tuple[list[dict], list[dict]]:
         if errors:
             raise ValueError(f"{qid}: {errors}")
         items.append(item)
-        keys.append({"question_id": qid, "canary": CANARY, "kind": q["kind"], "block_id": q["block"],
-                     "setting": q["setting"], "reference": reference(q), "answer": q["answer"],
-                     "evidence": q["evidence"]})
+        key = {"question_id": qid, "canary": CANARY, "kind": q["kind"], "block_id": q["block"],
+               "setting": q["setting"], "stated_items": q["stated_items"], "reference": reference(q),
+               "answer": q["answer"], "evidence": q["evidence"]}
+        if "pairs_with" in q:
+            key["pairs_with"] = q["pairs_with"]
+        keys.append(key)
     return items, keys
+
+
+def score_rows(keys: list[dict], answers: dict[str, str]) -> list[dict]:
+    """Rows for `./gb score-k --batch` from a set's answer key and a model's answers {question id: text}."""
+    return [{"id": k["question_id"], "answer": answers[k["question_id"]], "reference": k["reference"]}
+            for k in keys if k["question_id"] in answers]
 
 
 def sheet(items: list[dict], keys: list[dict]) -> str:
@@ -988,10 +1114,10 @@ def report(doc: dict, items: list[dict]) -> str:
     blocks = Counter(i["source"]["block_id"] for i in items)
     reasons = Counter(d["reason"] for d in doc["dropped"])
     L = ["# Tier K: GNU Radio behaviour questions", "",
-         f"Generated by `./gb blockq` ({GENERATOR}, {SEED}). Status: pending team review of the wording "
+         f"Generated by `./gb blockq` ({GENERATOR}, version {VERSION}, reference seed `{doc['seed']}`). Status: "
+         "pending team review of the wording of each question template "
          "(`handoff/review_sheets/tier_k_block_questions.csv`) and the Qoherent expert review.", "",
-         f"**{len(items)} test questions about {len(blocks)} of the 125 test-side blocks** "
-         "(`splits/block_partition.json`), at most "
+         f"**The reference set: {len(items)} test questions about {len(blocks)} GNU Radio blocks**, at most "
          f"{MAX_PER_BLOCK} per block. Each asks for one number that comes from what the block does on a stated input: "
          "the k-th output item, or how many items it produces. The answer key is GNU Radio's own output: the "
          "generator runs the block (finite Vector Source(s) -> block -> File Sink(s)) in the sandbox and reads the "
@@ -999,7 +1125,10 @@ def report(doc: dict, items: list[dict]) -> str:
          "behaviour gives the same number, and the rule cascade gives the key full credit and a wrong value less.", "",
          "Why these questions: the agent traces used for training show the catalog entries of almost every block, "
          "but no trace ran a flowgraph (`reports/agent_traces.md`), so behaviour on a given input is held out. "
-         "Tier K is closed-book: the model under test sees only the question text.", "",
+         "Any other seed gives a fresh set with the same composition and none of these instances "
+         "(`./gb blockq --seed S --like-reference`; `reports/tier_k_fresh_sets.md`), so a model that memorised "
+         "the published questions shows a gap between its two scores. Tier K is closed-book: the model under "
+         "test sees only the question text.", "",
          "| Kind | Questions | Answer format |", "|---|---:|---|",
          f"| output_value | {kinds.get('output_value', 0)} | one number (floats within 1 % or 0.005; integers exact) |",
          f"| output_count | {kinds.get('output_count', 0)} | a count (exact) |", "",
@@ -1025,13 +1154,131 @@ def outputs(doc: dict) -> dict[str, str]:
             OUT_SHEET: sheet(items, keys), OUT_REPORT: report(doc, items)}
 
 
+# --------------------------------------------------------------------------- fresh sets
+def fresh_outputs(doc: dict) -> dict[str, str]:
+    """The files of a fresh set (its own folder): questions, key with pairs, and a manifest."""
+    items, keys = records(doc)
+    composition = Counter(f"{k['block_id']}/{k['kind']}" for k in keys)
+    manifest = {"generator": GENERATOR, "generator_version": VERSION, "seed_sha256": seed_hash(doc["seed"]),
+                "reference_seed": REFERENCE_SEED,
+                "reference_answers_sha256": hashlib.sha256((REPO / OUT_ANSWERS).read_bytes()).hexdigest(),
+                "catalog_hash": GNURADIO_CATALOG_SHA256, "n_questions": len(items), "like_reference": True,
+                "composition": dict(sorted(composition.items())), "candidates": doc["candidates"],
+                "dropped": dict(sorted(Counter(d["reason"] for d in doc["dropped"]).items()))}
+    return {"questions.jsonl": "".join(json.dumps(i, ensure_ascii=False, sort_keys=True) + "\n" for i in items),
+            "answers.jsonl": "".join(json.dumps(k, ensure_ascii=False, sort_keys=True) + "\n" for k in keys),
+            "manifest.json": json.dumps(manifest, indent=1, sort_keys=True) + "\n"}
+
+
+def _outside_repo(path: Path, what: str) -> Path:
+    path = path.expanduser().resolve()
+    repo = REPO.resolve()
+    if path == repo or repo in path.parents:
+        raise SystemExit(f"{what} is never written inside the repository: {path}")
+    return path
+
+
+def read_seed_file(path: Path) -> str:
+    """A seed from a file: JSON {"seed": ...} or the whole text."""
+    text = path.expanduser().read_text(encoding="utf-8").strip()
+    try:
+        return str(json.loads(text)["seed"])
+    except (ValueError, KeyError, TypeError):
+        return text
+
+
+def private_seed_init(path: Path = PRIVATE_SEED) -> str:
+    """Write a random private seed (never overwritten, readable by the owner only); returns its SHA-256."""
+    path = _outside_repo(path, "a private seed")
+    if path.exists():
+        raise SystemExit(f"{path} exists: a private seed is never overwritten")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    seed = secrets.token_hex(16)
+    path.write_text(json.dumps({"seed": seed}) + "\n", encoding="utf-8")
+    os.chmod(path, 0o600)
+    return seed_hash(seed)
+
+
+def fresh_set(seed: str, out: Path | None = None, workers: int = WORKERS) -> tuple[Path, dict]:
+    """Build and write the fresh set of `seed` (like the reference set); returns its folder and document."""
+    if seed == REFERENCE_SEED:
+        raise SystemExit("the reference seed gives the reference set, not a fresh set")
+    out = _outside_repo(out or FRESH_ROOT / seed_hash(seed)[:16], "a fresh set")
+    doc = build(workers=workers, seed=seed, slots=reference_slots())
+    for rel, text in fresh_outputs(doc).items():
+        write_text(out / rel, text)
+    return out, doc
+
+
+def proxies(keys: list[dict], items: list[dict]) -> dict[str, Any]:
+    """Model-free difficulty proxies of one set: composition, answer sizes, stated input, wording length."""
+    answers = [abs(float(k["answer"])) for k in keys]
+    return {"n": len(keys), "composition": sorted(Counter((k["block_id"], k["kind"]) for k in keys).items()),
+            "kinds": Counter(k["kind"] for k in keys), "difficulty": Counter(i["difficulty"] for i in items),
+            "integer_share": sum(k["reference"]["tolerance"] < 1e-6 for k in keys) / len(keys),
+            "median_abs_answer": statistics.median(answers),
+            "median_stated_items": statistics.median(k["stated_items"] for k in keys),
+            "mean_question_chars": statistics.mean(len(i["question"]) for i in items)}
+
+
+def compare(n_seeds: int, workers: int = WORKERS) -> str:
+    """`--compare N`: the reference set and N public check seeds, side by side (markdown)."""
+    rows = [("reference", proxies([json.loads(x) for x in (REPO / OUT_ANSWERS).read_text(encoding="utf-8").splitlines() if x],
+                                  [json.loads(x) for x in (REPO / OUT_QUESTIONS).read_text(encoding="utf-8").splitlines() if x]))]
+    for i in range(1, n_seeds + 1):
+        doc = build(workers=workers, seed=CHECK_SEED.format(i), slots=reference_slots())
+        items, keys = records(doc)
+        rows.append((f"check {i}", proxies(keys, items)))
+    ref = rows[0][1]
+    L = ["# Tier K: fresh GNU Radio question sets", "",
+         f"Generated by `./gb blockq --compare {n_seeds}` ({GENERATOR}, version {VERSION}). The reference set is "
+         f"the published one (`{REFERENCE_SEED}`); check *i* is the fresh set of the public seed "
+         f"`{CHECK_SEED.format('i')}`. Every fresh set copies the reference set's composition (the same blocks, "
+         "kinds and number of questions per block) and repeats none of its instances; only the settings, the "
+         "inputs and the asked item differ. The columns below describe the drawn numbers; the model-based "
+         "check is the pre-registered fresh-set gap (`stats.functions.fresh_gap`).", "",
+         "| Set | Questions | Same composition | Value / count | Basic / intermediate / advanced | Integer answers "
+         "| Median abs. answer | Median stated items | Mean question length |",
+         "|---|---:|---|---|---|---:|---:|---:|---:|"]
+    for name, p in rows:
+        L.append(f"| {name} | {p['n']} | {'yes' if p['composition'] == ref['composition'] else 'NO'} | "
+                 f"{p['kinds'].get('output_value', 0)} / {p['kinds'].get('output_count', 0)} | "
+                 f"{p['difficulty'].get('basic', 0)} / {p['difficulty'].get('intermediate', 0)} / "
+                 f"{p['difficulty'].get('advanced', 0)} | {100 * p['integer_share']:.0f} % | "
+                 f"{p['median_abs_answer']:g} | {p['median_stated_items']:g} | {p['mean_question_chars']:.0f} chars |")
+    return "\n".join(L) + "\n"
+
+
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="gb blockq", description=__doc__.splitlines()[0])
-    ap.add_argument("--out", type=Path, default=REPO, help="root folder for the outputs (default: the repo)")
+    ap.add_argument("--out", type=Path, default=None,
+                    help="root folder (reference set: default the repo; fresh set: its folder)")
     ap.add_argument("--workers", type=int, default=WORKERS, help="GNU Radio runs in parallel")
-    ap.add_argument("--check", action="store_true", help="compare a fresh build with the files on disk")
+    ap.add_argument("--check", action="store_true", help="compare a fresh build of the reference set with the files")
     ap.add_argument("--only", default=None, help="comma-separated block ids (development; use with --out)")
+    ap.add_argument("--seed", default=None, help="a fresh set's seed (with --like-reference)")
+    ap.add_argument("--seed-file", type=Path, default=None, help="read the fresh set's seed from this file")
+    ap.add_argument("--like-reference", action="store_true", help="a fresh set with the reference set's composition")
+    ap.add_argument("--private-seed-init", nargs="?", const=str(PRIVATE_SEED), default=None, metavar="FILE",
+                    help=f"write a random private seed (default {PRIVATE_SEED}); prints only its SHA-256")
+    ap.add_argument("--compare", type=int, default=None, metavar="N", help="N public check seeds -> " + OUT_FRESH_REPORT)
     args = ap.parse_args(argv)
+    if args.private_seed_init:
+        print(f"private seed written to {args.private_seed_init}; sha256 {private_seed_init(Path(args.private_seed_init))}")
+        return 0
+    if args.compare:
+        md = compare(args.compare, args.workers)
+        write_text((args.out or REPO) / OUT_FRESH_REPORT, md)
+        print(f"wrote {OUT_FRESH_REPORT} ({args.compare} check seeds)")
+        return 0
+    seed = read_seed_file(args.seed_file) if args.seed_file else args.seed
+    if seed is not None:
+        if not args.like_reference:
+            raise SystemExit("a fresh set copies the reference set's composition: add --like-reference")
+        out, doc = fresh_set(seed, args.out, args.workers)
+        print(f"wrote fresh set {seed_hash(seed)[:16]}: {len(doc['questions'])} questions from "
+              f"{doc['candidates']} candidates ({len(doc['dropped'])} dropped) in {out}")
+        return 0
     doc = build(workers=args.workers, only=set(args.only.split(",")) if args.only else None)
     files = outputs(doc)
     if args.check:
@@ -1039,10 +1286,11 @@ def main(argv: list[str]) -> int:
                  if not (REPO / rel).exists() or (REPO / rel).read_text(encoding="utf-8") != text]
         print("blockq --check: " + ("OK" if not stale else "differs: " + ", ".join(stale)))
         return 1 if stale else 0
+    root = args.out or REPO
     for rel, text in files.items():
-        write_text(args.out / rel, text)
+        write_text(root / rel, text)
     print(f"wrote {len(doc['questions'])} behaviour questions from {doc['candidates']} candidates "
-          f"({len(doc['dropped'])} dropped) under {args.out}")
+          f"({len(doc['dropped'])} dropped) under {root}")
     return 0
 
 

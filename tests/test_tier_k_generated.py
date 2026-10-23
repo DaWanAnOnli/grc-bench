@@ -1,7 +1,8 @@
 """The generated Tier-K material: block questions (`./gb blockq`) and rubric templates (`./gb rubrics`).
 
-Fast tests on the files in the repository (no GNU Radio): the block questions are test-side,
-schema-valid, scorable by the rule cascade and kept apart from their answer key; the rubric
+Fast tests on the files in the repository (no GNU Radio): the block questions are on eligible catalog
+blocks with a behaviour model, schema-valid, scorable by the rule cascade and kept apart from their
+answer key; the generator's seeds reach wide instance spaces; the rubric
 templates cover every test and dev question, hold no prose, never reach the judge unfilled, and the
 generator never overwrites what the team has filled in.
 """
@@ -16,7 +17,7 @@ from pathlib import Path
 import pytest
 
 from grcbench.common.canary import CANARY_GUID
-from grcbench.common.paths import ITEMS, REPO, SPLITS
+from grcbench.common.paths import ITEMS, REPO
 from grcbench.common.schemas import validate
 from grcbench.tier_k import blockgen, judge_prompt, rubrics, rules
 
@@ -30,14 +31,17 @@ ANSWERS = _jsonl(REPO / blockgen.OUT_ANSWERS)
 
 
 # ---------------------------------------------------------------- block questions
-def test_block_questions_are_test_side_valid_and_about_100():
-    part = {b["id"]: b for b in json.loads((SPLITS / "block_partition.json").read_text())["blocks"]}
+def test_block_questions_are_valid_and_about_100():
+    catalog = {b["id"]: b for b in json.loads(blockgen.CATALOG_JSON.read_text(encoding="utf-8"))["blocks"]}
+    modelled = {s.block for s in blockgen.SETTINGS}
     assert len(QUESTIONS) == blockgen.TARGET == len(ANSWERS)
     assert len({q["id"] for q in QUESTIONS}) == len(QUESTIONS)
     for q in QUESTIONS:
         assert validate(q) == [], q["id"]
-        assert part[q["source"]["block_id"]]["split"] == "test"          # training uses other blocks
-        assert q["cluster_id"] == f"block_family:{part[q['source']['block_id']]['family']}"
+        block = q["source"]["block_id"]
+        assert catalog[block]["eligible"] and block in modelled            # no test/train block split
+        assert q["cluster_id"] == f"block_family:{catalog[block]['family']}"
+        assert f"({blockgen.REFERENCE_SEED})" in q["provenance"]["generator_version"]
         assert q["item_kind"] == "block_question" and q["review"]["status"] == "pending-team-review"
         assert q["block_question_kind"] in ("output_value", "output_count")   # behaviour, never catalog facts
         assert q["source"]["kind"] == "gnuradio_run"

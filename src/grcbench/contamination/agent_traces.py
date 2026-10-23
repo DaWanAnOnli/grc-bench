@@ -10,7 +10,7 @@ in full for training (Joel, 23 Oct), so the benchmark is checked against them:
   tool use     families, tool calls per trace, tools never called, the replies to run_flowgraph (the
                collection harness could not execute flowgraphs), validation-feedback retries, reads of
                the collection's own folder, tool names outside the schema
-  exposure     for every test-side block of splits/block_partition.json: the traces in which its
+  exposure     for every eligible block of reports/block_catalog.json: the traces in which its
                catalog entry (a knowledge-base result or its printed block YAML) appears, and whether a
                trace built or ran it in GNU Radio code. Catalog facts are exposed, so Tier K asks only
                questions whose answers come from execution (tier_k/blockgen.py)
@@ -191,7 +191,7 @@ def _make_map() -> dict[str, list[str]]:
     return out
 
 
-def exposure(rows: list[tuple[str, dict]], test_blocks: set[str]) -> dict[str, Any]:
+def exposure(rows: list[tuple[str, dict]], eligible: set[str]) -> dict[str, Any]:
     shown: dict[str, set[str]] = defaultdict(set)
     executed: dict[str, set[str]] = defaultdict(set)
     commands = []
@@ -215,7 +215,7 @@ def exposure(rows: list[tuple[str, dict]], test_blocks: set[str]) -> dict[str, A
             for bid in blocks:
                 executed[bid].add(sid)
             commands.append({"scenario_id": sid, "python_api": apis, "blocks": blocks})
-    return {"catalog_shown": {b: sorted(shown[b]) for b in sorted(test_blocks) if shown.get(b)},
+    return {"catalog_shown": {b: sorted(shown[b]) for b in sorted(eligible) if shown.get(b)},
             "catalog_shown_any": len({b for b in shown}),
             "executed_in_code": {b: sorted(s) for b, s in sorted(executed.items())},
             "gnuradio_code_commands": len(commands), "commands": commands}
@@ -279,21 +279,21 @@ def signatures(rows: list[tuple[str, dict]], block_ids: set[str]) -> dict[str, A
 # --------------------------------------------------------------------------- report
 def build() -> dict[str, Any]:
     rows = list(traces())
-    part = read_json(SPLITS / "block_partition.json")["blocks"]
-    block_ids = {b["id"] for b in part}
-    test_blocks = {b["id"] for b in part if b.get("split") == "test"}
+    blocks = read_json(REPORTS / "block_catalog.json")["blocks"]
+    block_ids = {b["id"] for b in blocks}
+    eligible = {b["id"] for b in blocks if b["eligible"]}
     return {"inputs": {tier: {"path": str(p.relative_to(NEW_DATA.parent)), "sha256": sha256_file(p)}
                        for tier, p in AGENT_TRACES.items()},
             "model": sorted({r.get("model") for _, r in rows}),
             "harness": harness([r for _, r in rows]), "tool_use": tool_use(rows),
-            "exposure": exposure(rows, test_blocks), "test_side_blocks": len(test_blocks),
+            "exposure": exposure(rows, eligible), "eligible_blocks": len(eligible),
             "task_level": task_level(rows, block_ids), "signatures": signatures(rows, block_ids)}
 
 
 def manifest(doc: dict) -> dict[str, Any]:
     ex = doc["exposure"]
     return {"generator": "grcbench.contamination.agent_traces", "inputs": doc["inputs"],
-            "catalog_shown_test_blocks": sorted(ex["catalog_shown"]),
+            "catalog_shown_blocks": sorted(ex["catalog_shown"]),
             "executed_blocks": sorted(ex["executed_in_code"]),
             "note": ("Blocks whose catalog entry a training trace shows, and blocks a trace built or ran in "
                      "GNU Radio code. Tier-K block questions are execution-derived and avoid executed blocks.")}
@@ -340,7 +340,7 @@ def report(doc: dict) -> str:
           + "; ".join(f"\"{k}...\" ({v})" for k, v in runs.items()) + ". No trace ran a flowgraph.", "",
           "## 4. Exposure of benchmark facts", "",
           f"- **Catalog facts.** The catalog entry (a knowledge-base result, or the printed block YAML) of "
-          f"**{len(ex['catalog_shown'])} of the {doc['test_side_blocks']} test-side blocks** appears in at least one "
+          f"**{len(ex['catalog_shown'])} of the {doc['eligible_blocks']} eligible blocks** appears in at least one "
           "trace: its parameter options, port types and port counts. Questions answered by such facts would not be "
           "held out, so Tier K's GNU Radio questions are answered by execution instead (`tier_k/blockgen.py`).",
           f"- **Execution.** No trace ran a flowgraph. {ex['gnuradio_code_commands']} `run_command` calls build "
@@ -384,7 +384,7 @@ def main(argv: list[str]) -> int:
     write_text(args.out / OUT_REPORT.relative_to(REPO), report(doc))
     ex = doc["exposure"]
     print(f"traces: {doc['tool_use']['tier1']['rows']} + {doc['tool_use']['tier2']['rows']}; catalog facts of "
-          f"{len(ex['catalog_shown'])}/{doc['test_side_blocks']} test-side blocks shown; "
+          f"{len(ex['catalog_shown'])}/{doc['eligible_blocks']} eligible blocks shown; "
           f"{len(ex['executed_in_code'])} blocks built in code; task-level overlaps "
           f"{len(doc['task_level']['same_start_graph']) + len(doc['task_level']['same_final_blocks'])}")
     for p in (OUT_REPORT, OUT_JSON, OUT_MANIFEST):

@@ -145,6 +145,19 @@ def _c_paired():
         f"{d['diff']:.4f} [{d['boot_lo']:.4f}, {d['boot_hi']:.4f}]", ok
 
 
+def _c_fresh_gap():
+    ref = {f"r{i}": s for i, s in enumerate([1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0])}
+    pairs = {f"f{i}": f"r{i}" for i in range(8)}
+    blocks = {f"r{i}": f"b{i // 2}" for i in range(8)}
+    same = fn.fresh_gap(ref, {f"f{i}": ref[f"r{i}"] for i in range(8)}, pairs, blocks, B=500)
+    lower = fn.fresh_gap(ref, {f"f{i}": max(0.0, ref[f"r{i}"] - 0.5) for i in range(8)}, pairs, blocks, B=500)
+    ok = _close(same["diff"], 0.0) and not same["memorisation"]
+    ok &= _close(lower["diff"], 0.375) and lower["memorisation"] and lower["n_clusters"] == 4
+    return "equal sets: gap 0, no flag; fresh 0.5 lower on 6 of 8: gap 0.375, flagged, 4 clusters", \
+        f"{same['diff']:.3f} {same['memorisation']}; {lower['diff']:.3f} {lower['memorisation']} " \
+        f"({lower['n_clusters']} clusters)", ok
+
+
 def _c_mcnemar():
     p = fn.mcnemar_exact_p(1, 6)
     ok = _close(p, 2 * 8 / 128)
@@ -647,6 +660,7 @@ CHECKS: list[Check] = [
     ("cluster-robust SE", "§9 uncertainty", _c_cluster_se),
     ("cluster bootstrap CI", "§9 uncertainty", _c_bootstrap),
     ("paired difference CI", "§9 effect sizes", _c_paired),
+    ("fresh-set gap (Tier K)", "§4.2, §9", _c_fresh_gap),
     ("McNemar exact + majority", "§9 comparisons", _c_mcnemar),
     ("clustered McNemar/Wilcoxon", "§9 comparisons", _c_clustered_tests),
     ("Wilcoxon signed-rank", "§9 comparisons", _c_wilcoxon),

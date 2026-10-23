@@ -26,8 +26,8 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "contamination": ("grcbench.contamination.audit:main", "8-gram, TF-IDF and embedding overlap audit"),
     "traces": ("grcbench.contamination.agent_traces:main", "audit Qoherent's agent traces against the benchmark"),
     # Tier K
-    "blocks": ("grcbench.tier_k.catalog:main", "load the GNU Radio block catalog; test/train block partition"),
-    "blockq": ("grcbench.tier_k.blockgen:main", "generate the GNU Radio behaviour test questions"),
+    "blocks": ("grcbench.tier_k.catalog:main", "load the GNU Radio block catalog: modules, families, eligibility"),
+    "blockq": ("grcbench.tier_k.blockgen:main", "GNU Radio behaviour questions: the reference set, fresh sets from any seed"),
     "calc": ("grcbench.tier_k.calc:main", "compute calculation-question answers by script"),
     "rubrics": ("grcbench.tier_k.rubrics:main", "write rubric templates and review sheets"),
     "score-k": ("grcbench.tier_k.rules:main", "rule-cascade scorer for Tier-K answers"),

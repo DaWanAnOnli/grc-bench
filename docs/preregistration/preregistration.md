@@ -34,7 +34,7 @@ assistant inside GNU Radio Companion. It has four tiers.
 
 | Tier | What it measures | Dev split (for every choice) | Test split v1.0 (frozen 13 Nov) | Built by G2 |
 |---|---|---|---|---|
-| K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 200 questions held back from the 1,668 training questions | 285: the 185 frozen questions and 100 GNU Radio behaviour questions, each answered by running GNU Radio | all 285 test and 200 dev questions; rubric templates (prose written by the team) |
+| K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 200 questions held back from the 1,668 training questions | 285: the 185 frozen questions and 100 GNU Radio behaviour questions, each answered by running GNU Radio (the public reference set; any seed draws a fresh set of the same composition) | all 285 test and 200 dev questions; rubric templates (prose written by the team) |
 | F: flowgraphs | Making a correct flowgraph edit for a stated goal: one documentation lookup and one edit inside GRC-Agent, judged by running the result | 45 tasks | 150 tasks (60 L1, 60 L2, 30 L3) | a first set of 30 (20 test, 10 dev), all gates passed, pending team review |
 | A: agent | Completing a realistic multi-step task with GRC-Agent's tools (8–20 tool calls), judged by the end state | 12 tasks | 30 tasks | 10 test and 12 dev tasks built, all gates passed; 20 test tasks drafted as specifications |
 | E: speed and memory | Prompt and generation speed, time to first token and peak memory on the target hardware | — | — | the llama-bench protocol, tested on a small model |
@@ -65,6 +65,9 @@ assistant inside GNU Radio Companion. It has four tiers.
   - they show the catalog entries of almost every block (port types, parameter options, port counts)
     but never ran a flowgraph. So Tier K's GNU Radio questions ask what a block does on a stated input,
     which only execution reveals, and none is about a block a trace built in GNU Radio code.
+- **No block split.** Training data may use any GNU Radio block, including what it outputs for a given
+  input. The GNU Radio questions come from a seed, and a fresh set of the same composition checks for
+  memorisation of the published ones (§5.1, §7).
 
 ## 3. Research questions, hypotheses and decision rules
 
@@ -120,6 +123,13 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   and the rule cascade scores the key 1 and a wrong value less (`./gb blockq`;
   `reports/tier_k_block_questions.md`). Floats are accepted within 1 % (with an absolute margin that
   shrinks near zero), integers and counts exactly.
+- **Reference set and fresh sets.** The 100 questions are the reference set (seed
+  `grc-bench-blockq-v3-2026-10-23`). Any other seed gives a fresh set with the same blocks, the same
+  number of questions of each kind per block and none of the reference set's instances; each fresh
+  question is paired with the reference question in the same block slot (`./gb blockq --seed S
+  --like-reference`; `reports/tier_k_fresh_sets.md`). The fresh set of this study comes from a private
+  seed with SHA-256 `4426ac05b766f88634056a9e90550c75a7bb08b1fbd9cf3c749e0f8b9c24ca28`; the seed is
+  revealed with the results.
 - **Rule cascade first, judge second.** Every answer is parsed by the rule cascade (`grcbench.tier_k.rules`):
   numbers with units and tolerances, option letters, block identifiers and symbols. Numeric answers
   earn tiered credit by relative error, and a wrong unit or order of magnitude earns 0. Only answers
@@ -246,6 +256,10 @@ default settings on 10 tasks.
 
 - **Seeds.** The final setting of each model is trained with 3 seeds; the spread between seeds is
   reported separately from the item-level interval.
+- **Memorisation check (Tier K).** The headline configurations (B0 and the final model of each target,
+  and B3) also answer the private fresh set. The gap is the reference-minus-fresh mean item score over
+  the paired slots, clustered by block, with both 95 % intervals; memorisation is flagged when both lie
+  above 0 (`fresh-set-gap`). The headline Tier-K score stays the reference set's.
 - **Item analysis.** Difficulty and discrimination for every item; a Rasch model as an exploratory
   check only (`rasch-solved-min`).
 - **Error analysis.** Two annotators label failures with the set list of error types
@@ -432,6 +446,12 @@ Proposals for G2 (deviation = changes a stated definition; extension = decides a
 - Proposal: On Tier K a model 'solves' an item when its mean credit is at least 0.5; models and items with extreme scores are removed first, and no estimates are reported when the remaining data are separated.
 - Code: items.RASCH_SOLVED_MIN, items.rasch_fit
 - Evidence: exploratory only; nothing is kept or dropped because of it.
+
+### fresh-set-gap (extension): Memorisation check on Tier K's GNU Radio questions
+
+- Proposal: The 100 published GNU Radio questions are the reference set. A fresh set of the same composition comes from a private seed whose SHA-256 is published with this document (tier_k.blockgen). The headline configurations (B0 and the final model of each target, and B3) also answer the fresh set. The gap is the reference-minus-fresh mean item score over paired slots, clustered by block, with the clustered t and cluster-bootstrap 95% intervals; memorisation is flagged when both lie above 0. The headline Tier-K score stays the reference set's.
+- Code: functions.fresh_gap
+- Evidence: ./gb stats selfcheck: equal sets give a gap of 0 and no flag; a fresh set 0.5 lower on 6 of 8 slots gives 0.375, flagged.
 <!-- END stats-proposals -->
 
 ## Appendix B: Tier-K question prompt and judge prompt

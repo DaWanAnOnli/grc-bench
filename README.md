@@ -69,17 +69,32 @@ directories live outside the repository, in `~/grc-bench-cache` and `~/grc-bench
   reference answers or rubric prose (eval plan Table 5), and it does not touch training data.
   Anthropic models are therefore excluded from the model panel.
 
+## Fresh GNU Radio question sets
+
+The 100 GNU Radio behaviour questions of Tier K are the published reference set. Each asks what a block
+outputs for a stated input, and GNU Radio's own output is the key. Anyone can draw a fresh set:
+
+```
+./gb blockq --seed <any text> --like-reference      # writes ~/grc-bench-work/fresh/<seed hash>/
+```
+
+A fresh set has the same blocks, kinds and number of questions per block as the reference set, repeats
+none of its instances, and pairs each question with a reference question (`answers.jsonl`,
+`pairs_with`). Report a model's score on both: training on block descriptions and input/output pairs is
+fine, and a model that memorised the published questions shows a gap (`stats.functions.fresh_gap`:
+reference minus fresh, paired by slot, clustered by block). There is no test/train block split.
+
 ## Status
 
 | Part | State (23 Oct) | Where |
 |---|---|---|
-| Tier K | 285 test questions (185 frozen, 100 GNU Radio behaviour questions answered by running GNU Radio) and 200 dev questions; closed-book question prompt, rule cascade and judge prompt; 385 empty rubric templates for the team | `items/tier_k/`, `reports/tier_k_block_questions.md` |
+| Tier K | 285 test questions (185 frozen, 100 GNU Radio behaviour questions answered by running GNU Radio) and 200 dev questions; fresh GNU Radio question sets from any seed; closed-book question prompt, rule cascade and judge prompt; 385 empty rubric templates for the team | `items/tier_k/`, `reports/tier_k_block_questions.md`, `reports/tier_k_fresh_sets.md` |
 | Tier F | first set of 30 tasks (20 test, 10 dev), all gates passed, in GRC-Agent's harness as one lookup and one edit | `items/tier_f/`, `reports/tier_f_first_set.md` |
 | Tier A | first set of 22 tasks (10 test, 12 dev), all gates passed; 20 more test tasks drafted as specs | `items/tier_a/`, `reports/tier_a_first_set.md` |
 | GRC-Agent runner | `./gb agent`: GRC-Agent headless on any request, outputs as files, conversations continued across calls, local or hosted OpenAI-compatible models; `./gb agent-package` builds the teammates' zip (setup script, tutorial, self-test; no benchmark content) | `handoff/agent_runner.md`, `handoff/agent_package/TUTORIAL.md` |
 | Tier E | llama-bench protocol, checked on a small model (CPU and the local RTX 5090) | `reports/tier_e/` |
 | Contamination | 8-gram, TF-IDF and embedding audit of every tier, including Qoherent's 1,853 agent traces; task-level check of the traces (`./gb traces`) | `reports/contamination.md`, `reports/agent_traces.md` |
-| Analysis | `grcbench.stats`, self-check 37/37 | `./gb stats selfcheck` |
+| Analysis | `grcbench.stats`, self-check 38/38 | `./gb stats selfcheck` |
 | Pre-registration | draft for sign-off at G2; the run list is `status: draft`, so every test run is refused until then | `docs/preregistration/` |
 | Final check | `./gb test`, `./gb audit`, `./gb baseline check` | `reports/compliance_review.md` |
 

@@ -13,7 +13,7 @@ folder covers one kind of data. Start with the table, then read the file for the
 |---|---|---|
 | `README.md` and `exclude_question_ids.txt` | Tier-K questions (the 200 dev questions) | Exclude the 200 dev questions, and everything built from them, from every training use. |
 | `test_twins.tsv` (and `README.md` §2–3) | training questions that overlap the 185 test questions | Remove the test twins' answers where possible; the team decides on the flagged neighbours. |
-| `block_partition.md` | generated questions about GNU Radio blocks | Write training questions only about blocks whose `split` is `train`, in your own wording. |
+| this file, below | generated questions about GNU Radio blocks | Any block may be used, including what a block outputs for a given input. Write your own wording and templates. |
 | `flowgraph_seed_split.md` | flowgraph and agent tasks built from GNU Radio example files | Never use a test or dev seed file, also not edited or with a fault planted in it. |
 | `flowgraph_composed_chains.md` and `flowgraph_reserved_signatures.txt` | flowgraphs written by hand or by a script | Emit a graph only if its signature hashes to train and its digest is not on the reserved list. |
 | this file, below | tool outputs inside training sessions | Cut long tool outputs with the same 4K-token function as the benchmark. |
@@ -32,6 +32,22 @@ checked them against the benchmark (`reports/agent_traces.md`):
   null sinks). For agent traces, the task-level check is the rule, and they pass it.
 - **No change on your side.** The GNU Radio test questions ask what a block does to a stated input.
   The traces show the block catalog but never ran a flowgraph, so they do not contain those answers.
+
+## Generated questions about GNU Radio blocks
+
+There is no test/train block split. Training data may cover any GNU Radio block: its catalog entry,
+its documentation, and what it outputs for a given input (for example from running it). The
+benchmark does not depend on which blocks training uses: its GNU Radio questions come from a seed,
+and every evaluation can also draw a fresh set with the same composition, so learning a block is
+fine and memorising the published questions shows up as a gap between the two scores.
+
+Two rules remain:
+
+- **Never the published test items.** Items carrying the GRC-Bench canary string, and anything built
+  from them, stay out of training.
+- **Your own wording.** Write your own question wording and templates; do not copy or imitate
+  GRC-Bench's. The overlap audit compares training text with the benchmark, and copied templates
+  would make every generated question look like an overlap.
 
 Notes on the data (for your judgement; GRC-Bench does not change training data):
 

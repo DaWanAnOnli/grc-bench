@@ -447,6 +447,21 @@ def paired_difference(a: Sequence[float], b: Sequence[float], clusters: Sequence
             "n_clusters": t["n_clusters"], "B": B, "seed": seed, "alpha": alpha}
 
 
+def fresh_gap(reference: Mapping[str, float], fresh: Mapping[str, float], pairs: Mapping[str, str],
+              clusters: Mapping[str, str] | None = None, B: int = BOOTSTRAP_B, seed: int = SEED,
+              alpha: float = ALPHA) -> dict:
+    """Memorisation check of Tier K's GNU Radio questions (PROPOSAL fresh-set-gap): a model's item
+    scores on the published reference set minus its scores on a fresh set of the same composition
+    (tier_k.blockgen), paired by slot (`pairs`: fresh id -> reference id) and clustered by block
+    (`clusters`: reference id -> block). `memorisation` is True when both intervals lie above 0."""
+    fresh_ids = sorted(pairs)
+    a = [reference[pairs[f]] for f in fresh_ids]
+    b = [fresh[f] for f in fresh_ids]
+    d = paired_difference(a, b, [clusters[pairs[f]] for f in fresh_ids] if clusters else None, B, seed, alpha)
+    d["memorisation"] = bool(d["t_lo"] > 0 and d["boot_lo"] > 0)
+    return d
+
+
 def compression_cost_difference(a_full: Sequence[float], a_comp: Sequence[float], k_full: Sequence[float],
                                 k_comp: Sequence[float], a_clusters: Sequence | None = None,
                                 k_clusters: Sequence | None = None, B: int = BOOTSTRAP_B, seed: int = SEED,

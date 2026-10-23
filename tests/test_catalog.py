@@ -1,14 +1,8 @@
-"""Tests for the block catalog and the test/train block partition (plan WS3a; eval plan §4.2, §6)."""
+"""Tests for the GNU Radio block catalog (plan WS3a): modules, families, eligibility; no block split."""
 
 from __future__ import annotations
 
-import csv
 import hashlib
-import io
-import random
-import re
-from collections import defaultdict
-from fractions import Fraction
 from pathlib import Path
 
 import pytest
@@ -52,14 +46,6 @@ def test_assign_families_links_ids_and_yaml_stems():
     assert C.assign_families(list(reversed(recs))) == fam
 
 
-def test_allocate_largest_remainder_and_ties():
-    assert C.allocate({"a": 5, "b": 3, "c": 2}, 3) == {"a": 1, "b": 1, "c": 1}
-    assert C.allocate({"y": 1, "x": 1}, 1) == {"x": 1, "y": 0}          # tie -> stratum name
-    alloc = C.allocate({"m1": 40, "m2": 17, "m3": 1}, 17)
-    assert sum(alloc.values()) == 17 and alloc["m1"] == 12
-    assert C.round_half_up(Fraction(5, 2)) == 3 and C.round_half_up(Fraction(3, 10) * 402) == 121
-
-
 def test_exclusion_reasons_order_and_rules():
     base = {"flags": [], "n_inputs": 1, "n_outputs": 1, "has_value": False, "deprecated": False,
             "module": "blocks"}
@@ -73,39 +59,6 @@ def test_exclusion_reasons_order_and_rules():
         "deprecated", "hardware-or-network-module"]
     for module in C.EXCLUDED_MODULES:
         assert C.exclusion_reasons(dict(base, id=f"{module}_x", module=module)) == ["hardware-or-network-module"]
-
-
-def _synthetic(n_modules=4, seed=7):
-    rng = random.Random(seed)
-    recs = []
-    for m in range(n_modules):
-        for f in range(rng.randint(3, 25)):
-            for v in range(rng.choice([1, 1, 1, 2, 3])):
-                recs.append({"id": f"mod{m}_fam{f}_{'x' * (v + 1)}", "module": f"mod{m}",
-                             "family": f"mod{m}_fam{f}", "eligible": rng.random() > 0.1})
-    return recs
-
-
-def test_partition_is_order_independent_and_keeps_families_together():
-    recs = _synthetic()
-    first = C.partition(recs)
-    shuffled = recs[:]
-    random.Random(1).shuffle(shuffled)
-    assert C.partition(shuffled) == first
-    sides = defaultdict(set)
-    for r in recs:
-        side = first["split"][r["id"]]
-        assert (side is None) == (not r["eligible"])
-        if side:
-            sides[r["family"]].add(side)
-    assert all(len(s) == 1 for s in sides.values())
-    n_fam = len(first["family_stratum"])
-    assert first["n_test_families"] == C.round_half_up(Fraction(3, 10) * n_fam)
-    per_module = defaultdict(int)
-    for fam, side in {r["family"]: first["split"][r["id"]] for r in recs if r["eligible"]}.items():
-        per_module[first["family_stratum"][fam]] += side == "test"
-    assert dict(per_module) == {m: k for m, k in first["allocation"].items()}
-    assert C.partition(recs, seed="another-seed")["split"] != first["split"]
 
 
 # --------------------------------------------------------------------------- GNU Radio catalog
@@ -189,53 +142,31 @@ def test_catalog_hash_is_the_ladder_hash():
 
 
 @pytest.mark.gnuradio
-def test_partition_rules_hold_on_the_real_catalog(loaded):
+def test_eligibility_rules_hold_on_the_real_catalog(loaded):
     doc = loaded["doc"]
-    sides = defaultdict(set)
     for b in doc["blocks"]:
         rec = loaded["by_id"][b["id"]]
-        assert b["eligible"] == (b["reason"] is None) == (b["split"] is not None)
+        assert "split" not in b                              # there is no test/train block split
+        assert b["eligible"] == (b["reason"] is None)
         assert b["reason"] == (", ".join(rec["reasons"]) or None)
-        if b["split"]:
+        if b["eligible"]:
             assert rec["module"] not in C.EXCLUDED_MODULES and not rec["deprecated"]
             assert not b["id"].startswith("variable") and b["id"] not in C.NON_BLOCK_IDS
-            sides[b["family"]].add(b["split"])
-    assert all(len(s) == 1 for s in sides.values()), "a block family straddles test and train"
     c = doc["counts"]
-    assert c["test"] + c["train"] == c["eligible"] and 0.25 <= c["test"] / c["eligible"] <= 0.35
-    assert c["test_families"] == C.round_half_up(Fraction(3, 10) * c["eligible_families"])
-    for module, m in doc["modules"].items():
-        if m["test_families"] + m["train_families"] >= 4:
-            assert m["test"] and m["train"], module
-    assert doc["cross_module_families"] == []
+    assert (c["blocks"], c["eligible"], c["excluded"]) == (585, 415, 170)
+    assert c["eligible_families"] == len({b["family"] for b in doc["blocks"] if b["eligible"]})
+    assert sum(m["eligible"] for m in doc["modules"].values()) == c["eligible"]
 
 
 @pytest.mark.gnuradio
-def test_build_is_deterministic(loaded, tmp_path):
+def test_build_is_deterministic_and_the_committed_catalog_is_current(loaded, tmp_path):
     again = C.build()                                       # fresh platform load
     a = C.write_outputs(loaded["doc"], tmp_path / "a")
     b = C.write_outputs(again, tmp_path / "b")
     assert [p.relative_to(tmp_path / "a") for p in a] == [p.relative_to(tmp_path / "b") for p in b]
     for pa, pb in zip(a, b):
         assert pa.read_bytes() == pb.read_bytes(), pa.name
-    shuffled = loaded["doc"]["_catalog"][:]
-    random.Random(3).shuffle(shuffled)
-    assert C.partition(shuffled)["split"] == C.partition(loaded["doc"]["_catalog"])["split"]
-    committed = REPO / C.PARTITION_JSON
-    if committed.exists():                                  # the checked-in partition is current
-        assert committed.read_bytes() == a[0].read_bytes()
-
-
-@pytest.mark.gnuradio
-def test_handoff_and_review_sheet(loaded):
-    doc = loaded["doc"]
-    text = C.handoff_md(doc)
-    assert "Use train-side blocks only" in text and "Different wording" in text
-    assert doc["catalog_hash"] in text and "BENCHMARK DATA" not in text
-    rows = list(csv.DictReader(io.StringIO(C.review_sheet(doc))))
-    assert len(rows) == 585 and {r["split"] for r in rows} == {"test", "train", "excluded"}
-    assert sum(r["split"] == "test" for r in rows) == doc["counts"]["test"]
-    train_ids = {b["id"] for b in doc["blocks"] if b["split"] == "train"}
-    test_ids = {b["id"] for b in doc["blocks"] if b["split"] == "test"}
-    listed = set(re.findall(r"\w+", text.split("## Train-side blocks you may use")[1]))
-    assert train_ids <= listed and not (test_ids & listed)
+    for p, rel in zip(a, (C.CATALOG_JSON, C.CATALOG_MD)):
+        assert (REPO / rel).read_bytes() == p.read_bytes(), rel
+    assert "no test/train block split" in (REPO / C.CATALOG_MD).read_text(encoding="utf-8")
+    assert not (REPO / "splits" / "block_partition.json").exists()

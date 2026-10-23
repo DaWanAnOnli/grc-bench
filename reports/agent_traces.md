@@ -33,7 +33,7 @@ Reference: Qoherent's SFT release (`grc-agent-sft-v0.1.0/grc-agent-sft-v0.1.0/sf
 
 ## 4. Exposure of benchmark facts
 
-- **Catalog facts.** The catalog entry (a knowledge-base result, or the printed block YAML) of **124 of the 125 test-side blocks** appears in at least one trace: its parameter options, port types and port counts. Questions answered by such facts would not be held out, so Tier K's GNU Radio questions are answered by execution instead (`tier_k/blockgen.py`).
+- **Catalog facts.** The catalog entry (a knowledge-base result, or the printed block YAML) of **411 of the 415 eligible blocks** appears in at least one trace: its parameter options, port types and port counts. Questions answered by such facts would not be held out, so Tier K's GNU Radio questions are answered by execution instead (`tier_k/blockgen.py`).
 - **Execution.** No trace ran a flowgraph. 40 `run_command` calls build GNU Radio objects in Python; the blocks they touch (8: analog_simple_squelch_cc, blocks_correctiq, blocks_message_debug, blocks_phase_shift, blocks_vector_insert_x, digital_ofdm_serializer_vcc, fec_bercurve_generator, trellis_siso_f) are listed in `splits/agent_traces.json`, and the block-question generator asks nothing about them.
 
 ## 5. Task-level check (eval plan §6)

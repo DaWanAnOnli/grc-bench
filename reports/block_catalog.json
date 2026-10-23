@@ -7,7 +7,6 @@
    "label": "Missing Block",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": null,
    "yaml_sha256": null
   },
@@ -18,7 +17,6 @@
    "label": "AGC2",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_agc2_xx.block.yml",
    "yaml_sha256": "df0754b8d612796f4796d5f44ae3067bfb928b17e6c6bd6e64d3cbc004ec6b5a"
   },
@@ -29,7 +27,6 @@
    "label": "AGC3",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_agc3_xx.block.yml",
    "yaml_sha256": "8fdccbe7b98cbe3fbb94342ad9fe5ca56f3e729d7cd4b779f395cd137e4044d5"
   },
@@ -40,7 +37,6 @@
    "label": "AGC",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_agc_xx.block.yml",
    "yaml_sha256": "bf3a30f807fc57d1121b71012e1419db2ba6c2e629e5e58f4bf32e0e64da7a80"
   },
@@ -51,7 +47,6 @@
    "label": "AM Demod",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_am_demod_cf.block.yml",
    "yaml_sha256": "3c99835ef4cf85bf87cea3daf3268f4c377b9b502b6ac8b12cc6893684c43118"
   },
@@ -62,7 +57,6 @@
    "label": "Constant Source",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_const_source_x.block.yml",
    "yaml_sha256": "3cd86c40111234d3adff61bd9fc047914eff21648165463e2a66c50d112dff67"
   },
@@ -73,7 +67,6 @@
    "label": "CPFSK",
    "module": "analog",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "analog_cpfsk_bc.block.yml",
    "yaml_sha256": "03d73961739a03926a9a9b07ecd872d39a9023903ef3d5ff5085f0ec2f365404"
   },
@@ -84,7 +77,6 @@
    "label": "CTCSS Squelch",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_ctcss_squelch_ff.block.yml",
    "yaml_sha256": "963611a4f89c6499b7581ea09962fe0406b91c7a842217a1b04db7d400995c3e"
   },
@@ -95,7 +87,6 @@
    "label": "Detect Peak",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_dpll_bb.block.yml",
    "yaml_sha256": "0d62c0baa7ce8656329eb25a57b21f4763301fb70eb5422444f4e66f8c038667"
   },
@@ -106,7 +97,6 @@
    "label": "Fast Noise Source",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_fastnoise_source_x.block.yml",
    "yaml_sha256": "5256b494a953dc4f0423347eaa44d20a2d85d016d6f2c1e31272a434bc77edbb"
   },
@@ -117,7 +107,6 @@
    "label": "Feed Forward AGC",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_feedforward_agc_cc.block.yml",
    "yaml_sha256": "ceab46d1646a9ebf5acd495b129266df8b86a56d11b3b5d398c99022bbcc367e"
   },
@@ -128,7 +117,6 @@
    "label": "FM Deemphasis",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_fm_deemph.block.yml",
    "yaml_sha256": "8e005372f81c723b4d4dce356a6d91af35ee7499bf8cf6591998dab2244c3239"
   },
@@ -139,7 +127,6 @@
    "label": "FM Demod",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_fm_demod_cf.block.yml",
    "yaml_sha256": "513def2f2040f3dc7803ccf10434891184948be8c14a02059d08a8cc00e327a1"
   },
@@ -150,7 +137,6 @@
    "label": "FM Preemphasis",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_fm_preemph.block.yml",
    "yaml_sha256": "8583a8d856bb911f596f5c9a5d17cb19da8e6428661d0e4578102396b4c18a0c"
   },
@@ -161,7 +147,6 @@
    "label": "FM Detector",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_fmdet_cf.block.yml",
    "yaml_sha256": "fbcb5e85e57f636de38eec1a9154939d04cd583fabf4e02547778ec8cb502a9d"
   },
@@ -172,7 +157,6 @@
    "label": "Frequency Mod",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_frequency_modulator_fc.block.yml",
    "yaml_sha256": "2358c6c69e8da6e6425338727cc1553a0bb5cb158ad0a600bbd3d04719d5476f"
   },
@@ -183,7 +167,6 @@
    "label": "NBFM Receive",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_nbfm_rx.block.yml",
    "yaml_sha256": "c4b6a75786b2fdd647a9bd2b919e19472ad42762bbdeb9cc5a5b018517b3a71c"
   },
@@ -194,7 +177,6 @@
    "label": "NBFM Transmit",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_nbfm_tx.block.yml",
    "yaml_sha256": "837f407f492748e35e9597c69e3b6282a3bfb0eb0b06eda2f6d8b47fdf3c2a52"
   },
@@ -205,7 +187,6 @@
    "label": "Noise Source",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_noise_source_x.block.yml",
    "yaml_sha256": "6d0f980189b37224ae18ce7e5ee7ad3606f63a064bec2fe1737ffc37be05fe8b"
   },
@@ -216,7 +197,6 @@
    "label": "Phase Mod",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_phase_modulator_fc.block.yml",
    "yaml_sha256": "1caf50d3874b18fa10141f9654a125fc0baf466257d7c5c3dad6c7fcaa87c029"
   },
@@ -227,7 +207,6 @@
    "label": "PLL Carrier Tracking",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_pll_carriertracking_cc.block.yml",
    "yaml_sha256": "96b0473a035ff1d5780bafccff1303c81b8ff58bc02823eff1366ef64a7d199b"
   },
@@ -238,7 +217,6 @@
    "label": "PLL Frequency Detector",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_pll_freqdet_cf.block.yml",
    "yaml_sha256": "26fe53666f160d70c921c2b53d7387dede4f15b4c6e0016659abbef44510f453"
   },
@@ -249,7 +227,6 @@
    "label": "PLL Carrier Regeneration",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_pll_refout_cc.block.yml",
    "yaml_sha256": "d20d97edf0813f3615a6d4b79d3179348510882295d44fd28b379e7bb6ca1f7b"
   },
@@ -260,7 +237,6 @@
    "label": "Probe Avg Mag^2",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_probe_avg_mag_sqrd_x.block.yml",
    "yaml_sha256": "574431a7cf7417b02123f83f7d3c1f73b8b1e5012f499d11be15338f150d918d"
   },
@@ -271,7 +247,6 @@
    "label": "Power Squelch",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_pwr_squelch_xx.block.yml",
    "yaml_sha256": "5e0e6fd3365ff279630a2384b23ade2b3048f320084d6ef142050d69f6c9ec9d"
   },
@@ -282,7 +257,6 @@
    "label": "Quadrature Demod",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_quadrature_demod_cf.block.yml",
    "yaml_sha256": "dd7eb2b50baabc5f0f76d653bc7de7c0cd278acaf746ca3eaff2d8632c5e6071"
   },
@@ -293,7 +267,6 @@
    "label": "Rail",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_rail_ff.block.yml",
    "yaml_sha256": "da8b2a88cef2df770aa58f72260d21397ad3c5c52d6e951b33cca10368208190"
   },
@@ -304,7 +277,6 @@
    "label": "Random Source",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_random_source_x.block.yml",
    "yaml_sha256": "bd6408d0f9b253fb4039d7a81aefd85c68988c1f0b5a7d6809fcc513562de754"
   },
@@ -315,7 +287,6 @@
    "label": "Random Uniform Source",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_random_uniform_source_x.block.yml",
    "yaml_sha256": "c40a8148ba6c0a30200c534ef57d434f2260e65a41b40141b7d992ae6165da1b"
   },
@@ -326,7 +297,6 @@
    "label": "Signal Source",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_sig_source_x.block.yml",
    "yaml_sha256": "f5b1d211b09b6787682b96a4e37b45c50e88005f1cbfd45b8efbfd43cdcc3611"
   },
@@ -337,7 +307,6 @@
    "label": "Simple Squelch",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_simple_squelch_cc.block.yml",
    "yaml_sha256": "dd0a1e9953180684e51b23997f43884d9dc2a7d7d5010460bb02bf8b69aacc4d"
   },
@@ -348,7 +317,6 @@
    "label": "Standard Squelch",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_standard_squelch.block.yml",
    "yaml_sha256": "9964357196b4246914709cd2575f44c22a7e69cb925ec30af6b2c97f809c1184"
   },
@@ -359,7 +327,6 @@
    "label": "WBFM Receive",
    "module": "analog",
    "reason": null,
-   "split": "test",
    "yaml_file": "analog_wfm_rcv.block.yml",
    "yaml_sha256": "f09c228935efe4463a8fa84d9ac3d7d80831e7bed468573cf2812d2f40aa6760"
   },
@@ -370,7 +337,6 @@
    "label": "WBFM Receive PLL",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_wfm_rcv_pll.block.yml",
    "yaml_sha256": "dc7cc9c500096e1a3d91fe7c365b59c814a313beed87e5cbc81bb2d0eb44b9d0"
   },
@@ -381,7 +347,6 @@
    "label": "WBFM Transmit",
    "module": "analog",
    "reason": null,
-   "split": "train",
    "yaml_file": "analog_wfm_tx.block.yml",
    "yaml_sha256": "1fec37ea064735f3c2a49d9d9d05830472849eab726761bbb13861112d460915"
   },
@@ -392,7 +357,6 @@
    "label": "Audio Sink",
    "module": "audio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "audio_sink.block.yml",
    "yaml_sha256": "ae9bd9046608eaa6313d6b1c2198d1cd81199af8f9b613807fea0ed27ea0783f"
   },
@@ -403,7 +367,6 @@
    "label": "Audio Source",
    "module": "audio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "audio_source.block.yml",
    "yaml_sha256": "e895a39dbaac295275203bcf32106f093b2b1f30301ab5d4e8abc78e3d06fa16"
   },
@@ -414,7 +377,6 @@
    "label": "Band Pass Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_band_pass_filter.block.yml",
    "yaml_sha256": "eeaf3ef4b161bdc5167ce98b1cf245cefa496b3a4fd8ad3abf85fb1335fcd4f2"
   },
@@ -425,7 +387,6 @@
    "label": "Band Reject Filter",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_band_reject_filter.block.yml",
    "yaml_sha256": "cc525c0db82d9e990db97b2e854a55498f529aeabd59457e6b6f4ad7e055ec90"
   },
@@ -436,7 +397,6 @@
    "label": "Abs",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_abs_xx.block.yml",
    "yaml_sha256": "48f74e5955e723d5d50886120f950b38295d5da1d87ababaf4fa5779d38df568"
   },
@@ -447,7 +407,6 @@
    "label": "Add Const",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_add_const_vxx.block.yml",
    "yaml_sha256": "5701a1dc36da27a04b8722fcabc2a8b4b9827807b83b9d33b833cf7511d4e970"
   },
@@ -458,7 +417,6 @@
    "label": "Add",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_add_xx.block.yml",
    "yaml_sha256": "7509d5805314b50497c0768c31ac476b53cbb097704993bf7878e42043049a6d"
   },
@@ -469,7 +427,6 @@
    "label": "And Const",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_and_const_xx.block.yml",
    "yaml_sha256": "645666d97b524fe5197933a62ba325842654eb936b90d348baa4ee3260387cf8"
   },
@@ -480,7 +437,6 @@
    "label": "And",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_and_xx.block.yml",
    "yaml_sha256": "601674afe20dbce04c7547b0c04fe3b9a20b4d97acfde5c31eaaaf1a31efa87c"
   },
@@ -491,7 +447,6 @@
    "label": "Argmax",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_argmax_xx.block.yml",
    "yaml_sha256": "704511e341c848fdc77ef52c0d2a6820c7d3d09129fb4294678ad3f8032bb355"
   },
@@ -502,7 +457,6 @@
    "label": "Block interleaver",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_blockinterleaver_xx.block.yml",
    "yaml_sha256": "6369bdc26bff356ee3d5120e01f08388c802a0fab1614cafa7498c9661b6fe65"
   },
@@ -513,7 +467,6 @@
    "label": "Burst Tagger",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_burst_tagger.block.yml",
    "yaml_sha256": "c943218be2e3dbd9cef97cf89bdca56207ac0548f67a1a2cab1220b458e7b3dc"
   },
@@ -524,7 +477,6 @@
    "label": "Burst to Stream",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_burst_to_stream.block.yml",
    "yaml_sha256": "295910e010ce2647858125e62eec313e4a0d1042d173d6b79e762da2a824f529"
   },
@@ -535,7 +487,6 @@
    "label": "Char To Float",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_char_to_float.block.yml",
    "yaml_sha256": "d77b76605be4c3426d5cdde08152a630fbb18dc6994753bc1103ebba1e0a6351"
   },
@@ -546,7 +497,6 @@
    "label": "Char To Short",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_char_to_short.block.yml",
    "yaml_sha256": "d40449cdfe466f413b74d07d095d645f4670a554bcf7dd0aa9e55b486cca7d74"
   },
@@ -557,7 +507,6 @@
    "label": "Complex to Arg",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_complex_to_arg.block.yml",
    "yaml_sha256": "ddcdc2658ce05b3f3fc6eae465434d6cfdb043ad0f7e908fdc508e2e2fbef66d"
   },
@@ -568,7 +517,6 @@
    "label": "Complex To Float",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_complex_to_float.block.yml",
    "yaml_sha256": "fd63773887d882603e3ac0290bfc6e1ac3ec728f38989f00a205f2ed50741371"
   },
@@ -579,7 +527,6 @@
    "label": "Complex to Imag",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_complex_to_imag.block.yml",
    "yaml_sha256": "bd57d6f0c95bac1cc03b71882e333227ec73d605b4d548dc2a74b843bac5e7df"
   },
@@ -590,7 +537,6 @@
    "label": "Complex To IChar",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_complex_to_interleaved_char.block.yml",
    "yaml_sha256": "9b106b45de8f33f1ca5dd023a797e2996c35f441f22e0046b4b240f94877f335"
   },
@@ -601,7 +547,6 @@
    "label": "Complex To IShort",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_complex_to_interleaved_short.block.yml",
    "yaml_sha256": "29b72ff54b76144e074313ffb67654256e4a18c626ab3a91c3888236c0c0f569"
   },
@@ -612,7 +557,6 @@
    "label": "Complex to Mag",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_complex_to_mag.block.yml",
    "yaml_sha256": "b1a3b21821dd0e0f88592a1b2a8b034858bb070f204b84e9536dcbc5917231cf"
   },
@@ -623,7 +567,6 @@
    "label": "Complex to Mag^2",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_complex_to_mag_squared.block.yml",
    "yaml_sha256": "760c95e21567523b0737038658f8502c81b795197b908223b3808eeff658b6b4"
   },
@@ -634,7 +577,6 @@
    "label": "Complex To Mag Phase",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_complex_to_magphase.block.yml",
    "yaml_sha256": "06072ebd7a23867ce2dd73636729425b1b40b7b610ea2a66f3d00e85c920ff3f"
   },
@@ -645,7 +587,6 @@
    "label": "Complex To Real",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_complex_to_real.block.yml",
    "yaml_sha256": "74bbcd649594214b356d6a7f05de61073ffdabc9f6e03dd47f6339727afb0e48"
   },
@@ -656,7 +597,6 @@
    "label": "Complex Conjugate",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_conjugate_cc.block.yml",
    "yaml_sha256": "0ffedc0d314f68ad32e513a76dc34f0a1056f7ad2b571952c012ce72d414bf56"
   },
@@ -667,7 +607,6 @@
    "label": "Copy",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_copy.block.yml",
    "yaml_sha256": "929b6f0c0a9b8fdc19185b66264d4a22cca14fdf09cc343325812b30b5b8ffeb"
   },
@@ -678,7 +617,6 @@
    "label": "Remove DC Spike",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_correctiq.block.yml",
    "yaml_sha256": "7a82317a55220e47369f77ddfc7a85c0ffbf33502088f3b31b1cf3367db19441"
   },
@@ -689,7 +627,6 @@
    "label": "Remove DC Spike AutoSync",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_correctiq_auto.block.yml",
    "yaml_sha256": "7dbcc6a3dbbaf51449b2446186d6f868c9fcfef18afb9708c2567217615b89e0"
   },
@@ -700,7 +637,6 @@
    "label": "IQ Correction Manual Offset",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_correctiq_man.block.yml",
    "yaml_sha256": "58a1e522853015b66d30f5e5288cb83254e2d02f35be9258ff8f7563408cbcdc"
   },
@@ -711,7 +647,6 @@
    "label": "CtrlPort Monitor",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_ctrlport_viewer.block.yml",
    "yaml_sha256": "4aa918302626bc4d6932ad387c959cf24c7ce3bb04100908241dab5dbc381cf3"
   },
@@ -722,7 +657,6 @@
    "label": "CtrlPort Performance Monitor",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_ctrlport_performance.block.yml",
    "yaml_sha256": "833b7aa2f311932ecfb6c4285e38b6369a31a3b3e7a4aeac8ea767590962bacb"
   },
@@ -733,7 +667,6 @@
    "label": "Ctrlport Probe",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_ctrlport_probe2_c.block.yml",
    "yaml_sha256": "6d8ef3cdce54ded27ffddb11121268f95fda5f8d94517da55b30580d0e605e87"
   },
@@ -744,7 +677,6 @@
    "label": "Ctrlport Probe",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_ctrlport_probe2_x.block.yml",
    "yaml_sha256": "b195ac2f6447930347a8719611c397a3deac1309cfd5f0034c1c7511244aa319"
   },
@@ -755,7 +687,6 @@
    "label": "Ctrlport Complex Probe",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_ctrlport_probe_c.block.yml",
    "yaml_sha256": "7dc143497fa8a9eb69bedb41f8cc8b43cdfbd6e5d68fdd5e4981bf9527aa272e"
   },
@@ -766,7 +697,6 @@
    "label": "Deinterleave",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_deinterleave.block.yml",
    "yaml_sha256": "a7a32f17eb34c1a7432e7ffa98eee7116d29cedb1173b8c9b2cc826076e6121d"
   },
@@ -777,7 +707,6 @@
    "label": "Delay",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_delay.block.yml",
    "yaml_sha256": "c203de6e374ac15c477ce3e7961ea21503bf0570c363e5d23ee11909cd2f883e"
   },
@@ -788,7 +717,6 @@
    "label": "Divide",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_divide_XX.block.yml",
    "yaml_sha256": "5508e65e31458591007693f3ab7f018b05a40ec92e93bdcceab82eb641f89f20"
   },
@@ -799,7 +727,6 @@
    "label": "Endian Swap",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_endian_swap.block.yml",
    "yaml_sha256": "2c0441c819d171862e074919fd5bc4b80aa7165aab0161e0efee6d1d7888df51"
   },
@@ -810,7 +737,6 @@
    "label": "Exponentiate Const Int",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_exponentiate_const_cci.block.yml",
    "yaml_sha256": "2a20826d1e732a4d1f6b0a4fe6b79e17d51a7c0db77f1a4cb6e5b8b857fe366d"
   },
@@ -821,7 +747,6 @@
    "label": "File Descriptor Sink",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_file_descriptor_sink.block.yml",
    "yaml_sha256": "376fa78d7de13c984e39e4bd860816725abd9bdcf1de5a5cacc1fb852a89b99b"
   },
@@ -832,7 +757,6 @@
    "label": "File Descriptor Source",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_file_descriptor_source.block.yml",
    "yaml_sha256": "12b34e4090b5c44b4b194a773ddf8b72cdd38a7a863cde85593cc5492c01dd7c"
   },
@@ -843,7 +767,6 @@
    "label": "File Meta Sink",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_file_meta_sink.block.yml",
    "yaml_sha256": "b80012253a79d638342fe8b25c6ea968c8d3af725c985edf154af979622ca03e"
   },
@@ -854,7 +777,6 @@
    "label": "File Meta Source",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_file_meta_source.block.yml",
    "yaml_sha256": "c6ad1d499d8d25eb07c24c5fadb7d5724b127ce93ef884cf31d91a3397f229c2"
   },
@@ -865,7 +787,6 @@
    "label": "File Sink",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_file_sink.block.yml",
    "yaml_sha256": "347f769348ab4fb5c57c58a45a7fc04ef85d33e3f871b38bc72110952c0efbb6"
   },
@@ -876,7 +797,6 @@
    "label": "File Source",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_file_source.block.yml",
    "yaml_sha256": "2f350944b9065657192ead467e43bbf6577d886abc86b624e2914a86dee3a572"
   },
@@ -887,7 +807,6 @@
    "label": "Float To Char",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_float_to_char.block.yml",
    "yaml_sha256": "b0008305be6de39050fd0a9c05cf137983180535264fd427422b63594ec09e1d"
   },
@@ -898,7 +817,6 @@
    "label": "Float To Complex",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_float_to_complex.block.yml",
    "yaml_sha256": "86a35d1b17216f9d0038041289e581fc7750d19d4ae5686a0ebc77fdf725cd30"
   },
@@ -909,7 +827,6 @@
    "label": "Float To Int",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_float_to_int.block.yml",
    "yaml_sha256": "49f29b37dd76aba73571ea23351067eac4befa521805bc285e2f65af58b35df1"
   },
@@ -920,7 +837,6 @@
    "label": "Float To Short",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_float_to_short.block.yml",
    "yaml_sha256": "79274824c7dc75d005eaf88c76f336c5acf8fa08984f86b662938fbc7b7b1171"
   },
@@ -931,7 +847,6 @@
    "label": "Float To UChar",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_float_uchar.block.yml",
    "yaml_sha256": "76fe6ca0286b3a0e106bf13b3517ddb8a9c27a73031c6cfc70e3d029eb9a82fc"
   },
@@ -942,7 +857,6 @@
    "label": "Frequency Shift",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_freqshift_cc.block.yml",
    "yaml_sha256": "5d642b8c4ea7c63da4f6a5e6147d239fba7379b25432606b6b505d79ceed0d42"
   },
@@ -953,7 +867,6 @@
    "label": "Head",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_head.block.yml",
    "yaml_sha256": "3ba8cbc7dfb2ac7da105a56dd342bfac4e313978a927206c402297c7f9876d6b"
   },
@@ -964,7 +877,6 @@
    "label": "Int To Float",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_int_to_float.block.yml",
    "yaml_sha256": "1d6348765f12ade79d52cabad41569702b53c43c1290dd1c21ecb2a547118eae"
   },
@@ -975,7 +887,6 @@
    "label": "Integrate",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_integrate_xx.block.yml",
    "yaml_sha256": "46ebad102e0c6520dd4ce1fbf45e9710894984d41b70b4a580c0c41386bbab6b"
   },
@@ -986,7 +897,6 @@
    "label": "Interleave",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_interleave.block.yml",
    "yaml_sha256": "9cf7ebdc107a9fdfc6dc99c6f6074bbb58dcc3c3317cedfe5dcb0b546c8b5792"
   },
@@ -997,7 +907,6 @@
    "label": "IChar To Complex",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_interleaved_char_to_complex.block.yml",
    "yaml_sha256": "99d107ed4d4d8e4d3746f334292dcfe45c8345a48d5db7cbeeddc96c07cb15e2"
   },
@@ -1008,7 +917,6 @@
    "label": "IShort To Complex",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_interleaved_short_to_complex.block.yml",
    "yaml_sha256": "b62221d7a22a27712624471c3492fa38143919a0934def5e6bfffa2d607cde7f"
   },
@@ -1019,7 +927,6 @@
    "label": "Keep M in N",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_keep_m_in_n.block.yml",
    "yaml_sha256": "b259f329910611cea19e7ea97b237919a5c68343655d4c3e97b88cd76a31acaf"
   },
@@ -1030,7 +937,6 @@
    "label": "Keep 1 in N",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_keep_one_in_n.block.yml",
    "yaml_sha256": "b76f639f9de0421a22bbf1640e26094107b62a5e6fdaabc04163602f998625e2"
   },
@@ -1041,7 +947,6 @@
    "label": "Magnitude and Phase To Complex",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_magphase_to_complex.block.yml",
    "yaml_sha256": "68aa03fc232e2cad2692412cb8c97f5c837bd4b55aa3ef219c7297b1ae99873e"
   },
@@ -1052,7 +957,6 @@
    "label": "Matrix Interleaver",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_matrix_interleaver.block.yml",
    "yaml_sha256": "8320c9f6bfa6320e3c4d2815ad963523acbfb059f439b13bdc2f87bf2c01f430"
   },
@@ -1063,7 +967,6 @@
    "label": "Max",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_max_xx.block.yml",
    "yaml_sha256": "14657c1b9d29422eb6761a17a1988b33d5dcc1b830a2ec183196b55c93a2a3a7"
   },
@@ -1074,7 +977,6 @@
    "label": "Message Debug",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_message_debug.block.yml",
    "yaml_sha256": "ce9df48e11e32c4e4aecac6958abdc7d51d754bdd1f09a862c73855014a97c86"
   },
@@ -1085,7 +987,6 @@
    "label": "Message Strobe",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_message_strobe.block.yml",
    "yaml_sha256": "02aef0ad29b0c27c19d4420b790040ceaec78e469d5ee6463098f096be447ff4"
   },
@@ -1096,7 +997,6 @@
    "label": "Message Strobe Random-Delay",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_message_strobe_random.block.yml",
    "yaml_sha256": "7d537a2d20de6c7fa722fc2451f7cea7e8462548054453b1d5613e01fc2c6638"
   },
@@ -1107,7 +1007,6 @@
    "label": "Min",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_min_xx.block.yml",
    "yaml_sha256": "dba57f2cb9bdda06fbaa1b3c91bfb309da87494333f6760d12752738bb0bf5e8"
   },
@@ -1118,7 +1017,6 @@
    "label": "Moving Average",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_moving_average_xx.block.yml",
    "yaml_sha256": "c4780abfa57782d02f983bdbbfbcbb56c808b48f380cf85f6d249fa2215544fe"
   },
@@ -1129,7 +1027,6 @@
    "label": "Message Meta Value to Pair",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_meta_to_pair.block.yml",
    "yaml_sha256": "8956e205b014f6ed4da8504af3d1ce90e26bb380c3e949e8452981e8ccabe360"
   },
@@ -1140,7 +1037,6 @@
    "label": "Message Pair to Var",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_msg_pair_to_var.block.yml",
    "yaml_sha256": "6618e307043f4be48e0b66037f6fdb15c08369e623712bebacc7dd74dac0c088"
   },
@@ -1151,7 +1047,6 @@
    "label": "Multiply by Tag Value",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_multiply_by_tag_value_cc.block.yml",
    "yaml_sha256": "744c29f6cd7ccc838f70625a47a51c16ae1ed14d329f05c490320a54138f47dc"
   },
@@ -1162,7 +1057,6 @@
    "label": "Multiply Conjugate",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_multiply_conjugate_cc.block.yml",
    "yaml_sha256": "c5ea4a5b337bf5b9c4c1d5f612ce16c5ec0cd124586cbaaf684d948ad8b25d9b"
   },
@@ -1173,7 +1067,6 @@
    "label": "Multiply Const",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_multiply_const_vxx.block.yml",
    "yaml_sha256": "5d989e14cf2d6b03bede39308eb76242df3c512df9f0d61726a8db65981bd8c0"
   },
@@ -1184,7 +1077,6 @@
    "label": "Fast Multiply Const",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_multiply_const_xx.block.yml",
    "yaml_sha256": "e0464630e1c7a90c82569f74f7a4c5f58fff59d7191dc5ab2d0290a1957b650f"
   },
@@ -1195,7 +1087,6 @@
    "label": "Multiply by Matrix",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_multiply_matrix_xx.block.yml",
    "yaml_sha256": "9c58e94249ba7cfb5e98bb520c7b151258b7458730c69cbab2bc38b2fc5c1ff3"
   },
@@ -1206,7 +1097,6 @@
    "label": "Multiply",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_multiply_xx.block.yml",
    "yaml_sha256": "805cf78fd730c001574e1d9697a056f87c1143f4bb8a0ee242d9e4322424ac34"
   },
@@ -1217,7 +1107,6 @@
    "label": "Mute",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_mute_xx.block.yml",
    "yaml_sha256": "9fcb11e05d027ff916766ce5bb95412cef26c3421c8c1fdd2c0bd9e275ba04bc"
   },
@@ -1228,7 +1117,6 @@
    "label": "Log10",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_nlog10_ff.block.yml",
    "yaml_sha256": "26b2e46b8d3e9264410d6d8af02486bafccd22e689da9469c7252552e6d53d81"
   },
@@ -1239,7 +1127,6 @@
    "label": "Nop",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_nop.block.yml",
    "yaml_sha256": "b0f0cb7306cfe86c83ced7efd5c53c263749ff3b834f968799a380ebb0d9996e"
   },
@@ -1250,7 +1137,6 @@
    "label": "Not",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_not_xx.block.yml",
    "yaml_sha256": "d317762a2fd88415ec6f2669f9399cc45e1239e91057a574a7eafe5037dccb35"
   },
@@ -1261,7 +1147,6 @@
    "label": "Null Sink",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_null_sink.block.yml",
    "yaml_sha256": "aeaa42bbfb0a7c01488aa71410605a7da5d3b551cd629c116a38232b7c094c2d"
   },
@@ -1272,7 +1157,6 @@
    "label": "Null Source",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_null_source.block.yml",
    "yaml_sha256": "f9ffcd55bc0d86b562a96cf11ca71f67c091eec4cbb0ee93b582b3f656454ab2"
   },
@@ -1283,7 +1167,6 @@
    "label": "Or",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_or_xx.block.yml",
    "yaml_sha256": "b1689ffc1c565beb72c206f5315b2022fe9471cfb401930ca9dd21bd2eca537d"
   },
@@ -1294,7 +1177,6 @@
    "label": "Pack K Bits",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_pack_k_bits_bb.block.yml",
    "yaml_sha256": "85b5bc4fe6a809e3aa0d09701ceb5ddf8862c7dee099f76efcc1d9a1ad60cca0"
   },
@@ -1305,7 +1187,6 @@
    "label": "Packed to Unpacked",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_packed_to_unpacked_xx.block.yml",
    "yaml_sha256": "25dc89f510310b531adc8ca9a57c4f33623b296ef3d06cc49ada18634f79f2c0"
   },
@@ -1316,7 +1197,6 @@
    "label": "Patterned Interleaver",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_patterned_interleaver.block.yml",
    "yaml_sha256": "e291efb79d79260da9df739f6969ab406060984b066d4146e62baf298b5f268b"
   },
@@ -1327,7 +1207,6 @@
    "label": "Peak Detector2",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_peak_detector2_fb.block.yml",
    "yaml_sha256": "c11d6c3494b141fd9c51a21552fb1807fe64b36036717cc526face788725e509"
   },
@@ -1338,7 +1217,6 @@
    "label": "Peak Detector",
    "module": "blocks",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "blocks_peak_detector_xb.block.yml",
    "yaml_sha256": "6273a36319430b1310985e996c7d57e93d85227d1e4ca9c1a6d0b0a71c66d31d"
   },
@@ -1349,7 +1227,6 @@
    "label": "Phase Shift",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_phase_shift.block.yml",
    "yaml_sha256": "e3c0012118095b4d23f59fe4f29146f63a3ca607ae0d67666463252712f7911e"
   },
@@ -1360,7 +1237,6 @@
    "label": "Plateau Detector",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_plateau_detector_fb.block.yml",
    "yaml_sha256": "732e645897656e84ce9029aa4336d2c0eced2f70ddaf8dfa26172bb50c757614"
   },
@@ -1371,7 +1247,6 @@
    "label": "Probe Rate",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_probe_rate.block.yml",
    "yaml_sha256": "c649d65017e275d7c8c19c9a5508f8d81cd94964a162ec7df83de35578227826"
   },
@@ -1382,7 +1257,6 @@
    "label": "Probe Signal Vector",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_probe_signal_vx.block.yml",
    "yaml_sha256": "4f73d2f735918782a69094c9fd31d7ff7c6ca7bcf4e1a1090f4b47d02a8bbd69"
   },
@@ -1393,7 +1267,6 @@
    "label": "Probe Signal",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_probe_signal_x.block.yml",
    "yaml_sha256": "eebc63ed76e06b9abeef32ca0108091f11415e9c373fca627f5a603d51406beb"
   },
@@ -1404,7 +1277,6 @@
    "label": "Regenerate",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_regenerate_bb.block.yml",
    "yaml_sha256": "0d3f8bb5140dfc2836bdabec81b9365ff2e637e20e91971c5fb88c1901c76075"
   },
@@ -1415,7 +1287,6 @@
    "label": "Repack Bits",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_repack_bits_bb.block.yml",
    "yaml_sha256": "3a2fe6eed93858c966303ef02f9dfbeb491c8e91e16b153b4c9f4b4ae8aec49f"
   },
@@ -1426,7 +1297,6 @@
    "label": "Repeat",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_repeat.block.yml",
    "yaml_sha256": "deec2da20b6fe6399735110c54f828d24c8a925de2a0dd401c4a360581bc6525"
   },
@@ -1437,7 +1307,6 @@
    "label": "RMS",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_rms_xx.block.yml",
    "yaml_sha256": "5abfad7700165796d076f596610ec0aee7bad8979dc19c0dcfd6860773e18906"
   },
@@ -1448,7 +1317,6 @@
    "label": "Rotator",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_rotator_cc.block.yml",
    "yaml_sha256": "8e39a1b989dc6347919e50db3b109c719f96ec5d95b9b235d784dd1753fea8e0"
   },
@@ -1459,7 +1327,6 @@
    "label": "Sample and Hold",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_sample_and_hold_xx.block.yml",
    "yaml_sha256": "5b21d9aa81d7ca87c23cc1fd7173f5c2fdfe2e6b8b81ea0996127194bf707bd2"
   },
@@ -1470,7 +1337,6 @@
    "label": "Selector",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_selector.block.yml",
    "yaml_sha256": "8faf8856c4586ce80ab6fb25666d600d156219f70106e17cdeacb2af9d0b5896"
   },
@@ -1481,7 +1347,6 @@
    "label": "Short To Char",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_short_to_char.block.yml",
    "yaml_sha256": "0a0b3722cfc2a128cca77ee6c7fba197cc14e92105569e632993af49da2bc759"
   },
@@ -1492,7 +1357,6 @@
    "label": "Short To Float",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_short_to_float.block.yml",
    "yaml_sha256": "50a8e1ab726e8ec0c0afb3e87e62a498046295c4404decfdfbf744a6ecad5791"
   },
@@ -1503,7 +1367,6 @@
    "label": "SigMF Sink (Minimal)",
    "module": "blocks",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "blocks_sigmf_sink_minimal.block.yml",
    "yaml_sha256": "780be64f5a33bc37b3a315b3a83010be7dbfd838c75e26097eeeb07d82e3a871"
   },
@@ -1514,7 +1377,6 @@
    "label": "SigMF Source (Minimal)",
    "module": "blocks",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "blocks_sigmf_source_minimal.block.yml",
    "yaml_sha256": "8666fdbfab60a07452aa3c99f7d6600c3f174872b36e9122c657d1b70df29be1"
   },
@@ -1525,7 +1387,6 @@
    "label": "Skip Head",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_skiphead.block.yml",
    "yaml_sha256": "bbae5d4e328986b8fec5acf45ae737623771a528cffb2f4ea61f074445bb89f5"
   },
@@ -1536,7 +1397,6 @@
    "label": "Stream Demux",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_stream_demux.block.yml",
    "yaml_sha256": "a8579ae7bc19627c74f96050ad5cc7a4431132adf5a3d9a8dab36cf3ebe58726"
   },
@@ -1547,7 +1407,6 @@
    "label": "Stream Mux",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_stream_mux.block.yml",
    "yaml_sha256": "6d821b4d4451f89ac7e6e309ff5c66a413339f57d69ef3c0fd15b3c311aa507a"
   },
@@ -1558,7 +1417,6 @@
    "label": "Stream to Streams",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_stream_to_streams.block.yml",
    "yaml_sha256": "934e34d8760a3797bf90b87528ea4d7251f1efcd466d4febcd37599a6bb599dd"
   },
@@ -1569,7 +1427,6 @@
    "label": "Stream to Tagged Stream",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_stream_to_tagged_stream.block.yml",
    "yaml_sha256": "fad833a9decb36232c690b5e521651b3b4da008539594598d75cae7557cda5d0"
   },
@@ -1580,7 +1437,6 @@
    "label": "Stream to Vector",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_stream_to_vector.block.yml",
    "yaml_sha256": "84d47e708ad626965dfe15e0a8b4323f638df3d493fb59aa09f5b686aa02f680"
   },
@@ -1591,7 +1447,6 @@
    "label": "Stream to Vec Decim",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_stream_to_vector_decimator.block.yml",
    "yaml_sha256": "b800a3e293a1db2ad2de7d9a9edb56a44487cc1398aa5bb117a9adf59e47ff55"
   },
@@ -1602,7 +1457,6 @@
    "label": "Streams to Stream",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_streams_to_stream.block.yml",
    "yaml_sha256": "242ecb976f7dde48e411df8cd456f1f0c4602e03d694f75854305f48c32fceae"
   },
@@ -1613,7 +1467,6 @@
    "label": "Streams to Vector",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_streams_to_vector.block.yml",
    "yaml_sha256": "09b55465109adfc840193e8ba4127db6e2f76a9501987aa81b33731178835454"
   },
@@ -1624,7 +1477,6 @@
    "label": "Stretch",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_stretch_ff.block.yml",
    "yaml_sha256": "7da1aee9db05cc581d473679a56894f9d153abcd7253fe27a67311ea4ed5a48e"
   },
@@ -1635,7 +1487,6 @@
    "label": "Subtract",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_sub_xx.block.yml",
    "yaml_sha256": "d3ded066f6311b4e30a4167560233d45eb1267656e0e0d4e1fd66e21c858236e"
   },
@@ -1646,7 +1497,6 @@
    "label": "Swap IQ",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_correctiq_swapiq.block.yml",
    "yaml_sha256": "417fd707cee4abb598a2e636fb53a325df770b52d0ef36c743ed949efd85771a"
   },
@@ -1657,7 +1507,6 @@
    "label": "Tag Debug",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_tag_debug.block.yml",
    "yaml_sha256": "1ca61e816c576dc87f1d8ef3f2a188c1fdd1d939bd411e10679a60320b752fd5"
   },
@@ -1668,7 +1517,6 @@
    "label": "Tag Gate",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_tag_gate.block.yml",
    "yaml_sha256": "65dce00ac400a657d51cff20421ce61a84919c59d6e13cfa00ef6eceb0de104f"
   },
@@ -1679,7 +1527,6 @@
    "label": "Tag Share",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_tag_share.block.yml",
    "yaml_sha256": "5617969fe2a7fccf90a18bec3b823e983e7a074436a92730b5d6849fe3428b04"
   },
@@ -1690,7 +1537,6 @@
    "label": "Tagged File Sink",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_tagged_file_sink.block.yml",
    "yaml_sha256": "43c0f79d1a410c88443b0d66c451ecbf3c24162201a9d45f1a3053fc4626f22a"
   },
@@ -1701,7 +1547,6 @@
    "label": "Tagged Stream Align",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_tagged_stream_align.block.yml",
    "yaml_sha256": "76d0e0695686df75b2da660d18e5e88de28961c71d27d67448de9b98ca7486fd"
   },
@@ -1712,7 +1557,6 @@
    "label": "Tagged Stream Multiply Length Tag",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_tagged_stream_multiply_length.block.yml",
    "yaml_sha256": "d7114aa2ca49794469e7feea58dfed12adc1772c4c8cc33332e0950a8cb3bd0f"
   },
@@ -1723,7 +1567,6 @@
    "label": "Tagged Stream Mux",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_tagged_stream_mux.block.yml",
    "yaml_sha256": "c105e369e6f70adfb46c328b50aa3bde455f59e73fb6ed049d9313173f635b4c"
   },
@@ -1734,7 +1577,6 @@
    "label": "Tags Strobe",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_tags_strobe.block.yml",
    "yaml_sha256": "fddb91a04bfe7e97b0bdf732abadeaa1e437b113f05f7ca4317dea011d62fdc4"
   },
@@ -1745,7 +1587,6 @@
    "label": "Test Tag Variable Rate",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_test_tag_variable_rate_ff.block.yml",
    "yaml_sha256": "d3a359068cb7f3eb4ef627d4b823ce34633b3f83f7aefe9f71f8be8d5085a436"
   },
@@ -1756,7 +1597,6 @@
    "label": "Threshold",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_threshold_ff.block.yml",
    "yaml_sha256": "69e414825e99420dba6a0f58e10d966cc427aba21c721d0850ef4460dc0e4bf3"
   },
@@ -1767,7 +1607,6 @@
    "label": "Throttle (old)",
    "module": "blocks",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "blocks_throttle.block.yml",
    "yaml_sha256": "4b650334f281dc27d4ca92f166d474e027d02881431a358b3f4c26729553dd37"
   },
@@ -1778,7 +1617,6 @@
    "label": "Throttle",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_throttle2.block.yml",
    "yaml_sha256": "a2b860ae0daec0de92c99345eb170f9500e4309d0d992848313cd46cf29b7528"
   },
@@ -1789,7 +1627,6 @@
    "label": "Transcendental",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_transcendental.block.yml",
    "yaml_sha256": "130aa2813c78ea56da40001495e3afeee7f637a6a0a122e6224a3f6368fd8232"
   },
@@ -1800,7 +1637,6 @@
    "label": "UChar To Float",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_uchar_to_float.block.yml",
    "yaml_sha256": "58629a12706682053ba063de323c11d6ec914ffdb6c834fcb5fdb3417b87cf2e"
   },
@@ -1811,7 +1647,6 @@
    "label": "Unpack K Bits",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_unpack_k_bits_bb.block.yml",
    "yaml_sha256": "dc9eff9215384d5df2226784841a4c9a5669bb7fa831bb2282220ab434025a60"
   },
@@ -1822,7 +1657,6 @@
    "label": "Unpacked to Packed",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_unpacked_to_packed_xx.block.yml",
    "yaml_sha256": "625dd8e83b925b9a444589d5c789a6f187ab9b82f8ec9bc8bb99487f1c5e28a7"
   },
@@ -1833,7 +1667,6 @@
    "label": "Variable to Message",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_var_to_msg.block.yml",
    "yaml_sha256": "f4df1f0f7456e005943dfe3045a1071d2ab0c74fcb9ad8a3936cfdf97896bdf6"
   },
@@ -1844,7 +1677,6 @@
    "label": "VCO (complex)",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_vco_c.block.yml",
    "yaml_sha256": "0381e368aa60c228d8993ba75a1d351e4674b1995b37436e6fc9698f79d0cb5d"
   },
@@ -1855,7 +1687,6 @@
    "label": "VCO",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_vco_f.block.yml",
    "yaml_sha256": "85393b6039703112151ac6a4c53981fcb30391b2bf19e2be4fd8dc11a95e3485"
   },
@@ -1866,7 +1697,6 @@
    "label": "Vector Insert",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_vector_insert_x.block.yml",
    "yaml_sha256": "05ee86be07e460b6d0d60ababe5e4cc82a7889b3694eca267410a291f971390e"
   },
@@ -1877,7 +1707,6 @@
    "label": "Vector Sink",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_vector_sink_x.block.yml",
    "yaml_sha256": "9847e5c229b4c8aeaeb720eb57585628fd53f270610b867d20428dc17bc6b162"
   },
@@ -1888,7 +1717,6 @@
    "label": "Vector Source",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_vector_source_x.block.yml",
    "yaml_sha256": "049e47d3ae39db75561017d7c48ce52b3a7b2147a4cc44d651bcdaa5b46e8b33"
   },
@@ -1899,7 +1727,6 @@
    "label": "Vector to Stream",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_vector_to_stream.block.yml",
    "yaml_sha256": "a804c899788c60b11a6b750d4758b822d0cdb7a87234257878a41a259b078ce3"
   },
@@ -1910,7 +1737,6 @@
    "label": "Vector to Streams",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_vector_to_streams.block.yml",
    "yaml_sha256": "8e14e04390587c18a6b17ae73af5ce444fb9bf20abea132ffe775c1532f91db8"
   },
@@ -1921,7 +1747,6 @@
    "label": "Wav File Sink",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_wavfile_sink.block.yml",
    "yaml_sha256": "c69f3b42bf041138f6957976687940d2f49e7d91db57d5323a11308044ccc7d6"
   },
@@ -1932,7 +1757,6 @@
    "label": "Wav File Source",
    "module": "blocks",
    "reason": null,
-   "split": "test",
    "yaml_file": "blocks_wavfile_source.block.yml",
    "yaml_sha256": "32d80f825924d08f53140f2d7840851e0e86866c0aa6195ea9115dc7da21b23f"
   },
@@ -1943,7 +1767,6 @@
    "label": "Xor",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "blocks_xor_xx.block.yml",
    "yaml_sha256": "61c7b592c2ce97f4673505f73d3f214beed5da4dfddf5a47528a93704c2b4f44"
   },
@@ -1954,7 +1777,6 @@
    "label": "Amplitude Balance",
    "module": "channels",
    "reason": null,
-   "split": "test",
    "yaml_file": "channels_amp_bal.block.yml",
    "yaml_sha256": "c2e1cb3e68105b4423952e05b75fd5e30d2d9675f9c133ccabec510cea49da42"
   },
@@ -1965,7 +1787,6 @@
    "label": "CFO Model",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_cfo_model.block.yml",
    "yaml_sha256": "13311c5391aca3b7a6957c464b5344d76f272bf5bb148b54427ddb7e878adf86"
   },
@@ -1976,7 +1797,6 @@
    "label": "Channel Model",
    "module": "channels",
    "reason": null,
-   "split": "test",
    "yaml_file": "channels_channel_model.block.yml",
    "yaml_sha256": "bca0ed7c7650ff3266685ff0816b86eeeab8afd063e63cb4bb93ff0c4e75fdcf"
   },
@@ -1987,7 +1807,6 @@
    "label": "Channel Model 2",
    "module": "channels",
    "reason": null,
-   "split": "test",
    "yaml_file": "channels_channel_model2.block.yml",
    "yaml_sha256": "05785f4bb6d2f29552d5fccbe85532089dccbb51254e8045f366790a861ce1d9"
   },
@@ -1998,7 +1817,6 @@
    "label": "Freq. Selective IQ Correction",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_conj_fs_iqcorr.block.yml",
    "yaml_sha256": "fbf2e5fa7fbdca6e89b7b366b201a85d464eca41bd97f97cafe4fc8e5fa5d66d"
   },
@@ -2009,7 +1827,6 @@
    "label": "Second Order Distortion",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_distortion_2_gen.block.yml",
    "yaml_sha256": "eb78a52000e382014f7e20c1746acf274d5d787646523317eacf65b63f9bf3f3"
   },
@@ -2020,7 +1837,6 @@
    "label": "Third Order Distortion",
    "module": "channels",
    "reason": null,
-   "split": "test",
    "yaml_file": "channels_distortion_3_gen.block.yml",
    "yaml_sha256": "ace3a689620f2ab1fe68328a8b9107521d9d11d5ddd9b6617482a7834e4440ad"
   },
@@ -2031,7 +1847,6 @@
    "label": "Dynamic Channel Model",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_dynamic_channel_model.block.yml",
    "yaml_sha256": "4f103fd30376a6b758ce9f9b3b9164195f459a73a7007cd972a6b3b337146c8c"
   },
@@ -2042,7 +1857,6 @@
    "label": "Fading Model",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_fading_model.block.yml",
    "yaml_sha256": "19ce3539250a19bbeee70a92fe9c7819d11a0b12104c571089cb013d52bf71ee"
   },
@@ -2053,7 +1867,6 @@
    "label": "HW Impairments",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_impairments.block.yml",
    "yaml_sha256": "10f91f75c14a81ac06d7c37afe073f9893129acb6c63d1c532776ed7e1a6fa69"
   },
@@ -2064,7 +1877,6 @@
    "label": "IQ Imbalance Generator",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_iqbal_gen.block.yml",
    "yaml_sha256": "aeba726f7aa73458341396d50041cb5bed39e84b127b9c76b947b30bfc474e2b"
   },
@@ -2075,7 +1887,6 @@
    "label": "Phase Balance",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_phase_bal.block.yml",
    "yaml_sha256": "1d5314a89e79622c63b971221b04473b537be7e8e49ce946ad001b37ae52d4f4"
   },
@@ -2086,7 +1897,6 @@
    "label": "Phase Noise Generator",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_phase_noise_gen.block.yml",
    "yaml_sha256": "bfbd6368ff449d5ab9f93de1503dc8cd3375887f8d1285a6b5f42898e9e558a4"
   },
@@ -2097,7 +1907,6 @@
    "label": "Quantizer",
    "module": "channels",
    "reason": null,
-   "split": "train",
    "yaml_file": "channels_quantizer.block.yml",
    "yaml_sha256": "1579697be091baec13966f5b6292a2dc988317a5c17309e7f7725c6c784a600c"
   },
@@ -2108,7 +1917,6 @@
    "label": "Frequency Selective Fading Model",
    "module": "channels",
    "reason": null,
-   "split": "test",
    "yaml_file": "channels_selective_fading_model.block.yml",
    "yaml_sha256": "e6a8a9875bcbf71a89b903054960b6deb5aa61546b1001782c50dcc4c0eb16e9"
   },
@@ -2119,7 +1927,6 @@
    "label": "Frequency Selective Fading Model2",
    "module": "channels",
    "reason": null,
-   "split": "test",
    "yaml_file": "channels_selective_fading_model2.block.yml",
    "yaml_sha256": "1b257452d678c6bb4d4d0971eb9cfe5f83ff9fb1a412e61d8e3e75fa3744d2b6"
   },
@@ -2130,7 +1937,6 @@
    "label": "SRO Model",
    "module": "channels",
    "reason": null,
-   "split": "test",
    "yaml_file": "channels_sro_model.block.yml",
    "yaml_sha256": "6f2cad6fc96a0441f47bddcbcce80d8135d6c0b08a5c34a8bb2dd9080f72a530"
   },
@@ -2141,7 +1947,6 @@
    "label": "DC Blocker",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_dc_blocker_xx.block.yml",
    "yaml_sha256": "8e921af134c0555f12da7f65c0a92defa3183aea051dcef381f0d998fb0eacae"
   },
@@ -2152,7 +1957,6 @@
    "label": "Additive Scrambler (Deprecated)",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_additive_scrambler_bb.block.yml",
    "yaml_sha256": "681c0343fec6d70c2e2ee6a73c8a226a29021b4d5b0b6b34d47e8510e907415d"
   },
@@ -2163,7 +1967,6 @@
    "label": "Additive Scrambler",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_additive_scrambler_xx.block.yml",
    "yaml_sha256": "5b1ea4b51d57d291393bfb733033ef20d964f397f57e539910c61bf0caf87e9b"
   },
@@ -2174,7 +1977,6 @@
    "label": "Binary Slicer",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_binary_slicer_fb.block.yml",
    "yaml_sha256": "c280d0fe6dd094a06d1400ed5240ab37c5ac02659ed2a5491a688560aed92ecb"
   },
@@ -2185,7 +1987,6 @@
    "label": "Burst Shaper",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_burst_shaper.block.yml",
    "yaml_sha256": "d1fccb8aa7e76bbfa6ed481dd1b2c27f075ea8db6459ea5d176ecc85ed8ee81d"
   },
@@ -2196,7 +1997,6 @@
    "label": "Chunks to Symbols",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_chunks_to_symbols.block.yml",
    "yaml_sha256": "e3055b2eb055b5444c4231a780b009f93cb3044cd499ecaf189936a9a9f29ccc"
   },
@@ -2207,7 +2007,6 @@
    "label": "Clock Recovery MM",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_clock_recovery_mm_xx.block.yml",
    "yaml_sha256": "64dc41ca1290fe08bc85c6f7ec9c19d21e539daf1cfc1408b82f3a5f2dce3879"
   },
@@ -2218,7 +2017,6 @@
    "label": "Constellation Decoder",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_constellation_decoder_cb.block.yml",
    "yaml_sha256": "c3414bf33a78a609ea1e1c1608b1168392c8ec4c5b7b58a082ac6a4ad278ac37"
   },
@@ -2229,7 +2027,6 @@
    "label": "Constellation Encoder",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_constellation_encoder_bc.block.yml",
    "yaml_sha256": "cbc33d00e3bbabbfc30c248ab040fbcb48026b6b6f2df307cf65de8022962917"
   },
@@ -2240,7 +2037,6 @@
    "label": "Constellation Modulator",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_constellation_modulator.block.yml",
    "yaml_sha256": "5e47d86c7832c46d97db063f8bc7eee5b4c3bc344177ade673683112f984d92b"
   },
@@ -2251,7 +2047,6 @@
    "label": "Constellation Receiver",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_constellation_receiver_cb.block.yml",
    "yaml_sha256": "679086d94b0b815b2d7083460fde2332e13423da6da8e5887ecda9df1dc10e51"
   },
@@ -2262,7 +2057,6 @@
    "label": "Constellation Soft Decoder",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_constellation_soft_decoder_cf.block.yml",
    "yaml_sha256": "875a4c10ff58b97e4a86648f4e96546becf77f8fb025237ceeade9153efaaa70"
   },
@@ -2273,7 +2067,6 @@
    "label": "Correlation Estimator",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_corr_est_cc.block.yml",
    "yaml_sha256": "cb0e91f3f2607e08d5bca6b6c6a677d29d86d7d033f7fb40ac18a24d6df33309"
   },
@@ -2284,7 +2077,6 @@
    "label": "Correlate Access Code - Tag",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_correlate_access_code_tag_xx.block.yml",
    "yaml_sha256": "309c89a0860767dff07904e7af7f9ad68b52152f5328834f3b7fe3e2c6f76a60"
   },
@@ -2295,7 +2087,6 @@
    "label": "Correlate Access Code - Tag Stream",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_correlate_access_code_xx_ts.block.yml",
    "yaml_sha256": "80073a2c712d99afdfd9d7156d099ae7024bd72603ea42263a92b9438ce86e4c"
   },
@@ -2306,7 +2097,6 @@
    "label": "Costas Loop",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_costas_loop_cc.block.yml",
    "yaml_sha256": "3b9c5966517b8f8375c728f49ed9fe5ede8c6d239f7aef3020e3b598208e3b1c"
   },
@@ -2317,7 +2107,6 @@
    "label": "Continuous Phase Modulation",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_cpmmod_bc.block.yml",
    "yaml_sha256": "6482a549a2910924cedbd82e00cefedc812cbb08496e4bc628df292fb4ee4b52"
   },
@@ -2328,7 +2117,6 @@
    "label": "Async CRC16",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_crc16_async_bb.block.yml",
    "yaml_sha256": "ee1203e5c9746b708c859254ff652c6cb03cee2563c6a4659057113edc17f68a"
   },
@@ -2339,7 +2127,6 @@
    "label": "Async CRC32",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_crc32_async_bb.block.yml",
    "yaml_sha256": "16e3f321b8148cee5c87882d8f52265a24d534d866cec7eb43ef2581e6e5260f"
   },
@@ -2350,7 +2137,6 @@
    "label": "Stream CRC32",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_crc32_bb.block.yml",
    "yaml_sha256": "8b6df4c77b681313ad24ee8a5b63dd0f7c063c31d7b7ba4b15ee7d6a7ce371bd"
   },
@@ -2361,7 +2147,6 @@
    "label": "CRC Append",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_crc_append.block.yml",
    "yaml_sha256": "3bafd1986374b2a902d2f2efb8793436a1b574447f659c9e45d7863a3f2b7aa4"
   },
@@ -2372,7 +2157,6 @@
    "label": "CRC Check",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_crc_check.block.yml",
    "yaml_sha256": "fc6818374964743a808a3d51de20f15b1cdc84ca7d51bd783146b5f593cda48e"
   },
@@ -2383,7 +2167,6 @@
    "label": "Decision Feedback Equalizer",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_decision_feedback_equalizer.block.yml",
    "yaml_sha256": "8b6ac2e705d974d5050a2bb29b79aa52707c93f9d423aa2a9b500e4a3ec96868"
   },
@@ -2394,7 +2177,6 @@
    "label": "Descrambler",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_descrambler_bb.block.yml",
    "yaml_sha256": "6430cfd8a819db39a5fdee494f5718d3eb0f2692fbbb183e9052038cef687e33"
   },
@@ -2405,7 +2187,6 @@
    "label": "Differential Decoder",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_diff_decoder_bb.block.yml",
    "yaml_sha256": "83adb6e6550d5877c59934245dbfea3e4c56ca01310e80b1446748ea9027b994"
   },
@@ -2416,7 +2197,6 @@
    "label": "Differential Encoder",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_diff_encoder_bb.block.yml",
    "yaml_sha256": "4330877a51f454d7f2629cb7632771fad817bf732044738a0d6d09d8b8e0dcc3"
   },
@@ -2427,7 +2207,6 @@
    "label": "Differential Phasor",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_diff_phasor_cc.block.yml",
    "yaml_sha256": "9afde88da03ed2d257b56fe6425521f61d2801ef28e2cb098084951cb04de7df"
   },
@@ -2438,7 +2217,6 @@
    "label": "FLL Band-Edge",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_fll_band_edge_cc.block.yml",
    "yaml_sha256": "3cc38b4fb5b2fe4fa3c34dc348bb3b091e9c27825ffcfb65172bc5a07c40e94a"
   },
@@ -2449,7 +2227,6 @@
    "label": "Framer Sink 1",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_framer_sink_1.block.yml",
    "yaml_sha256": "0ea88e2372902ba60d99c2cbf06e6da3cf05c12cb082d751fe0936fbacdf74ed"
   },
@@ -2460,7 +2237,6 @@
    "label": "GFSK Demod",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_gfsk_demod.block.yml",
    "yaml_sha256": "a9ec25827ccc6754a9420ff38d1f54b3862d8e5c04afa52d72ef951412d9477d"
   },
@@ -2471,7 +2247,6 @@
    "label": "GFSK Mod",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_gfsk_mod.block.yml",
    "yaml_sha256": "e06c909adf4644d6779f3eb5b3d714e2f3cf5dd9947b31c35aec99ad6cdbb639"
   },
@@ -2482,7 +2257,6 @@
    "label": "GLFSR Source",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_glfsr_source_x.block.yml",
    "yaml_sha256": "8b400dbba3df8c6248526b86bba31a7867b6f707473259c10781bfdc74476d24"
   },
@@ -2493,7 +2267,6 @@
    "label": "GMSK Demod",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_gmsk_demod.block.yml",
    "yaml_sha256": "182cb971c6c4c123d5fd66dfe70ecfab982411c516f9d7162cf2a394c043de8d"
   },
@@ -2504,7 +2277,6 @@
    "label": "GMSK Mod",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_gmsk_mod.block.yml",
    "yaml_sha256": "abe1e229f37cf4192cdfab55931642335a6ebed696ee6eee89bd9ea0305f4b08"
   },
@@ -2515,7 +2287,6 @@
    "label": "GMSK Modulator",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_gmskmod_bc.block.yml",
    "yaml_sha256": "6633f3d4b4fd60f459b73a1e4151955a38317852397f1ab9cc55e20a1eb6afd3"
   },
@@ -2526,7 +2297,6 @@
    "label": "HDLC Deframer",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_hdlc_deframer_bp.block.yml",
    "yaml_sha256": "dfb07fde72f728846727a5f7e8896ea570296b1a4c82495a8b6313acdbf53dff"
   },
@@ -2537,7 +2307,6 @@
    "label": "HDLC Framer",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_hdlc_framer_pb.block.yml",
    "yaml_sha256": "c5cd93f75db689e31a4fbf9ae6af9a08db0bb669bf7b60776212ce1654eb2a61"
   },
@@ -2548,7 +2317,6 @@
    "label": "Header/Payload Demux",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_header_payload_demux.block.yml",
    "yaml_sha256": "3fb82d3a8d0000332476c31735eed7fcb84259c48a22abad0ed3019ef32f871f"
   },
@@ -2559,7 +2327,6 @@
    "label": "Linear Equalizer",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_linear_equalizer.block.yml",
    "yaml_sha256": "96aa628689c0c72a49eb6feb3cd36e9c8c63868425f330d7b53a6c1d6407164a"
   },
@@ -2570,7 +2337,6 @@
    "label": "Map",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_map_bb.block.yml",
    "yaml_sha256": "b012d361a484db2ea2794d49e12e4cef62a8b72a91e9ab9f22a6d20b8a9ee64d"
   },
@@ -2581,7 +2347,6 @@
    "label": "EVM Measurement",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_meas_evm_cc.block.yml",
    "yaml_sha256": "c069b17d530ff33f75019c01d8c82e354c53d112e8bd646a14bebe633c8e42c9"
   },
@@ -2592,7 +2357,6 @@
    "label": "MPSK SNR Estimator",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_mpsk_snr_est_cc.block.yml",
    "yaml_sha256": "d04e82325c412a0d1f7ad6b0c9a519e26d3777d3ff3fddd0eda1e5bb2cef68da"
   },
@@ -2603,7 +2367,6 @@
    "label": "MSK Timing Recovery",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_msk_timing_recovery_cc.block.yml",
    "yaml_sha256": "b504577527e5482a939a96e757c2d192848e73ef2c4521ccbd2236239af8324e"
   },
@@ -2614,7 +2377,6 @@
    "label": "OFDM Carrier Allocator",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_ofdm_carrier_allocator_cvc.block.yml",
    "yaml_sha256": "6899931b692b5244b1caed4474a1efb9746c85c314b58f223d21b2e8c33b52e5"
   },
@@ -2625,7 +2387,6 @@
    "label": "OFDM Channel Estimation",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_ofdm_chanest_vcvc.block.yml",
    "yaml_sha256": "3348fcf3070b0f2fb18e257afcf84263289fe058c5f953bf3f43ecb7dbcb42fc"
   },
@@ -2636,7 +2397,6 @@
    "label": "OFDM Cyclic Prefixer",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_ofdm_cyclic_prefixer.block.yml",
    "yaml_sha256": "fe0f13d801793219fa30aab0ec7e2904431b051cce16542b303a068be2981a51"
   },
@@ -2647,7 +2407,6 @@
    "label": "OFDM Frame Equalizer",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_ofdm_frame_equalizer_vcvc.block.yml",
    "yaml_sha256": "99ca9f7ffadeeca2921e0d46bfe10506f905c7e0777d67c5839ee720d128ef30"
   },
@@ -2658,7 +2417,6 @@
    "label": "OFDM Receiver",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_ofdm_rx.block.yml",
    "yaml_sha256": "a09e7276036029708d7196898c3d34efd66c74602820d657ce2448a1527c4743"
   },
@@ -2669,7 +2427,6 @@
    "label": "OFDM Serializer",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_ofdm_serializer_vcc.block.yml",
    "yaml_sha256": "b677c814b58c8f140cdcc89dbff17d46139018a2078e628e1f496c4101e677fe"
   },
@@ -2680,7 +2437,6 @@
    "label": "Schmidl & Cox OFDM synch.",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_ofdm_sync_sc_cfb.block.yml",
    "yaml_sha256": "f0788221663520782ecd7e1e3076bea50ed2b4d4c573bbf3f8d5de935e433835"
   },
@@ -2691,7 +2447,6 @@
    "label": "OFDM Transmitter",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_ofdm_tx.block.yml",
    "yaml_sha256": "a7d5b22edac2c2e630679d999d3e17e4505339ef55a1a41925ea44f6cf3b89f2"
   },
@@ -2702,7 +2457,6 @@
    "label": "Packet Header Generator",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_packet_headergenerator_bb.block.yml",
    "yaml_sha256": "e729508376521cf77581bb2510c4986da125c0f5688628b68bb9642c54877d35"
   },
@@ -2713,7 +2467,6 @@
    "label": "Packet Header Generator (Default)",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_packet_headergenerator_bb_default.block.yml",
    "yaml_sha256": "39fab5b80be6854f9ecb22e03c8856e7b9aec2eb83a4b15165cd7861525816f8"
   },
@@ -2724,7 +2477,6 @@
    "label": "Packet Header Parser",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_packet_headerparser_b.block.yml",
    "yaml_sha256": "910822d5a3f61e65a7286a00ce2105bcb74ec87ffb7923072618e30ffdeb8b6e"
   },
@@ -2735,7 +2487,6 @@
    "label": "Packet Header Parser (Default)",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_packet_headerparser_b_default.block.yml",
    "yaml_sha256": "a1c4bf4230dfa494c6d05548b0db3f702dff376716c850266bdaae138cc2b3d6"
   },
@@ -2746,7 +2497,6 @@
    "label": "Packet Sink",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_packet_sink.block.yml",
    "yaml_sha256": "eae719b6949a446c2e453f1eb2e9a90bcd220ac17bab986837663f9716944660"
   },
@@ -2757,7 +2507,6 @@
    "label": "Polyphase Clock Sync",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_pfb_clock_sync.block.yml",
    "yaml_sha256": "07903be615fb66aabfb7b6b0886b652fcd98e569ea6f8743f4206467d8f1770f"
   },
@@ -2768,7 +2517,6 @@
    "label": "PN Correlator",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_pn_correlator_cc.block.yml",
    "yaml_sha256": "75b243f0176594921970ea7b692e6ca66f86b476670d4408fd8078e14a91293f"
   },
@@ -2779,7 +2527,6 @@
    "label": "Probe Density",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_probe_density_b.block.yml",
    "yaml_sha256": "71d79c126afcc1ecf21743e8e5921296aad7f022bf126e37462465cfd94c4301"
   },
@@ -2790,7 +2537,6 @@
    "label": "MPSK SNR Estimator Probe",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_probe_mpsk_snr_est_c.block.yml",
    "yaml_sha256": "90d0ac78783a8b158eeaf478ab3e30b77dfd73a47e672aec030e652f1651cf1b"
   },
@@ -2801,7 +2547,6 @@
    "label": "Protocol Formatter (Async)",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_protocol_formatter_async.block.yml",
    "yaml_sha256": "aea457a9ff68e53bdc37b6a51e27dfa33b37737b8938a9533e4ed804872b30ca"
   },
@@ -2812,7 +2557,6 @@
    "label": "Protocol Formatter",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_protocol_formatter_bb.block.yml",
    "yaml_sha256": "c0cfb32bf9cf39008e38642462a0659568027565b42e5b8195dfe511de1f1a6d"
   },
@@ -2823,7 +2567,6 @@
    "label": "Protocol Parser",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_protocol_parser_b.block.yml",
    "yaml_sha256": "714322f7c228333ec75404846e628c1efc8e177b8934d3c19964d4450427e180"
   },
@@ -2834,7 +2577,6 @@
    "label": "PSK Demod",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_psk_demod.block.yml",
    "yaml_sha256": "b2139dfa020d2be68c1da319c805b1573f914b090ff5a782e3672a40ff42ae14"
   },
@@ -2845,7 +2587,6 @@
    "label": "PSK Mod",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_psk_mod.block.yml",
    "yaml_sha256": "7bebaf964ee4b898384d73f92f01acc1f186bcf44f56c30de2fd5fae563b1fc5"
   },
@@ -2856,7 +2597,6 @@
    "label": "QAM Demod",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_qam_demod.block.yml",
    "yaml_sha256": "490c8bdcb48dbfd7f8fb930e2e26f18720940eb45f2967ae780fe25d23f6d371"
   },
@@ -2867,7 +2607,6 @@
    "label": "QAM Mod",
    "module": "digital",
    "reason": "deprecated",
-   "split": null,
    "yaml_file": "digital_qam_mod.block.yml",
    "yaml_sha256": "7dfce16cd40527b58cb3d9d5f55d15cdccee3a0d502e6923ef9939b5511272e3"
   },
@@ -2878,7 +2617,6 @@
    "label": "Scrambler",
    "module": "digital",
    "reason": null,
-   "split": "test",
    "yaml_file": "digital_scrambler_bb.block.yml",
    "yaml_sha256": "c49b3fe17cbf0d6e9063337d83bb9d49d8872cf2744383d1f6c35005837b00ac"
   },
@@ -2889,7 +2627,6 @@
    "label": "Symbol Sync",
    "module": "digital",
    "reason": null,
-   "split": "train",
    "yaml_file": "digital_symbol_sync_xx.block.yml",
    "yaml_sha256": "c359ad373c53e579d76d44cdb1dc642d4d7ca41e19668c32cb71f78d6521ef06"
   },
@@ -2900,7 +2637,6 @@
    "label": "ATSC Deinterleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_deinterleaver.block.yml",
    "yaml_sha256": "327d04d52a15281a45040ee0b2225bf0073ed20f7f3db38e58b667219fc9eeaf"
   },
@@ -2911,7 +2647,6 @@
    "label": "ATSC Depad",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_depad.block.yml",
    "yaml_sha256": "4922439efb41a6e30ea6e36a716eb202aac1f10252d7424417c660c96354a109"
   },
@@ -2922,7 +2657,6 @@
    "label": "ATSC Derandomizer",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_derandomizer.block.yml",
    "yaml_sha256": "df2f1670b0e9359cb10e925f60c8751a82d3d610e6ca0b42fb727e9045fc98d3"
   },
@@ -2933,7 +2667,6 @@
    "label": "ATSC Equalizer",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_equalizer.block.yml",
    "yaml_sha256": "e5a7fffc3110504d5cbf765f93e612b659e471290f10531ec4eefba911fd024f"
   },
@@ -2944,7 +2677,6 @@
    "label": "ATSC Field Sync Mux",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_atsc_field_sync_mux.block.yml",
    "yaml_sha256": "11907aa27408b041c146aafe7d5db8a9d311240e13750c06d4ce1e87511cb4d4"
   },
@@ -2955,7 +2687,6 @@
    "label": "ATSC Receiver FPLL",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_fpll.block.yml",
    "yaml_sha256": "c80ec272543b5775db5a912390906998dc673f25878dddd7e521aa4b80a2c771"
   },
@@ -2966,7 +2697,6 @@
    "label": "ATSC Field Sync Checker",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_fs_checker.block.yml",
    "yaml_sha256": "d3cf554c04116f1deae25edb3226196b7aa34f9ad4a7a784448804dc22001b9c"
   },
@@ -2977,7 +2707,6 @@
    "label": "ATSC Interleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_interleaver.block.yml",
    "yaml_sha256": "cfb0fe309c525290680b93295f5dc09fc9cd6cd6d93cdf75661ef0ac59facce7"
   },
@@ -2988,7 +2717,6 @@
    "label": "ATSC Pad",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_pad.block.yml",
    "yaml_sha256": "61e4b5540065dc06331822c7635e7f6e049c2cdb4f62d85c2e1c7e4ab8e53779"
   },
@@ -2999,7 +2727,6 @@
    "label": "ATSC Randomizer",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_randomizer.block.yml",
    "yaml_sha256": "f273ef505f6375184b88f9b262511c9e680c1edb2342537e35ba318489e7f25c"
   },
@@ -3010,7 +2737,6 @@
    "label": "ATSC Reed–Solomon Decoder",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_rs_decoder.block.yml",
    "yaml_sha256": "5610d765ccf09c0b3a2997266ebdcd652ecca3f07a7c92fc130556d151dc92d7"
   },
@@ -3021,7 +2747,6 @@
    "label": "ATSC RS Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_rs_encoder.block.yml",
    "yaml_sha256": "7f70b840047b7e0088832e1530f7a99d2f66e3d2c9dcab314c6635fe320f67ea"
   },
@@ -3032,7 +2757,6 @@
    "label": "ATSC Receive Pipeline",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_atsc_rx.block.yml",
    "yaml_sha256": "5064b4d00168e9b603dda32c4d0aee309422b998c9647418bb4f0a9b8e54d0c7"
   },
@@ -3043,7 +2767,6 @@
    "label": "ATSC RX Filter",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_atsc_rx_filter.block.yml",
    "yaml_sha256": "0541d094fee0a2f0f2cc7a04446fc26cdef359996e5da02304b18031e465d81a"
   },
@@ -3054,7 +2777,6 @@
    "label": "ATSC Receiver SYNC",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_atsc_sync.block.yml",
    "yaml_sha256": "6034dac9004d4be3d0a933d236d830fc7a0b9bdcc674e5989515c316d90442a1"
   },
@@ -3065,7 +2787,6 @@
    "label": "ATSC Trellis Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_trellis_encoder.block.yml",
    "yaml_sha256": "ffbe5af3024cd28561bf8251a58f231a50f1c691c6ae1422fe32b92d7b21df5c"
   },
@@ -3076,7 +2797,6 @@
    "label": "ATSC Viterbi Decoder",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_atsc_viterbi_decoder.block.yml",
    "yaml_sha256": "3e2e230045049dce64150c26adc1cd317be75fc026d38957b088c57d51dc5333"
   },
@@ -3087,7 +2807,6 @@
    "label": "Frame Sync Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_catv_frame_sync_enc_bb.block.yml",
    "yaml_sha256": "f6f65af7e16e593a6b2818f4e86ccd0e60cdc00b20a1e7c6baed611a2a08877b"
   },
@@ -3098,7 +2817,6 @@
    "label": "Randomizer",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_catv_randomizer_bb.block.yml",
    "yaml_sha256": "a3626b6efa5087c701dd87b22d552d54cd969fa300355f7228d4e23dd1b40e86"
   },
@@ -3109,7 +2827,6 @@
    "label": "Reed-Solomon Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_catv_reed_solomon_enc_bb.block.yml",
    "yaml_sha256": "a79887ab74b5c8995f0b535374a06b26c516f57a3427a76837aaf5ab4ccffd29"
   },
@@ -3120,7 +2837,6 @@
    "label": "Transport Framing Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_catv_transport_framing_enc_bb.block.yml",
    "yaml_sha256": "587c33ff9358dbfb7789f03d0d1d8eddc7586056aa75ac4f3b881b0dddf1284c"
   },
@@ -3131,7 +2847,6 @@
    "label": "Trellis Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_catv_trellis_enc_bb.block.yml",
    "yaml_sha256": "72d91948064263b14d0f6b12f370020dd6cb1946aecca1ca7f68f944532c7fa4"
   },
@@ -3142,7 +2857,6 @@
    "label": "BBheader",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvb_bbheader_bb.block.yml",
    "yaml_sha256": "74b83fd425e0dae1b30e7a3e72386fe170262c450fbfeb8460de2daf7b95b73e"
   },
@@ -3153,7 +2867,6 @@
    "label": "BBscrambler",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvb_bbscrambler_bb.block.yml",
    "yaml_sha256": "eb7fc73a4d52365e237e90345758b165138c325ea0806f2e790011bf3395598f"
   },
@@ -3164,7 +2877,6 @@
    "label": "BCH Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvb_bch_bb.block.yml",
    "yaml_sha256": "d71950ee83aa9970a0588282048a860094a935627f3dd55d6c174d99ed74458b"
   },
@@ -3175,7 +2887,6 @@
    "label": "LDPC Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvb_ldpc_bb.block.yml",
    "yaml_sha256": "431f10736dbadbe0b4ac50c530f06bbca16f2a23823144a2e4928363ef811245"
   },
@@ -3186,7 +2897,6 @@
    "label": "Interleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbs2_interleaver_bb.block.yml",
    "yaml_sha256": "6a9e2058cd033af2a2f5c3813ce7b4b8dfd00a95fb6e00a01070f0d3af8bfefa"
   },
@@ -3197,7 +2907,6 @@
    "label": "DVB-S2X Modulator",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbs2_modulator_bc.block.yml",
    "yaml_sha256": "c78b89f673fa63852105c0c58ee188eb2776b4041692b1d23540a2d8f5edf239"
   },
@@ -3208,7 +2917,6 @@
    "label": "Physical Layer Framer",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvbs2_physical_cc.block.yml",
    "yaml_sha256": "f97e642b455b9788f692b3d4fa6f9e5e0500a7970d61e097d1e326a72102433a"
   },
@@ -3219,7 +2927,6 @@
    "label": "Cell/Time Interleaver",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvbt2_cellinterleaver_cc.block.yml",
    "yaml_sha256": "ab734a62d0dbb177c9ebadcfca6e586e23a96ad8cb43858c23386ceda5c24317"
   },
@@ -3230,7 +2937,6 @@
    "label": "Frame Mapper",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvbt2_framemapper_cc.block.yml",
    "yaml_sha256": "68cb19ecbf98f491b1e5afab3209a300f9baba398a1b76d9873c565a05776f16"
   },
@@ -3241,7 +2947,6 @@
    "label": "Frequency Interleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt2_freqinterleaver_cc.block.yml",
    "yaml_sha256": "6cc263b4f4dc8a33ca5d34c401f7b90ff3f10207ef9745ef60a7e7a0d8c96e27"
   },
@@ -3252,7 +2957,6 @@
    "label": "Bit Interleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt2_interleaver_bb.block.yml",
    "yaml_sha256": "50ebb0e14b331d9dd43918bfec0cc99fbb7dc6262bb8f233a842a041c0b06e6b"
   },
@@ -3263,7 +2967,6 @@
    "label": "MISO Processing",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt2_miso_cc.block.yml",
    "yaml_sha256": "6df9a9e4ca38e1c77fe753e02d47029c5f634c9f92584d6f690130b45567b180"
   },
@@ -3274,7 +2977,6 @@
    "label": "DVB-T2 Modulator",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt2_modulator_bc.block.yml",
    "yaml_sha256": "5524e2c5fa2b56c9dcf9595987d7fae962598b5f54a66971f02cc48466831d81"
   },
@@ -3285,7 +2987,6 @@
    "label": "P1 Symbol Insertion",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvbt2_p1insertion_cc.block.yml",
    "yaml_sha256": "f384c47a668d7ff5cc7c2cfd6a6dbfbbe87f102af247112241a1a7c774e84f9e"
   },
@@ -3296,7 +2997,6 @@
    "label": "Tone Reservation PAPR",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt2_paprtr_cc.block.yml",
    "yaml_sha256": "b28213e26795cd6dd48999f3b121cd52565be774d6d27b2bc8169bd5def31f85"
   },
@@ -3307,7 +3007,6 @@
    "label": "Pilot Generator and IFFT",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt2_pilotgenerator_cc.block.yml",
    "yaml_sha256": "b7ad2e42b40defc9179e635e4b8f11dfad73862297b8e74c0dc0e6361c15ab6a"
   },
@@ -3318,7 +3017,6 @@
    "label": "Bit Inner Deinterleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_bit_inner_deinterleaver.block.yml",
    "yaml_sha256": "3e6901e5dd74e30beb186ddc314429fe4bbf896ba924bb079be7408a9cf687c7"
   },
@@ -3329,7 +3027,6 @@
    "label": "Bit Inner Interleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_bit_inner_interleaver.block.yml",
    "yaml_sha256": "a93e314191c6289e1b10e908f019adad9093474a44ca4d3845f66da92668752a"
   },
@@ -3340,7 +3037,6 @@
    "label": "Convolutional Deinterleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_convolutional_deinterleaver.block.yml",
    "yaml_sha256": "1da33d5509cb6a23984aa432d1c84cb2c3a6caae962f2363ace681e712d444a8"
   },
@@ -3351,7 +3047,6 @@
    "label": "Convolutional Interleaver",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvbt_convolutional_interleaver.block.yml",
    "yaml_sha256": "d7c925bd51d0508ec167f1705af16ec62b5815296e267ab42013587acfa1001b"
   },
@@ -3362,7 +3057,6 @@
    "label": "DVB-T Demap",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_demap.block.yml",
    "yaml_sha256": "c9d6f2c43d26a7bc01bdd22c67118f60aa8d5085a415c19eb452dbce745c89a0"
   },
@@ -3373,7 +3067,6 @@
    "label": "Demod Reference Signals",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_demod_reference_signals.block.yml",
    "yaml_sha256": "7de9c36a0183fb2b19b90d4f2036483e75ae023a264b76d332bbf5c2441863ec"
   },
@@ -3384,7 +3077,6 @@
    "label": "Energy Descramble",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_energy_descramble.block.yml",
    "yaml_sha256": "ee1e3de1cea20b0a5d59812c28d7f433f3f05ff1119159247f9f2e70aab43402"
   },
@@ -3395,7 +3087,6 @@
    "label": "Energy Dispersal",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_energy_dispersal.block.yml",
    "yaml_sha256": "6259c5bf5700df4d4553735b472ef97fc72567f4ac9ccdf056fa028bac9e11b9"
   },
@@ -3406,7 +3097,6 @@
    "label": "Inner Coder",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_inner_coder.block.yml",
    "yaml_sha256": "929749a7659b71eb91ddc4c970ec296bfbb089df134b8037b36bfc5eda7ecf57"
   },
@@ -3417,7 +3107,6 @@
    "label": "DVB-T Map",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvbt_map.block.yml",
    "yaml_sha256": "0d3006f35ec971344b97a9d27a07610596f020cacc7143dce2d12a9e54182393"
   },
@@ -3428,7 +3117,6 @@
    "label": "OFDM Symbol Acquisition",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_ofdm_sym_acquisition.block.yml",
    "yaml_sha256": "0120285d3ab1f7f27cf543423f50eb969024e3b28192e8c214d0082eb4879d4d"
   },
@@ -3439,7 +3127,6 @@
    "label": "Reed-Solomon Decoder",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_reed_solomon_dec.block.yml",
    "yaml_sha256": "97d63afe0a23d406acc307106438170a7b569b67accdb4053a641d202835e6c2"
   },
@@ -3450,7 +3137,6 @@
    "label": "Reed-Solomon Encoder",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvbt_reed_solomon_enc.block.yml",
    "yaml_sha256": "03095badc2935729f1b7db1c6d908360a5f1ed8c2404a318e6d70ee3bbc67146"
   },
@@ -3461,7 +3147,6 @@
    "label": "Reference Signals",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_reference_signals.block.yml",
    "yaml_sha256": "c54633bcfc528b81f211bb47b316d0b87f9e4a5e89e5ae755f09c035f76d4761"
   },
@@ -3472,7 +3157,6 @@
    "label": "Symbol Inner Interleaver",
    "module": "dtv",
    "reason": null,
-   "split": "train",
    "yaml_file": "dtv_dvbt_symbol_inner_interleaver.block.yml",
    "yaml_sha256": "48ef9be23b2a15e6840b539c17e7f4cb0fc5baea7f06867f0ebfff9648bc9479"
   },
@@ -3483,7 +3167,6 @@
    "label": "Viterbi Decoder",
    "module": "dtv",
    "reason": null,
-   "split": "test",
    "yaml_file": "dtv_dvbt_viterbi_decoder.block.yml",
    "yaml_sha256": "8792090b8a9c2c44f6a370dcb5766e98afc8a67fd80d35097a8eceba286863c2"
   },
@@ -3494,7 +3177,6 @@
    "label": "Python Block",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": null,
    "yaml_sha256": null
   },
@@ -3505,7 +3187,6 @@
    "label": "Python Module",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": null,
    "yaml_sha256": null
   },
@@ -3516,7 +3197,6 @@
    "label": "FEC Async Decoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_async_decoder.block.yml",
    "yaml_sha256": "d14b254a31b2af05b91fccee9c4442a17949da11b0b5f29ea391d4f0d48a67c5"
   },
@@ -3527,7 +3207,6 @@
    "label": "FEC Async Encoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_async_encoder.block.yml",
    "yaml_sha256": "f85e119e72093232cfc48da5895b940be5d71f2f5b48e73c39adb20a728d2651"
   },
@@ -3538,7 +3217,6 @@
    "label": "BER",
    "module": "fec",
    "reason": null,
-   "split": "test",
    "yaml_file": "fec_ber_bf.block.yml",
    "yaml_sha256": "8f021dcf2b78c2fa134d56c130755458e599a4704e01dcabd6e8b351dacc9e7b"
   },
@@ -3549,7 +3227,6 @@
    "label": "BER Curve Gen.",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_bercurve_generator.block.yml",
    "yaml_sha256": "607263840d1acb8792d6e084eedc3d66049286cbf999c465398d5c89bf8653e7"
   },
@@ -3560,7 +3237,6 @@
    "label": "Decode CCSDS 27",
    "module": "fec",
    "reason": null,
-   "split": "test",
    "yaml_file": "fec_decode_ccsds_27_fb.block.yml",
    "yaml_sha256": "7ddc68235866fd6302e1477fbdc47827689d39b56bf91cc7369fc19c3b3736c5"
   },
@@ -3571,7 +3247,6 @@
    "label": "Depuncture",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_depuncture_bb.block.yml",
    "yaml_sha256": "523a3e045781d502bf3c863fb065e621e3d16e3d9e262455b956ae2d3a3738e1"
   },
@@ -3582,7 +3257,6 @@
    "label": "Encode CCSDS 27",
    "module": "fec",
    "reason": null,
-   "split": "test",
    "yaml_file": "fec_decode_ccsds_27_bb.block.yml",
    "yaml_sha256": "7b2995aab1f317ca4268259f8d92aa197b9ba0a3ad26ad7ccaf62903593beed7"
   },
@@ -3593,7 +3267,6 @@
    "label": "FEC Extended Async Encoder",
    "module": "fec",
    "reason": null,
-   "split": "test",
    "yaml_file": "fec_extended_async_encoder.block.yml",
    "yaml_sha256": "d36e76a06c459e5a3f0083aa2f26cda5015f058f24614824bf3b89ff007ee2d8"
   },
@@ -3604,7 +3277,6 @@
    "label": "FEC Extended Decoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_extended_decoder.block.yml",
    "yaml_sha256": "4f60413bb6ba92c6a33986f455d03524f2d943a45bd0d8e3babc65ec758d2907"
   },
@@ -3615,7 +3287,6 @@
    "label": "FEC Extended Encoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_extended_encoder.block.yml",
    "yaml_sha256": "95775994a05671378cca7f6de2cb1d2d93e6cd29e3c01958acc5c8b5a74ca72a"
   },
@@ -3626,7 +3297,6 @@
    "label": "FEC Extended Tagged Decoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_extended_tagged_decoder.block.yml",
    "yaml_sha256": "48b7b1ebe2aed8f5f6fb2a9959cef10dc74922c8661286a648e9967657508f6e"
   },
@@ -3637,7 +3307,6 @@
    "label": "FEC Extended Tagged Encoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_extended_tagged_encoder.block.yml",
    "yaml_sha256": "87a849c0befe8c529d15d57b228a2024a24ec3d782558169e951eefb56a6dd42"
   },
@@ -3648,7 +3317,6 @@
    "label": "FEC Decoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_decoder.block.yml",
    "yaml_sha256": "3468c028eb17352b04ab6598c9651a1d20743d408d14242914fe5698848d0a42"
   },
@@ -3659,7 +3327,6 @@
    "label": "FEC Encoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_encoder.block.yml",
    "yaml_sha256": "a4559c86efa19ce5e2b2e47b2ecf848803242887b2d090a6484e3cf49487a90b"
   },
@@ -3670,7 +3337,6 @@
    "label": "Puncture",
    "module": "fec",
    "reason": null,
-   "split": "test",
    "yaml_file": "fec_puncture_xx.block.yml",
    "yaml_sha256": "117414f3955a3c847beeec53265bf52d6e9aa9bce45a96a37c284eab1218e2ef"
   },
@@ -3681,7 +3347,6 @@
    "label": "FEC Tagged Decoder",
    "module": "fec",
    "reason": null,
-   "split": "train",
    "yaml_file": "fec_tagged_decoder.block.yml",
    "yaml_sha256": "3a2bdd69148fb37de45e4059006dddef2f6f2c31f3bd87988cdbe05da99811ef"
   },
@@ -3692,7 +3357,6 @@
    "label": "FEC Tagged Encoder",
    "module": "fec",
    "reason": null,
-   "split": "test",
    "yaml_file": "fec_tagged_encoder.block.yml",
    "yaml_sha256": "f52663da0fe871a4cd0439d834a38be06cd9cc5edc43d2a8a0230dcee5e69de1"
   },
@@ -3703,7 +3367,6 @@
    "label": "Ctrlport Probe PSD",
    "module": "fft",
    "reason": null,
-   "split": "train",
    "yaml_file": "fft_ctrlport_probe_psd.block.yml",
    "yaml_sha256": "0421e5811df15e3cc7d4234bd9cd3f59660836c168cc51c2397b925f49d09143"
   },
@@ -3714,7 +3377,6 @@
    "label": "FFT Filter",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_fft_filter_xxx.block.yml",
    "yaml_sha256": "a8dcbfed03058702f238915f70f442bd44b514002d9fcfc0171946c05697fa44"
   },
@@ -3725,7 +3387,6 @@
    "label": "FFT",
    "module": "fft",
    "reason": null,
-   "split": "train",
    "yaml_file": "fft_fft_vxx.block.yml",
    "yaml_sha256": "e036499d29dbfbfb721fc7e31bb8fea2c5c730ff3e638b63e3ea0e657ae9c878"
   },
@@ -3736,7 +3397,6 @@
    "label": "Filter Delay",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_filter_delay_fc.block.yml",
    "yaml_sha256": "63a1e7a283b3ff09f2393f016048114b48ba31c414f29bdda604f8531771bde1"
   },
@@ -3747,7 +3407,6 @@
    "label": "FFT Low Pass Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_fft_low_pass_filter.block.yml",
    "yaml_sha256": "b7f9431d6bc5ccc904a597cfe180d3bb96b921a5395d1bfa1bcfebb6b5c6eeec"
   },
@@ -3758,7 +3417,6 @@
    "label": "FFT Root Raised Cosine Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_fft_root_raised_cosine_filter.block.yml",
    "yaml_sha256": "db4628a71e7f8ba7cb048e7826e8ba8abd8246b704b94c577bdc89c4fd0df3c7"
   },
@@ -3769,7 +3427,6 @@
    "label": "Generic Filterbank",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_filterbank_vcvcf.block.yml",
    "yaml_sha256": "bc2defda7ec83e5f93e79c14786871fd6f57c918e8be96f6a3b5d02ca38f73d1"
   },
@@ -3780,7 +3437,6 @@
    "label": "Decimating FIR Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_fir_filter_xxx.block.yml",
    "yaml_sha256": "b36c01120d9ccd340e59fec557aa49f67c7a776c6c93628cffc60563cf518aed"
   },
@@ -3791,7 +3447,6 @@
    "label": "Frequency Xlating FFT Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_freq_xlating_fft_filter_ccc.block.yml",
    "yaml_sha256": "67cfc68ef2d36fe171ab01c55005836a94f6705df66ffe48f536eb56a767d8de"
   },
@@ -3802,7 +3457,6 @@
    "label": "Frequency Xlating FIR Filter",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_freq_xlating_fir_filter_xxx.block.yml",
    "yaml_sha256": "d9c9b8872bc7c4bb36f108370026be0a1c4fda16efb003d5707446a027318a5e"
   },
@@ -3813,7 +3467,6 @@
    "label": "Goertzel",
    "module": "fft",
    "reason": null,
-   "split": "test",
    "yaml_file": "fft_goertzel_fc.block.yml",
    "yaml_sha256": "9fca1df257836623d6c0a5bde9b24e6a1a6f92b07eda658b841012087af16862"
   },
@@ -3824,7 +3477,6 @@
    "label": "High Pass Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_high_pass_filter.block.yml",
    "yaml_sha256": "cde0c5fa2807559c29281312fe5fd8c073b53629a4dd607fe74a4d5f7c375511"
   },
@@ -3835,7 +3487,6 @@
    "label": "Hilbert",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_hilbert_fc.block.yml",
    "yaml_sha256": "f0f7fdc9a14bac829d6b7efab36107412072748ea445f2c61047352a746eb4e1"
   },
@@ -3846,7 +3497,6 @@
    "label": "IIO Attribute Sink",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_attr_sink.block.yml",
    "yaml_sha256": "05603e10121d409e64a63f44c5b0bf0657ae351cc7c8c1b1b040cd8d035d380c"
   },
@@ -3857,7 +3507,6 @@
    "label": "IIO Attribute Source",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_attr_source.block.yml",
    "yaml_sha256": "5037c0025aaa047e810a5ab6891d9c8dc9e92708c61040703d57f9c13409b57c"
   },
@@ -3868,7 +3517,6 @@
    "label": "IIO Attribute Updater",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_attr_updater.block.yml",
    "yaml_sha256": "db0e3123d909447d81c34532623013255b7e53c2be87d01e727de5d6ab976a17"
   },
@@ -3879,7 +3527,6 @@
    "label": "DDS Control",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_dds_control.block.yml",
    "yaml_sha256": "9d385d4ca189a554f7f74a339a2930fab670f7967c4689b5bd6873808b63b2a8"
   },
@@ -3890,7 +3537,6 @@
    "label": "IIO Device Sink",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_device_sink.block.yml",
    "yaml_sha256": "26a8cbace158f6df6c3c73ed5817ab19f6c88f750c1e13b15528908440043fb5"
   },
@@ -3901,7 +3547,6 @@
    "label": "IIO Device Source",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_device_source.block.yml",
    "yaml_sha256": "05f633e793bb33a7729c6d099e182ab5b30080f89adaca06ad59de09e81c7778"
   },
@@ -3912,7 +3557,6 @@
    "label": "FMComms2/3/4 Sink",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_fmcomms2_sink.block.yml",
    "yaml_sha256": "07540ac8485bb60299d36d3a4c478dcbd8fb64e2aa9866a4baa0ddab37244119"
   },
@@ -3923,7 +3567,6 @@
    "label": "FMComms2/3/4 Source",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_fmcomms2_source.block.yml",
    "yaml_sha256": "c28e706def196364942613ab5525f16213719770c415d848b25c7b1d409115a1"
   },
@@ -3934,7 +3577,6 @@
    "label": "PlutoSDR Sink",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_pluto_sink.block.yml",
    "yaml_sha256": "014351e8aa61a72afdd315c278ebb4270a830d58d4be1abe423971373809f4b5"
   },
@@ -3945,7 +3587,6 @@
    "label": "PlutoSDR Source",
    "module": "iio",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "iio_pluto_source.block.yml",
    "yaml_sha256": "ac355b643a26af9621a47b42886ceb441ffbbf037131e4a5c696c5b70740c879"
   },
@@ -3956,7 +3597,6 @@
    "label": "IIR Filter",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_iir_filter_xxx.block.yml",
    "yaml_sha256": "551e1a17c78adca3ef79ba82a155071c9d9a0a3e80327d1f249a6219939f87d1"
   },
@@ -3967,7 +3607,6 @@
    "label": "Import",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "import.block.yml",
    "yaml_sha256": "6e9d44e931299732af3e5a1f77de13a1b316f58c98886f28333556c1979fc99d"
   },
@@ -3978,7 +3617,6 @@
    "label": "Interpolating FIR Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_interp_fir_filter_xxx.block.yml",
    "yaml_sha256": "ce1cd114ccb02cd3d045eb7b2131aa00c32815d4d1a5d7289b5768c56d07e1a0"
   },
@@ -3989,7 +3627,6 @@
    "label": "Interleaved Stream Decimator",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_ival_decimator.block.yml",
    "yaml_sha256": "2ade3db170a80e4a8c1f9bb28ca7f834f80561efede41c11c7a3cdd0456791ff"
   },
@@ -4000,7 +3637,6 @@
    "label": "JSON Config",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "json_config.block.yml",
    "yaml_sha256": "f100a49de037be68a5292a48d33d1fe3bb839e6c1f7e9396ff1d67b4592e9b5f"
   },
@@ -4011,7 +3647,6 @@
    "label": "Log Power FFT",
    "module": "fft",
    "reason": null,
-   "split": "train",
    "yaml_file": "fft_logpwrfft_x.block.yml",
    "yaml_sha256": "b5ac721a3c5502a4ca7ac80a71c923cf5612871e7688f513de464076cde0b304"
   },
@@ -4022,7 +3657,6 @@
    "label": "Low Pass Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_low_pass_filter.block.yml",
    "yaml_sha256": "43af768ea8f47cead53f48309287075d0d555138e8b97a71496fed065d0d0486"
   },
@@ -4033,7 +3667,6 @@
    "label": "Fractional Resampler",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_mmse_resampler_xx.block.yml",
    "yaml_sha256": "1982b0c28b14c7e5c73988e8a14b5815826a0fcca50aa64dc4dfa492081f3b42"
   },
@@ -4044,7 +3677,6 @@
    "label": "Socket PDU",
    "module": "network",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "network_socket_pdu.block.yml",
    "yaml_sha256": "3cf17ae5a75b55099d2bdd13d2608a44b41590813f1dd3edbbb876e2d734cb35"
   },
@@ -4055,7 +3687,6 @@
    "label": "TCP Sink",
    "module": "network",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "network_tcp_sink.block.yml",
    "yaml_sha256": "2a710a72a592429967ba3d69f57e089859436cf1d66df6f85bb0fe6cb8168f14"
   },
@@ -4066,7 +3697,6 @@
    "label": "TCP Source",
    "module": "network",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "network_tcp_source.block.yml",
    "yaml_sha256": "db86c77f8c6fdd90da7293fa52a0c5031b2e1f96260005cb292143e13a1f8561"
   },
@@ -4077,7 +3707,6 @@
    "label": "TUNTAP PDU",
    "module": "network",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "network_tuntap_pdu.block.yml",
    "yaml_sha256": "6a5831f5dfdb4a6253adc012716df66a8e1c723d8bb2d3e768d3d8481174f042"
   },
@@ -4088,7 +3717,6 @@
    "label": "UDP Sink",
    "module": "network",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "network_udp_sink.block.yml",
    "yaml_sha256": "25a5bb79c8b5ae4657cd551d637baa207566a0cdd6543301b8601430e6328c52"
   },
@@ -4099,7 +3727,6 @@
    "label": "UDP Source",
    "module": "network",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "network_udp_source.block.yml",
    "yaml_sha256": "5e192a57b8852c5c224c699ad7fe87270709ac7cb14ecb45c7df899b99ab7677"
   },
@@ -4110,7 +3737,6 @@
    "label": "Note",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "note.block.yml",
    "yaml_sha256": "7cd0ca0220c0438ba8f46a7dc3ff7f8a390329a4e8a06fd68a098a4029d3170c"
   },
@@ -4121,7 +3747,6 @@
    "label": "Options",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "options.block.yml",
    "yaml_sha256": "31b46cbab2652f7c0b03c4671b02dbcad469f43a15b8ee966385d1574eb9c012"
   },
@@ -4132,7 +3757,6 @@
    "label": "Pad Sink",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "pad_sink.block.yml",
    "yaml_sha256": "159d1ead30c2e585fc57e09fdc6ceb26893cc0c3954b996031e0c49a081b3083"
   },
@@ -4143,7 +3767,6 @@
    "label": "Pad Source",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "pad_source.block.yml",
    "yaml_sha256": "c6725489fdde01e8ef7992f43636b4d0d9a8f05977e6348340e7ebaaa443d363"
   },
@@ -4154,7 +3777,6 @@
    "label": "Parameter",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "parameter.block.yml",
    "yaml_sha256": "bc4732d840c9f48a80f272b2f4b248572666a04a3bdcb92b894228daa50c797a"
   },
@@ -4165,7 +3787,6 @@
    "label": "Add System Time",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_add_system_time.block.yml",
    "yaml_sha256": "4962d375b2fbae98da39a21ca4c8a8a0fdea7736af967b150b2a26305c7a5484"
   },
@@ -4176,7 +3797,6 @@
    "label": "PDU Filter",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_pdu_filter.block.yml",
    "yaml_sha256": "8db5e07ee1b388633d0f6fe27a0ed9584e19b52146b5dd1b4d311e4e12834d42"
   },
@@ -4187,7 +3807,6 @@
    "label": "PDU Lambda",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_pdu_lambda.block.yml",
    "yaml_sha256": "d415915aba25ecebfa8501ef555e345010011f315fd12981da799826c569caaf"
   },
@@ -4198,7 +3817,6 @@
    "label": "PDU Remove",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_pdu_remove.block.yml",
    "yaml_sha256": "aaa980da57bb4e767bf30fceb4dc5e236166ce6468b824e617d275227bd204f9"
   },
@@ -4209,7 +3827,6 @@
    "label": "PDU Set",
    "module": "pdu",
    "reason": null,
-   "split": "test",
    "yaml_file": "pdu_pdu_set.block.yml",
    "yaml_sha256": "25e054cc1a09301be8eac8aa6a181ce56a6aa14296462d1b1915028ec5b12647"
   },
@@ -4220,7 +3837,6 @@
    "label": "PDU Split",
    "module": "pdu",
    "reason": null,
-   "split": "test",
    "yaml_file": "pdu_pdu_split.block.yml",
    "yaml_sha256": "3eb7c64e1f58f2e8d850ad2050440dac90127bce33e1273f174457cfc83ee580"
   },
@@ -4231,7 +3847,6 @@
    "label": "PDU To Stream",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_pdu_to_stream.block.yml",
    "yaml_sha256": "e505090920c957378979675d1777ac7f7179c5a6a5e88bb10d3b2839ef91c5c9"
   },
@@ -4242,7 +3857,6 @@
    "label": "PDU to Tagged Stream",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_pdu_to_tagged_stream.block.yml",
    "yaml_sha256": "04a1b98f12e9d11e4f0489ac089f4d899decf47ec937ac300c36706c48009281"
   },
@@ -4253,7 +3867,6 @@
    "label": "Random PDU Generator",
    "module": "pdu",
    "reason": null,
-   "split": "test",
    "yaml_file": "pdu_random_pdu.block.yml",
    "yaml_sha256": "a3fc5c2c7037320488401eedb5f9958d6dad94b03bb36e07b08361f60fa25f51"
   },
@@ -4264,7 +3877,6 @@
    "label": "Tagged Stream to PDU",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_tagged_stream_to_pdu.block.yml",
    "yaml_sha256": "b382fc4a6313597163b5e4689197ccf2ba3bbd3493a8c03908cc6f51ecbaa43a"
   },
@@ -4275,7 +3887,6 @@
    "label": "Tags To PDU",
    "module": "pdu",
    "reason": null,
-   "split": "test",
    "yaml_file": "pdu_tags_to_pdu.block.yml",
    "yaml_sha256": "8bc3ce52e376d7f38ab963a425d1ec5784ab8b7ba320157d53723e780e46b6c3"
   },
@@ -4286,7 +3897,6 @@
    "label": "Take/Skip To PDU",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_take_skip_to_pdu.block.yml",
    "yaml_sha256": "4f3497dec5448a1663ac330bcfa81ea94c69584b1046532995d9269eca4a3f11"
   },
@@ -4297,7 +3907,6 @@
    "label": "Time Delta",
    "module": "pdu",
    "reason": null,
-   "split": "train",
    "yaml_file": "pdu_time_delta.block.yml",
    "yaml_sha256": "c8a2004f08ce91dbd898f61565a3dad8b894d0143dd07e7f7ce0b1ad9c70389f"
   },
@@ -4308,7 +3917,6 @@
    "label": "Polyphase Arbitrary Resampler",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_pfb_arb_resampler.block.yml",
    "yaml_sha256": "4a152531abc27b0f500b9ef2c3bf516a01dc39641eb6b4825476ca20b8fc523c"
   },
@@ -4319,7 +3927,6 @@
    "label": "Polyphase Channelizer",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_pfb_channelizer.block.yml",
    "yaml_sha256": "ac22037410f6acb49bc1dcec219cfe5155efca3ef28f9d325a6c3bceb1bae9aa"
   },
@@ -4330,7 +3937,6 @@
    "label": "Hierarchical Polyphase Channelizer",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_pfb_channelizer_hier.block.yml",
    "yaml_sha256": "137fa40304dc44f6e10ad32e3ba83392227470ec45b759bb7f23cdda506330f3"
   },
@@ -4341,7 +3947,6 @@
    "label": "Polyphase Decimator",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_pfb_decimator.block.yml",
    "yaml_sha256": "7f1eaf57b619e231fec17bb91302bbc97beb26be9c07e0be4d527e8fcf84590a"
   },
@@ -4352,7 +3957,6 @@
    "label": "Polyphase Interpolator",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_pfb_interpolator.block.yml",
    "yaml_sha256": "8dd55dc10363159eecfadec95854ea90243ede409b68baf108482a07af6498f0"
   },
@@ -4363,7 +3967,6 @@
    "label": "Polyphase Synthesizer",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_pfb_synthesizer.block.yml",
    "yaml_sha256": "16a596c9043550bdbe7a49fdb7ec95838df2a179baebbfa334d0d5a6a297ca42"
   },
@@ -4374,7 +3977,6 @@
    "label": "QT GUI Fast Auto-Correlator Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "test",
    "yaml_file": "qtgui_autocorrelator_sink.block.yml",
    "yaml_sha256": "2e3dfdd09f7133ccd7f9850f5d3727660c940a80cf2847588d1809abeec6ccf8"
   },
@@ -4385,7 +3987,6 @@
    "label": "QT GUI Bercurve Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_ber_sink_b.block.yml",
    "yaml_sha256": "3db28517a2193c8ad685c6fd6a77989cf4fe7d22efb8c5c3fce5ef33269a2d81"
   },
@@ -4396,7 +3997,6 @@
    "label": "QT GUI Compass",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_compass.block.yml",
    "yaml_sha256": "28d3270c1bac21d4c01ea17338364373bf97d15958be06d0fa1ce5a1c4c14f04"
   },
@@ -4407,7 +4007,6 @@
    "label": "QT GUI Constellation Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "test",
    "yaml_file": "qtgui_const_sink_x.block.yml",
    "yaml_sha256": "70c148580052f42de9fdba043df67b389231726b4a6804c5f43810eed39111a8"
   },
@@ -4418,7 +4017,6 @@
    "label": "QT GUI Dial Gauge",
    "module": "qtgui",
    "reason": null,
-   "split": "test",
    "yaml_file": "qtgui_dialgauge.block.yml",
    "yaml_sha256": "92fda0e2d9079048969bc815eaf9dfaa1b4ea4fda39369a47194af4d9bb81fc4"
   },
@@ -4429,7 +4027,6 @@
    "label": "QT GUI Message Edit Box",
    "module": "qtgui",
    "reason": null,
-   "split": "test",
    "yaml_file": "qtgui_edit_box_msg.block.yml",
    "yaml_sha256": "8caf28ecd8ff412e633f6e1f0eafd9fb42288408672c2d76a32390f32b06a7d7"
   },
@@ -4440,7 +4037,6 @@
    "label": "QT GUI Eye Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_eye_sink_x.block.yml",
    "yaml_sha256": "659373f3252cec1240381044233d6589a30ef6ee748f1bb4408b581ef00adeec"
   },
@@ -4451,7 +4047,6 @@
    "label": "QT GUI Frequency Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_freq_sink_x.block.yml",
    "yaml_sha256": "c99624038327c6fafbc98fe64d0bb1e362844f0bbe034cf39d64abcca02e2d8d"
   },
@@ -4462,7 +4057,6 @@
    "label": "QT GUI Graphic Item",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_graphicitem.block.yml",
    "yaml_sha256": "0912179d5ca521b500fb05f67cdeabba9383484a2cef277ae7b8ce8a062d4016"
   },
@@ -4473,7 +4067,6 @@
    "label": "QT GUI Graphic Overlay Sample Source",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_graphicoverlay.block.yml",
    "yaml_sha256": "68d256517ec53da43ad575519bf16c547ca56e9c6f59f197a72a45b7d628fdb3"
   },
@@ -4484,7 +4077,6 @@
    "label": "QT GUI App Background",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_appbackground.block.yml",
    "yaml_sha256": "f9574aec1dc420a219d62d0c5188e9d4f3914524afa72c766c153bc45c671cb4"
   },
@@ -4495,7 +4087,6 @@
    "label": "QT GUI Histogram Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_histogram_sink_x.block.yml",
    "yaml_sha256": "76f68e606bd83a9eee8e4de712b479a70aff029c3cf7df5fe23e7a06ea302210"
   },
@@ -4506,7 +4097,6 @@
    "label": "QT GUI LED Indicator",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_ledindicator.block.yml",
    "yaml_sha256": "927e774d7a1e01113b0fe97314085bfb2efc50897620928dca59a42d0caa5ea7"
   },
@@ -4517,7 +4107,6 @@
    "label": "QT GUI Level Gauge",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_levelgauge.block.yml",
    "yaml_sha256": "394dd32da3fe1a573a00c8f3cd8a521c3e33221f913b0e367e1a3bd14c84555f"
   },
@@ -4528,7 +4117,6 @@
    "label": "QT GUI Matrix Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_matrix_sink.block.yml",
    "yaml_sha256": "20c2214b5e6313ad69a85e1fd176c238f580e345bc04386f93778aa1ede606aa"
   },
@@ -4539,7 +4127,6 @@
    "label": "QT GUI Digital Number Control",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_msgdigitalnumbercontrol.block.yml",
    "yaml_sha256": "ed9fa2d8381e8f183ff8a85cba0a2137f7df0ca1a6b1a65834e1d729bea5a7ed"
   },
@@ -4550,7 +4137,6 @@
    "label": "QT GUI Number Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_number_sink.block.yml",
    "yaml_sha256": "d0e484a4ded5e4d9313e7dcf6fac607c6f5747de2e3d8fea1186fabc851c8f69"
   },
@@ -4561,7 +4147,6 @@
    "label": "QT GUI Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "test",
    "yaml_file": "qtgui_sink_x.block.yml",
    "yaml_sha256": "13180ad34ac5e03a840cecb8b2f58738462fc637adddf62fc19b2c9f464f85e6"
   },
@@ -4572,7 +4157,6 @@
    "label": "QT GUI Tab Widget",
    "module": "qtgui",
    "reason": null,
-   "split": "test",
    "yaml_file": "qtgui_tab_widget.block.yml",
    "yaml_sha256": "eb5c04b1a0520a74f4d9a323e769a817b7de7bc283e24394294fc86d7ee4e194"
   },
@@ -4583,7 +4167,6 @@
    "label": "QT GUI Time Raster Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_time_raster_x.block.yml",
    "yaml_sha256": "e97290bf8d11a5603102f7ae103454ae9736ec72bbd1cd7d03d7b1689b6bb78d"
   },
@@ -4594,7 +4177,6 @@
    "label": "QT GUI Time Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_time_sink_x.block.yml",
    "yaml_sha256": "0de8279d7663c239c7c2f76b46ed30d2132c209ed45a7dbead6933f4b5fcb411"
   },
@@ -4605,7 +4187,6 @@
    "label": "QT GUI Vector Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "train",
    "yaml_file": "qtgui_vector_sink_f.block.yml",
    "yaml_sha256": "4bcf3cca98a76ef3667c0de91fa8e2a40f70c94287ca36cf89e8ab9b4f13fcd6"
   },
@@ -4616,7 +4197,6 @@
    "label": "QT GUI Waterfall Sink",
    "module": "qtgui",
    "reason": null,
-   "split": "test",
    "yaml_file": "qtgui_waterfall_sink_x.block.yml",
    "yaml_sha256": "5416a8ffa8b4aee9ea1f57c4f28be2188736e4938fc9f4e033dc802f339cfedb"
   },
@@ -4627,7 +4207,6 @@
    "label": "Rational Resampler",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_rational_resampler_xxx.block.yml",
    "yaml_sha256": "81087a3fadc8c9d19920508c3452b20e5eb9b6789898c36c5371482c3a56528e"
   },
@@ -4638,7 +4217,6 @@
    "label": "Root Raised Cosine Filter",
    "module": "filter",
    "reason": null,
-   "split": "train",
    "yaml_file": "filter_root_raised_cosine_filter.block.yml",
    "yaml_sha256": "71a659fdafbabe7544f4fbdd0541f3dc1bd4467cb6de97607ba4406d37bae747"
   },
@@ -4649,7 +4227,6 @@
    "label": "Single Pole IIR Filter",
    "module": "filter",
    "reason": null,
-   "split": "test",
    "yaml_file": "filter_single_pole_iir_filter_xx.block.yml",
    "yaml_sha256": "819086ec7fed285684ac6e201d1510923f547f363a109479b7ef1d047b184944"
   },
@@ -4660,7 +4237,6 @@
    "label": "Python Snippet",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "snippet.block.yml",
    "yaml_sha256": "eb4aefdf33782e7a66f46093ce604d52c0e1e2bc629b1d2e9e4340a81c84f0b5"
   },
@@ -4671,7 +4247,6 @@
    "label": "Soapy AirspyHF Source",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_airspyhf_source.block.yml",
    "yaml_sha256": "7abf68a1a7af7a961d6acd66218278c1f7ed6c846cc71856122634f749999f2d"
   },
@@ -4682,7 +4257,6 @@
    "label": "Soapy BladeRF Sink",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_bladerf_sink.block.yml",
    "yaml_sha256": "698695af406ec2ed306ebe47a86bc24a97eaac6a70bcad9da5052705b542c45c"
   },
@@ -4693,7 +4267,6 @@
    "label": "Soapy BladeRF Source",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_bladerf_source.block.yml",
    "yaml_sha256": "b8a1d7d9d8c486b7d54822419fcda0baf3587bdde66ead91ae871560c09f16bc"
   },
@@ -4704,7 +4277,6 @@
    "label": "Soapy Custom Sink",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_custom_sink.block.yml",
    "yaml_sha256": "94ea1587b3c78f74af189668440b360c4b7778252b4d7162f5309da56c72afbd"
   },
@@ -4715,7 +4287,6 @@
    "label": "Soapy Custom Source",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_custom_source.block.yml",
    "yaml_sha256": "695a31ad523a771bf1832b464bdcc9c4dc2fae5bc878d6fb1aab699132a63bf6"
   },
@@ -4726,7 +4297,6 @@
    "label": "Soapy HackRF Sink",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_hackrf_sink.block.yml",
    "yaml_sha256": "f602e0b56dcd984086e005de51559a0907313c5f039a6d3003b5ff712d26a40a"
   },
@@ -4737,7 +4307,6 @@
    "label": "Soapy HackRF Source",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_hackrf_source.block.yml",
    "yaml_sha256": "4ba1ba5bd599df67ec26ba9f3a7020e75061987fe4671ad6e31fb3f6d3ee5bdb"
   },
@@ -4748,7 +4317,6 @@
    "label": "Soapy LimeSDR Sink",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_limesdr_sink.block.yml",
    "yaml_sha256": "e90df6bce116a084975ec8b1b42d249b825434f76a9701f3751a834f7acdc699"
   },
@@ -4759,7 +4327,6 @@
    "label": "Soapy LimeSDR Source",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_limesdr_source.block.yml",
    "yaml_sha256": "8c03c8cc9bb776966b02456cdfe1bab0b8db6952df4d8484174195fc56548a9d"
   },
@@ -4770,7 +4337,6 @@
    "label": "Soapy PLUTO Sink",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_plutosdr_sink.block.yml",
    "yaml_sha256": "556728d68f3e8abebc031844bea75c57b15824fb771ceaa3db17f39311325549"
   },
@@ -4781,7 +4347,6 @@
    "label": "Soapy PLUTO Source",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_plutosdr_source.block.yml",
    "yaml_sha256": "c131ecae3d3c5e7e46c8ad9d850cefe58555f4cc68763cc4561af3bc4b9c58d6"
   },
@@ -4792,7 +4357,6 @@
    "label": "Soapy RTLSDR Source",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_rtlsdr_source.block.yml",
    "yaml_sha256": "8b47e82b730f0d15beb169bf72cfccd02c19d6cac4a32a6cc6c5e8b0d6ecde80"
   },
@@ -4803,7 +4367,6 @@
    "label": "Soapy SDRPlay Source",
    "module": "soapy",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_sdrplay_source.block.yml",
    "yaml_sha256": "0cc0c3deb8cba548432aac844bfa8fd4c5f6c6401280f18b50b5679ad1edb6cc"
   },
@@ -4814,7 +4377,6 @@
    "label": "Soapy Sink",
    "module": "soapy",
    "reason": "deprecated, hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_sink.block.yml",
    "yaml_sha256": "d89ed3a093d1b424a9cb798b3efa766ecee1afe0f2438ecbb4cae26c67b07c97"
   },
@@ -4825,7 +4387,6 @@
    "label": "Soapy Source",
    "module": "soapy",
    "reason": "deprecated, hardware-or-network-module",
-   "split": null,
    "yaml_file": "soapy_source.block.yml",
    "yaml_sha256": "7864bb2788cd6ce4eb3eadadd7c8bc7b1bb2488a2344668157338b2711ded23a"
   },
@@ -4836,7 +4397,6 @@
    "label": "Trellis Encoder",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_encoder_xx.block.yml",
    "yaml_sha256": "8d34802614866bb3a8a9aafd682d2d234f5e2b6fcc28bd50dd653b8e7e79048e"
   },
@@ -4847,7 +4407,6 @@
    "label": "Trellis Metrics",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_metrics_x.block.yml",
    "yaml_sha256": "9c1dcc53b172f27e0b2c166f6dc98099891dc20d07532a31d77e0f249d81d0db"
   },
@@ -4858,7 +4417,6 @@
    "label": "PCCC Decoder Combo",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_pccc_decoder_combined_xx.block.yml",
    "yaml_sha256": "ee26afb804a40331c98f070d17017eba56f4657598b753b8bf6fed2afadd123b"
   },
@@ -4869,7 +4427,6 @@
    "label": "PCCC Decoder",
    "module": "trellis",
    "reason": null,
-   "split": "test",
    "yaml_file": "trellis_pccc_decoder_x.block.yml",
    "yaml_sha256": "24a107769ccdaa12fe44c7045bc20eb787e518434e5438543490982cef2572e1"
   },
@@ -4880,7 +4437,6 @@
    "label": "PCCC Encoder",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_pccc_encoder_xx.block.yml",
    "yaml_sha256": "257852bb8ea81fbe06aa5f31c5ac7b0f4528f6ff204304b5a639055236fafeb9"
   },
@@ -4891,7 +4447,6 @@
    "label": "Trellis Permutation",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_permutation.block.yml",
    "yaml_sha256": "66d419979a08fb6ae3dc3f2ae403bc5b4a2361be9674446723645d192f1bbbbf"
   },
@@ -4902,7 +4457,6 @@
    "label": "SCCC Decoder Combo",
    "module": "trellis",
    "reason": null,
-   "split": "test",
    "yaml_file": "trellis_sccc_decoder_combined_xx.block.yml",
    "yaml_sha256": "670542738569a69f07c2614cc6718db789e278e46f5c4f96f667e2ad3dfed30c"
   },
@@ -4913,7 +4467,6 @@
    "label": "SCCC Decoder",
    "module": "trellis",
    "reason": null,
-   "split": "test",
    "yaml_file": "trellis_sccc_decoder_x.block.yml",
    "yaml_sha256": "6f6eea1c1114690938492c7ea973770598413a9638f3e75322d8c40f53f8312f"
   },
@@ -4924,7 +4477,6 @@
    "label": "SCCC Encoder",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_sccc_encoder_xx.block.yml",
    "yaml_sha256": "79c71aefae4215f657e0f997b92aa8d248465384f400c6c671771a89eb22d8de"
   },
@@ -4935,7 +4487,6 @@
    "label": "SISO Combo",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_siso_combined_f.block.yml",
    "yaml_sha256": "d79827b80121b00a6dbd75fdb57a1da77534347b7beaf80fca285991c6ef5994"
   },
@@ -4946,7 +4497,6 @@
    "label": "SISO",
    "module": "trellis",
    "reason": null,
-   "split": "test",
    "yaml_file": "trellis_siso_f.block.yml",
    "yaml_sha256": "48546f8d7996d78a9294236d084bc9e80deafbc93579b452256b8e905c7ad9f7"
   },
@@ -4957,7 +4507,6 @@
    "label": "Viterbi Combo",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_viterbi_combined_xx.block.yml",
    "yaml_sha256": "7da3cc5e455bb041aebcbe8ba1698cacfa3bca963e021c9ebed29259a52bb4d9"
   },
@@ -4968,7 +4517,6 @@
    "label": "Viterbi",
    "module": "trellis",
    "reason": null,
-   "split": "train",
    "yaml_file": "trellis_viterbi_x.block.yml",
    "yaml_sha256": "1617d2c5595fbecc1ce964f7448c3672556c2f2689a48430b8ba1fa19a73abc0"
   },
@@ -4979,7 +4527,6 @@
    "label": "UHD: USRP Async Msg Source",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_amsg_source.block.yml",
    "yaml_sha256": "6aef3b4ef71a4835d37d3b0ed6362a669e00eaee1a60be49ba011d014489708f"
   },
@@ -4990,7 +4537,6 @@
    "label": "RFNoC Add/Subtract",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_addsub.block.yml",
    "yaml_sha256": "b258f2ff19ff71ad13c1ba8b504e777eee5d230bcb3fad3fe3425894b4a1a20d"
   },
@@ -5001,7 +4547,6 @@
    "label": "CHDR DMA Transport Adapter",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_chdr_dma_ta.block.yml",
    "yaml_sha256": "bf6c6d2260014b29dddb38864dab919522429d07083055d5d86a94167e4e98cc"
   },
@@ -5012,7 +4557,6 @@
    "label": "RFNoC DDC",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_ddc.block.yml",
    "yaml_sha256": "2f8a788349d20df289903ea3c7293410c200e4609e68dfd85984cd1e6858d2ac"
   },
@@ -5023,7 +4567,6 @@
    "label": "RFNoC Device BSP",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_device_bsp.block.yml",
    "yaml_sha256": "abff3baa00f4d0baf3af47a069e1b09c14a82f53f88fe24676a76dc54921f95c"
   },
@@ -5034,7 +4577,6 @@
    "label": "No Connect",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_device_none.block.yml",
    "yaml_sha256": "7e4761fc908621ffc6d5a1e20b26028ecf8a1fad892a4a0186e8524775df7a1f"
   },
@@ -5045,7 +4587,6 @@
    "label": "RFNoC DUC",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_duc.block.yml",
    "yaml_sha256": "d821a5fdd37a52156c9d5c6238ebcd6cbc2008c920d8886cc1fb4e6ad459b9be"
   },
@@ -5056,7 +4597,6 @@
    "label": "Ethernet Transport Adapter",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_eth_ta.block.yml",
    "yaml_sha256": "f09c5d50ce6ed53433907315b1a3e92c70bd3dcd18e344847bd2ce3ae81988c7"
   },
@@ -5067,7 +4607,6 @@
    "label": "RFNoC F15 (FPGA Fosphor)",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_fosphor.block.yml",
    "yaml_sha256": "f60e3ece126547572a2503985de01f5fe154260ff38806857c065da4c7747290"
   },
@@ -5078,7 +4617,6 @@
    "label": "RFNoC FFT",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_fft.block.yml",
    "yaml_sha256": "571f4d0ea1157bc6bf7d0fdebd0a3c76f7bcde5639b8c9a5adb264f0278aa456"
   },
@@ -5089,7 +4627,6 @@
    "label": "RFNoC FIR Filter",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_fir_filter.block.yml",
    "yaml_sha256": "37e0f9a6c6120b1096e9f5faeffc085c2e634cddbe8208ac043293494b749fbc"
   },
@@ -5100,7 +4637,6 @@
    "label": "RFNoC Keep One-in-N",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_keep_one_in_n.block.yml",
    "yaml_sha256": "aa8c6760e8481d78b72a642313d873a69024ff34918fae66d5e69f94a1c4ee7c"
   },
@@ -5111,7 +4647,6 @@
    "label": "RFNoC Null Source/Sink",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_null_src_sink.block.yml",
    "yaml_sha256": "4b1eaf6b16173a132e3befd399b46425e0abe7a5f64f0b1b29a4d4b124dff99f"
   },
@@ -5122,7 +4657,6 @@
    "label": "RFNoC Radio",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_radio.block.yml",
    "yaml_sha256": "48a80bee2a6b1cdc6f9785e11580fb4e2774a41522cab44e8aaa8189737977fc"
   },
@@ -5133,7 +4667,6 @@
    "label": "RFNoC DRAM Replay/Capture",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_replay.block.yml",
    "yaml_sha256": "b179dbc666d61244cfdcee82f352e19ddb8036af949db46d413dedbaa1515b99"
   },
@@ -5144,7 +4677,6 @@
    "label": "Stream Endpoint",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_sep.block.yml",
    "yaml_sha256": "b8855529ac2abc07639e3a22fbaff66550f03c2a7077da53584a5b61748e0da3"
   },
@@ -5155,7 +4687,6 @@
    "label": "RFNoC Signal Generator",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_siggen.block.yml",
    "yaml_sha256": "8cb3e9dac3b6a2cc57c224c0bb1090274506b8b858afcca78878174f048a08d1"
   },
@@ -5166,7 +4697,6 @@
    "label": "RFNoC Split Stream",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_split_stream.block.yml",
    "yaml_sha256": "11fb1f4ee427e7af54f23d1d4d1bb7a873435e19f63f25750d83d9968fa09d2a"
   },
@@ -5177,7 +4707,6 @@
    "label": "RFNoC Switchboard",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_fpga_switchboard.block.yml",
    "yaml_sha256": "27dc3715f07f39d0175e875aa8eba5a0a1a0926c33a7fde6c54f3c8c93d32e71"
   },
@@ -5188,7 +4717,6 @@
    "label": "Replay Msg Push Button",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_msgpushbutton.block.yml",
    "yaml_sha256": "e6649de62d5f9c425df4524f932f000ea5a9eed875b26c78ca9ace40a55c20cd"
   },
@@ -5199,7 +4727,6 @@
    "label": "RFNoC Fast Add-Subtract Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_addsub.block.yml",
    "yaml_sha256": "8795db1ff7b13d223d742c9469d2a54499915d340f74454e818252ae2786e535"
   },
@@ -5210,7 +4737,6 @@
    "label": "RFNoC Digital Downconverter Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_ddc.block.yml",
    "yaml_sha256": "4be9cc264e975d0737f3e8fcf52dad1c5e4c84c002328c93d3d215a0f5b8c47a"
   },
@@ -5221,7 +4747,6 @@
    "label": "RFNoC Digital Upconverter Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_duc.block.yml",
    "yaml_sha256": "dab14287110896d55f24fdb940ee93e78f4d325587cbeb0d4c604c59904466ad"
   },
@@ -5232,7 +4757,6 @@
    "label": "RFNoC Fast Fourier Transform (FFT) Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_fft.block.yml",
    "yaml_sha256": "2dd76fb7923c0eeecb0004d0ede7164039db46ee80272a304c7c88bfcd79b6bb"
   },
@@ -5243,7 +4767,6 @@
    "label": "RFNoC FIR Filter Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_fir_filter.block.yml",
    "yaml_sha256": "a5cbed149a068a586471217d3faeacd9f6461fb8137bb562c220cb787b9d6fb6"
   },
@@ -5254,7 +4777,6 @@
    "label": "RFNoC Fosphor Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_fosphor.block.yml",
    "yaml_sha256": "f00ed3d94098cac7e43d233cef469d4a83f5cf8e3ff036e820f293c7b7447446"
   },
@@ -5265,7 +4787,6 @@
    "label": "RFNoC Graph (Device)",
    "module": "uhd",
    "reason": "non-block, hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_graph.block.yml",
    "yaml_sha256": "fc3b3ab0e3f1d654f74e55b43a55fa060c1ed187e8ce099859d0b728691b2552"
   },
@@ -5276,7 +4797,6 @@
    "label": "RFNoC Keep One in N Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_keep_one_in_n.block.yml",
    "yaml_sha256": "228875c8403e03f0be41202c0606c2b1473d4f8013a16f2e90be6056ebdb9b43"
   },
@@ -5287,7 +4807,6 @@
    "label": "RFNoC Log-Power Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_logpwr.block.yml",
    "yaml_sha256": "666291efc099e2b33ebacdd582fceeef8f5060eecd4147989ddb417e85d4ef2f"
   },
@@ -5298,7 +4817,6 @@
    "label": "RFNoC Moving Average Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_moving_avg.block.yml",
    "yaml_sha256": "d74f4d8b3ba71bb18f2134add33f0e72d54d55ffc9026feb0d4b31fd47170a32"
   },
@@ -5309,7 +4827,6 @@
    "label": "RFNoC Null Source Sink Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_null_src_sink.block.yml",
    "yaml_sha256": "9e8c08d2fa957eea845ff127a71e3c7cca6bb179193d20f5fc3db350ac5cd8df"
   },
@@ -5320,7 +4837,6 @@
    "label": "RFNoC Replay Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_replay.block.yml",
    "yaml_sha256": "07b4b1a0abf08601b1215a01f3657ccf24dc20506e39fde392a3e62ef95af9a3"
   },
@@ -5331,7 +4847,6 @@
    "label": "RFNoC RX Radio",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_rx_radio.block.yml",
    "yaml_sha256": "7bd7826c057642551284d943aa9a355edb80a4f0e4b78b49a9bb951202a35d39"
   },
@@ -5342,7 +4857,6 @@
    "label": "RFNoC Rx Streamer",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_rx_streamer.block.yml",
    "yaml_sha256": "1d14e558a98aaeda0b826c0e8b213b5fa83d2025b3012b942ae5f1b48cdec428"
   },
@@ -5353,7 +4867,6 @@
    "label": "RFNoC SigGen Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_siggen.block.yml",
    "yaml_sha256": "f86cfcafe4976120d488ad62153d3f9e5a9032dcf4b983f9a189567f1cf31431"
   },
@@ -5364,7 +4877,6 @@
    "label": "RFNoC Split Stream Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_split_stream.block.yml",
    "yaml_sha256": "aac87a0dd1c9c58562762a5b10d2532a58495e5cf1a0027d69a7084aca581069"
   },
@@ -5375,7 +4887,6 @@
    "label": "RFNoC Switchboard Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_switchboard.block.yml",
    "yaml_sha256": "589e18f2bae1f749d5e67e9c547931c1bb6410208679bcd8c3968bb916565636"
   },
@@ -5386,7 +4897,6 @@
    "label": "RFNoC TX Radio",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_tx_radio.block.yml",
    "yaml_sha256": "f30854fbeedd7295ae3684d5beb708e8e80a65eb6526d1df42cf383de7436a90"
   },
@@ -5397,7 +4907,6 @@
    "label": "RFNoC Tx Streamer",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_tx_streamer.block.yml",
    "yaml_sha256": "9a6cf2c51195deb2790d7a2b2c6791fc989d99f12136d2c5a7723ab5d3f31642"
   },
@@ -5408,7 +4917,6 @@
    "label": "RFNoC Vector IIR Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_vector_iir.block.yml",
    "yaml_sha256": "f83d266e965fc650eaa6363fb7917c23b725dbe3a6276404fee26bd48790d183"
   },
@@ -5419,7 +4927,6 @@
    "label": "RFNoC Window Block",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_rfnoc_window.block.yml",
    "yaml_sha256": "b04e46e74f39623a70d57eb1fb1f37bda4750489bd1654d6731e34617e10d1e6"
   },
@@ -5430,7 +4937,6 @@
    "label": "UHD: USRP Sink",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_usrp_sink.block.yml",
    "yaml_sha256": "f724a7b5cd40dca651e99b76150f2952321be08644fb7e32bb488ddb0d930601"
   },
@@ -5441,7 +4947,6 @@
    "label": "UHD: USRP Source",
    "module": "uhd",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "uhd_usrp_source.block.yml",
    "yaml_sha256": "a802d1f786aa444b3414004a47865100bfed8fbe038061de9e6ca8ef0adf04e1"
   },
@@ -5452,7 +4957,6 @@
    "label": "Variable",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable.block.yml",
    "yaml_sha256": "1c577b8303168fa2476adc2e51f90ad6b51df9c66c7b5721d95813c799222548"
   },
@@ -5463,7 +4967,6 @@
    "label": "Adaptive Algorithm",
    "module": "digital",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "digital_adaptive_algorithm.block.yml",
    "yaml_sha256": "eb294b311e2f7814f3fe5a2242cf2a5084f93375d6ef827ca2244e323383b134"
   },
@@ -5474,7 +4977,6 @@
    "label": "Band-pass Filter Taps",
    "module": "filter",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_band_pass_filter_taps.block.yml",
    "yaml_sha256": "53bfba16b4668dddf8277860f4616f694f908ef5aea9298bfdb097b6e816bfb8"
   },
@@ -5485,7 +4987,6 @@
    "label": "Band-reject Filter Taps",
    "module": "filter",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_band_reject_filter_taps.block.yml",
    "yaml_sha256": "1ad0da1826c0b3502786a6496134acc540315ae723b76e8ef943dcbf5db3c8ec"
   },
@@ -5496,7 +4997,6 @@
    "label": "CC Decoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_cc_decoder_def_list.block.yml",
    "yaml_sha256": "db613e1142530887eb075fdc9c34be1c5a1d0009578c51dc47bac50c1702d590"
   },
@@ -5507,7 +5007,6 @@
    "label": "CC Encoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_cc_encoder_def_list.block.yml",
    "yaml_sha256": "2e1597d122e148d747a5720bc9bb8f4db68b98d576ab8101fd1637df7a7dbb53"
   },
@@ -5518,7 +5017,6 @@
    "label": "CCSDS Encoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_ccsds_encoder_def_list.block.yml",
    "yaml_sha256": "89e0ed4798d0a83e72777a3fe8968aff2322165c4ac52e7963118fe6c6c72bb2"
   },
@@ -5529,7 +5027,6 @@
    "label": "Variable Config",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_config.block.yml",
    "yaml_sha256": "f895defa11d119184f68b3f351204bf661cdcf04930cea7df5c634662d6385ed"
   },
@@ -5540,7 +5037,6 @@
    "label": "Constellation Object",
    "module": "digital",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "digital_constellation.block.yml",
    "yaml_sha256": "bc4794c703b945c69f13ff6c130002ade0d8b1a95d722e4c9c3a041e382a9e05"
   },
@@ -5551,7 +5047,6 @@
    "label": "Constellation Rect. Object",
    "module": "digital",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "digital_constellation_rect.block.yml",
    "yaml_sha256": "6d309562b44f4a93c44d203db24df87c274e99ca7dccc39eb78a09115d974ccd"
   },
@@ -5562,7 +5057,6 @@
    "label": "Dummy Decoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_dummy_decoder_def_list.block.yml",
    "yaml_sha256": "e051c8a0658761a86a3f9693a83c66592590b4c619121e9ba48f2a6a0323cc1f"
   },
@@ -5573,7 +5067,6 @@
    "label": "Dummy Encoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_dummy_encoder_def_list.block.yml",
    "yaml_sha256": "0802e49fa26182552eb90ba13958c2dea3386ab3b0770d529d49eabd5bf8682e"
   },
@@ -5584,7 +5077,6 @@
    "label": "Filter Taps Loader",
    "module": "filter",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_file_filter_taps.block.yml",
    "yaml_sha256": "2f708b5da6b8006395ac9fd76db27801c41291843507737f515c02937a03aa7b"
   },
@@ -5595,7 +5087,6 @@
    "label": "Function Probe",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_function_probe.block.yml",
    "yaml_sha256": "9166f7e436baf3f11d55ad9b341b8b28a2eff4ead58e59eefe840479e01547ce"
   },
@@ -5606,7 +5097,6 @@
    "label": "Default Header Format Obj.",
    "module": "digital",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_header_format_default.block.yml",
    "yaml_sha256": "843f9ac73468e1c61886b4626d73b0fff239f8b3e3d3066c5e3fac18d8ac54c0"
   },
@@ -5617,7 +5107,6 @@
    "label": "High-pass Filter Taps",
    "module": "filter",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_high_pass_filter_taps.block.yml",
    "yaml_sha256": "b392538e9c8c7f201d36a6f54a515f7dcf3befda066bda2e3cd2f2a09063f398"
   },
@@ -5628,7 +5117,6 @@
    "label": "LDPC Generator Matrix",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_ldpc_G_matrix_object.block.yml",
    "yaml_sha256": "550dd55a4c6a1ce0989968505a371c812f678e0cf20b4217e080ea50251190af"
   },
@@ -5639,7 +5127,6 @@
    "label": "LDPC Parity Check Matrix",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_ldpc_H_matrix_object.block.yml",
    "yaml_sha256": "ff2227cdd56e0358ce45185141d849ac29e09604340570e1b0c39e068b6e7160"
   },
@@ -5650,7 +5137,6 @@
    "label": "LDPC Bit Flip Decoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_ldpc_bit_flip_decoder.block.yml",
    "yaml_sha256": "1ea8579e036e9c279245d4ec3dbf54f587376a8d4c68b8e26b913bde22b95f9c"
   },
@@ -5661,7 +5147,6 @@
    "label": "LDPC Decoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "ldpc_decoder_def_list.block.yml",
    "yaml_sha256": "a7a0c9f76db0f98cf7a2d42b86c4cb24783855ca68a3a83090064f0efde34fd9"
   },
@@ -5672,7 +5157,6 @@
    "label": "LDPC Encoder Definition (via Generator)",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_ldpc_encoder_G.block.yml",
    "yaml_sha256": "ff489482fd49df51fec463402788f0d1721ff70696a6c0224f2a8043adc38d48"
   },
@@ -5683,7 +5167,6 @@
    "label": "LDPC Encoder Definition (via Parity Check)",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_ldpc_encoder_H.block.yml",
    "yaml_sha256": "9fd6b0ec5f84bf5f86c2fe6ad7256ff12d15c9ce3aee3414a2f9e54e8d2d0ffd"
   },
@@ -5694,7 +5177,6 @@
    "label": "LDPC Encoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "ldpc_encoder_def_list.block.yml",
    "yaml_sha256": "6ccd848ebbe2cb20e4f813439b50025d34c9c188b6f7554e014eb9787d372875"
   },
@@ -5705,7 +5187,6 @@
    "label": "Low-pass Filter Taps",
    "module": "filter",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_low_pass_filter_taps.block.yml",
    "yaml_sha256": "bfb9b5cbc0187ce2a7c765e80867cb59fe08d430b11a66b2af020883182ea57e"
   },
@@ -5716,7 +5197,6 @@
    "label": "Modulate Vector",
    "module": "digital",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "digital_modulate_vector.block.yml",
    "yaml_sha256": "9d8e00fba568d4e73bae651a9540602e159777e873c67a700343126308625614"
   },
@@ -5727,7 +5207,6 @@
    "label": "POLAR code Configurator",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_polar_code_configurator.block.yml",
    "yaml_sha256": "af8e07e9c102100c399562ac9c09c9c86b02c1de484de1fa2ab59ffa25fbb321"
   },
@@ -5738,7 +5217,6 @@
    "label": "POLAR Decoder SC Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_polar_decoder_sc.block.yml",
    "yaml_sha256": "e6766d48e5cef3cfbdb14f7d9ea9bf2fec96592132b4c2f95f6418d5e77d9036"
   },
@@ -5749,7 +5227,6 @@
    "label": "POLAR Decoder SC List Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_polar_decoder_sc_list.block.yml",
    "yaml_sha256": "d872719dffa3675e2737b76bbd5bdbc98471c31da0b78de4ce65ea11d838a78b"
   },
@@ -5760,7 +5237,6 @@
    "label": "systematic POLAR Decoder SC Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_polar_decoder_sc_systematic.block.yml",
    "yaml_sha256": "1eedab312ef2c8b3f804824043df0fd29495218fbf7ea879f9ea98211398b671"
   },
@@ -5771,7 +5247,6 @@
    "label": "POLAR Encoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_polar_encoder.block.yml",
    "yaml_sha256": "b2d94b581db9a8ff45a3cccf1169c54c3fde4f865673f05f6b1a81c12deed459"
   },
@@ -5782,7 +5257,6 @@
    "label": "systematic POLAR Encoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_polar_encoder_systematic.block.yml",
    "yaml_sha256": "2cf100e30d546b14be0ed70d6dd513a879f845543256cd25e97c5ee4879b76e2"
   },
@@ -5793,7 +5267,6 @@
    "label": "QT GUI Az-El Plot",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_azelplot.block.yml",
    "yaml_sha256": "b87e8d9477f562466cc6912501b7b4d517d9f3746a7bd632e80ff8f151ccb787"
   },
@@ -5804,7 +5277,6 @@
    "label": "QT GUI Check Box",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_check_box.block.yml",
    "yaml_sha256": "cf6022a0e8c289af58cb7325cbc3037ef7696cef55063ba2efc83b1cf8d1c0b6"
   },
@@ -5815,7 +5287,6 @@
    "label": "QT GUI Chooser",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_chooser.block.yml",
    "yaml_sha256": "7f26626027fa1547ad02a677b40d1eae68a39278673af4c4ae1c6c19ddec4360"
   },
@@ -5826,7 +5297,6 @@
    "label": "QT GUI Dial",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_dialcontrol.block.yml",
    "yaml_sha256": "38124badff30f31ad9d15658f4434ce8d285584962443b1ba29f868776b5d86f"
   },
@@ -5837,7 +5307,6 @@
    "label": "QT GUI Distance Radar",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_distanceradar.block.yml",
    "yaml_sha256": "897ba9c988bccf445178425db7f4d649fc43c1ff0a4188440a2df95b643c0181"
   },
@@ -5848,7 +5317,6 @@
    "label": "QT GUI Entry",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_entry.block.yml",
    "yaml_sha256": "50fa3b13bb25681f46234d396914297cf494e40a26977c36adb3eb198605de20"
   },
@@ -5859,7 +5327,6 @@
    "label": "QT GUI Label",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_label.block.yml",
    "yaml_sha256": "23584f5571a9d65b3d952b8bfe45db989bf7340af8232207ac4c065c835ed5ea"
   },
@@ -5870,7 +5337,6 @@
    "label": "QT GUI Msg Push Button",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_msgpushbutton.block.yml",
    "yaml_sha256": "6b56ae7bdb47fc68ee96246ed721729c08be18c30cf00ee77ce6162dbbd27032"
   },
@@ -5881,7 +5347,6 @@
    "label": "QT GUI Msg CheckBox",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_msgcheckbox.block.yml",
    "yaml_sha256": "4aa658341232c57e3903caa392d9157e128c0df61bf2ff66f96431501f3fbf34"
   },
@@ -5892,7 +5357,6 @@
    "label": "QT GUI Push Button",
    "module": "qtgui",
    "reason": "non-block, deprecated",
-   "split": null,
    "yaml_file": "qtgui_push_button.block.yml",
    "yaml_sha256": "be42326a54cc00624d14a117963bb4fcab658f3a9427e805888ebce44c17ab0d"
   },
@@ -5903,7 +5367,6 @@
    "label": "QT GUI Range",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_range.block.yml",
    "yaml_sha256": "9ddec22e127b06cc2571321468466220f86b46bd53b4e49d7783b4d49808c647"
   },
@@ -5914,7 +5377,6 @@
    "label": "QT GUI Toggle Button",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_togglebutton.block.yml",
    "yaml_sha256": "6532914196a3f05faf649c81b254a3925d87ea0e5bc42655e712e59513e1ed4b"
   },
@@ -5925,7 +5387,6 @@
    "label": "QT GUI Toggle Switch",
    "module": "qtgui",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "qtgui_toggleswitch.block.yml",
    "yaml_sha256": "ba22944241e046bde5361458beb80f58804abc733c420a7038d6debfd0725575"
   },
@@ -5936,7 +5397,6 @@
    "label": "Repetition Decoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_repetition_decoder_def_list.block.yml",
    "yaml_sha256": "4222e32a7a5f211ddadc686bc9556abf5181a70ba60b845a6dd2b8e8719feb96"
   },
@@ -5947,7 +5407,6 @@
    "label": "Repetition Encoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_repetition_encoder_def_list.block.yml",
    "yaml_sha256": "923590e5031eb48839ad21343e5471b7caaa95b14f6b40bb36da006d5880ed57"
   },
@@ -5958,7 +5417,6 @@
    "label": "RRC Filter Taps",
    "module": "filter",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_rrc_filter_taps.block.yml",
    "yaml_sha256": "0b2c25edda75944ee436663898792d8c88997cf4e4ddd7682e3cefdecc4b7755"
   },
@@ -5969,7 +5427,6 @@
    "label": "Variable Save Restore",
    "module": "blocks",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "blocks_variable_save_restore.block.yml",
    "yaml_sha256": "c167a3ed85b47add0cdaf4065e2f66c21724fff22be971e3dd86b082f062c135"
   },
@@ -5980,7 +5437,6 @@
    "label": "Struct Variable",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "variable_struct.block.yml",
    "yaml_sha256": "d73077b52ab7fff79a3bd824fca4e66f12af8769986551a5099f7af6fc9842c0"
   },
@@ -5991,7 +5447,6 @@
    "label": "Tag Object",
    "module": "blocks",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "blocks_tag_object.block.yml",
    "yaml_sha256": "20f2e05a0e2bb6c01309cccc0f374852d16df534fafa4b653cab0fe3c64b93e3"
   },
@@ -6002,7 +5457,6 @@
    "label": "TPC Decoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "tpc_decoder_def_list.block.yml",
    "yaml_sha256": "e73b927ed731a0cf91008329bf3fca3c1068a9bb77e0277f9d76084884155dca"
   },
@@ -6013,7 +5467,6 @@
    "label": "TPC Encoder Definition",
    "module": "fec",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "tpc_encoder_def_list.block.yml",
    "yaml_sha256": "ef723d04d33dd3416341b956b694e54124485d899bc3beebc12e90d9d3ef0fd6"
   },
@@ -6024,7 +5477,6 @@
    "label": "Video SDL Sink",
    "module": "video",
    "reason": null,
-   "split": "train",
    "yaml_file": "video_sdl_sink.block.yml",
    "yaml_sha256": "1cf5f27295b52cfe55a94d2228bdae69d86916697c27c0de348b4a510ba168ce"
   },
@@ -6035,7 +5487,6 @@
    "label": "Virtual Sink",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": null,
    "yaml_sha256": null
   },
@@ -6046,7 +5497,6 @@
    "label": "Virtual Source",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": null,
    "yaml_sha256": null
   },
@@ -6057,7 +5507,6 @@
    "label": "Alaw Audio Decoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_alaw_decode_bs.block.yml",
    "yaml_sha256": "9c165f9d97f59ec2d16b60fa7b7d834d88f907e274077d284c0788276b19d2b2"
   },
@@ -6068,7 +5517,6 @@
    "label": "g711 Alaw Audio Encoder",
    "module": "vocoder",
    "reason": null,
-   "split": "test",
    "yaml_file": "vocoder_alaw_encode_sb.block.yml",
    "yaml_sha256": "65bc36f63ea465130043fbb45b9f8b49df9319e54912f32062a8c5a1b389bc47"
   },
@@ -6079,7 +5527,6 @@
    "label": "CODEC2 Audio Decoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_codec2_decode_ps.block.yml",
    "yaml_sha256": "a784927b4d6073c2529b7fe108129cb6ad03766ad3b085bcb940d5b54c617523"
   },
@@ -6090,7 +5537,6 @@
    "label": "CODEC2 Audio Encoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_codec2_encode_sp.block.yml",
    "yaml_sha256": "b386845e0ebc3d6a02990c23d483f280bbf818869d09480bbd592fe1252514f3"
   },
@@ -6101,7 +5547,6 @@
    "label": "CVSD Decoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_cvsd_decode.block.yml",
    "yaml_sha256": "fa3b8d66c0b26c17fb406891305c480f19dca0a02e9c6dc4aea29f36923cc6c2"
   },
@@ -6112,7 +5557,6 @@
    "label": "CVSD Audio Decoder (Raw Bit-Level)",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_cvsd_decode_bs.block.yml",
    "yaml_sha256": "3f93203e8a9a0f1368d31fb2f1b52802d1f25c6ba5b74c9ad814d49330ce88dd"
   },
@@ -6123,7 +5567,6 @@
    "label": "CVSD Encoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_cvsd_encode.block.yml",
    "yaml_sha256": "627d98b6b418557ca4e522c712f1138f91dd032bed91a11998fbc2f88c20f99d"
   },
@@ -6134,7 +5577,6 @@
    "label": "CVSD Audio Encoder (Raw Bit-Level)",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_cvsd_encode_sb.block.yml",
    "yaml_sha256": "911879fecc59ee788bb97f7f4a1b0366be12703ea7d56885dadc528171917055"
   },
@@ -6145,7 +5587,6 @@
    "label": "FreeDV demodulator",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_freedv_rx_ss.block.yml",
    "yaml_sha256": "5fc9996be49181d1ec48c578beee0dc1277b96031ea07ca78df1e211e0e90a3f"
   },
@@ -6156,7 +5597,6 @@
    "label": "FreeDV modulator",
    "module": "vocoder",
    "reason": null,
-   "split": "test",
    "yaml_file": "vocoder_freedv_tx_ss.block.yml",
    "yaml_sha256": "ddd9299b6bb9906c4f0196380a4f36e6e38b2dfa92404f70a753536c2e323351"
   },
@@ -6167,7 +5607,6 @@
    "label": "g721 Audio Decoder",
    "module": "vocoder",
    "reason": null,
-   "split": "test",
    "yaml_file": "vocoder_g721_decode_bs.block.yml",
    "yaml_sha256": "456cfcfd69b5e32d275f1f5468d6782b6408aecfb56417d9029bcd8235185f03"
   },
@@ -6178,7 +5617,6 @@
    "label": "g721 Audio Encoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_g721_encode_sb.block.yml",
    "yaml_sha256": "3d7e9452929c9674c0482c40adfe9d57614d3d442b075a9e5c33abaa7a972dfe"
   },
@@ -6189,7 +5627,6 @@
    "label": "g723_24 Audio Decoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_g723_24_decode_bs.block.yml",
    "yaml_sha256": "777f974fcc254d86fd3c3c493bab136d1bcd9496d8fbf65a51112bc5a727bc2d"
   },
@@ -6200,7 +5637,6 @@
    "label": "g723_24 Audio Encoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_g723_24_encode_sb.block.yml",
    "yaml_sha256": "0338d020ab03d94abb841b134a9cd2ddfd324f467c5c0f48f8ff5c4ced448d41"
   },
@@ -6211,7 +5647,6 @@
    "label": "g723_40 Audio Decoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_g723_40_decode_bs.block.yml",
    "yaml_sha256": "5f9e1897200701cd431e99792fd27bc92bfad78086b8ccdbbdd2646109bd73ab"
   },
@@ -6222,7 +5657,6 @@
    "label": "g723_40 Audio Encoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_g723_40_encode_sb.block.yml",
    "yaml_sha256": "d504e979c82566d67205e3eeb0514a855bbff8ec91c11c20a7b3f913afc7e3e7"
   },
@@ -6233,7 +5667,6 @@
    "label": "GSM full-rate Audio Decoder",
    "module": "vocoder",
    "reason": null,
-   "split": "test",
    "yaml_file": "vocoder_gsm_fr_decode_ps.block.yml",
    "yaml_sha256": "de0cf14e13b7563718131eaeca4fc0b6bf0508a833c5e4c7f6063a329807006a"
   },
@@ -6244,7 +5677,6 @@
    "label": "GSM full-rate Audio Encoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_gsm_fr_encode_sp.block.yml",
    "yaml_sha256": "d671fecd5452dc8112417f32082396b18bfea6014140b75d7a05f33623c4a0df"
   },
@@ -6255,7 +5687,6 @@
    "label": "ulaw Audio Decoder",
    "module": "vocoder",
    "reason": null,
-   "split": "train",
    "yaml_file": "vocoder_ulaw_decode_bs.block.yml",
    "yaml_sha256": "c7bd4cc0020b09eafb5bc02afba5c656fe3eb6350544dfd55d9262d321510dcf"
   },
@@ -6266,7 +5697,6 @@
    "label": "ulaw Audio Encoder",
    "module": "vocoder",
    "reason": null,
-   "split": "test",
    "yaml_file": "vocoder_ulaw_encode_sb.block.yml",
    "yaml_sha256": "302d689eae56167571542bba3ef0370f5c13b9ff561299878016ef14834aa0f0"
   },
@@ -6277,7 +5707,6 @@
    "label": "XMLRPC Client",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "xmlrpc_client.block.yml",
    "yaml_sha256": "ef1e06a5ec420c257e5d768d4aea05270a287058c801cbdf92e77173331b8518"
   },
@@ -6288,7 +5717,6 @@
    "label": "XMLRPC Server",
    "module": "blocks",
    "reason": null,
-   "split": "train",
    "yaml_file": "xmlrpc_server.block.yml",
    "yaml_sha256": "3f4bd877d3b5af5a7edbac4134bf3a70106ad11beceb7afa605249cf08875e90"
   },
@@ -6299,7 +5727,6 @@
    "label": "YAML Config",
    "module": "grc",
    "reason": "non-block",
-   "split": null,
    "yaml_file": "yaml_config.block.yml",
    "yaml_sha256": "832e5dd7ba6ab1b750b33f3d6b88ca69917fdce79c8d9159edcdb55f387dbde4"
   },
@@ -6310,7 +5737,6 @@
    "label": "ZMQ PUB Message Sink",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_pub_msg_sink.block.yml",
    "yaml_sha256": "372d75239ec26b528e18e9ea891b4d6cc6bb1745f8a0809e15197dad09732aab"
   },
@@ -6321,7 +5747,6 @@
    "label": "ZMQ PUB Sink",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_pub_sink.block.yml",
    "yaml_sha256": "274065521fef333315d63f502272a7443f7b82624ac3694adbb2c6723558f9ae"
   },
@@ -6332,7 +5757,6 @@
    "label": "ZMQ PULL Message Source",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_pull_msg_source.block.yml",
    "yaml_sha256": "0ae7dcafb360549ae543cdef67804f4cf9c9c5569c91e237de8143448580778e"
   },
@@ -6343,7 +5767,6 @@
    "label": "ZMQ PULL Source",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_pull_source.block.yml",
    "yaml_sha256": "c992618e1416ba690cca1cf00e6b686bf7a9f6305682ae7ae9abec061f883a22"
   },
@@ -6354,7 +5777,6 @@
    "label": "ZMQ PUSH Message Sink",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_push_msg_sink.block.yml",
    "yaml_sha256": "2a0a6f31856657374641de2fc8da95cf8f2be3098e0213ac6a9c9f4b2442c4aa"
   },
@@ -6365,7 +5787,6 @@
    "label": "ZMQ PUSH Sink",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_push_sink.block.yml",
    "yaml_sha256": "26828fe190968e788e5082ce35f66474d08eb7817072f3115134b0caed7202d9"
   },
@@ -6376,7 +5797,6 @@
    "label": "ZMQ REP Message Sink",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_rep_msg_sink.block.yml",
    "yaml_sha256": "5449a1c4a082c7248002be2ef68731845ec237f90d130bb74763cb08cd03158b"
   },
@@ -6387,7 +5807,6 @@
    "label": "ZMQ REP Sink",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_rep_sink.block.yml",
    "yaml_sha256": "41bdb8d2d3ed2bc2a0e6646ef8c450f6761d8f4db4188e62a2f6bfcd6f99c0b0"
   },
@@ -6398,7 +5817,6 @@
    "label": "ZMQ REQ Message Source",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_req_msg_source.block.yml",
    "yaml_sha256": "1f4677787d286c1e153aace74995b5deca16f8e7d67afc6dccab2faaceb302d3"
   },
@@ -6409,7 +5827,6 @@
    "label": "ZMQ REQ Source",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_req_source.block.yml",
    "yaml_sha256": "85c01783198ebe58b45587313ec9eb33536bbafed0d77a67444b588e04d72ed0"
   },
@@ -6420,7 +5837,6 @@
    "label": "ZMQ SUB Message Source",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_sub_msg_source.block.yml",
    "yaml_sha256": "ff1a04f832a0809b95bfcce4e25d13a0423a2cb3656c2e00692c7dbb6df3cf53"
   },
@@ -6431,7 +5847,6 @@
    "label": "ZMQ SUB Source",
    "module": "zeromq",
    "reason": "hardware-or-network-module",
-   "split": null,
    "yaml_file": "zeromq_sub_source.block.yml",
    "yaml_sha256": "db06c9a96e7971cffe5df0ab944c8065ff450368374e3766a142c33ebe8d5be0"
   }
@@ -6448,198 +5863,113 @@
    "deprecated": 18,
    "hardware-or-network-module": 85,
    "non-block": 67
-  },
-  "test": 125,
-  "test_families": 121,
-  "train": 290
+  }
  },
- "cross_module_families": [],
  "generator": "grcbench.tier_k.catalog",
  "gnuradio_version": "3.10.12.0",
  "modules": {
   "analog": {
    "blocks": 34,
    "eligible": 33,
-   "excluded": 1,
-   "test": 9,
-   "test_families": 9,
-   "train": 24,
-   "train_families": 22
+   "excluded": 1
   },
   "audio": {
    "blocks": 2,
    "eligible": 0,
-   "excluded": 2,
-   "test": 0,
-   "test_families": 0,
-   "train": 0,
-   "train_families": 0
+   "excluded": 2
   },
   "blocks": {
    "blocks": 142,
    "eligible": 136,
-   "excluded": 6,
-   "test": 40,
-   "test_families": 40,
-   "train": 96,
-   "train_families": 91
+   "excluded": 6
   },
   "channels": {
    "blocks": 17,
    "eligible": 17,
-   "excluded": 0,
-   "test": 7,
-   "test_families": 5,
-   "train": 10,
-   "train_families": 10
+   "excluded": 0
   },
   "digital": {
    "blocks": 73,
    "eligible": 57,
-   "excluded": 16,
-   "test": 17,
-   "test_families": 17,
-   "train": 40,
-   "train_families": 40
+   "excluded": 16
   },
   "dtv": {
    "blocks": 54,
    "eligible": 54,
-   "excluded": 0,
-   "test": 16,
-   "test_families": 16,
-   "train": 38,
-   "train_families": 38
+   "excluded": 0
   },
   "fec": {
    "blocks": 39,
    "eligible": 17,
-   "excluded": 22,
-   "test": 6,
-   "test_families": 5,
-   "train": 11,
-   "train_families": 11
+   "excluded": 22
   },
   "fft": {
    "blocks": 4,
    "eligible": 4,
-   "excluded": 0,
-   "test": 1,
-   "test_families": 1,
-   "train": 3,
-   "train_families": 3
+   "excluded": 0
   },
   "filter": {
    "blocks": 33,
    "eligible": 27,
-   "excluded": 6,
-   "test": 9,
-   "test_families": 8,
-   "train": 18,
-   "train_families": 18
+   "excluded": 6
   },
   "grc": {
    "blocks": 18,
    "eligible": 0,
-   "excluded": 18,
-   "test": 0,
-   "test_families": 0,
-   "train": 0,
-   "train_families": 0
+   "excluded": 18
   },
   "iio": {
    "blocks": 10,
    "eligible": 0,
-   "excluded": 10,
-   "test": 0,
-   "test_families": 0,
-   "train": 0,
-   "train_families": 0
+   "excluded": 10
   },
   "network": {
    "blocks": 6,
    "eligible": 0,
-   "excluded": 6,
-   "test": 0,
-   "test_families": 0,
-   "train": 0,
-   "train_families": 0
+   "excluded": 6
   },
   "pdu": {
    "blocks": 13,
    "eligible": 13,
-   "excluded": 0,
-   "test": 4,
-   "test_families": 4,
-   "train": 9,
-   "train_families": 9
+   "excluded": 0
   },
   "qtgui": {
    "blocks": 36,
    "eligible": 23,
-   "excluded": 13,
-   "test": 7,
-   "test_families": 7,
-   "train": 16,
-   "train_families": 16
+   "excluded": 13
   },
   "soapy": {
    "blocks": 15,
    "eligible": 0,
-   "excluded": 15,
-   "test": 0,
-   "test_families": 0,
-   "train": 0,
-   "train_families": 0
+   "excluded": 15
   },
   "trellis": {
    "blocks": 13,
    "eligible": 13,
-   "excluded": 0,
-   "test": 4,
-   "test_families": 4,
-   "train": 9,
-   "train_families": 9
+   "excluded": 0
   },
   "uhd": {
    "blocks": 43,
    "eligible": 0,
-   "excluded": 43,
-   "test": 0,
-   "test_families": 0,
-   "train": 0,
-   "train_families": 0
+   "excluded": 43
   },
   "video": {
    "blocks": 1,
    "eligible": 1,
-   "excluded": 0,
-   "test": 0,
-   "test_families": 0,
-   "train": 1,
-   "train_families": 1
+   "excluded": 0
   },
   "vocoder": {
    "blocks": 20,
    "eligible": 20,
-   "excluded": 0,
-   "test": 5,
-   "test_families": 5,
-   "train": 15,
-   "train_families": 13
+   "excluded": 0
   },
   "zeromq": {
    "blocks": 12,
    "eligible": 0,
-   "excluded": 12,
-   "test": 0,
-   "test_families": 0,
-   "train": 0,
-   "train_families": 0
+   "excluded": 12
   }
  },
  "n_block_yml_files": 580,
- "rule": "stratified-largest-remainder-sha256-v1 over block families; strata = module; test = round(0.3 * eligible families)",
  "rules": {
   "eligibility": {
    "deprecated": "flag 'deprecated' or a 'Deprecated' category",
@@ -6648,7 +5978,5 @@
   },
   "family": "key = lower-case name minus one trailing type-signature word of letters bcfisvx, minus a trailing _hier, minus one trailing version digit; blocks share a family when ids or YAML file stems share a key",
   "module": "tree file <module>.tree.yml listing the id; else first word of the YAML file name; else 'grc' (built-ins without YAML)"
- },
- "seed": "grc-bench-blocks-v1-2026-10-14",
- "test_fraction": "3/10"
+ }
 }

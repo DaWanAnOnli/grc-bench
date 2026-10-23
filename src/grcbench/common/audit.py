@@ -13,7 +13,7 @@ reports/audit.json; the command exits 1 if any check fails.
                  Tier-F graph has that graph's licence identifier (the first word, e.g. GPL-3.0-or-later)
   unique ids     no id is used twice across tiers and splits
   tier-k splits  dev and test questions are disjoint; the training team's exclusion list holds every
-                 dev id; every block question is about a test-side block of the block partition
+                 dev id; every block question is about an eligible catalog block with a behaviour model
   tier-f splits  every task's split agrees with its signature rule or seed file (compose.audit_items)
   tier-a splits  every Tier-A start graph comes from a Tier-F graph of the same split
   reserved list  handoff/training_team/flowgraph_reserved_signatures.txt holds the current reserved set
@@ -134,10 +134,12 @@ def check_tier_k_splits(records: list[tuple[str, dict, str]]) -> dict[str, Any]:
     excluded = {line.strip() for line in (HANDOFF / "training_team" / "exclude_question_ids.txt")
                 .read_text(encoding="utf-8").splitlines() if line.strip() and not line.startswith("#")}
     bad += [f"{i}: dev id missing from the training team's exclusion list" for i in sorted(dev - excluded)]
-    split_of = {b["id"]: b.get("split") for b in read_json(SPLITS / "block_partition.json")["blocks"]}
+    from ..tier_k.blockgen import SETTINGS
+    eligible = {b["id"] for b in read_json(REPORTS / "block_catalog.json")["blocks"] if b["eligible"]}
+    modelled = {s.block for s in SETTINGS}
     blockq = [r for _, r, _ in records if r.get("item_kind") == "block_question"]
-    bad += [f"{r['id']}: block {r['source'].get('block_id')} is not a test-side block" for r in blockq
-            if split_of.get(r["source"].get("block_id")) != "test"]
+    bad += [f"{r['id']}: block {r['source'].get('block_id')} is not an eligible catalog block with a behaviour "
+            "model" for r in blockq if not {r["source"].get("block_id")} <= eligible & modelled]
     return _check("tier-k splits", bad, f"{len(dev)} dev ids, {len(test)} test items, {len(blockq)} block questions")
 
 
