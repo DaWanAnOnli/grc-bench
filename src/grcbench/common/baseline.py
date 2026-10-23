@@ -2,6 +2,7 @@
 
     gb baseline take          # once, before the first run
     gb baseline take --add    # add the manifest of a root that has none yet; the others stay as they are
+    gb baseline take --root NAME[,NAME]   # retake only these roots (an accepted change); the others stay
     gb baseline check         # at any time; non-zero exit if anything changed
 
 Full manifests live in ~/grc-bench-work/baseline (machine-specific); the summary goes into
@@ -66,6 +67,18 @@ def add_missing() -> list[str]:
     return added
 
 
+def retake(names: list[str]) -> list[str]:
+    """Replace the manifests of the named roots only; every other root keeps its manifest."""
+    snaps = _snapshot()
+    unknown = [n for n in names if n not in snaps]
+    if not names or unknown:
+        raise SystemExit(f"unknown root(s): {', '.join(unknown) or '(none given)'}; roots: {', '.join(snaps)}")
+    ensure(BASE_DIR)
+    for name in names:
+        write_json(BASE_DIR / f"{name}.json", snaps[name])
+    return [f"{name} ({snaps[name]['n_files']} files)" for name in names]
+
+
 def check() -> int:
     snaps = _snapshot()
     bad = 0
@@ -91,6 +104,11 @@ def main(argv: list[str]) -> int:
     if cmd == "take" and "--add" in argv:
         added = add_missing()
         print("added: " + (", ".join(added) if added else "nothing (every root is in the baseline)"))
+        return 0
+    if cmd == "take" and "--root" in argv:
+        i = argv.index("--root")
+        names = argv[i + 1].split(",") if i + 1 < len(argv) else []
+        print("retaken: " + ", ".join(retake(names)))
         return 0
     if cmd == "take":
         if (BASE_DIR / "grc_agent_repo.json").exists() and "--force" not in argv:

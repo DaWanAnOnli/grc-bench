@@ -32,7 +32,7 @@ Write values exactly as shown (lower case, the same spelling), so the sheets can
 | | the same on `error` rows (`D1`, ..., `DU`) | `present`, `absent` |
 | | the same on the `hallucination` row (`H`) | `none`, `present` (names in the note: `name (kind); ...`) |
 | `blinding_key` | `sheet` | `judge_calibration`, `judge_calibration_finetuned`, `error_analysis` |
-| | `source_group` | `base`, `b4`, `panel`, `final` |
+| | `source_group` | `base`, `b3`, `panel`, `final` |
 | `error_analysis` | `tier` | `F`, `A` |
 | | `primary_*`, `final_primary` | `hallucinated_block`, `wrong_port_type`, `missing_connection`, `rate_mismatch`, `parameter_error`, `runtime_error`, `wrong_behaviour`, `no_output`, `item_defect_suspected`, `other`; Tier F only: `none` |
 | | `process_*`, `final_process` (Tier A) | `malformed_call`, `unknown_tool`, `edit_without_inspect`, `giving_up`, `looping`, `other`, `none` |

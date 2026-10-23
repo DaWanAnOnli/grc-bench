@@ -62,7 +62,7 @@ That is about 14 hours more than Table 7. Two things go into the pre-registratio
 The answers come from the logged Tier-K runs of three source groups (eval plan §8.1):
 
 - **base models:** the B0 runs of Nanbeige4.2-3B and North-Mini-Code;
-- **B4:** DeepSeek-V4.1-Flash;
+- **B3:** DeepSeek-V4.1-Flash;
 - **the panel:** the small open models, the open teachers, the closed frontier model and
   Qwen3-30B-A3B.
 
@@ -107,17 +107,17 @@ An answer can be drawn only if **all** of these hold:
   the blinding key.
 - **Order:** the sheet lists the answers in a random order, not grouped by model or by question.
 
-**Open point, to be decided before G2: when the B4 and panel answers exist.** Eval plan Table 15
+**Open point, to be decided before G2: when the B3 and panel answers exist.** Eval plan Table 15
 schedules the calibration labels in week 4. In week 4, only the base models' answers exist:
 
-- **B4** (DeepSeek-V4.1-Flash) "is run once, on the frozen benchmark in week 8" (proposal, baselines).
+- **B3** (DeepSeek-V4.1-Flash) "is run once, on the frozen benchmark in week 8" (proposal, baselines).
   DeepSeek is also the session teacher (Table 5), and session collection runs from week 4 to
-  mid-November. An early B4 run on test questions would send test items to a teacher while it
-  creates training data, which eval plan §6 forbids. **So there is no early B4 run.**
+  mid-November. An early B3 run on test questions would send test items to a teacher while it
+  creates training data, which eval plan §6 forbids. **So there is no early B3 run.**
 - **The panel** runs from week 5 ("Panel runs on Qoherent's machines", Table 15), and its members are
   chosen at the freeze (§7.3).
 
-So in every option the **B4 share is labelled in week 8**, next to the second check and before any
+So in every option the **B3 share is labelled in week 8**, next to the second check and before any
 declared test result is judged. The options differ in when the rest is labelled:
 
 1. **Start in week 4.** Label the base-model share in week 4, and the panel share when the panel
@@ -385,7 +385,7 @@ coordinator only and never sent to annotators. The error analysis uses the same 
 | `blind_id` | the opaque id on the annotators' sheet (`answer_id` here, `failure_id` in the error analysis) |
 | `sheet` | `judge_calibration`, `judge_calibration_finetuned` or `error_analysis` |
 | `item_id`, `split` | the question or task, and its split |
-| `source_group` | `base`, `b4`, `panel` or `final` |
+| `source_group` | `base`, `b3`, `panel` or `final` |
 | `model`, `configuration` | the model and its configuration (for example B0 at Q4_K_M) |
 | `run_id`, `sample_index` | the logged run and which of its samples this is |
 | `selection_seed` | the seed the sample was drawn with |

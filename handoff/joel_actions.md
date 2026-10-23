@@ -46,8 +46,9 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
    `docker/` pins GNU Radio 3.10.12; the benchmark runs natively in WSL today).
 9. **First git commit.** `grc-bench/` has never been committed. Claude asks before the first commit.
    The pre-registration should cite this commit.
-10. **Retake the baseline** of the read-only inputs (`./gb baseline take`) if you accept the two
-    changes `./gb baseline check` reports since 18 Oct (`~/grc-agent/.git/index`, `fftw_wisdom`).
+10. **Retake the baseline** of the read-only inputs
+    (`./gb baseline take --root grc_agent_repo,gnuradio_user_cache`) if you accept the two changes
+    `./gb baseline check` reports since 18 Oct (`~/grc-agent/.git/index`, `fftw_wisdom`).
 11. **The RTX 5090 in this machine.** llama.cpp b10333 now runs on it with CUDA (`./gb fetch --cuda`).
-    Some of the GPU-hours in the compute request (about 51 rented RTX 5090 hours) could run here
+    Some of the GPU-hours in the compute request (about 47 rented RTX 5090 hours) could run here
     instead. Your decision; it changes no benchmark setting.

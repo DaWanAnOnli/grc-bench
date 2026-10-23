@@ -16,7 +16,7 @@ No row is failing.
 
 | Check | Result |
 |---|---|
-| `./gb test` | 1,187 tests in 32 files, all pass; `./gb stats selfcheck` 37/37; `./gb score-k --selftest` 85/85 |
+| `./gb test` | 1,189 tests in 33 files, all pass; `./gb stats selfcheck` 37/37; `./gb score-k --selftest` 85/85 |
 | `./gb audit` | 8/8 checks pass on 557 item records: schema, canary, licence, unique ids, Tier-K/F/A splits, reserved list (`reports/audit.json`) |
 | `./gb baseline check` | read-only inputs (now including `new_data/`) unchanged except the two 18 Oct changes (`~/grc-agent/.git/index`, `~/.cache/gnuradio/fftw_wisdom`); retaking the baseline waits for Joel |
 | `./gb build-all` | every generated output is deterministic and identical to the repository, including `./gb traces` and the execution-derived `./gb blockq` (23 Oct) |
@@ -50,7 +50,7 @@ No row is failing.
 | **eval §4.4, §6** A model under test sees only its own task: from inside the sandbox no task record, answer key, other run, repository file or secret can be read | `common/sandbox.py` (the user's files hidden in every sandbox; the run folders, cache and source hidden from code the agent starts), `tier_a/isolation.py`, `tier_a/headless_proxy.py`; hosted models' keys stay on the host (`tier_a/relay.py`) | `tests/test_sandbox_masks.py` probes all three sandboxes; `tests/test_agent_adhoc.py` checks that a key reaches the provider and no run file; conformance check: a write outside the project fails with "Read-only file system" | done |
 | **eval §6, §13** Flowgraph signatures of test and dev tasks kept out of training | `handoff/training_team/flowgraph_reserved_signatures.txt` (61, Tier F and Tier A) | audit "reserved list" | done |
 | **eval §7.1** llama.cpp for every open model; recommended sampling; answer limits; thinking removed | llama.cpp b10333 pinned (CPU build and CUDA build for the RTX 5090); `rules.strip_reasoning` | smoke tests; judge prompt hash covers reasoning removal | done |
-| **eval §7.2** Declared run list (Table 6), published with the pre-registration | `docs/preregistration/run_list.yaml` (42 configurations, `status: draft`) | pre-registration tests | team: sign-off at G2 sets `status: declared` |
+| **eval §7.2** Declared run list (Table 6), published with the pre-registration | `docs/preregistration/run_list.yaml` (40 configurations, `status: draft`) | pre-registration tests | team: sign-off at G2 sets `status: declared` |
 | **eval §7.3** Model panel | 11 panel slots in `run_list.yaml` | — | partial: members chosen at the freeze |
 | **eval §7.4** Every run stores prompts, outputs, tool calls, logs, scores, tokens, time, GPU-hours (MLflow) | runner traces in Qoherent's SFT row format; run log | trace tests | partial: MLflow logging is not built yet |
 | **eval §8.1, prop §5.1** Judge: MiniMax-M3, rubric-based, blind to the model; calibration κ ≥ 0.7 (lower bound ≥ 0.6) on 150 answers, 3 annotators; fallback | `tier_k/judge_prompt.py` (version and hash in the pre-registration); `stats/agreement.py`; `docs/guidelines/judge_calibration.md` | judge tests; stats self-check | partial: calibration labels need team time and API access (blocked) |

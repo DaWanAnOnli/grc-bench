@@ -80,7 +80,7 @@ an expression or an example) or `underspecified`. The team then writes the refer
 - **Never paste a test question into ChatGPT, Claude or any other chatbot or online tool.** Look
   things up in documents, not in a chatbot. Test items reach a model only in a declared, logged run.
   Eval plan §6 says "no test item is sent to a teacher that creates training data". It adds that
-  the models evaluated through an API (B4 and the panel) "do see the public test items; we use
+  the models evaluated through an API (B3 and the panel) "do see the public test items; we use
   settings that do not keep prompts where providers offer them".
   - **The one exception** is the Table-5 drafting model, if the team decides to use it (eval plan
     §5.2). The test questions then go to that one declared model only, through its API, with

@@ -199,13 +199,13 @@ the tokens and the time, and the run's GPU-hours. All raw outputs are released w
 its model, precision, tiers, samples per item (n) and Tier-A runs per task (k), and the hypotheses it
 serves. In summary:
 
-- **Nanbeige4.2-3B** (BF16 unless stated): B0, B1, B2, B3, the best S1 checkpoint, S1 + DPO and
+- **Nanbeige4.2-3B** (BF16 unless stated): B0, B1, B2, the best S1 checkpoint, S1 + DPO and
   S1 + DPOP, the final model compressed to Q8_0, Q5_K_M and Q4_K_M, seeds 2 and 3 of the final
   setting, and four comparison arms.
 - **North-Mini-Code**, compared at the 4-bit deployment precision with BF16 as the anchor: B0 in BF16
-  and Q4, B1, B2, B3 and the best S1 checkpoint at Q4, the final model in BF16, Q8_0, Q5_K_M and Q4,
+  and Q4, B1, B2 and the best S1 checkpoint at Q4, the final model in BF16, Q8_0, Q5_K_M and Q4,
   seeds 2 and 3, and one comparison arm (attention-only adapters).
-- **References:** Qwen3-30B-A3B at Q4 and the B4 cloud teacher, DeepSeek-V4.1-Flash.
+- **References:** Qwen3-30B-A3B at Q4 and the B3 cloud teacher, DeepSeek-V4.1-Flash.
 - **The panel** (eval plan §7.3): six small open models, four open teachers and one closed frontier
   model. The panel's slots are declared now; its members are chosen and added at the freeze.
 
@@ -232,7 +232,7 @@ default settings on 10 tasks.
   (`clustered-tests`). Each comparison has one primary p-value (`primary-test`), and the effect size is
   reported next to it (Cohen's h or the matched odds ratio; the paired difference with its interval).
 - **Corrections.** Holm–Bonferroni within each research question: RQ2 (H2a and H2b, and every
-  comparison of a trained model with B0, B1 and B3), RQ3 (H3) and RQ4 (every compression level against
+  comparison of a trained model with B0 and B1), RQ3 (H3) and RQ4 (every compression level against
   BF16, and H4a).
 - **What the benchmark can detect** (eval plan Table 8: 80 % power, 5 % significance, paired, 20–30 %
   of items decided differently). The MDE is printed beside every claim, with a design-effect

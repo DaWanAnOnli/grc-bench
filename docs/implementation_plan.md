@@ -339,7 +339,7 @@ Default-value, which-block and parameter-meaning questions are dropped. Answers 
   - Tier-F and Tier-A first sets, pending team review.
 
 ## Not executable now
-- **Needs money or access:** the throughput pilot; judge calibration runs, B4 and the panel (no API access or GPUs); base-model runs and item pruning (no weights or GPU); fine-tuned runs (training not started).
+- **Needs money or access:** the throughput pilot; judge calibration runs, B3 and the panel (no API access or GPUs); base-model runs and item pruning (no weights or GPU); fine-tuned runs (training not started).
 - **Needs hardware:** Tier E on H1 (needs a 32 GB laptop and Nanbeige's fork build) and on H2, H3 and the server.
 - **Needs people:** expert review and all team reviews.
 - **Later or another team's work:**
