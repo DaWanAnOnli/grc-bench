@@ -75,11 +75,11 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.342,
-     "min": 0.1718,
-     "p10": 0.1904,
-     "p25": 0.2029,
-     "p50": 0.2332,
-     "p75": 0.2457,
+     "min": 0.1854,
+     "p10": 0.1947,
+     "p25": 0.2045,
+     "p50": 0.2346,
+     "p75": 0.2499,
      "p90": 0.3038,
      "p95": 0.3378,
      "p99": 0.3409
@@ -201,8 +201,8 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.8403,
-     "min": 0.7062,
-     "p10": 0.7258,
+     "min": 0.7183,
+     "p10": 0.7374,
      "p25": 0.7599,
      "p50": 0.7794,
      "p75": 0.809,
@@ -244,10 +244,10 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.3089,
-     "min": 0.153,
-     "p10": 0.1911,
-     "p25": 0.2095,
-     "p50": 0.231,
+     "min": 0.1813,
+     "p10": 0.1956,
+     "p25": 0.2104,
+     "p50": 0.232,
      "p75": 0.249,
      "p90": 0.2587,
      "p95": 0.2773,
@@ -370,7 +370,7 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.8404,
-     "min": 0.7039,
+     "min": 0.7176,
      "p10": 0.7304,
      "p25": 0.7558,
      "p50": 0.7745,
@@ -413,7 +413,7 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.3135,
-     "min": 0.1689,
+     "min": 0.162,
      "p10": 0.1904,
      "p25": 0.2144,
      "p50": 0.2481,
@@ -586,7 +586,7 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.3561,
-     "min": 0.2115,
+     "min": 0.1755,
      "p10": 0.2299,
      "p25": 0.2403,
      "p50": 0.2607,
@@ -713,7 +713,7 @@
     "max_cosine_quantiles": {
      "max": 0.7932,
      "min": 0.6758,
-     "p10": 0.7169,
+     "p10": 0.7234,
      "p25": 0.7352,
      "p50": 0.7646,
      "p75": 0.7748,
@@ -758,8 +758,8 @@
      "min": 0.1259,
      "p10": 0.1425,
      "p25": 0.1559,
-     "p50": 0.1755,
-     "p75": 0.1981,
+     "p50": 0.1733,
+     "p75": 0.191,
      "p90": 0.2126,
      "p95": 0.2202,
      "p99": 0.2529
@@ -881,8 +881,8 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.834,
-     "min": 0.7208,
-     "p10": 0.7414,
+     "min": 0.7283,
+     "p10": 0.7418,
      "p25": 0.7611,
      "p50": 0.777,
      "p75": 0.8066,
@@ -890,7 +890,7 @@
      "p95": 0.8246,
      "p99": 0.8324
     },
-    "passages_embedded": 73,
+    "passages_embedded": 74,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -952,9 +952,9 @@
     "max_cosine_quantiles": {
      "max": 0.343,
      "min": 0.2017,
-     "p10": 0.2159,
-     "p25": 0.2452,
-     "p50": 0.2668,
+     "p10": 0.2173,
+     "p25": 0.2489,
+     "p50": 0.267,
      "p75": 0.2888,
      "p90": 0.3151,
      "p95": 0.3266,
@@ -1079,7 +1079,7 @@
      "max": 0.8156,
      "min": 0.7042,
      "p10": 0.7173,
-     "p25": 0.7327,
+     "p25": 0.7377,
      "p50": 0.7574,
      "p75": 0.7848,
      "p90": 0.8061,
@@ -1120,9 +1120,9 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.3412,
-     "min": 0.157,
-     "p10": 0.1701,
-     "p25": 0.2038,
+     "min": 0.1614,
+     "p10": 0.1724,
+     "p25": 0.2094,
      "p50": 0.2242,
      "p75": 0.2609,
      "p90": 0.2904,
@@ -1248,23 +1248,23 @@
  "sources": [
   {
    "path": "grc-bench/items/tier_a/test/gba-test-01/task.json",
-   "sha256": "e1bea63c1316b54b41c3ea4187449d7aca73d0c75f5c066c26441fdf51027743"
+   "sha256": "00fc049836586ac5971000b454aefe8456c9c0a48b68307eba50976b56b88ad5"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-02/task.json",
-   "sha256": "d5e493f5a12a053721c96b7b03c26bc2374587c9e914cf3ff9e7a7fa065cc1f2"
+   "sha256": "9f82780c4ee272d0bea7f7462420cc4e6788eff06b5a0a91db6c8fe61e753fec"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-03/task.json",
-   "sha256": "41d428a9710ecb560b9b77bc0a63127058be63987508011e740e1a4854d92698"
+   "sha256": "d3be7db1d9fab1b88d9663d88da46bd7eb4386dc5d0fd02bb2296ecebf9dec4e"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-04/task.json",
-   "sha256": "def398a145de220bb5f447c93dfb18f29a6c03ee1282b9d08706f5f6006040d4"
+   "sha256": "339dffb8ad64297c4879f8ec7ba45b946ed1ddf7cd1cb5a4a07ab663f72cbea0"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-05/task.json",
-   "sha256": "66cd6396ea237d2f92ffbc69fd1b8dd04f49161fde4d17066c5dab0b5dc11aed"
+   "sha256": "44f5ced6a7e07a108775701ac308ef534936921fde5eb4edd557ca754f1df9d3"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-06/task.json",
@@ -1272,7 +1272,7 @@
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-07/task.json",
-   "sha256": "fb2a8a634b630eba078737e089a0cb33a06bf064b5c50dbd2dd4cf7ffed3afce"
+   "sha256": "f1bf140ffddd90fcc63b31aff21bc5eb8e5a9e4a3a669f0ace8a7f1ad5859f13"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-08/task.json",
@@ -1288,7 +1288,7 @@
   },
   {
    "path": "grc-bench/items/tier_a/test_spec_drafts.jsonl",
-   "sha256": "eaf3a49b0120bbfb64143c07bd2e4137f992bc475082ed03ae4ebbaaf04be313"
+   "sha256": "93aab4deecb3ccd0edeb6f16fe1a2855de3fa90bb0aa6b2a6b08cc940eead964"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",

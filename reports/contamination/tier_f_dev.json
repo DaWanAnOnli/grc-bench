@@ -1257,43 +1257,43 @@
  "sources": [
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-01/task.json",
-   "sha256": "fbc5937d9906152616f30187c27ea30a4cee0f37b64afcd0797586e7ff2dee52"
+   "sha256": "85c1b183804fbc4832cf39581b0a9d14526064def1392e0de9af2d1877a60c92"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-02/task.json",
-   "sha256": "0c11a33bae88be1ebf0f9a07881d559928b12ae2032af9823e33888a55263d92"
+   "sha256": "48408427ea505cfb2bc871d3b234970aae880296a3653e6563413b2f65cbf038"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-03/task.json",
-   "sha256": "5e96102f8f5567c8b264827cd339252361b3205f848fcf88aa348887e9b48b5a"
+   "sha256": "e6a3234b5cd2cccc45c036100ee66670150a4d7613eaae4e2c9c24ec8249ee11"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-04/task.json",
-   "sha256": "5f8055a60eb2d9cdd273968d35a80610f60e1a167105d4d67ac6b5857df2368d"
+   "sha256": "9ecd4c357a7afb72e1c468785d86cdcdfdd3605ee2cd06eefe607fccaad231e1"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-05/task.json",
-   "sha256": "095cab752df6518a4421b249a44a6c3876fbc35638676b27372a2c9130293960"
+   "sha256": "25ca4dce10f65cac3ed69ae61eaf90e556956dbebf8cad274666270f3b7a03bb"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-06/task.json",
-   "sha256": "93660de223e757ffbdfc4d958806e541348b3ac4f7c5f4b64eb7babf18d27c14"
+   "sha256": "aabd89b205d698aea9b165e0b66fee5c939678200cad5aacde2bf5666a5568a0"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-07/task.json",
-   "sha256": "a2713e15c05d101a7941280ce225853fe852ff6f4c419bf05c8137cb4de65e8d"
+   "sha256": "79ac794697726ed88b113a82f2b14bdbfba3b5a7d665eaae718d22872249667e"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-08/task.json",
-   "sha256": "0fd275393603a345dc985ea5aee5844d829907b69861885aea39eba2d4b566bf"
+   "sha256": "fa04bdb13e72694668e399931526125a193366288222420625b2295e0afa9a12"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-09/task.json",
-   "sha256": "9fb5cdf7aa2e175fb56c690ceb11909c5f125b8323f14f6cdbd2fc9535c38dc3"
+   "sha256": "b077519a684d0e68779c72e197594bf24bf2ad4828f956815a4a57517cab27fb"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-10/task.json",
-   "sha256": "b75b1ed012db9f601da5431b92cfa95887ab35740d593a563481fd7db90cddb2"
+   "sha256": "dc60d6d006d6e4a20cc1cd99b0c95704a8a50cab9527da083910987f7bf381c0"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",

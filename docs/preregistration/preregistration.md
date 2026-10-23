@@ -298,9 +298,7 @@ Each item states what has to be decided and the option this draft proposes.
    data source A1 and adapter placement A3).
 10. **Infrastructure re-runs:** *proposed:* an episode with an infrastructure error is re-run up to
     twice; if it fails a third time it is scored as a failure and listed.
-11. **Tier-A refusal tasks:** whether an unsafe request (gba-test-29) belongs in Tier A beside the
-    hardware, network and impossible-request tasks.
-12. **The code version:** the commit of the `grc-bench` repository made at sign-off, which this
+11. **The code version:** the commit of the `grc-bench` repository made at sign-off, which this
     document cites for the analysis code.
 
 ## 9. Fixed at the freeze (13 November)

@@ -1248,31 +1248,31 @@
  "sources": [
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-01/task.json",
-   "sha256": "494ddba3297922719f395bc473feedecaa4365b36345e9676bbda100bb01a0fb"
+   "sha256": "f8a0be1b2e16b1e374af1a43ded18d60b0f5bc267d2e46e60d632e4dbf85bb6e"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-02/task.json",
-   "sha256": "c6b3598e94e053645554f58cda6a2e8437f5957603952309fb8eedb6aacd05b3"
+   "sha256": "a4b1d56e59a5d043ca294210ffd345bf281d93a5d590fbc527f2805ef0efa32b"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-03/task.json",
-   "sha256": "7c3932f97cc8990a45b1aefa5adb6724bb9996cbf8d88117f5d61697729206f5"
+   "sha256": "cda38c6178b81455d713f7cb126c6b8346a0fd9ecaab2bf8644b34304df25fb9"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-04/task.json",
-   "sha256": "d2bdb811b566968e575678418c11e16b9ef528d1c83dae2b85d3ac22a56589d4"
+   "sha256": "c7e0a87ae8943bc71a482ac5adf01636d7f2d2fcf819d1d95599bac81d6d2627"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-05/task.json",
-   "sha256": "d426794db69322966d2be4b9f4f1a18ed59095374a197affee60651475d879cd"
+   "sha256": "7dc6654c2c11f3e30e9ff8b0432f1425f7009d20d75791d095db5599fae0cde0"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-06/task.json",
-   "sha256": "5434d5573665a982d643c52c60df17fda95bb70d663317960a2da0d895ca6899"
+   "sha256": "89f5378cf2d0e3c0333b93e7cdda8ce59044a0fa641441c45449c1d3bdaef5d0"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-07/task.json",
-   "sha256": "43e0d14b9dbd1496bd0201cd62627a8986468d24ba6edffb1fdada77986ce360"
+   "sha256": "7f7eeef710539c017d929bd4e4a8d33a3acb7456b01200731f37e82e5723fb60"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-08/task.json",
@@ -1280,7 +1280,7 @@
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-09/task.json",
-   "sha256": "f3e856f01730e589dababfad40d893be28fefbdea6ea636a922a90bbf310dd16"
+   "sha256": "b78271090556f708639a4e573978fde21f1682a4871bab8b2f6eacbba3ec2397"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-10/task.json",

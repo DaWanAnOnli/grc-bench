@@ -215,11 +215,11 @@ Distribution of each item's maximum cosine (quantiles over items):
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---|
 | train_questions | 0.224 | 0.290 | 0.329 | 0.341 | 0.757 | 0.806 | 0.814 | 0.816 | all passages |
 | teacher_answers | 0.267 | 0.315 | 0.341 | 0.343 | 0.777 | 0.818 | 0.832 | 0.834 | TF-IDF candidates |
-| repaired | 0.231 | 0.259 | 0.303 | 0.309 | 0.779 | 0.820 | 0.839 | 0.840 | TF-IDF candidates |
+| repaired | 0.232 | 0.259 | 0.303 | 0.309 | 0.779 | 0.820 | 0.839 | 0.840 | TF-IDF candidates |
 | repaired_glm | 0.248 | 0.279 | 0.309 | 0.314 | 0.774 | 0.823 | 0.840 | 0.840 | TF-IDF candidates |
 | sft_sessions | 0.261 | 0.342 | 0.355 | 0.356 | 0.770 | 0.812 | 0.820 | 0.821 | TF-IDF candidates |
-| task_specs | 0.175 | 0.213 | 0.253 | 0.266 | 0.765 | 0.786 | 0.793 | 0.793 | all passages |
-| agent_traces | 0.233 | 0.304 | 0.341 | 0.342 | 0.763 | 0.804 | 0.820 | 0.826 | TF-IDF candidates |
+| task_specs | 0.173 | 0.213 | 0.253 | 0.266 | 0.765 | 0.786 | 0.793 | 0.793 | all passages |
+| agent_traces | 0.235 | 0.304 | 0.341 | 0.342 | 0.763 | 0.804 | 0.820 | 0.826 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 

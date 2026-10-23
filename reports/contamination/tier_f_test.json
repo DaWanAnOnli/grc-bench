@@ -1263,83 +1263,83 @@
  "sources": [
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-01/task.json",
-   "sha256": "da4b2679d70c5a69326594210b2390cddcce48c9c552a962187588666364ce7f"
+   "sha256": "807f3eaf581fd717fec6247daf7a06e5c9d55821b393ae06a5f3197f8fc042e1"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-02/task.json",
-   "sha256": "fa0b885a204738e384e163528dd6eee67f2f90206d07c50289e92c8d7c62e36e"
+   "sha256": "98c5e9ae1526e948125dd039b1dd98a58909b5a901c615bd490987775b6fb750"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-03/task.json",
-   "sha256": "b0b604c041c16528ad55f28ef3c40c4caf795e6d070f2034cb5ad715ffaf8bb0"
+   "sha256": "1e9f585e3ddc2645283a1db82fb45ac863a4eecc207dc163dfb2cd21772af098"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-04/task.json",
-   "sha256": "727457356851658b25be02223525c9308e08bf79220bc55c3be566b8293a9a2d"
+   "sha256": "c728f45a04735cd4f2e8ccedd04911e478d42b85f5b5243fb94ff37bfb2c7f3b"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-05/task.json",
-   "sha256": "1d7888e814a830bc3052134a610fe4d584229358ae6e2f4eb378ef9f702739a8"
+   "sha256": "d8611306b594c8dc461ab0a8dab54b97f0203ad7cbc65f060a40f98fa9a735a9"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-06/task.json",
-   "sha256": "01b1692c99c536014340fdaaf89dbd0a661b4a1b682ec5df8be6e86e4137d09e"
+   "sha256": "5cb5610373dac4a5f2dfe915de5a5b7334fde1e55c8ee8d7cdd942adab4cf3be"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-07/task.json",
-   "sha256": "696ac1b2b8d9093dd4aba572c503a2d9d7b274b67535b895005d1459b718b8f1"
+   "sha256": "d365c22277eca8bd1083d33d4ed3b6b8787c77744009eb3cb4c4b0a4e64cd094"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-08/task.json",
-   "sha256": "f1c3d90a1af680eba67f57894fec8467c9ab9ecf94da77dbf5cee7998174a607"
+   "sha256": "a4b8fd047bf0a8af7e0f09640f0b411b4264c4c298daf166135cc3f9057480d9"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-09/task.json",
-   "sha256": "71b22e1d9197d21be4cf370e5155f0adfb31ef7883e985422f5c87647453f122"
+   "sha256": "99a897602f0e69910be5346875905a42cb85d609afa992366aed747acd7624a2"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-10/task.json",
-   "sha256": "e255c62fea703ff505d40eebd271905f9869a1358c031483ec9967c8bfc5686c"
+   "sha256": "55002b182d61625fa592dbc033564fc55b865e7063f1100afc34a2faec608692"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-11/task.json",
-   "sha256": "8790eb7ad3112448374bd1a9e699ae11e4730ee993c6244fd74a72853ecb9053"
+   "sha256": "2e37459e0dffe504e61e0f2b660760f47c7e76ab4a7f6123ecf788b4324feed1"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-12/task.json",
-   "sha256": "222b386b3d0ad6b8b2d349214f13ef4ea7b53f1a17eac513788933007d44c48b"
+   "sha256": "d1b20bb1509a3bd624383258b4b90990e96760426cc2f3a84a01a6876d403e27"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-13/task.json",
-   "sha256": "30fcffe7fcfc1583490da266bc01234448818f8db9af5f5130d68a15f3d0294c"
+   "sha256": "a92bbd04e96b837a36df5a2e600f2edc0d4b03a64cd36f53e25b9605a46f9e9d"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-14/task.json",
-   "sha256": "73889e805e75d76eb26c1ef5164feeb2f7791e2efa24d1a016dba88f2d5ec70d"
+   "sha256": "b859841e3ce8af2c0091e7571b609fda8ca1ff7313c56bd538ffeee5d9c84699"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-15/task.json",
-   "sha256": "6410a932b88acac11edeffe62c18aa515f2b9b3f18a6f4e3d12fae14910048ed"
+   "sha256": "76ba344fe27685c01add2d85d5bb545704bec12a907a5a06c0a0cc2e880e807a"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-16/task.json",
-   "sha256": "1d42fb01d3aad2816f8e418401ec187b30cbd5b4a4e75db1f8603dda43a1975d"
+   "sha256": "cccb8ee00323cad922794ff7e525ef2906fafd86fa2d18819c569fb21cb98f19"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-17/task.json",
-   "sha256": "1406ce579350b0a08fd0133bdffd45f6ca031eb8146beec19529db5c7262de44"
+   "sha256": "61470db41cf2b97d3d7fcc6ece9f3cdb4b69db103780d4e1da53ebd283a46da8"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-18/task.json",
-   "sha256": "8517dbfe6c167f9a0fa053b54b38e397c7063296aa341e1687992f781e8943c4"
+   "sha256": "093a60f6c224d57b441ef96122827ebee4c28fb8c1e4bbd05a912e9eb18d8410"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-19/task.json",
-   "sha256": "33b5c2bbaceb6366420b0742a39699c9b2276858a34d9ab545aa31790a56cd15"
+   "sha256": "5e12bfff1c0d50c5102f9f7e136e36e778166ccfb1e6e3dd4107a6265a82eb56"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-20/task.json",
-   "sha256": "5a3dc4e3623c55456d8a6edc49d3679d56c2bdb3426fd5bf0f665df3d19639dc"
+   "sha256": "ef511ed36e49904344c86f7f6588196dfde473e9541d214fabf0ecf8b108241f"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",
