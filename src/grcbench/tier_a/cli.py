@@ -25,7 +25,7 @@
                        plumbing test, never a model result (smoke.py): golden FunctionModel replays of
                        every fixture task that has a golden_calls.json (Tier A and the Tier-F
                        setting), graded; with --start-server the grammar probe (does --jinja
-                       grammar-constrain tool calls: B0 vs. B2) and the pinned llama-server with the
+                       grammar-constrain tool calls: the B0 setting) and the pinned llama-server with the
                        smoke model; with a server, one graded real-model episode per Tier-A fixture
                        and N Tier-F samples per --tier-f-tasks fixture; writes
                        reports/tier_a_smoke.md when a real model ran
@@ -357,7 +357,7 @@ def _smoke(argv: list[str]) -> int:
         import os
         os.environ["GRC_BENCH_LLAMA_BACKEND"] = a.backend
     if a.report_from:
-        summary = read_json(Path(a.report_from))
+        summary = smoke.load_summary_dict(read_json(Path(a.report_from)))
         if a.note:
             summary["notes"] = list(summary.get("notes") or []) + a.note
         write_text(smoke.REPORT, smoke.render_report(summary))

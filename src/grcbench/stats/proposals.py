@@ -169,9 +169,10 @@ PROPOSALS = (
      "approved": "proposal H4: the MoE reaches >= 80 tok/s on reference hardware at Q4_K_M; eval plan "
                  "§3: the reference hardware is setup H2 (4 GB GPU, MoE experts in CPU memory)",
      "proposal": "Generation speed (llama-bench tg) of North-Mini-Code at Q4_K_M on H2, median of 5 warm "
-                 "runs, at 4K tokens of context. The 16K, 32K and 64K speeds and setups H1 and H3 are "
-                 "reported beside it.",
-     "where": ("tier_e.bench.CONTEXTS", "tier_e.bench.REPETITIONS"),
+                 "runs, decided at each of 4K, 16K, 32K and 64K tokens of context; the result states "
+                 "the context range over which H4b holds. A context that cannot be run (for example out "
+                 "of memory) does not hold. Setups H1 and H3 are reported beside it.",
+     "where": ("tier_e.bench.CONTEXTS", "tier_e.bench.REPETITIONS", "functions.h4b_decision"),
      "evidence": "the protocol of eval plan §4.5 (median of 5 warm runs, 4K-64K)."},
     {"id": "judge-gate", "kind": "extension",
      "topic": "What the judge's kappa is computed on",
@@ -199,7 +200,7 @@ PROPOSALS = (
      "proposal": "The 100 published GNU Radio questions are the reference set. A fresh set of the same "
                  "composition comes from a private seed whose SHA-256 is published with this document "
                  "(tier_k.blockgen). The headline configurations (B0 and the final model of each target, "
-                 "and B3) also answer the fresh set. The gap is the reference-minus-fresh mean item score "
+                 "and B2) also answer the fresh set. The gap is the reference-minus-fresh mean item score "
                  "over paired slots, clustered by block, with the clustered t and cluster-bootstrap 95% "
                  "intervals; memorisation is flagged when both lie above 0. The headline Tier-K score "
                  "stays the reference set's.",

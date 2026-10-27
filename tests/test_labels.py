@@ -191,12 +191,33 @@ def test_largest_remainder():
 def test_report_content(built):
     out, res = built
     text = (out / tt.REPORT_REL).read_text(encoding="utf-8")
-    assert "for team decision; to be fixed in the G2 pre-registration before any test run" in text
+    assert "for team decision" not in text and "Proposal: merge into" not in text
     assert "## Raw to clean counts" in text and "## Clean type counts" in text
     for g in res["small_groups"]:
-        assert f"### `{g}`" in text and "Proposal: merge into" in text
+        assert f"### `{g}`" in text and "Merged into" in text
     assert "factual recall and reasoning" in text.lower()
     assert "return your labels before reading this report" in text
+    for line in ("design + gnuradio_usage: 50 test items", "recall: 30 test items", "reasoning: 155 test items",
+                 "GNU Radio behaviour: 100 test items"):
+        assert line in text, line
+
+
+def test_gnuradio_usage_reports_with_design():
+    assert tt.report_group("gnuradio_usage", "frozen_question") == "design + gnuradio_usage"
+    assert tt.report_group("design", "bank_question") == "design + gnuradio_usage"
+    assert tt.report_group("factual", "frozen_question") == "factual"
+
+
+def test_families_cover_the_frozen_questions_only():
+    assert tt.family("factual", "frozen_question") == "recall"
+    assert tt.family("gnuradio_usage", "frozen_question") == "reasoning"
+    assert tt.family("calculation", "bank_question") == "reasoning"          # dev: the same mapping
+    assert tt.family("reasoning", "block_question") is None
+    assert tt.report_group("reasoning", "block_question") == "gnuradio_behaviour"
+    with pytest.raises(ValueError):
+        tt.family("factual", "frozen")
+    with pytest.raises(ValueError):
+        tt.report_group("trivia", "frozen_question")
 
 
 def test_build_is_deterministic(built, tmp_path):

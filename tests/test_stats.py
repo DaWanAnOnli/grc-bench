@@ -945,3 +945,89 @@ def test_cli_selfcheck_and_mde(capsys):
     assert out.count(" yes") == 3
     assert cli.main(["mde", "--n", "150", "--pd", "0.2"]) == 0
     assert "MDE = 10.23 points" in capsys.readouterr().out
+
+
+# --- round-2 findings C3-C6 and H4b at every context length -----------------------------------------
+
+PAIR_A = {f"i{i}": [1.0] if i % 3 else [0.0] for i in range(30)}       # 30 items in 6 clusters of 5
+PAIR_B = {f"i{i}": [0.0] if i % 4 == 0 else [1.0] for i in range(30)}
+PAIR_CL = {f"i{i}": f"c{i // 5}" for i in range(30)}
+
+
+def test_clustered_odds_ratio_interval_is_a_cluster_bootstrap():
+    r = fn.compare_paired(PAIR_A, PAIR_B, clusters=PAIR_CL, outcome="pass_fail")
+    o = r["primary"]["odds_ratio"]
+    assert o["interval"] == "cluster_bootstrap" and o["lo"] <= o["odds_ratio"] <= o["hi"]
+    assert fn.compare_paired(PAIR_A, PAIR_B, outcome="pass_fail")["primary"]["odds_ratio"]["interval"] == "exact_conditional"
+
+
+def test_one_cluster_gives_no_interval():
+    ci = fn.cluster_bootstrap_ci([0.1, 0.2, 0.3], clusters=["c", "c", "c"])
+    assert math.isnan(ci["lo"]) and math.isnan(ci["hi"])
+    k = ag.cohen_kappa_ci([1, 0, 1], [1, 0, 0], clusters=["c", "c", "c"])
+    assert math.isnan(k["lo"]) and math.isnan(k["hi"])
+
+
+def test_weighted_kappa_on_text_needs_categories():
+    with pytest.raises(ValueError):
+        ag.cohen_kappa(["met", "not_met"], ["met", "partially_met"], weights="linear")
+    assert ag.cohen_kappa(["met", "not_met"], ["met", "partially_met"], weights="linear",
+                          categories=["not_met", "partially_met", "met"]) < 1
+
+
+def test_mde_cli_bad_argument_is_a_clean_error(capsys):
+    with pytest.raises(SystemExit) as e:
+        cli.main(["mde", "--n", "-3", "--pd", "0.2"])
+    assert e.value.code == 2 and "Traceback" not in capsys.readouterr().err
+
+
+def test_h4b_decided_at_every_context():
+    r = fn.h4b_decision({4096: [90] * 5, 16384: [85] * 5, 32768: [70] * 5, 65536: [60] * 5})
+    assert r["holds_up_to"] == 16384 and r["contexts"][32768]["holds"] is False
+    assert r["threshold"] == 80.0 and r["contexts"][4096]["median"] == 90 and r["contexts"][4096]["runs"] == 5
+    assert fn.h4b_decision({4096: [70] * 5, 16384: [90] * 5, 32768: [90] * 5, 65536: [90] * 5})["holds_up_to"] is None
+    with pytest.raises(ValueError):
+        fn.h4b_decision({4096: [90] * 4, 16384: [90] * 5, 32768: [90] * 5, 65536: [90] * 5})
+    r = fn.h4b_decision({4096: [90] * 5, 16384: [90] * 5, 32768: [90] * 5})      # 64K did not run
+    assert r["holds_up_to"] == 32768 and r["contexts"][65536]["holds"] is False
+
+
+def test_a_bootstrap_without_spread_gives_no_odds_ratio_interval():
+    a = [False] * 50 + [True] * 10                 # a_only 0, b_only 50, in 5 clusters
+    b = [True] * 50 + [True] * 10
+    o = fn.clustered_odds_ratio(a, b, [i % 5 for i in range(60)], B=500)
+    assert o["odds_ratio"] == 0 and math.isnan(o["lo"]) and math.isnan(o["hi"])
+
+
+def test_h4b_uses_the_median_and_a_context_that_did_not_run():
+    r = fn.h4b_decision({4096: [100, 100, 79, 79, 79], 16384: [90] * 5, 32768: [90] * 5, 65536: [90] * 5})
+    assert r["contexts"][4096]["median"] == 79 and r["holds_up_to"] is None     # the mean (87.4) would pass
+    assert fn.h4b_decision({4096: [80] * 5, 16384: [70] * 5, 32768: [70] * 5, 65536: [70] * 5})["holds_up_to"] == 4096
+    r = fn.h4b_decision({4096: [90] * 5, 16384: [85] * 5, 32768: None, 65536: []})   # 32K did not run
+    assert r["holds_up_to"] == 16384 and r["contexts"][32768] == {"median": None, "runs": 0, "holds": False}
+    with pytest.raises(ValueError):
+        fn.h4b_decision({4096: [90] * 5, 8192: [90] * 5})
+    assert fn.h4b_decision({c: np.full(5, 90.0) for c in (4096, 16384, 32768, 65536)})["holds_up_to"] == 65536
+    with pytest.raises(ValueError):
+        fn.h4b_decision({4096: np.array([0.0]), 16384: [90] * 5, 32768: [90] * 5, 65536: [90] * 5})
+
+
+def test_every_mde_argument_error_is_clean(capsys):
+    for argv in (["mde", "--alpha", "0"], ["mde", "--power", "1"], ["mde", "--n", "100", "--pd", "0.2", "1.5"]):
+        with pytest.raises(SystemExit) as e:
+            cli.main(argv)
+        cap = capsys.readouterr()
+        assert e.value.code == 2 and "Traceback" not in cap.err and "MDE =" not in cap.out, argv
+
+
+def test_one_cluster_gives_no_bootstrap_spread_or_h4a_interval():
+    ci = fn.cluster_bootstrap_ci([0.1, 0.2, 0.3], clusters=["c", "c", "c"])
+    assert math.isnan(ci["se_boot"])
+    r = fn.compression_cost_difference([1.0, 0.5], [0.5, 0.0], [0.8, 0.6], [0.8, 0.6],
+                                       a_clusters=["x", "x"], k_clusters=["y", "y"], B=200)
+    assert math.isnan(r["lo"]) and math.isnan(r["hi"]) and r["holds"] is False
+
+
+def test_kappa_reads_its_ratings_once():
+    assert ag.cohen_kappa(iter([1, 0, 1, 1]), iter([1, 0, 0, 1]), weights="linear") == \
+        ag.cohen_kappa([1, 0, 1, 1], [1, 0, 0, 1], weights="linear")

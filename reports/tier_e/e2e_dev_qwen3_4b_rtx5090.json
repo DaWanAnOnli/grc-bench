@@ -1,0 +1,427 @@
+{
+ "applied_settings_problems": [],
+ "cli_args": [
+  "tier-e",
+  "run",
+  "--model",
+  "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+  "--hardware",
+  "H3",
+  "--llama-dir",
+  "/home/lenovo/grc-bench-cache/llama.cpp/b10333-cuda",
+  "--contexts",
+  "4096",
+  "--purpose",
+  "plumbing",
+  "--name",
+  "e2e_dev_qwen3_4b_rtx5090",
+  "--machine-label",
+  "the build workstation (RTX 5090)",
+  "--note",
+  "G2 end-to-end dev run: plumbing of the Tier-E protocol; label H3 is the nearest setup (a desktop GPU), not Qoherent's RTX 3090"
+ ],
+ "code": {
+  "grc_bench_commit": "7ebc32160e10b17589d9771405ff79f219a2a229",
+  "module": "grcbench.tier_e.bench",
+  "module_sha256": "cd32f84389678504c62b2b62760d4b5abd7442489ff62450e7cec9d8bac65ecb"
+ },
+ "contexts": [
+  {
+   "context": 4096,
+   "errors": [],
+   "generation": {
+    "kind": "tg",
+    "llama_bench_avg_ts": 254.563002,
+    "llama_bench_stddev_ts": 7.353494,
+    "max_ts": 263.291,
+    "median_ns": 502413931.0,
+    "median_s": 0.5024,
+    "median_ts": 254.77,
+    "min_ts": 245.937,
+    "n_depth": 4096,
+    "n_gen": 128,
+    "n_prompt": 0,
+    "repetitions": 5,
+    "samples_ns": [
+     520458304,
+     514716587,
+     492050346,
+     486153376,
+     502413931
+    ],
+    "samples_ts": [
+     245.9371,
+     248.6805,
+     260.136,
+     263.2914,
+     254.77
+    ],
+    "test": "tg128 @ d4096",
+    "test_time": "2026-10-27T21:21:46Z"
+   },
+   "gpu_note": "nvidia-smi memory.used, device-wide, peak minus the value before the process started",
+   "incremental_prompt": {
+    "kind": "pp",
+    "llama_bench_avg_ts": 15232.251695,
+    "llama_bench_stddev_ts": 2521.769043,
+    "max_ts": 16904.32,
+    "median_ns": 30468380.0,
+    "median_s": 0.0305,
+    "median_ts": 16804.307,
+    "min_ts": 11147.078,
+    "n_depth": 4096,
+    "n_gen": 0,
+    "n_prompt": 512,
+    "repetitions": 5,
+    "samples_ns": [
+     35550073,
+     45931319,
+     30288115,
+     30289885,
+     30468380
+    ],
+    "samples_ts": [
+     14402.2208,
+     11147.0781,
+     16904.3204,
+     16903.3326,
+     16804.3066
+    ],
+    "test": "pp512 @ d4096",
+    "test_time": "2026-10-27T21:21:45Z"
+   },
+   "invocations": [
+    {
+     "argv": [
+      "/home/lenovo/grc-bench-cache/llama.cpp/b10333-cuda/llama-bench",
+      "-m",
+      "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+      "-p",
+      "4096",
+      "-n",
+      "0",
+      "-d",
+      "0",
+      "-r",
+      "5",
+      "-t",
+      "24",
+      "-b",
+      "2048",
+      "-ub",
+      "512",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "-fa",
+      "on",
+      "-ngl",
+      "999",
+      "-lm",
+      "mmap",
+      "-o",
+      "json",
+      "--progress"
+     ],
+     "error": null,
+     "gpu_peak_delta_bytes": 3727687680,
+     "idle_wait": {
+      "idle": true,
+      "seen": [],
+      "waited_s": 0.0
+     },
+     "kind": "prompt",
+     "load1_after": 1.12,
+     "load1_before": 1.12,
+     "max_rss_bytes": 2847727616,
+     "other_llama_processes": [],
+     "returncode": 0,
+     "started_utc": "2026-10-27T21:21:42Z",
+     "stderr": "/home/lenovo/grc-bench-work/tier_e/e2e_dev_qwen3_4b_rtx5090/ctx4096_prompt.log",
+     "stdout": "/home/lenovo/grc-bench-work/tier_e/e2e_dev_qwen3_4b_rtx5090/ctx4096_prompt.json",
+     "vmhwm_sampled_bytes": 2847727616,
+     "wall_s": 3.14
+    },
+    {
+     "argv": [
+      "/home/lenovo/grc-bench-cache/llama.cpp/b10333-cuda/llama-bench",
+      "-m",
+      "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+      "-p",
+      "512",
+      "-n",
+      "128",
+      "-d",
+      "4096",
+      "-r",
+      "5",
+      "-t",
+      "24",
+      "-b",
+      "2048",
+      "-ub",
+      "512",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "-fa",
+      "on",
+      "-ngl",
+      "999",
+      "-lm",
+      "mmap",
+      "-o",
+      "json",
+      "--progress"
+     ],
+     "error": null,
+     "gpu_peak_delta_bytes": 3769630720,
+     "idle_wait": {
+      "idle": true,
+      "seen": [],
+      "waited_s": 0.0
+     },
+     "kind": "depth",
+     "load1_after": 1.11,
+     "load1_before": 1.12,
+     "max_rss_bytes": 2847739904,
+     "other_llama_processes": [],
+     "returncode": 0,
+     "started_utc": "2026-10-27T21:21:45Z",
+     "stderr": "/home/lenovo/grc-bench-work/tier_e/e2e_dev_qwen3_4b_rtx5090/ctx4096_depth.log",
+     "stdout": "/home/lenovo/grc-bench-work/tier_e/e2e_dev_qwen3_4b_rtx5090/ctx4096_depth.json",
+     "vmhwm_sampled_bytes": 2847739904,
+     "wall_s": 5.22
+    }
+   ],
+   "label": "4K",
+   "ok": true,
+   "peak_gpu_bytes": 3769630720,
+   "peak_ram_bytes": 2847739904,
+   "prompt": {
+    "kind": "pp",
+    "llama_bench_avg_ts": 15704.314515,
+    "llama_bench_stddev_ts": 1065.861489,
+    "max_ts": 16654.968,
+    "median_ns": 259651113.0,
+    "median_s": 0.2597,
+    "median_ts": 15775.014,
+    "min_ts": 13977.752,
+    "n_depth": 0,
+    "n_gen": 0,
+    "n_prompt": 4096,
+    "repetitions": 5,
+    "samples_ns": [
+     259651113,
+     293037099,
+     245932632,
+     262455411,
+     248131472
+    ],
+    "samples_ts": [
+     15775.0142,
+     13977.7524,
+     16654.9675,
+     15606.4605,
+     16507.378
+    ],
+    "test": "pp4096 @ d0",
+    "test_time": "2026-10-27T21:21:42Z"
+   },
+   "ttft": {
+    "first_decode_s": 0.00393,
+    "prefill_s": 0.2597,
+    "seconds": 0.2636
+   },
+   "wall_s": 8.4
+  }
+ ],
+ "deviations": [],
+ "finished_utc": "2026-10-27T21:21:50Z",
+ "hardware": {
+  "definition": "desktop GPU: Qoherent's RTX 3090 (24 GB)",
+  "gpu_used": true,
+  "label": "H3",
+  "mismatches": [
+   "no 3090 GPU found (H3: desktop GPU: Qoherent's RTX 3090 (24 GB))"
+  ]
+ },
+ "label": "Plumbing test of the protocol on the build workstation (RTX 5090), not a Tier-E result for any GRC-Bench model or hardware tier.",
+ "llama_cpp": {
+  "backends": "CUDA",
+  "build_commit": "08659901c",
+  "build_number": 10333,
+  "cpu_backend_variant": null,
+  "cpu_info": "Intel(R) Core(TM) Ultra 9 285K",
+  "gpu_info": "NVIDIA GeForce RTX 5090",
+  "matches_pin": true
+ },
+ "machine": {
+  "cpu_model": "Intel(R) Core(TM) Ultra 9 285K",
+  "gpus": [
+   {
+    "driver": "610.88",
+    "memory_total_mib": 32607,
+    "name": "NVIDIA GeForce RTX 5090"
+   }
+  ],
+  "kernel": "6.18.54.1-microsoft-standard-WSL2",
+  "llama_cpp": {
+   "backend_libraries": [
+    "libggml-base.so",
+    "libggml-cpu.so",
+    "libggml-cuda.so"
+   ],
+   "dir": "/home/lenovo/grc-bench-cache/llama.cpp/b10333-cuda",
+   "gpu_backend_libraries": [
+    "libggml-cuda.so"
+   ],
+   "pinned_build": "b10333"
+  },
+  "logical_cpus": 24,
+  "os": "Ubuntu 26.04.1 LTS",
+  "physical_cores": 24,
+  "ram_total_bytes": 150823899136,
+  "wsl": true
+ },
+ "machine_label": "the build workstation (RTX 5090)",
+ "model": {
+  "file": "Qwen3-4B-Q4_K_M.gguf",
+  "llama_bench_model_size": 2491323904,
+  "llama_bench_model_type": "qwen3 4B Q4_K - Medium",
+  "n_params": 4022468096,
+  "path": "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+  "quant": "Q4_K_M",
+  "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+  "size_bytes": 2497280256
+ },
+ "name": "e2e_dev_qwen3_4b_rtx5090",
+ "notes": [
+  "G2 end-to-end dev run: plumbing of the Tier-E protocol; label H3 is the nearest setup (a desktop GPU), not Qoherent's RTX 3090"
+ ],
+ "protocol": {
+  "batch": 2048,
+  "cache_type_k": "q8_0",
+  "cache_type_v": "q8_0",
+  "contention": "wait until no other llama-server/llama-bench process runs (poll 30 s, up to 60 min) before every llama-bench process; record load average",
+  "contexts": [
+   4096,
+   16384,
+   32768,
+   65536
+  ],
+  "extension_rule": "--extend C --extend-if-under S: C is measured only if the previous context's whole measurement (both processes, warm-ups included) took under S seconds",
+  "flash_attn": "on",
+  "load_mode": "mmap",
+  "n_gpu_layers": {
+   "H1": 0,
+   "H2": 999,
+   "H3": 999,
+   "server": 999
+  },
+  "peak_gpu": "nvidia-smi memory.used, sampled every second, peak minus the value before the process started (device-wide); n/a without a GPU backend",
+  "peak_ram": "ru_maxrss of the llama-bench process from wait4 (= VmHWM at exit); max over a context's processes",
+  "repetitions": 5,
+  "source": "eval plan §4.5 (median of 5 runs, warm cache, 4K-64K context); §7.1 (8-bit KV cache)",
+  "statistic": "median of the per-run samples of each llama-bench test",
+  "tests_per_context": {
+   "depth": "llama-bench -p 512 -n 128 -d C: tg128 and pp512 with C tokens already in the KV cache",
+   "prompt": "llama-bench -p C -n 0 -d 0: a C-token prompt into an empty KV cache"
+  },
+  "threads": "physical cores unless set; fixed for the whole run",
+  "ttft": "median prefill time of the C-token prompt + one decode step at depth C (1 / median tg128 tokens/s); derived, both parts recorded",
+  "ubatch": 512,
+  "version": "tier-e/1",
+  "warmup": "one short warm-up llama-bench invocation per run (pp512 + tg16, 1 repetition; discarded) to page the weights in, plus llama-bench's own warm-up run before every test (discarded)"
+ },
+ "purpose": "plumbing",
+ "raw_dir": "/home/lenovo/grc-bench-work/tier_e/e2e_dev_qwen3_4b_rtx5090",
+ "requested": {
+  "contexts": [
+   4096
+  ],
+  "extend": [],
+  "extend_if_under_s": null
+ },
+ "settings": {
+  "batch": 2048,
+  "cache_type_k": "q8_0",
+  "cache_type_v": "q8_0",
+  "flash_attn": "on",
+  "gen_tokens": 128,
+  "incremental_prompt": 512,
+  "load_mode": "mmap",
+  "n_cpu_moe": 0,
+  "n_gpu_layers": 999,
+  "override_tensor": null,
+  "repetitions": 5,
+  "threads": 24,
+  "ubatch": 512
+ },
+ "skipped": [
+  {
+   "context": 16384,
+   "label": "16K",
+   "reason": "16K not requested in this run"
+  },
+  {
+   "context": 32768,
+   "label": "32K",
+   "reason": "32K not requested in this run"
+  },
+  {
+   "context": 65536,
+   "label": "64K",
+   "reason": "64K not requested in this run"
+  }
+ ],
+ "started_utc": "2026-10-27T21:21:39Z",
+ "status": "complete",
+ "warmup": {
+  "argv": [
+   "/home/lenovo/grc-bench-cache/llama.cpp/b10333-cuda/llama-bench",
+   "-m",
+   "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+   "-p",
+   "512",
+   "-n",
+   "16",
+   "-d",
+   "0",
+   "-r",
+   "1",
+   "-t",
+   "24",
+   "-b",
+   "2048",
+   "-ub",
+   "512",
+   "-ctk",
+   "q8_0",
+   "-ctv",
+   "q8_0",
+   "-fa",
+   "on",
+   "-ngl",
+   "999",
+   "-lm",
+   "mmap",
+   "-o",
+   "json",
+   "--progress"
+  ],
+  "error": null,
+  "idle_wait": {
+   "idle": true,
+   "seen": [],
+   "waited_s": 0.0
+  },
+  "load1_after": 1.12,
+  "load1_before": 1.21,
+  "max_rss_bytes": 2847711232,
+  "returncode": 0,
+  "wall_s": 2.01
+ }
+}

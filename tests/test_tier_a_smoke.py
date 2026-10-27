@@ -164,7 +164,7 @@ def test_probe_reading_unconstrained_default_is_not_called_constrained():
     assert smoke.probe_body({"name": "t", "thinking": True})["chat_template_kwargs"] == {"enable_thinking": True}
 
 
-def test_tool_call_settings_b0_b2_from_a_constrained_default():
+def test_tool_call_settings_from_a_constrained_default():
     valid = _reply(calls=[("set_mode", '{"mode": "alpha", "level": 1}')])
     violating_text = _reply(content='<tool_call>{"name": "set_mode", "arguments": {"mode": "gamma", "level": "high"}}</tool_call>')
     no_jinja = [smoke.probe_record(c, 500, {"error": {"message": "tools param requires --jinja flag"}}, 0.1)
@@ -180,26 +180,26 @@ def test_tool_call_settings_b0_b2_from_a_constrained_default():
     assert v["control_parsed_tool_calls"] == 0 and v["no_jinja_tool_requests_refused"] == 3 and v["no_jinja_cases"] == 3
     s = smoke.tool_call_settings(v)
     assert s["default_is_grammar_constrained"] and not s["flag_only_unconstrained_setting_with_parsed_calls"]
-    assert s["B2"]["chat_format"] == "peg-native" and s["B2"]["tool_calls_schema_constrained"]
-    assert s["B2"]["usable_by_grc_agent_as_is"] and s["B2"]["grammar_in_log"]
-    b0 = s["B0_candidate"]
+    assert s["B0"]["chat_format"] == "peg-native" and s["B0"]["tool_calls_schema_constrained"]
+    assert s["B0"]["usable_by_grc_agent_as_is"] and s["B0"]["grammar_in_log"]
+    b0 = s["unconstrained_candidate"]
     assert b0["server_flags"] == "--jinja --skip-chat-parsing" and not b0["tool_calls_schema_constrained"]
     assert not b0["server_parses_tool_calls"] and not b0["usable_by_grc_agent_as_is"] and not b0["grammar_in_log"]
     assert s["client_grammar_with_tools_refused"] and s["no_jinja"]["error"] == "tools param requires --jinja flag"
     text = "\n".join(smoke._settings_section(s))
-    assert "the server's default IS the B2 setting" in text and "(HTTP 400)" in text
-    assert "| B0 candidate: calls as the model writes them | `--jinja --skip-chat-parsing` | Content-only | no | no | no | no |" in text
+    assert "the server's default IS the B0 setting" in text and "(HTTP 400)" in text
+    assert "| Unconstrained candidate: calls as the model writes them | `--jinja --skip-chat-parsing` | Content-only | no | no | no | no |" in text
     summary = {"probe": {"servers": servers, "verdict": v, "tool_call_settings": s}, "golden": [], "model": {}}
     report = smoke.render_report(summary)
     assert "| no_jinja | auto | 500 | refused: tools param requires --jinja flag |" in report
     assert "grammar-constrains tool calls for this model in this build: yes" in report and text in report
-    # a default that does NOT hold calls to the schema is never read as B2
+    # a default that does NOT hold calls to the schema is never read as grammar-constrained
     loose = smoke.tool_call_settings(smoke.probe_verdict({**servers, "default": {"cases": _cases(violating_text)}}))
     assert not loose["default_is_grammar_constrained"]
     assert "did not show the default server" in "\n".join(smoke._settings_section(loose))
 
 
-def test_request_log_evidence_and_a_working_request_level_b0():
+def test_request_log_evidence_and_a_working_request_level_unconstrained_setting():
     log = ("0.22.211.649 D srv    operator(): Grammar (tool_calls): integer ::= (\"-\"? integral-part)\n"
            "root ::= tool-call | tool-calls\n0.22.211.651 I srv    operator(): chat format: peg-native\n"
            "0.35.514.210 D Grammar still awaiting trigger after token 151657 (`<tool_call>`)\n"
@@ -227,10 +227,11 @@ def test_request_log_evidence_and_a_working_request_level_b0():
     assert v["default_case_grammars"]["auto"]["triggered"] is True
     s = smoke.tool_call_settings(v)
     assert s["request_level_unconstrained_with_parsed_calls"] and s["default_is_grammar_constrained"]
-    assert s["B0_request_candidate"]["server_parses_tool_calls"] and not s["B0_request_candidate"]["grammar_in_log"]
+    assert s["unconstrained_request_candidate"]["server_parses_tool_calls"]
+    assert not s["unconstrained_request_candidate"]["grammar_in_log"]
     text = "\n".join(smoke._settings_section(s))
     assert "possible on the same server without a flag, at the request level" in text
-    assert "| B0 request-level candidate: tool_choice \"none\" + \"parse_tool_calls\": true" in text
+    assert "| Unconstrained request-level candidate: tool_choice \"none\" + \"parse_tool_calls\": true" in text
     report = smoke.render_report({"probe": {"servers": servers, "verdict": v, "tool_call_settings": s}})
     assert "| 1.0 | tool_calls (triggered); format peg-native |" in report
     assert smoke.probe_body(smoke.PROBE_CASES[-1])["parse_tool_calls"] is True
@@ -495,3 +496,14 @@ def test_run_smoke_end_to_end_over_http_with_a_fake_server(root, tmp_path):
     assert rows[1]["messages"][1]["tool_calls"][0]["name"] == "inspect_graph"        # the prefilled call
     text = report.read_text()
     assert smoke.BANNER in text and "| fx-a-knowledge-tone | yes (completed) |" in text and "- fake server" in text
+
+
+def test_a_stored_summary_with_the_old_keys_renders():
+    old = {"B2": {"calls": 1}, "B0_candidate": {"calls": 2}, "B0_request_candidate": {}, "no_jinja": {}}
+    s = smoke.load_summary_dict(old)
+    assert s["B0"] == {"calls": 1} and s["unconstrained_candidate"] == {"calls": 2} and "B2" not in s
+    assert "unconstrained_request_candidate" in s and s["no_jinja"] == {}
+    nested = smoke.load_summary_dict({"probe": {"tool_call_settings": old}})
+    assert "B0" in nested["probe"]["tool_call_settings"]
+    stored = smoke.load_summary_dict({"B0_request_candidate": {"server_flags": "--jinja (the B2 server)"}})
+    assert stored["unconstrained_request_candidate"]["server_flags"] == "--jinja (the B0 server)"

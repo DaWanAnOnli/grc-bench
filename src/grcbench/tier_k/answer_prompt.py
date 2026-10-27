@@ -33,14 +33,15 @@ from typing import Any
 from grcbench.common.io import sha256_text
 from grcbench.tier_k.judge_prompt import CanaryError, contains_canary
 
-PROMPT_VERSION = "tier-k-answer-v1"
+PROMPT_VERSION = "tier-k-answer-v2"
 MAX_ANSWER_TOKENS = 4096                 # eval plan §7.1: Tier-K answers are limited to 4K tokens
 INSTRUCTION = (
     "Answer the following question about radio, signal processing or GNU Radio. You may reason step by "
     "step first. End your reply with one line of the form\n"
     "Final answer: <your answer>\n"
-    "If the answer is a number, give it with its unit when it has one. If the question asks you to choose, "
-    "name the option.")
+    "If the answer is a number, write its unit after it (for example 30 kHz or 2.5 MS/s), and write dB "
+    "(or dBm, dBc, dBi, ...) after any value in decibels: a number without a unit is never read as "
+    "decibels. If the question asks you to choose, name the option.")
 TEMPLATE = "{instruction}\n\nQuestion:\n{question}"
 PROBE_QUESTIONS = (
     "What is the Nyquist rate of a real baseband signal limited to 10 kHz?",

@@ -42,6 +42,16 @@ def test_every_hypothesis_has_a_decision_rule():
         assert re.search(rf"^\| \*\*{h}\*\* ", table, re.MULTILINE), h
 
 
+def test_run_list_after_decision_1():
+    ids = {c["id"] for c in RUN_LIST["configurations"]}
+    assert len(ids) == 38 and "b2-deepseek-v4.1-flash" in ids
+    assert not ({"nb-bf16-b2", "nmc-q4-b2"} & ids) and not any(i.startswith("b3-") for i in ids)
+    stages = {c["id"]: c["stage"] for c in RUN_LIST["configurations"]}
+    assert stages["b2-deepseek-v4.1-flash"] == "B2 cloud teacher upper bound"
+    for cid in ("nb-bf16-b0", "nmc-bf16-b0", "nmc-q4-b0"):
+        assert stages[cid] == "B0 base model (server default: tool grammar on)"
+
+
 def test_run_list_is_well_formed_and_still_a_draft():
     configs = RUN_LIST["configurations"]
     ids = [c["id"] for c in configs]
@@ -93,3 +103,50 @@ def test_every_proposal_points_to_code_that_exists():
 def test_document_points_to_its_companions():
     for needle in ("run_list.yaml", "judge_prompt_snapshot.json", "./gb stats proposals", "grcbench.stats"):
         assert needle in TEXT, needle
+
+
+def section(text, heading):                  # the text from a heading to the next one of its level
+    level = heading.split(" ")[0]
+    start = text.index(heading)
+    nxt = re.search(rf"^{level} ", text[start + len(heading):], re.M)
+    return text[start:start + len(heading) + nxt.start()] if nxt else text[start:]
+
+
+def test_section_8_records_decisions_1_to_7():
+    s8 = " ".join(section(TEXT, "## 8.").split())
+    s51 = " ".join(section(TEXT, "### 5.1").split()).lower()
+    assert "human route" not in s51 and "human annotator" not in s51 and "`human`" not in s51
+    assert "human labels on 150 answers" in s51               # the judge calibration stays
+    for n, d in ((1, "B0 is the base model served with the default tool grammar"),
+                 (2, "accepted as written, including the strict bootstrap rule of H1a (95 % of pairs"),
+                 (3, "4K, 16K, 32K and 64K"), (4, "design + gnuradio_usage, of 50 frozen test items"),
+                 (5, "(155 items)"), (6, "F5"), (7, "scored automatically")):
+        item = re.search(rf"(?:^|\s){n}\. (.*?)(?=\s{n + 1}\. \*\*|$)", s8)
+        assert item and d in item[1], (n, d)
+    assert "stays open" in re.search(r"\s6\. (.*?)\s7\. \*\*", s8)[1]
+    assert "judge runner" in s8 and re.search(r"\s11\. \*\*The code version", s8)
+    assert "context-cap failure" in s8                         # the Tier-A harness work
+    assert "38 configurations" in " ".join(section(TEXT, "## 6.").split())
+    assert "North-Mini-Code's BF16 B0 (k = 2)" in " ".join(section(TEXT, "## 6.").split())
+
+
+def test_tier_k_dbv_band_and_masked_names():
+    s51 = " ".join(section(TEXT, "### 5.1").split())
+    assert "about 0.44 dB" in s51 and "dBV" in s51
+    assert "listed model and vendor names are masked" in s51 and "masked names" in s51
+
+
+def test_tier_k_count_nouns_and_unread_units():
+    s51 = " ".join(section(TEXT, "### 5.1").split())
+    assert '"34 vectors"' in s51 and '"34 bytes"' in s51
+    assert "a unit the rules do not read" in s51 and "scored 0 for a unit the rules do not read" in s51
+
+
+def test_tool_grammar_consequences_are_stated():
+    s52 = " ".join(section(TEXT, "### 5.2").split())
+    s53 = " ".join(section(TEXT, "### 5.3").split())
+    s10 = " ".join(section(TEXT, "## 10.").split())
+    assert "mostly check the server" in s52 and "hallucinated-block rate stays informative" in s52
+    assert "V2–V5" in s52 and "mostly checks the server" in s53
+    assert "or whether fine-tuning alone makes tool calls well formed" in s10
+    assert "numbered 3 in the approved plans" in s10

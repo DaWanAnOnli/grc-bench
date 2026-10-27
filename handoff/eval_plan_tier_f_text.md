@@ -43,11 +43,11 @@ edit it rejects is not retried, and any other tool answers that it is not availa
   lookup's results contained the reference's blocks, and whether GRC-Agent accepted the edit.
 - **Limits.** Each model turn is limited to 8K tokens, reasoning included.
 
-## Table 1, row "Baselines B1 and B2"
+## Table 1, row "Baseline B1"
 
 | Topic | This plan | Why |
 |---|---|---|
-| Baselines B1 and B2 | B1 (documentation search) runs on Tier K with the retrieved pages added to the prompt. In Tier F the model already has one documentation lookup, so B1 gives it the catalog entries of every block of the reference solution instead. In Tier A every configuration already has the search tool. B2 (grammar-constrained tool calls) runs on Tier A. | Each baseline is run where it can make a difference. |
+| Baseline B1 | B1 (documentation search) runs on Tier K with the retrieved pages added to the prompt. In Tier F the model already has one documentation lookup, so B1 gives it the catalog entries of every block of the reference solution instead. In Tier A every configuration already has the search tool. Every model served by llama.cpp runs with the server's default tool grammar on Tiers A and F (B0). | Each baseline is run where it can make a difference. |
 
 ## Wherever the ladder is listed (Key terms, §1.2, Table 2, §4.3)
 

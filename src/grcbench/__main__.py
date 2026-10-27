@@ -31,6 +31,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "calc": ("grcbench.tier_k.calc:main", "compute calculation-question answers by script"),
     "rubrics": ("grcbench.tier_k.rubrics:main", "write rubric templates and review sheets"),
     "score-k": ("grcbench.tier_k.rules:main", "rule-cascade scorer for Tier-K answers"),
+    "tier-k": ("grcbench.tier_k.run:main", "answer a split's Tier-K questions with one model; score them"),
     "retriever": ("grcbench.tier_k.retriever:main", "B1 documentation-search retriever"),
     # Tier F
     "ladder": ("grcbench.tier_f.ladder:main", "run the V1-V5 validity ladder on a .grc file"),
@@ -45,6 +46,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "stats": ("grcbench.stats.cli:main", "analysis functions (self-check)"),
     "prereg": ("grcbench.stats.prereg:main", "fill the pre-registration's generated appendices"),
     "runlog": ("grcbench.runlog.log:main", "append-only test-run log"),
+    "e2e": ("grcbench.e2e:main", "benchmark v0.9 end to end on the dev split with the smoke model (G2)"),
 }
 
 

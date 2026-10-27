@@ -9,7 +9,7 @@ Implements eval plan §4.2 (Labels) and proposal §4.2 (Label normalization). Ge
 - 1,853 questions (185 test, 1,668 train) carry 23 raw `task_type` spellings. They are mapped to the 6 canonical types of `00_dataset_spec/task_types.json`.
 - **Rule map:** 16 unambiguous spellings (the 6 canonical names plus 10 variants such as `debugging`, `system_design`, `factual knowledge`) cover 1,719 rows.
 - **Classified one by one:** 134 rows (11 test, 123 train) use one of 7 ambiguous spellings (`ask_for_info`, `asking for missing information`, `compare`, `compare/choose`, `compare_choose`, `conceptual`, `information_gathering`). Claude (Anthropic) read each question and chose a type against the task_types.json definitions, with a one-line reason. The decisions are data in `src/grcbench/labels/ambiguous_decisions.json`. This is labelling, not reference drafting (eval plan Table 5: Claude never drafts references).
-- **Small test groups:** `gnuradio_usage` (11) below 20 items. Merge proposals are below, **for team decision; to be fixed in the G2 pre-registration before any test run**.
+- **Small test groups:** `gnuradio_usage` (11) below 20 items. Each is reported merged with its neighbour, as decided at sign-off (pre-registration §8, decision 4).
 - **Team review:** all 11 ambiguous test items go to two team members for blind double labelling, and a seeded 10% sample of training rows (170 rows, every raw spelling included) is spot-checked. The sheets are in `handoff/review_sheets/`, and the instructions are in `task_type_instructions.md`.
 
 ## Inputs
@@ -21,6 +21,7 @@ Implements eval plan §4.2 (Labels) and proposal §4.2 (Label normalization). Ge
 | `data/GRC_dataset_20261007/dataset/04_eval_frozen/train_questions.jsonl` | `7e3df67853dd23dd010e5218fb946898ea4e263f8a8136f5cca67e5cc261e799` |
 | `data/GRC_dataset_20261007/dataset/04_eval_frozen/eval_manifest.json` | `eca148a98c5c24a6ea22f787a5fa52a74138a1b77ba799358480c61616f7459b` |
 | `grc-bench/src/grcbench/labels/ambiguous_decisions.json` | `ef919015e7780ff9a2d1a0c19060575908934af6523739312132571d74953ffa` |
+| `grc-bench/items/tier_k/test/block_questions.jsonl` | `220a7ddb1cc237e4260662276c209ea458f97c07ebf67148d6bc2d8f8ee1f55a` |
 
 ## Decision rules for the ambiguous rows
 
@@ -118,19 +119,18 @@ Eval plan §4.2: results are reported by cleaned label only, and no group with f
 
 `diagnosis` has exactly 20 test items, so it can be reported. None of its items is among the classified ones, so team relabelling can only add to it.
 
-## Groups with fewer than 20 test items: merge proposals
+## Groups with fewer than 20 test items: merges
 
-**For team decision; to be fixed in the G2 pre-registration before any test run** (eval plan §4.2: smaller groups are merged with their nearest neighbour, and the merge is decided before the final runs).
+Eval plan §4.2: smaller groups are merged with their nearest neighbour, and the merge is decided before the final runs. The merges below were decided at sign-off (pre-registration §8, decision 4).
 
 ### `gnuradio_usage`: 11 test items
 
-- **Proposal: merge into `design`** and report one group "design + gnuradio_usage" (50 test items). Reason: both are about building and configuring a system: choosing blocks, parameters and methods. Most of the test items read 'how would you implement / configure X'.
+- **Merged into `design`:** results report one group "design + gnuradio_usage" (50 test items). Reason: both are about building and configuring a system: choosing blocks, parameters and methods. Most of the test items read 'how would you implement / configure X'.
 - **Lexical check (agrees):** on the training questions only, the TF-IDF centroid of `gnuradio_usage` is closest to `design` (cosine 0.671). `design` 0.671, `reasoning` 0.593, `factual` 0.580, `diagnosis` 0.572, `calculation` 0.368.
-- **Alternative A (no merge):** Tier K v1.0 adds 100 GNU Radio behaviour questions (eval plan §4.2; WS3b), all about what GNU Radio blocks do to a stream, which is the gnuradio_usage definition. If the group rule is applied to Tier K as a whole (285 items) rather than to the 185 frozen questions, `gnuradio_usage` has about 111 items and needs no merge. GRC-Agent needs this skill most (Data Summary §6), so keeping it visible is worth considering.
-- **Alternative B:** merge into `factual` if the team sees the frozen usage questions as procedural recall. That would conflict with reporting factual recall separately (next section).
-- Note for the decision: several of the frozen `gnuradio_usage` test items are not about GNU Radio itself (USRP VM setup, Python implementations, Phaser). They were labelled that way by the generator, and the rule map keeps that label.
+- The 100 GNU Radio behaviour questions are reported as their own group (`gnuradio_behaviour`, decision 5), not as `gnuradio_usage`.
+- Several of the frozen `gnuradio_usage` test items are not about GNU Radio itself (USRP VM setup, Python implementations, Phaser). They were labelled that way by the generator, and the rule map keeps that label.
 
-Lexical similarity between all clean types (TF-IDF centroids over the training questions; the same tokenizer as the 8-gram check). It is a supporting check only; the proposal rests on the definitions.
+Lexical similarity between all clean types (TF-IDF centroids over the training questions; the same tokenizer as the 8-gram check). It is a supporting check only; the merge rests on the definitions.
 
 | type | `calculation` | `design` | `diagnosis` | `factual` | `gnuradio_usage` | `reasoning` |
 |---|---|---|---|---|---|---|
@@ -143,12 +143,12 @@ Lexical similarity between all clean types (TF-IDF centroids over the training q
 
 ## Factual recall and reasoning are reported separately
 
-Proposal §5.1 and eval plan §4.2 report factual recall and reasoning separately, because looped models such as Nanbeige4.2 may trade recall for reasoning [14]. Proposed mapping, **for team decision; to be fixed in the G2 pre-registration before any test run**:
+Proposal §5.1 and eval plan §4.2 report factual recall and reasoning separately, because looped models such as Nanbeige4.2 may trade recall for reasoning [14]. The split is made on the 185 frozen test questions, as decided at sign-off (pre-registration §8, decisions 4 and 5); the GNU Radio behaviour questions form their own group:
 
-- **Recall:** `factual` (30 test items).
-- **Reasoning:** `reasoning`, `calculation`, `design` and `diagnosis` (144 test items), plus the WS3b GNU Radio behaviour questions, whose answers combine knowing what a block does with a short computation on the stated input.
-- **`gnuradio_usage` (11 frozen test items):** put them in the reasoning family, in line with the merge into `design` proposed above (they ask how to implement or configure something). The alternative is to leave them out of the two-way split.
-- The split goes by item, not only by task type: a behaviour question counts as reasoning whatever its task_type.
+- recall: 30 test items (`factual`).
+- reasoning: 155 test items (`reasoning`, `calculation`, `diagnosis`, `design`, `gnuradio_usage`).
+- design + gnuradio_usage: 50 test items, the merged task-type group (decision 4), inside the reasoning family.
+- GNU Radio behaviour: 100 test items (`gnuradio_behaviour`), in neither family: their answers come from running GNU Radio on a stated input.
 - The recall group is much smaller than the reasoning group (30 vs 155 frozen items), so its intervals are wider. Print the MDE beside it (eval plan §9).
 
 ## Team review

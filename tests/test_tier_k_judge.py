@@ -12,6 +12,7 @@ from __future__ import annotations
 import copy
 import inspect
 import json
+import math
 import random
 import re
 
@@ -24,9 +25,9 @@ from grcbench.common.schemas import REVIEW_STATUSES
 from grcbench.tier_k import judge_prompt as jp
 from grcbench.tier_k import rules
 
-# Pinned on 18 Oct 2026 for PROMPT_VERSION tier-k-judge-v2. If this fails, the prompt changed:
+# Pinned on 28 Oct 2026 for PROMPT_VERSION tier-k-judge-v3. If this fails, the prompt changed:
 # bump PROMPT_VERSION and re-pin (and never after the G2 pre-registration without a recorded reason).
-PINNED_SHA256 = "0c462ae7b577601e4c4fef248d66c0a5bfb7af146bcef1ba758f0d549141a6d5"
+PINNED_SHA256 = "26e0b2285cd832aeb5b64cf150c9db6e632425a406ea98c50f92b648b82005b1"
 
 QUESTION = "Toy question for the template tests: name two primary colours of light."
 ANSWER = "Red and green are two of them."
@@ -95,7 +96,7 @@ def rubric_block(text: str) -> str:
     "Judge each point on its own and give a one-line reason",
     "Do not judge these numbers: report what the answer gives",
     "Do not convert or correct it, even if it looks wrong",
-    "48K means 48000",
+    "the multiplier as the unit, exactly as written",
     "2,5 MHz is 2.5 MHz",
     "list each of them. If it gives no value for the quantity, use an empty list",
     '"unit_written": false',
@@ -122,7 +123,8 @@ def test_number_rules_in_the_prompt_come_from_the_rule_cascade(monkeypatch):
     (proposal §5.1), so judge-graded and rule-graded numbers follow one table."""
     assert jp._tier_text() in jp.SYSTEM
     assert rules.CREDIT_TIERS == ((1.0, 1.0), (5.0, 0.5))
-    assert 'within 5 times the tolerance the point is at most "partially_met"' in jp.SYSTEM
+    assert ('within 5 times the tolerance and no more than 4 percentage points beyond the tolerance the '
+            'point is at most "partially_met"') in jp.SYSTEM
     assert f"off by a factor of {rules.MAGNITUDE_RATIO:g} or more" in jp.SYSTEM
     assert f"off by a factor of {rules.MAGNITUDE_RATIO:g} or more" in jp.UNIT_ERROR_TEXT
     monkeypatch.setattr(rules, "CREDIT_TIERS", ((1.0, 1.0), (3.0, 0.5)))
@@ -517,8 +519,8 @@ def test_verdict_ids_must_match_the_rubric(verdict):
     ([(5, "", False)], None),
     ([(5, "kV", False)], None),
     ([(5, "", True)], "unit_written is true but the unit is blank"),
-    ([(5, "volts-ish", True)], "is not one the rule cascade reads"),
-    ([(5, "V", True), (5, "furlongs", True)], "is not one the rule cascade reads"),
+    ([(5, "V", True), (5, "V or 6 V", True)], "the rule cascade cannot grade"),
+    ([(5, "furlongs", True)], None),                    # a unit the rules do not read: 0, not malformed
 ])
 def test_reported_values_must_be_gradable(values, message):
     rubric = numeric_rubric({"value": 5, "unit": "V"})
@@ -676,12 +678,13 @@ def test_hedges_and_missing_values(values, expected):
 
 
 @pytest.mark.parametrize("ref, value, unit, expected, reason", [
-    (KHZ, 10000, "Hz", 1.0, "within_tolerance"),         # "Answer: 10000", the answer clearly means Hz
+    (KHZ, 10000, "Hz", 0.0, "order_of_magnitude"),       # an unwritten unit is not taken: 10000 kHz
     (KHZ, 10, "", 1.0, "within_tolerance"),              # no unit at all: read in the reference unit
     (KHZ, 10000, "", 0.0, "order_of_magnitude"),         # ... as the rules read a bare number
     ({**KHZ, "unit_required": True}, 10, "kHz", 0.0, "unit_missing"),   # the unit must be written
     ({**KHZ, "unit_required": True}, 10, "", 0.0, "unit_missing"),
-    ({"value": 3, "unit": "dB"}, 3, "", 1.0, "within_tolerance"),
+    ({"value": 3, "unit": "dB"}, 3, "", 0.0, "outside_tolerance"),     # a bare 3 is a ratio: 4.77 dB
+    ({"value": 3, "unit": "dB"}, 2, "", 1.0, "converted_ratio"),       # a ratio of 2 is 3.01 dB
 ])
 def test_values_with_no_written_unit(ref, value, unit, expected, reason):
     explained = jp.explain_score(judge_numbers(N1=[(value, unit, False)]), numeric_rubric(ref))
@@ -704,33 +707,26 @@ def test_routing():
 
 
 @pytest.mark.parametrize("answer, ref, reason", [
-    ("Final answer: 1000", {"value": 30, "unit": "dB", "abs_tolerance": 0.1}, "bare_number_unit_unclear"),
-    ("The power ratio is 20 dB.", {"value": 100, "unit": ""}, "unit_reading_unclear"),
-    ("Final answer: a loss of 3 dB", {"value": -3, "unit": "dB"}, "db_sign_convention"),
+    ("Final answer: 1000", {"value": 30, "unit": "dB", "abs_tolerance": 0.1}, "converted_ratio"),
+    ("The power ratio is 20 dB.", {"value": 100, "unit": ""}, "converted_db"),
+    ("Final answer: a loss of 3 dB", {"value": -3, "unit": "dB"}, "loss_word_sign"),
 ])
-def test_two_readings_go_to_a_human(answer, ref, reason):
-    """Round-2 finding F1: when the rules hold two readings of a number with different credit, the
-    judge's value-and-unit verdict cannot choose between them, so the answer goes to a human."""
+def test_two_readings_are_decided_by_the_rules(answer, ref, reason):
+    """Round-2 finding F1 and decision 7: the judge's value-and-unit verdict cannot choose between two
+    readings of a number, so the rules decide them by the pre-registered conventions."""
     by_rules = rules.score(answer, ref)
-    assert by_rules["method"] == "judge" and by_rules["details"]["reason"] == reason
-    for rubric in (numeric_rubric(ref), numeric_rubric(ref, required_points=["Explains the step."])):
-        assert jp.route(rubric, by_rules) == "human"
-        explained = jp.explain_score(None, rubric, rules_result=by_rules)
-        assert explained["route"] == "human" and explained["score"] is None
-        assert explained["readings"] == [{"reason": reason, "literal_credit": 0.0, "alt_credit": 1.0}]
-        with pytest.raises(ValueError, match="human annotator"):
-            jp.score_from_verdict(None, rubric, rules_result=by_rules)
+    assert (by_rules["method"], by_rules["credit"], by_rules["details"]["reason"]) == ("numeric", 1.0, reason)
+    assert jp.route(numeric_rubric(ref), by_rules) == "rules"
+    assert jp.route(numeric_rubric(ref, required_points=["Explains the step."]), by_rules) == "judge"
     assert jp.route(numeric_rubric(MHZ), rules.score("2,5 MHz", MHZ)) == "judge"   # one reading: the judge
 
 
-def test_one_part_with_two_readings_sends_a_several_number_answer_to_a_human():
+def test_a_part_the_rules_cannot_read_sends_a_several_number_answer_to_the_judge():
     two = [{"label": "f", "value": 30, "unit": "dB"}, {"label": "P", "value": 2.5, "unit": "MHz"}]
     by_rules = rules.score("Final answer: f = 1000 and P = 2,4 MHz", two)
     assert [p["details"]["reason"] for p in by_rules["details"]["parts"]] == [
-        "bare_number_unit_unclear", "unclear_digit_grouping"]
-    assert jp.route(numeric_rubric(two), by_rules) == "human"
-    assert jp.explain_score(None, numeric_rubric(two), rules_result=by_rules)["readings"] == [
-        {"reason": "bare_number_unit_unclear", "literal_credit": 0.0, "alt_credit": 1.0}]
+        "converted_ratio", "unclear_digit_grouping"]
+    assert jp.route(numeric_rubric(two), by_rules) == "judge"
 
 
 def test_reviewers_probe_errors_and_points_apply_when_the_rules_read_the_number():
@@ -934,7 +930,7 @@ def test_inputs_carrying_the_canary_are_refused(where):
 # ---------------------------------------------------------------- pre-registration ---------------
 
 def test_prompt_version_and_pinned_hash():
-    assert jp.PROMPT_VERSION == "tier-k-judge-v2"
+    assert jp.PROMPT_VERSION == "tier-k-judge-v3"
     assert re.fullmatch(r"[0-9a-f]{64}", jp.prompt_sha256())
     assert jp.prompt_sha256() == jp.prompt_sha256() == PINNED_SHA256
 
@@ -955,7 +951,7 @@ def test_probes_cover_every_rubric_shape_and_reasoning_format():
 
 
 @pytest.mark.parametrize("name, value", [
-    ("PROMPT_VERSION", "tier-k-judge-v3"),
+    ("PROMPT_VERSION", "tier-k-judge-v4"),
     ("SYSTEM", jp.SYSTEM + " "),
     ("USER_TEMPLATE", jp.USER_TEMPLATE.replace("Grade the answer", "Grade this answer")),
     ("NO_TOLERANCE", "none"),
@@ -1015,3 +1011,253 @@ def test_fallback_judge_shares_the_template():
     assert jp.JUDGE_MODELS == {"primary": "MiniMax-M3", "fallback": "Kimi K2.6"}
     assert jp.snapshot()["judges"] == jp.JUDGE_MODELS
     assert "same template" in jp.snapshot()["fallback_note"]
+
+
+def test_the_judge_zeroes_the_reasons_the_rules_zero_a_part_for():
+    assert set(jp.DU_REASONS) == set(rules.PART_ZERO_REASONS) and "voltage_convention" in jp.DU_REASONS
+
+
+def test_a_bare_value_the_judge_reports_is_read_as_the_rules_read_it():
+    num = jp.normalize_rubric({"numeric": {"value": 30, "unit": "dB", "abs_tolerance": 0.1},
+                               "numeric_tolerance": "toy", "review": {"status": "approved"}}).numbers[0]
+    assert jp.grade_value({"value": 1000, "unit": "", "unit_written": False}, num)["credit"] == 1.0
+    assert jp.grade_value({"value": 30, "unit": "", "unit_written": False}, num)["credit"] == 0.0
+    assert jp.grade_value({"value": 1000, "unit": "times", "unit_written": True}, num)["credit"] == 1.0
+
+
+def test_new_numeric_fields_are_accepted():
+    assert {"ratio_kind", "form_required", "waveform", "quantity"} <= set(jp.NUMERIC_KEYS)
+
+
+def test_a_times_sign_the_judge_reports_is_a_ratio_word():
+    num = jp.normalize_rubric({"numeric": {"value": 30, "unit": "dB", "abs_tolerance": 0.1},
+                               "numeric_tolerance": "toy", "review": {"status": "approved"}}).numbers[0]
+    assert jp.grade_value({"value": 1000, "unit": "×", "unit_written": True}, num)["credit"] == 1.0
+
+
+def test_a_tie_broken_part_with_an_order_of_magnitude_error_zeroes_the_answer():
+    two = [{"label": "spur", "value": -40, "unit": "dBc"}, {"label": "B", "value": 1, "unit": "kHz"}]
+    by_rules = {"method": "numeric", "credit": 0.5, "details": {"reason": "part_zero", "parts": [
+        {"method": "numeric", "credit": 0.0, "details": {"reason": "tie_break_lower", "lower_reason": "order_of_magnitude"}},
+        {"method": "numeric", "credit": 1.0, "details": {"reason": "within_tolerance"}}]}}
+    explained = jp.explain_score(None, numeric_rubric(two), rules_result=by_rules)
+    assert explained["score"] == 0.0 and "N1:order_of_magnitude" in explained["disqualified_by"]
+
+
+def test_the_judge_is_never_asked_about_an_empty_answer():          # F9
+    rubric = {"numeric": None, "required_points": ["Says red."], "review": {"status": "approved"}}
+    by_rules = rules.score("", rubric)
+    assert jp.route(rubric, by_rules) == "rules"
+    assert jp.explain_score(None, rubric, rules_result=by_rules)["score"] == 0.0
+
+
+# --- sign-off: no human route, judge failures, request settings, F2-F8 (pre-registration §8) ----------
+
+def test_no_human_route():
+    two = {"method": "judge", "credit": None,
+           "details": {"reason": "sign_convention", "literal_credit": 0.0, "alt_credit": 1.0}}
+    assert jp.route(numeric_rubric({"value": 30, "unit": "kHz"}), two) == "judge"
+    assert "human" not in inspect.getsource(jp.route) and not hasattr(jp, "reading_deferrals")
+
+
+def test_judge_failure_scores_zero():
+    rubric = toy_rubric()
+    r = jp.explain_score(None, rubric, rules_result=rules.score("Some prose.", rubric), judge_failed=True)
+    assert r["score"] == 0.0 and r["reason"] == "judge_failed"
+    assert "Kimi K2.6" in jp.FAILURE_POLICY and "judge_failed" in jp.FAILURE_POLICY
+
+
+def test_tier_text_matches_the_rule_cascade():
+    t = jp._tier_text()
+    assert f"no more than {rules.HALF_BAND_EXTRA * 100:.0f} percentage points beyond the tolerance" in t
+    assert "difference in dB" in t and f"{rules.DB_TOLERANCE} dB" in t
+    assert f"{10 * math.log10(rules.MAGNITUDE_RATIO):.1f} dB" in t                  # 9.8 dB
+    assert f"{20 * math.log10(rules.MAGNITUDE_RATIO):.1f} dB" in t                  # 19.6 dB
+    # the rule cascade applies the edges the text states (default 1 %: half credit to 5 %)
+    assert rules.score("Final answer: 1.049 kHz", {"value": 1, "unit": "kHz"})["credit"] == 0.5
+    assert rules.score("Final answer: 1.051 kHz", {"value": 1, "unit": "kHz"})["credit"] == 0.0
+    assert rules.score("Final answer: 39.8 dB", {"value": 30, "unit": "dB"})["details"]["reason"] == "order_of_magnitude"
+
+
+def test_unapproved_rubric_gets_no_final_score():
+    pending = {"numeric": {"value": 2.5, "unit": "MHz"}, "numeric_tolerance": "toy",
+               "review": {"status": "pending-team-review"}}
+    with pytest.raises(jp.RubricError):
+        jp.explain_score(None, pending, rules_result=rules.score("Final answer: 2.5 MHz", pending["numeric"]))
+    with pytest.raises(jp.RubricError):
+        jp.score_from_verdict(None, pending, rules_result=rules.score("Final answer: 2.5 MHz", pending["numeric"]))
+
+
+def test_key_rubric_sends_a_keyed_answer_to_the_judge():
+    kr = jp.key_rubric({"value": 34.0, "unit": "", "abs_tolerance": 0.01})
+    jp.check_reviewed(kr)
+    assert kr["numeric_tolerance"] == jp.KEY_TOLERANCE_TEXT and kr["required_points"] == []
+    assert kr["review"]["status"] == jp.KEY_REVIEW
+    assert jp.route(kr, rules.score("Final answer: 34 or 35", kr["numeric"])) == "judge"
+    assert jp.build_messages("Toy block question?", kr, "Final answer: 34 or 35")
+    with pytest.raises(jp.RubricError):
+        jp.check_reviewed({**kr, "required_points": ["Says 34."]})
+
+
+def test_entities_the_index_cannot_settle_are_unchecked():
+    st = {e["name"]: e["status"] for e in jp.check_entities([
+        {"name": "grcc", "kind": "api"}, {"name": "VOLK", "kind": "module"},
+        {"name": "gr::blocks::throttle::make", "kind": "api"}, {"name": "Python Block", "kind": "block"},
+        {"name": "osmosdr_source", "kind": "block"}, {"name": "blocks_quantum_filter", "kind": "block"}])}
+    assert st["grcc"] == "exists" and st["VOLK"] == "exists" and st["Python Block"] == "exists"
+    assert st["gr::blocks::throttle::make"] == "unchecked" and st["osmosdr_source"] == "unchecked"
+    assert st["blocks_quantum_filter"] == "absent"
+    assert "grcc" in jp.GR_PROGRAMS and "grep" not in jp.GR_PROGRAMS
+
+
+def test_request_settings_are_pinned():
+    s = jp.snapshot()
+    assert {"temperature", "top_p", "max_tokens", "seed", "response_format", "reasoning"} <= set(s["judge_request"])
+    assert s["judge_request"]["temperature"] == 0.0 and s["judge_request"]["seed"] == 20261014
+    assert s["failure_policy"] == jp.FAILURE_POLICY and "human_route" not in s["aggregation"]
+
+
+def test_deep_nesting_is_a_malformed_verdict():
+    with pytest.raises(jp.VerdictError):
+        jp.parse_verdict("[" * 200000 + "]" * 200000)
+
+
+def test_self_names_are_redacted_and_technical_text_is_not():
+    text, n = jp.redact_self_names("As Qwen, a model developed by Alibaba Cloud, I can say: red.")
+    assert "Qwen" not in text and "Alibaba" not in text and n == 2
+    for keep in ("Serve it with llama.cpp.", "Point the antenna at the North pole.", "Set phi = 0.3 rad.",
+                 "Claude Shannon's capacity formula gives 30 kbit/s.", "As Claude E. Shannon showed, C = B log2(1 + SNR)."):
+        assert jp.redact_self_names(keep) == (keep, 0)
+    msgs = jp.build_messages("Q?", toy_rubric(), "As Qwen, I can say: red.")
+    assert "Qwen" not in msgs[-1]["content"]
+
+
+def test_report_counts():
+    rows = [{"score": 0.0, "reason": "judge_failed", "rule_reasons": [], "redactions": 1},
+            {"score": 0.5, "reason": "judge", "rule_reasons": ["tie_break_lower", "within_tolerance"], "redactions": 0},
+            {"score": 0.0, "reason": "wrong_form", "rule_reasons": ["wrong_form"], "redactions": 0}]
+    assert jp.report_counts(rows) == {"tie_break": 1, "wrong_form": 1, "judge_failed": 1, "unknown_unit": 0,
+                                      "redactions": 1}
+
+
+def test_explain_score_reports_the_rule_reasons_and_redactions():
+    by_rules = rules.score("Final answer: 20 dB", {"value": 100, "unit": "", "form_required": True})
+    r = jp.explain_score(None, numeric_rubric({"value": 100, "unit": "", "form_required": True}), rules_result=by_rules)
+    assert r["score"] == 0.0 and "wrong_form" in r["rule_reasons"] and r["redactions"] == 0
+
+
+def test_v3_asks_for_no_unit_when_none_is_written():
+    assert jp.PROMPT_VERSION == "tier-k-judge-v3"
+    assert '"unit": ""' in jp.SYSTEM and "the unit the answer clearly means" not in jp.SYSTEM
+
+
+def test_a_multiplier_without_a_unit_is_graded_as_the_rules_read_it():
+    num = jp.normalize_rubric(numeric_rubric({"value": 2.5, "unit": "MS/s"})).numbers[0]
+    assert jp.grade_value({"value": 2.5, "unit": "M", "unit_written": True}, num)["credit"] == 1.0
+    assert jp.grade_value({"value": 2.5, "unit": "million", "unit_written": True}, num)["credit"] == 1.0
+    assert jp.grade_value({"value": 2.5, "unit": "Million", "unit_written": True}, num)["credit"] == 1.0
+    assert "2.5M samples/s is value 2500000 with unit" in " ".join(jp.SYSTEM.split())
+    assert "48K means 48000" not in jp.SYSTEM and '"unit": "M"' in jp.SYSTEM
+
+
+def test_versioned_self_names_are_redacted():
+    for name in ("DeepSeek-V3", "GPT-4o", "Qwen3", "Qwen2.5", "Llama-3.1-8B", "MiniMax-M3", "DeepSeek-Coder", "Qwen-VL"):
+        text, n = jp.redact_self_names(f"I am {name}, and the answer is 5 V.")
+        assert name not in text and n == 1, name
+    for keep in ("Quantise it with GPTQ.", "A GPT-style decoder.", "Build Llama.cpp first.", "A Mistral-like wind.",
+                 "Claude Elwood Shannon", "Claude E Shannon", "Claude E.Shannon"):
+        assert jp.redact_self_names(keep) == (keep, 0), keep
+
+
+def test_the_hash_pins_the_redaction_and_the_attempts():
+    parts = "\n".join(jp._template_parts())
+    assert jp._REDACT.pattern in parts and f"max_attempts={jp.MAX_ATTEMPTS}" in parts
+    assert any("Qwen" in a for a in jp.PROBE_ANSWERS)
+
+
+def test_redactions_count_answers_sent_to_the_judge():
+    rubric = numeric_rubric({"value": 5, "unit": "V"})
+    by_rules = rules.score("Qwen says Qwen: 5 V", rubric["numeric"])
+    assert jp.explain_score(None, rubric, rules_result=by_rules, answer="Qwen says Qwen: 5 V")["redactions"] == 0
+    rows = [{"redactions": 2}, {"redactions": 0}, {"redactions": 1}]
+    assert jp.report_counts(rows)["redactions"] == 2                       # answers with a redaction
+
+
+def test_a_wrong_form_the_judge_reports_is_counted():
+    ref = {"value": 100, "unit": "", "form_required": True}
+    rubric = numeric_rubric(ref, required_points=["Explains the ratio."], disqualifying_errors=["Toy: no ratio."])
+    verdict = toy_verdict(points={"P1": "met"}, errors={"D1": False}, numbers={"N1": [(20, "dB", True)]})
+    r = jp.explain_score(verdict, rubric, rules_result=rules.score("at least 20 dB", ref))
+    assert r["numbers"]["N1"]["credit"] == 0.0 and r["numbers"]["N1"]["reason"] == "wrong_form"
+    assert r["score"] == 0.5 and jp.report_counts([r])["wrong_form"] == 1       # the point still counts
+
+
+def test_the_db_half_band_for_voltage_levels_is_stated():
+    assert f"{20 * math.log10(1 + rules.HALF_BAND_EXTRA):.2f} dB for voltage levels" in jp._tier_text()
+    assert rules.score("Final answer: 30.27 dB", {"value": 30, "unit": "dB"})["credit"] == 0.5
+    assert rules.score("Final answer: 30.28 dB", {"value": 30, "unit": "dB"})["credit"] == 0.0
+
+
+def test_an_unwritten_unit_is_not_checked():
+    num = jp.normalize_rubric(numeric_rubric({"value": 34, "unit": ""})).numbers[0]
+    assert jp.grade_value({"value": 34, "unit": "items", "unit_written": False}, num)["credit"] == 1.0
+
+
+KEY_34 = {"value": 34, "unit": "", "tolerance": 1e-9, "abs_tolerance": 0.01}    # a count key (blockgen)
+
+
+def test_a_word_that_is_no_unit_leaves_the_bare_number():
+    num = jp.normalize_rubric(jp.key_rubric(KEY_34)).numbers[0]
+    for unit in ("vectors", "taps", "items", "short items", "output items", "bytes", "symbols", "zeros"):
+        assert jp.grade_value({"value": 34, "unit": unit, "unit_written": True}, num)["credit"] == 1.0, unit
+
+
+def test_a_unit_the_rules_do_not_read_earns_0_and_is_counted_apart_from_judge_failures():
+    ref = {"value": 3.84e6, "unit": "Hz"}
+    rubric = jp.key_rubric(ref)
+    by_rules = rules.score("Final answer: 3.84 Mcps", ref)
+    assert by_rules["details"]["reason"] == "unknown_unit"
+    reply = json.dumps(toy_verdict(points={}, errors={}, numbers={"N1": [(3.84, "Mcps", True)]}))
+    verdict = jp.parse_verdict(reply, rubric)                                  # a valid verdict
+    r = jp.explain_score(verdict, rubric, rules_result=by_rules)
+    assert r["score"] == 0.0 and r["reason"] != "judge_failed"
+    assert r["numbers"]["N1"]["reason"] == "unknown_unit" and r["disqualified_by"] == []
+    assert jp.report_counts([r])["unknown_unit"] == 1 and jp.report_counts([r])["judge_failed"] == 0
+    deferred_only = jp.explain_score(json.loads(reply.replace('"Mcps"', '"Hz"').replace("3.84", "3840000")),
+                                     rubric, rules_result=by_rules)
+    assert deferred_only["score"] == 1.0 and jp.report_counts([deferred_only])["unknown_unit"] == 0
+
+
+def test_count_answers_to_behaviour_questions_score_end_to_end():
+    rubric = jp.key_rubric(KEY_34)
+    for ans in ("Final answer: 34 vectors", "Final answer: 34 short items", "Final answer: 34 bytes"):
+        r = rules.score(ans, KEY_34)
+        assert jp.route(rubric, r) == "rules", ans
+        assert jp.explain_score(None, rubric, rules_result=r)["score"] == 1.0, ans
+
+
+def test_g_and_t_written_without_a_unit_are_multipliers():
+    ghz = jp.normalize_rubric(numeric_rubric({"value": 2.4, "unit": "GHz"})).numbers[0]
+    assert jp.grade_value({"value": 2.4, "unit": "G", "unit_written": True}, ghz)["credit"] == 1.0
+    thz = jp.normalize_rubric(numeric_rubric({"value": 2e12, "unit": "Hz"})).numbers[0]
+    assert jp.grade_value({"value": 2, "unit": "T", "unit_written": True}, thz)["credit"] == 1.0
+
+
+def test_values_of_numbers_the_rules_decided_are_not_checked():
+    ref = {"value": 64, "unit": ""}
+    rubric = numeric_rubric(ref, required_points=["Names the window."], disqualifying_errors=[])
+    decided = rules.score("Use a Hamming window. Final answer: 64 taps", ref)
+    assert (decided["method"], decided["credit"]) == ("numeric", 1.0)
+    reply = json.dumps(toy_verdict(points={"P1": "met"}, errors={}, numbers={"N1": [(64, "", True)]}))
+    with pytest.raises(jp.VerdictError, match="unit is blank"):
+        jp.parse_verdict(reply, rubric)                                   # without the rules' result
+    verdict = jp.parse_verdict(reply, rubric, rules_result=decided)
+    assert jp.explain_score(verdict, rubric, rules_result=decided)["score"] == 1.0
+
+
+def test_program_names_add_no_generic_keys():
+    st = {e["name"]: e["status"] for e in jp.check_entities([{"name": "gr.companion", "kind": "api"},
+                                                             {"name": "gr.config_info", "kind": "api"},
+                                                             {"name": "gr_modtool", "kind": "api"}])}
+    assert st["gr.companion"] == "absent" and st["gr.config_info"] == "absent"   # not from gnuradio-companion
+    assert st["gr_modtool"] == "exists"

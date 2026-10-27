@@ -641,6 +641,20 @@ def _c_h4a():
     return "equal drops: no; Tier-A drop 35 points larger: holds",         f"same {same['difference']:.3f} [{same['lo']:.3f}, {same['hi']:.3f}]; worse {worse['difference']:.3f} "         f"[{worse['lo']:.3f}, {worse['hi']:.3f}]", ok
 
 
+def _c_h4b():
+    r = fn.h4b_decision({4096: [90, 88, 91, 89, 90], 16384: [82, 81, 80, 83, 79], 32768: [75] * 5,
+                         65536: [85] * 5})
+    ok = r["holds_up_to"] == 16384 and r["contexts"][16384]["median"] == 81 \
+        and not r["contexts"][32768]["holds"] and r["contexts"][65536]["holds"]
+    try:
+        fn.h4b_decision({4096: [90] * 4, 16384: [90] * 5, 32768: [90] * 5, 65536: [90] * 5})
+        ok = False
+    except ValueError:
+        pass
+    return "holds at 4K and 16K, not at 32K: holds up to 16K; 4 runs refused", \
+        f"holds up to {r['holds_up_to']}, medians {[v['median'] for v in r['contexts'].values()]}", ok
+
+
 def _c_by_group():
     groups = ["calc"] * 30 + ["factual"] * 10
     r = ag.by_group(groups, ag.cohen_kappa, [1, 0] * 20, [1, 0] * 20)
@@ -691,6 +705,7 @@ CHECKS: list[Check] = [
     ("per-task-type breakdown", "§8.1, §4.2", _c_by_group),
     ("PROPOSALS registry", "§9 pre-registration", _c_proposals),
     ("H4a compression cost", "§3 H4a", _c_h4a),
+    ("H4b at every context", "§3 H4b", _c_h4b),
 ]
 
 
@@ -819,14 +834,18 @@ def main(argv: list[str]) -> int:
             print(f"  {part:7s} holds in {r[f'share_{part}_holds']:.4f} "
                   f"(Monte Carlo SE {r[f'mcse_{part}']:.4f})")
         return 0
-    if args.n is None and args.pd is None:
-        default = args.alpha == md.ALPHA and args.power == md.POWER
-        ok = print_table8(args.alpha, args.power)
-        return 0 if ok or not default else 1
-    if args.n is None:
-        ap.error("--n is required with --pd")
-    for pd in args.pd or list(md.P_DISCORDANT):
-        v = md.mde(args.n, pd, args.alpha, args.power)
+    try:                                         # a bad --n, --pd, --alpha or --power: argparse's error (C6)
+        if args.n is None and args.pd is None:
+            md.mde(150, md.P_DISCORDANT[0], args.alpha, args.power)      # checks alpha and power first
+            default = args.alpha == md.ALPHA and args.power == md.POWER
+            ok = print_table8(args.alpha, args.power)
+            return 0 if ok or not default else 1
+        if args.n is None:
+            ap.error("--n is required with --pd")
+        rows = [(pd, md.mde(args.n, pd, args.alpha, args.power)) for pd in args.pd or list(md.P_DISCORDANT)]
+    except ValueError as exc:
+        ap.error(str(exc))
+    for pd, v in rows:
         print(f"n = {args.n}, p_d = {pd}: MDE = {100 * v:.2f} points "
               f"(alpha {args.alpha}, power {args.power})")
     return 0

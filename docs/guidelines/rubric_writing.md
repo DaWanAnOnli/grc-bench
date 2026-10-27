@@ -80,7 +80,7 @@ an expression or an example) or `underspecified`. The team then writes the refer
 - **Never paste a test question into ChatGPT, Claude or any other chatbot or online tool.** Look
   things up in documents, not in a chatbot. Test items reach a model only in a declared, logged run.
   Eval plan §6 says "no test item is sent to a teacher that creates training data". It adds that
-  the models evaluated through an API (B3 and the panel) "do see the public test items; we use
+  the models evaluated through an API (B2 and the panel) "do see the public test items; we use
   settings that do not keep prompts where providers offer them".
   - **The one exception** is the Table-5 drafting model, if the team decides to use it (eval plan
     §5.2). The test questions then go to that one declared model only, through its API, with
@@ -177,6 +177,10 @@ The rule cascade (`./gb score-k`) reads a numeric reference with these fields:
 | `unit_required` | `true` if a bare number without a unit must score 0 |
 | `accept_units` | other spellings to accept as the reference unit, for example `["dB"]` for a dBi gain |
 | `label` | the quantity's name, for example `"Ts"`, when the question asks for several numbers |
+| `ratio_kind` | `"power"` (default) or `"amplitude"`: how a decibel value and a plain ratio convert (20 dB is a power ratio of 100 or an amplitude ratio of 10). Set `"amplitude"` for voltage, current or field ratios. dBm and dBW are always power, dBV, dBmV and dBuV always amplitude |
+| `form_required` | `true` if the question fixes the form (for example "as a power ratio, not in dB"): an answer in the other form then scores 0. Default `false`: the other form is converted and graded |
+| `waveform` | `"sine"` when an RMS voltage may be compared with a peak or peak-to-peak value (factor √2); absent otherwise, and a different voltage convention then scores 0 |
+| `quantity` | `"gain"` when the quantity asked for is a gain, so that "a loss of 3 dB" reads as -3 dB even against a positive reference. Absent: a positive reference is read as a loss quantity ("insertion loss of 3 dB" is +3 dB) |
 
 **Decibel units (dB, dBm, dBi, ...).** The tolerance is in dB, and it goes in `abs_tolerance`:
 
@@ -227,8 +231,9 @@ exact values are the constants in `rules.py` (`CREDIT_TIERS`, `HALF_BAND_EXTRA`,
   confusing peak and RMS for a sine; a factor of 2 from confusing peak and peak-to-peak; the power
   versus amplitude decibel mix-up (10·log10 instead of 20·log10).
 
-State the same tolerance in words in `numeric_tolerance`, so the judge can apply it to answers the
-rules hand over. The scoring code refuses a rubric that has `numeric` but no `numeric_tolerance`.
+State the same tolerance in words in `numeric_tolerance`, for the two checkers; the scoring code
+applies the tolerance in `numeric`, also to the values the judge reports for answers the rules hand
+over. The scoring code refuses a rubric that has `numeric` but no `numeric_tolerance`.
 
 ## Calculation questions
 

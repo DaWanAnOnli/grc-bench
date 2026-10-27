@@ -753,7 +753,7 @@ def render_report(selftest: dict[str, Any], ref: dict[str, Any], checks: dict[st
         "L1816). The Ollama path never sends `strict` (its profile sets openai_supports_strict_tool_definition=False), so "
         f"the teacher's requests had none ({len(checks['wire_strict']['collection_teacher'])}). This is GRC-Agent's "
         "real behaviour against an OpenAI-compatible server and is kept; whether llama-server enforces it is "
-        "recorded by the smoke test (it bears on the B0/B2 distinction).",
+        "recorded by the smoke test (it bears on B0, the server default).",
         f"- Message layout: roles {shape['llama_server']['roles']}: the fixed instructions and the "
         "active-flowgraph note travel as two system messages (the teacher's request: "
         f"{shape['collection_teacher']['roles']}); `tool_choice` {esc(shape['llama_server']['tool_choice'])}; "

@@ -84,6 +84,15 @@ def _pairs(r1: Sequence, r2: Sequence) -> tuple[list, list]:
     return a, b
 
 
+def _check_order(a: list, b: list, categories: Sequence | None, weights: str | None) -> None:
+    """Weights need ordered categories: text ratings carry no order, so they need `categories`
+    (round-2 finding C5: "met" < "not_met" < "partially_met" alphabetically)."""
+    if weights is not None and categories is None and not all(
+            isinstance(v, (int, float, np.integer, np.floating)) and not isinstance(v, (bool, np.bool_))
+            for v in a + b):
+        raise ValueError("weighted kappa needs ordered categories: pass `categories` for non-numeric ratings")
+
+
 def _categories(a: list, b: list, categories: Sequence | None) -> list:
     if categories is None:
         return sorted(set(a) | set(b), key=_sort_key)
@@ -134,8 +143,11 @@ def _kappa_tables(tables: np.ndarray, w: np.ndarray) -> np.ndarray:
 def cohen_kappa(r1: Sequence, r2: Sequence, categories: Sequence | None = None,
                 weights: str | None = None) -> float:
     """Cohen's kappa (Po - Pe) / (1 - Pe); with weights, 1 - sum(w Po) / sum(w Pe) over ordered
-    categories (linear |i-j|/(K-1) or quadratic ((i-j)/(K-1))^2 disagreement weights)."""
-    cats, table = confusion(r1, r2, categories)
+    categories (linear |i-j|/(K-1) or quadratic ((i-j)/(K-1))^2 disagreement weights). Weights with
+    non-numeric ratings need `categories` (ValueError otherwise)."""
+    a, b = _pairs(r1, r2)
+    _check_order(a, b, categories, weights)
+    cats, table = confusion(a, b, categories)
     return float(_kappa_tables(table[None], _disagreement_weights(len(cats), weights))[0])
 
 
@@ -144,8 +156,9 @@ def cohen_kappa_ci(r1: Sequence, r2: Sequence, categories: Sequence | None = Non
                    B: int = BOOTSTRAP_B, seed: int = SEED, alpha: float = ALPHA) -> dict:
     """Cohen's kappa with a percentile bootstrap (1 - alpha) interval: items (or, with `clusters`,
     clusters of items) are resampled with replacement; resamples whose kappa is undefined are
-    dropped and counted."""
+    dropped and counted. Fewer than 2 clusters (or items) give no interval (NaN bounds)."""
     a, b = _pairs(r1, r2)
+    _check_order(a, b, categories, weights)
     cats, table = confusion(a, b, categories)
     k = len(cats)
     idx = {c: n for n, c in enumerate(cats)}
@@ -155,8 +168,8 @@ def cohen_kappa_ci(r1: Sequence, r2: Sequence, categories: Sequence | None = Non
     w = _disagreement_weights(k, weights)
     boot = _kappa_tables((wts @ onehot).reshape(B, k, k), w)
     ok = boot[np.isfinite(boot)]
-    lo, hi = _percentile_ci(ok, alpha) if ok.size else (float("nan"), float("nan"))
     _, g = cluster_codes(clusters, len(a))
+    lo, hi = _percentile_ci(ok, alpha) if ok.size and g >= 2 else (float("nan"), float("nan"))
     return {"kappa": float(_kappa_tables(table[None], w)[0]), "lo": lo, "hi": hi,
             "B": B, "seed": seed, "alpha": alpha, "n_items": len(a), "n_clusters": g,
             "n_undefined_resamples": int(boot.size - ok.size), "weights": weights,

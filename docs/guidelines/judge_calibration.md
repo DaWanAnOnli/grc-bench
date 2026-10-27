@@ -62,7 +62,7 @@ That is about 14 hours more than Table 7. Two things go into the pre-registratio
 The answers come from the logged Tier-K runs of three source groups (eval plan §8.1):
 
 - **base models:** the B0 runs of Nanbeige4.2-3B and North-Mini-Code;
-- **B3:** DeepSeek-V4.1-Flash;
+- **B2:** DeepSeek-V4.1-Flash, the cloud teacher;
 - **the panel:** the small open models, the open teachers, the closed frontier model and
   Qwen3-30B-A3B.
 
@@ -77,9 +77,9 @@ An answer can be drawn only if **all** of these hold:
   - answers to a numbers-only rubric whose numbers the rule cascade could not read
     (`./gb score-k` method `judge`);
 
-  Answers for which `route` returns `human` are not drawn. There the rule cascade found two
-  readings of a number that earn different credit, for example "1000" against a 30 dB gain, or
-  "a loss of 3 dB" against −3 dB. A team member scores these answers directly;
+  An answer whose numbers the rule cascade reads two ways ("1000" against a 30 dB gain, "a loss
+  of 3 dB" against −3 dB) is decided by the rules' pre-registered conventions and never reaches
+  the judge (pre-registration §8, decision 7), so it is not drawn for the judge's numbers;
 - it is not empty after reasoning removal, and it was not cut off at the length cap. Both cases are
   scored 0 by rule;
 - its model may be scored on Tier K (Table 5). This leaves out:
@@ -107,17 +107,17 @@ An answer can be drawn only if **all** of these hold:
   the blinding key.
 - **Order:** the sheet lists the answers in a random order, not grouped by model or by question.
 
-**Open point, to be decided before G2: when the B3 and panel answers exist.** Eval plan Table 15
+**Open point, to be decided before G2: when the B2 and panel answers exist.** Eval plan Table 15
 schedules the calibration labels in week 4. In week 4, only the base models' answers exist:
 
-- **B3** (DeepSeek-V4.1-Flash) "is run once, on the frozen benchmark in week 8" (proposal, baselines).
+- **B2** (DeepSeek-V4.1-Flash) "is run once, on the frozen benchmark in week 8" (proposal, baselines).
   DeepSeek is also the session teacher (Table 5), and session collection runs from week 4 to
-  mid-November. An early B3 run on test questions would send test items to a teacher while it
-  creates training data, which eval plan §6 forbids. **So there is no early B3 run.**
+  mid-November. An early B2 run on test questions would send test items to a teacher while it
+  creates training data, which eval plan §6 forbids. **So there is no early B2 run.**
 - **The panel** runs from week 5 ("Panel runs on Qoherent's machines", Table 15), and its members are
   chosen at the freeze (§7.3).
 
-So in every option the **B3 share is labelled in week 8**, next to the second check and before any
+So in every option the **B2 share is labelled in week 8**, next to the second check and before any
 declared test result is judged. The options differ in when the rest is labelled:
 
 1. **Start in week 4.** Label the base-model share in week 4, and the panel share when the panel

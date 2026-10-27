@@ -517,9 +517,9 @@ def test_calibration_guide_follows_the_judges_contract():
     assert judge_prompt.route(rubric, {"method": "numeric", "credit": 1.0, "details": {}}) == "judge"
 
 
-def test_calibration_guide_has_no_early_b3_run():
+def test_calibration_guide_has_no_early_b2_run():
     flat = " ".join(_text(GUIDELINES / "judge_calibration.md").split())
-    assert "So there is no early B3 run." in flat
+    assert "So there is no early B2 run." in flat
     assert "Session teacher; B3 upper bound | DeepSeek" in _eval_plan()
     proposal = SPECS_TEXT / "Methodology_Proposal_to_7Dec.txt"
     if proposal.exists():

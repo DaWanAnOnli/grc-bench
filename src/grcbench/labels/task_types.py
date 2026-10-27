@@ -15,7 +15,7 @@ inter-annotator agreement). The canonical types and their definitions come from
 Outputs (deterministic; a re-run gives byte-identical files):
   splits/task_type_labels.jsonl                         one row per question (1,853)
   splits/task_type_review_key.json                      review-sheet rows -> Claude / rule labels
-  reports/labels.md                                     counts, small groups, merge proposals
+  reports/labels.md                                     counts, small groups, merges and families
   handoff/review_sheets/task_type_ambiguous_test.csv    blind double labelling of ambiguous test items
   handoff/review_sheets/task_type_spotcheck_train.csv   seeded 10% spot-check of training rows
   handoff/review_sheets/task_type_instructions.md       how to fill in the two sheets
@@ -106,6 +106,43 @@ CONCEPT_NEIGHBOUR: dict[str, tuple[str, str]] = {
                                  "implement / configure X'"),
     "reasoning": ("factual", "both explain concepts; factual stops at recall"),
 }
+
+# How results are reported (pre-registration §8, decisions 4 and 5).
+REPORT_MERGES = {"gnuradio_usage": "design"}          # decision 4: one group "design + gnuradio_usage"
+FAMILIES = {"recall": ("factual",),                   # decision 5, on the frozen questions
+            "reasoning": ("reasoning", "calculation", "diagnosis", "design", "gnuradio_usage")}
+BEHAVIOUR_GROUP = "gnuradio_behaviour"                # the GNU Radio behaviour questions: their own group
+ITEM_KINDS = ("frozen_question", "bank_question", "block_question")   # test, dev, behaviour questions
+BLOCK_QUESTIONS_REL = Path("items") / "tier_k" / "test" / "block_questions.jsonl"
+
+
+def _check_kind(task_type: str, item_kind: str) -> None:
+    """A block question is reported in its own group whatever its task_type (decision 5), so only
+    the other kinds need a canonical type."""
+    if item_kind not in ITEM_KINDS:
+        raise ValueError(f"item kind {item_kind!r} is not one of {list(ITEM_KINDS)}")
+    if item_kind != "block_question" and task_type not in CANONICAL:
+        raise ValueError(f"task type {task_type!r} is not one of {list(CANONICAL)}")
+
+
+def report_group(task_type: str, item_kind: str) -> str:
+    """The group a Tier-K item is reported in: its clean task type, with REPORT_MERGES applied
+    ("design + gnuradio_usage"); BEHAVIOUR_GROUP for a GNU Radio behaviour question."""
+    _check_kind(task_type, item_kind)
+    if item_kind == "block_question":
+        return BEHAVIOUR_GROUP
+    head = REPORT_MERGES.get(task_type, task_type)
+    merged = sorted(t for t, h in REPORT_MERGES.items() if h == head)
+    return " + ".join([head, *merged])
+
+
+def family(task_type: str, item_kind: str) -> str | None:
+    """"recall" or "reasoning" for a frozen (test) or bank (dev) question; None for a GNU Radio
+    behaviour question, which is in neither family."""
+    _check_kind(task_type, item_kind)
+    if item_kind == "block_question":
+        return None
+    return next(f for f, types in FAMILIES.items() if task_type in types)
 
 
 # ----------------------------------------------------------------------------------------------
@@ -358,8 +395,12 @@ def render_report(ctx: dict[str, Any]) -> str:
     small = ctx["small_groups"]
     if small:
         names = ", ".join(f"`{g}` ({ctx['test_counts'][g]})" for g in small)
-        add(f"- **Small test groups:** {names} below {MIN_GROUP} items. Merge proposals are below, "
-            "**for team decision; to be fixed in the G2 pre-registration before any test run**.")
+        undecided = [g for g in small if g not in REPORT_MERGES]
+        add(f"- **Small test groups:** {names} below {MIN_GROUP} items. "
+            + ("Each is reported merged with its neighbour, as decided at sign-off (pre-registration §8, "
+               "decision 4)." if not undecided else
+               "Merge proposals are below, **for team decision; to be fixed in the G2 pre-registration "
+               "before any test run**."))
     add(f"- **Team review:** all {len(amb_eval)} ambiguous test items go to two team members for blind "
         f"double labelling, and a seeded {int(SPOTCHECK_FRACTION * 100)}% sample of training rows "
         f"({len(ctx['spot_rows'])} rows, every raw spelling included) is spot-checked. The sheets are in "
@@ -435,11 +476,10 @@ def render_report(ctx: dict[str, Any]) -> str:
                 "among the classified ones, so team relabelling can only add to it.")
             add("")
 
-    add(f"## Groups with fewer than {MIN_GROUP} test items: merge proposals")
+    add(f"## Groups with fewer than {MIN_GROUP} test items: merges")
     add("")
-    add("**For team decision; to be fixed in the G2 pre-registration before any test run** "
-        "(eval plan §4.2: smaller groups are merged with their nearest neighbour, and the merge is decided "
-        "before the final runs).")
+    add("Eval plan §4.2: smaller groups are merged with their nearest neighbour, and the merge is decided "
+        "before the final runs. The merges below were decided at sign-off (pre-registration §8, decision 4).")
     add("")
     sims = ctx["similarity"]
     if not small:
@@ -451,29 +491,27 @@ def render_report(ctx: dict[str, Any]) -> str:
         add(f"### `{g}`: {ctx['test_counts'][g]} test items")
         add("")
         merged = ctx["test_counts"][g] + ctx["test_counts"][concept]
-        add(f"- **Proposal: merge into `{concept}`** and report one group "
-            f"\"{concept} + {g}\" ({merged} test items). Reason: {why}.")
+        if REPORT_MERGES.get(g) == concept:
+            add(f"- **Merged into `{concept}`:** results report one group \"{concept} + {g}\" ({merged} test "
+                f"items). Reason: {why}.")
+        else:
+            add(f"- **Proposal: merge into `{concept}`** and report one group \"{concept} + {g}\" ({merged} "
+                f"test items), **for team decision; to be fixed in the G2 pre-registration before any test "
+                f"run**. Reason: {why}.")
         agree = "agrees" if lex == concept else "differs"
         add(f"- **Lexical check ({agree}):** on the training questions only, the TF-IDF centroid of `{g}` "
             f"is closest to `{lex}` (cosine {sims[g][lex]:.3f}). "
             + ", ".join(f"`{k}` {v:.3f}" for k, v in sorted(sims[g].items(), key=lambda kv: -kv[1]))
             + ".")
         if g == "gnuradio_usage":
-            add("- **Alternative A (no merge):** Tier K v1.0 adds 100 GNU Radio behaviour questions (eval plan "
-                "§4.2; WS3b), all about what GNU Radio blocks do to a stream, which is the "
-                "gnuradio_usage definition. If the group rule is applied to Tier K as a whole (285 items) "
-                f"rather than to the {n_eval} frozen questions, `gnuradio_usage` has about "
-                f"{ctx['test_counts'][g] + 100} items and needs no merge. GRC-Agent needs this skill most "
-                "(Data Summary §6), so keeping it visible is worth considering.")
-            add("- **Alternative B:** merge into `factual` if the team sees the frozen usage questions as "
-                "procedural recall. That would conflict with reporting factual recall separately (next "
-                "section).")
-            add("- Note for the decision: several of the frozen `gnuradio_usage` test items are not about "
-                "GNU Radio itself (USRP VM setup, Python implementations, Phaser). They were labelled "
-                "that way by the generator, and the rule map keeps that label.")
+            add(f"- The {ctx['families']['behaviour']} GNU Radio behaviour questions are reported as their own "
+                f"group (`{BEHAVIOUR_GROUP}`, decision 5), not as `gnuradio_usage`.")
+            add("- Several of the frozen `gnuradio_usage` test items are not about GNU Radio itself (USRP VM "
+                "setup, Python implementations, Phaser). They were labelled that way by the generator, and "
+                "the rule map keeps that label.")
         add("")
     add("Lexical similarity between all clean types (TF-IDF centroids over the training questions; the "
-        "same tokenizer as the 8-gram check). It is a supporting check only; the proposal rests on the "
+        "same tokenizer as the 8-gram check). It is a supporting check only; the merge rests on the "
         "definitions.")
     add("")
     types = sorted(sims)
@@ -485,21 +523,19 @@ def render_report(ctx: dict[str, Any]) -> str:
     add("")
     fam = ctx["families"]
     add("Proposal §5.1 and eval plan §4.2 report factual recall and reasoning separately, because looped "
-        "models such as Nanbeige4.2 may trade recall for reasoning [14]. Proposed mapping, "
-        "**for team decision; to be fixed in the G2 pre-registration before any test run**:")
+        f"models such as Nanbeige4.2 may trade recall for reasoning [14]. The split is made on the {n_eval} "
+        "frozen test questions, as decided at sign-off (pre-registration §8, decisions 4 and 5); the GNU "
+        "Radio behaviour questions form their own group:")
     add("")
-    add(f"- **Recall:** `factual` ({fam['recall']} test items).")
-    add(f"- **Reasoning:** `reasoning`, `calculation`, `design` and `diagnosis` ({fam['reasoning']} test "
-        "items), plus the WS3b GNU Radio behaviour questions, whose answers combine knowing what a block does "
-        "with a short computation on the stated input.")
-    add(f"- **`gnuradio_usage` ({fam['usage']} frozen test items):** put them in the reasoning family, in "
-        "line with the merge into `design` proposed above (they ask how to implement or configure "
-        "something). The alternative is to leave them out of the two-way split.")
-    add("- The split goes by item, not only by task type: a behaviour question counts as reasoning whatever "
-        "its task_type.")
+    add(f"- recall: {fam['recall']} test items (`factual`).")
+    add(f"- reasoning: {fam['reasoning']} test items "
+        f"({', '.join(f'`{t}`' for t in FAMILIES['reasoning'])}).")
+    add(f"- design + gnuradio_usage: {fam['merged']} test items, the merged task-type group (decision 4), "
+        "inside the reasoning family.")
+    add(f"- GNU Radio behaviour: {fam['behaviour']} test items (`{BEHAVIOUR_GROUP}`), in neither family: "
+        "their answers come from running GNU Radio on a stated input.")
     add(f"- The recall group is much smaller than the reasoning group ({fam['recall']} vs "
-        f"{fam['reasoning'] + fam['usage']} frozen items), so its intervals are wider. Print the MDE beside "
-        "it (eval plan §9).")
+        f"{fam['reasoning']} frozen items), so its intervals are wider. Print the MDE beside it (eval plan §9).")
     add("")
 
     add("## Team review")
@@ -589,10 +625,14 @@ def build(out: Path = REPO) -> dict[str, Any]:
     test_counts = Counter(r["clean"] for r in labels if r["split"] == "eval")
     small = [t for t in CANONICAL if test_counts[t] < MIN_GROUP]
     similarity = lexical_similarity((r["clean"], questions[r["id"]]) for r in labels if r["split"] == "train")
-    families = {"recall": test_counts["factual"], "usage": test_counts["gnuradio_usage"],
-                "reasoning": sum(test_counts[t] for t in ("reasoning", "calculation", "design", "diagnosis"))}
+    block_file = REPO / BLOCK_QUESTIONS_REL
+    families = {f: sum(test_counts[t] for t in types) for f, types in FAMILIES.items()}
+    families["merged"] = sum(test_counts[t] for t in CANONICAL
+                             if report_group(t, "frozen_question") != t)        # design + gnuradio_usage
+    families["behaviour"] = sum(1 for r in read_jsonl(block_file) if r.get("item_kind") == "block_question")
     inputs = [(_rel(p), sha256_file(p)) for p in (SPEC_FILE, EVAL_FILE, TRAIN_FILE, MANIFEST_FILE)]
     inputs.append(("grc-bench/src/grcbench/labels/ambiguous_decisions.json", sha256_file(DECISIONS_FILE)))
+    inputs.append((_rel(block_file), sha256_file(block_file)))
     ctx = {"spec": spec, "labels": labels, "decisions_doc": decisions_doc, "spot_rows": spot_rows,
            "test_counts": test_counts, "small_groups": small, "similarity": similarity,
            "families": families, "inputs": inputs}

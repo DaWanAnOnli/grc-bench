@@ -14,18 +14,17 @@ plan: Benchmark_Evaluation_Plan_to_7Dec.docx (CAD 504 budget case), Table 6 and 
 defaults:
   engine: llama.cpp b10333 (GGUF files, BF16 references included); API models through their provider
   sampling: each model's recommended settings
+  tool_calls: "llama.cpp-served models: the server default, --jinja with its tool grammar, on Tiers A and F (B0 and every later stage); API models: the provider's tool calling, strict mode where offered; the run log records the settings used"
   max_answer_tokens: {K: 4096, F: 8192}
   tier_a_kv_cache: q8_0
   judge: MiniMax-M3 (fallback Kimi K2.6), prompt fixed in preregistration.md Appendix B
 
 configurations:
   # ------------------------------------------------------------------ Nanbeige4.2-3B (BF16 unless stated)
-  - {id: nb-bf16-b0, model: Nanbeige4.2-3B, precision: BF16, stage: B0 base model,
+  - {id: nb-bf16-b0, model: Nanbeige4.2-3B, precision: BF16, stage: "B0 base model (server default: tool grammar on)",
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: true}, serves: [H1a, H1c, RQ2 baseline]}
   - {id: nb-bf16-b1, model: Nanbeige4.2-3B, precision: BF16, stage: B1 base model + documentation search,
      tiers: {K: {n: 5}, F: {n: 5}}, serves: [RQ2 baseline]}
-  - {id: nb-bf16-b2, model: Nanbeige4.2-3B, precision: BF16, stage: B2 grammar-constrained tool calls,
-     tiers: {A: {k: 4}}, serves: [RQ2 baseline]}
   - {id: nb-bf16-s1, model: Nanbeige4.2-3B, precision: BF16, stage: best S1 checkpoint,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H2a, H2b]}
   - {id: nb-bf16-s1-dpo, model: Nanbeige4.2-3B, precision: BF16, stage: S1 + DPO,
@@ -54,14 +53,12 @@ configurations:
      tiers: {K: {n: 3}, F: {n: 3}, BFCL: true}, serves: [H2a]}
 
   # ------------------------------------------------------------------ North-Mini-Code
-  - {id: nmc-bf16-b0, model: North-Mini-Code, precision: BF16, stage: B0 base model,
+  - {id: nmc-bf16-b0, model: North-Mini-Code, precision: BF16, stage: "B0 base model (server default: tool grammar on)",
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 2}, BFCL: true}, serves: [H1a, H1c, RQ2 baseline, RQ4 anchor]}
-  - {id: nmc-q4-b0, model: North-Mini-Code, precision: Q4_K_M, stage: B0 base model,
+  - {id: nmc-q4-b0, model: North-Mini-Code, precision: Q4_K_M, stage: "B0 base model (server default: tool grammar on)",
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1c, RQ2 baseline]}
   - {id: nmc-q4-b1, model: North-Mini-Code, precision: Q4_K_M, stage: B1 base model + documentation search,
      tiers: {K: {n: 5}, F: {n: 5}}, serves: [RQ2 baseline]}
-  - {id: nmc-q4-b2, model: North-Mini-Code, precision: Q4_K_M, stage: B2 grammar-constrained tool calls,
-     tiers: {A: {k: 4}}, serves: [RQ2 baseline]}
   - {id: nmc-q4-s1, model: North-Mini-Code, precision: Q4_K_M, stage: best S1 checkpoint,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H2a, H2b]}
   # Final model = the better preference method only (S1 + DPO or S1 + DPOP).
@@ -83,7 +80,7 @@ configurations:
   # ------------------------------------------------------------------ references
   - {id: qwen3-30b-a3b-q4, model: Qwen3-30B-A3B, precision: Q4_K_M, stage: architecture-matched open MoE reference,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: b3-deepseek-v4.1-flash, model: DeepSeek-V4.1-Flash, precision: API, stage: B3 cloud teacher upper bound,
+  - {id: b2-deepseek-v4.1-flash, model: DeepSeek-V4.1-Flash, precision: API, stage: B2 cloud teacher upper bound,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c, RQ2 upper bound]}
 
   # ------------------------------------------------------------------ panel slots (members chosen at the freeze)

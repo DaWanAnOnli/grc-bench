@@ -24,7 +24,7 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
    level: 8 tasks) and in `reports/scoring_reviews/round2_status.md` (the open findings, before the
    rule cascade and judge template are frozen in the pre-registration).
 3. **Sign off the pre-registration.** The draft is `docs/preregistration/preregistration.md` with
-   `run_list.yaml`. Its §8 lists 11 decisions (B0 against B2, the analysis proposals in Appendix A,
+   `run_list.yaml`. Its §8 lists 11 decisions (B0 and the tool grammar, the analysis proposals in Appendix A,
    label merges, the open scoring findings, the four Nanbeige comparison arms, ...). After the
    decisions: set `status: declared` in `run_list.yaml` (until then the harness refuses every test
    run), run `./gb prereg`, make the first commit (item 9) and upload to a new OSF project.

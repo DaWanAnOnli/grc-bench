@@ -8,14 +8,17 @@ partial credit by relative error; a wrong unit scores zero), §5.2 (the rubric's
 §7.1 (reasoning text is removed before scoring; an answer cut off at the length cap is scored as wrong).
 
     score(answer_text, reference, truncated=False)
-        -> {"method": "numeric" | "symbolic" | "judge", "credit": float in [0, 1] | None,
+        -> {"method": "numeric" | "symbolic" | "rules" | "judge", "credit": float in [0, 1] | None,
             "details": {...}}
+
+"rules" is a truncated or empty answer to an open-ended rubric (no rule target), scored 0 by rule.
 
 "judge" means the rules cannot decide: credit is None, and details carry the reason, the extracted
 candidate(s) and the final-answer text for the judge (eval plan §8). Every result names its reason in
 details["reason"]. The rules decide from the answer's form, never from which reading happens to be
-right: when two readings of one answer would earn different credit, the judge decides, whichever
-reading is correct (exceptions: P4 and P8 below). On rule-only checks (dev-split checkpoint screening,
+right: a number that could be read two ways is read by the pre-registered conventions (P4, P8), and
+a result that still holds two readings of different credit gets the lower one (P11); the judge
+reads only what the rules cannot (pre-registration §8, decision 7). On rule-only checks (dev-split checkpoint screening,
 eval plan §4.1 and §10.3, "scored by rules only") a judge result scores 0 (rule_only_credit) and the
 deferral rate is reported with the score (P10).
 
@@ -29,6 +32,7 @@ Reference forms (a rubric's numeric field, or a target for block and choice ques
       relative `tolerance` alone on a decibel reference is refused (ValueError: it is ambiguous), and
       next to a dB tolerance it is ignored (calc.py writes both).
       unit_required: a bare number scores 0 instead of being read in the reference unit.
+      waveform: "sine" or absent; with "sine" an RMS voltage converts to peak (factor √2).
       accept_units: spellings treated as the reference unit (e.g. ["dB"] for a dBi gain).
       label: str or list, the quantity's name ("Ts"), for questions asking for several numbers.
   [{...}, {...}]          several numeric parts; credit = mean of the parts (the per-part input
@@ -72,8 +76,10 @@ Reference forms (a rubric's numeric field, or a target for block and choice ques
    b/s, bps, B/s, bytes, samples, symbols, bits, deg/°, cycles (a count, so cycles/s = Hz and
    cycles/sample is a normalised frequency, or 2π rad), %, ppm, K, °C, °F, min, h, dB, dBm, dBW, dBV,
    dBmV, dBuV, dBi, dBd, dBc, dBFS, dB-Hz, dBm/Hz, dBc/Hz; compounds with "/", "per" and "·";
-   exponents; unit words (megahertz, "kilo samples per second", ...). Common miscapitalisations (KHz,
-   mhz, Mbps, dbm) are read as meant; "mHz" written exactly so is millihertz.
+   exponents; unit words (megahertz, "kilo samples per second", msec, μsec, nsec, microsec, ...);
+   voltage conventions Vpp, Vpk, Vp, Vrms. Common miscapitalisations (KHz, Kbit, mhz, Mbps, dbm) are
+   read as meant; "mHz" written exactly so is millihertz. A LaTeX "~" between a number and its unit
+   is a space ("30~\\text{kHz}"); before a number it means "about".
 2. Numeric. In the decision region (the narrowest region holding a quantity) the candidate is the last
    quantity outside parentheses with the reference's dimension; else the last with another unit (a
    unit error); else the last bare number, read in the reference unit. The rule for several numbers
@@ -95,8 +101,13 @@ Reference forms (a rubric's numeric field, or a target for block and choice ques
    a candidate with: a negation in its clause ("not 30 kHz"); a comparator next to it ("less than
    30 kHz", "at least 30 kHz", "≥ 30 kHz", "30 kHz or more": a bound, not a value; one earlier in a
    derivation, "fs ≥ 2B = 30 kHz", does not count); digits grouped by a plain space or a decimal
-   comma; an unknown unit after it ("2500 kSamp/s"); a number in words that could be the answer
-   ("thirty kilohertz"); or another reading that earns more (P4, P8). So does a decided candidate
+   comma; an unknown unit after it ("2500 kSamp/s"; after a bare candidate, any word that is no unit
+   and not in UNIT_STOP_WORDS: "3.84 Mcps", but not "4 taps"); a number in words that could be the answer
+   ("thirty kilohertz"); a loss word next to a negative value ("a loss of -3 dB", P8); or an
+   unevaluated expression ("Final answer: 2 × 15 kHz", "15 kHz + 15 kHz", "60 kHz over 2": a factor
+   of ×, ·, "times", "twice", "half" ..., or a term of "+", "plus", "minus", "over", with no
+   relation (=, ≈, →, ...) after it in its sentence, expression_answer; a difference written with
+   "-" is read on its last term, as "-" also marks ranges and separators). So does a decided candidate
    that the text after it revises ("revised_after_answer"): a retraction ("that's wrong", "I made an
    error"); a revision word ("actually", "wait,", "no,", "correction", "hmm", "on second thought",
    "recheck", ...) with a value of any unit (or a bare one) at another credit; or a hedge word ("or",
@@ -109,7 +120,12 @@ Reference forms (a rubric's numeric field, or a target for block and choice ques
    Credit: the units must have the same dimension, else credit 0 ("unit_mismatch": dB vs dBm, Hz vs s,
    bit/s vs Hz, symbols vs samples, rad/s vs Hz). Samples count as dimensionless, so a sample rate in
    Hz (GNU Radio's samp_rate) equals the same rate in S/s. dBm/dBW convert to W, dBV/dBmV/dBuV to V,
-   dBd to dBi (+2.15 dB), °C/°F to K. Linear units: a ratio to the reference of >= MAGNITUDE_RATIO or
+   dBd to dBi (+2.15 dB), °C/°F to K. A plain dB (dB/Hz) value is read in the reference's relative
+   decibel unit (dBc, dBc/Hz, dBi, dBd, dBFS); against an absolute one (dBm, dBW, dBV, ...) it is a
+   unit error. Voltages: Vp is Vpk; Vpp and Vpk convert exactly (factor 2); Vrms converts to peak only
+   when the reference records waveform "sine" (factor √2), otherwise a different convention scores 0
+   ("voltage_convention", a unit error under P9); a plain V names no convention and is compared as
+   written. Linear units: a ratio to the reference of >= MAGNITUDE_RATIO or
    <= 1/MAGNITUDE_RATIO is an order-of-magnitude error and a sign flip is wrong; both score 0 whatever
    the tolerance, unless the error is within an explicit abs_tolerance. Otherwise the relative error
    |a - r| / |r| is graded: <= tolerance -> 1.0; <= min(5 x tolerance, tolerance + HALF_BAND_EXTRA)
@@ -119,7 +135,9 @@ Reference forms (a rubric's numeric field, or a target for block and choice ques
    dBV) is an order of magnitude (score 0).
 3. Symbolic (no computer algebra). Sets: decided only from a clean list of known options ("A, C",
    "complex and float", bullets; "both"/"only" allowed); "or" is a hedge, not a list. With one-letter
-   options, the letters leading an explicit final answer ("(B), since (A) is wrong" reads B). The set
+   options, the letters leading an explicit final answer ("(B), since (A) is wrong" reads B); a bare
+   capital is a letter only before the end of the clause, punctuation, "&", "+" or "and"/"or" and
+   another letter, so in "A low-pass filter is needed, so option C" the "A" is the article. The set
    found must equal the target: an extra or a missing option scores 0. Without a universe an unknown
    piece cannot be told from an extra option, so it goes to the judge. Prose naming options goes to
    the judge. Exact: the normalised answer (a region) equals the target or an alias; or, with no
@@ -127,7 +145,10 @@ Reference forms (a rubric's numeric field, or a target for block and choice ques
    "either", ...), the first clause of the final answer names identifiers (code spans, snake_case
    names; `blocks.throttle` reads blocks_throttle, an instance blocks_throttle_0 reads blocks_throttle)
    and they are exactly the target (1.0) or only other identifiers with the target named nowhere
-   (0.0). A plain word named in prose ("complex or float" for "complex") goes to the judge.
+   (0.0). When the target is a GNU Radio block id, those other identifiers must all be block ids
+   of the frozen catalog (reports/block_catalog.json): parameter and variable names ("set
+   `samples_per_second` to `samp_rate`") name a block only in words, so they go to the judge
+   (not_a_block_id). A plain word named in prose ("complex or float" for "complex") goes to the judge.
    Every symbolic decision is then checked, as numbers are (P7): it goes to the judge if a
    parenthetical the match left out holds a hedge, contrast or addition word or another option or
    identifier ("complex (or float)", "complex (float also works)", "`blocks_throttle` (or
@@ -145,7 +166,9 @@ POLICIES that change credit (PROPOSAL, to be fixed in the G2 pre-registration):
       0.46 and a doubling only from 0.96 (the guideline forbids tolerances that let a factor-2 slip
       pass). The reference's unit sets the scale the error is measured on: a decibel reference is
       graded in dB, by default 0.1 dB for full credit and about 0.27 dB for half (about 2.3 % and
-      6.4 % in power, 1.2 % and 3.2 % in amplitude), a linear one at 1 % and 5 %. So dB items are
+      6.4 % in power, 1.2 % and 3.2 % in amplitude; for dBV, dBmV and dBuV, whose decibels are
+      20*log10 of a voltage, the half band ends at about 0.44 dB, 5.2 % in voltage), a linear one at
+      1 % and 5 %. So dB items are
       graded somewhat more leniently than linear ones, deliberately: 0.1 dB is the usual precision of
       a decibel value, and an answer correctly rounded to it errs by up to 0.05 dB (1.2 % in power),
       more than 10*log10(1.01) = 0.043 dB, the dB equivalent of the linear 1 %. An answer in the
@@ -154,28 +177,43 @@ POLICIES that change credit (PROPOSAL, to be fixed in the G2 pre-registration):
   P2  MAGNITUDE_RATIO: an order-of-magnitude error scores 0; so does a sign flip on a linear unit;
       an explicit abs_tolerance lifts both.
   P3  a unit of another dimension scores 0; samples are dimensionless (Hz == S/s); cycles are a count.
-  P4  a bare number is read in the reference unit (unit_required: it scores 0). If another reading
-      earns more, the judge decides: in SI base units (30000 for 30 kHz), with another SI prefix of a
-      reference unit that takes one (30 for 30000 Hz, read as 30 kHz) or as a power or amplitude ratio
-      (for a dB reference). A bare number with an attached multiplier (10k, 2.5M) is in SI base units;
-      an attached K is kelvin only for a temperature reference. Set unit_required when a bare number
-      must not earn credit.
+      Against a reference with no unit, bits, bytes and symbols count items (ITEM_COUNT_UNITS: "34 bytes"
+      is 34 byte items), and a GNU Radio item word after a number is no unit (UNIT_STOP_WORDS: "34
+      vectors", "34 short items").
+  P4  a bare number (decision 7; the Tier-K prompt says "a number without a unit is never read as
+      decibels"): against a decibel reference it is a linear ratio, to the unit's reference level for an
+      absolute unit (1 mW for dBm, 1 W for dBW, 1 V, 1 mV or 1 μV for dBV, dBmV, dBuV) and of kind
+      ratio_kind for a relative one (power by default: 1000 is 30 dB; amplitude: 1000 is 60 dB),
+      reason converted_ratio; against a dimensionless reference it is read as is; against any other
+      reference it is read in the reference unit, with no other reading (30000 for 30 kHz is 30000 kHz).
+      A bare number with an attached multiplier (10k, 2.5M) is in SI base units (against a decibel
+      reference it is a ratio: 10k is 40 dB); an attached K is kelvin only for a temperature reference.
+      Where a value in the reference's own form is also given, it is the candidate before a bare or
+      converted one ("13 dB, so N = 16"). unit_required: a bare number scores 0 (unit_missing).
+      A ratio word after it (RATIO_WORDS: "1000 times", "1000x") makes it a plain ratio with a unit
+      against a dimensionless or decibel reference; against any other reference the word is ignored.
   P5  the final-answer rule, the rule for several numbers and the revision rule (1 and 2 above): the
       final stated answer counts, and a later revision of it, a hedge or a comparator next to it
       sends the answer to the judge.
   P6  truncated and empty answers score 0 (eval plan §7.1), reasoning text is removed first.
   P7  sets are scored by exact equality (an extra or a missing option scores 0); a hedged, extended
       or revised option answer goes to the judge (3 above).
-  P8  a decibel answer for a dimensionless reference, a ratio with a unit (%, ppm) for a relative
-      decibel reference and an angle for a dimensionless reference score 0 unless their other reading
-      (as a power or amplitude ratio or in dB; in radians) earns credit; then the judge decides
-      (details carry literal_credit and alt_credit). So does a plain dB value for a relative decibel
-      reference (dBc, dBi, dBd, dBFS) when its clause names that reference ("40 dB below the carrier"
-      for -40 dBc); elsewhere dB for dBc is a unit error unless the rubric's accept_units allows it.
-      A value of the opposite sign (a relative decibel or a linear unit) scores 0, unless a word in its
-      clause carries the sign ("a loss of 3 dB" for -3 dB, "40 dBc below the carrier", "10 kHz below
-      the carrier" for -10 kHz, "lags by 90 degrees" for -90 deg): then the judge decides.
-  P9  parts: a unit or order-of-magnitude error in any decided part scores the whole answer 0
+  P8  the other form (decision 7): a decibel answer for a dimensionless reference (a ratio of kind
+      ratio_kind: 20 dB is 100 in power, 10 in amplitude), a ratio with a unit (%, ppm, a ratio word)
+      for a relative decibel reference and an angle for a dimensionless reference (degrees to radians)
+      are converted and graded (converted_db, converted_ratio, converted_angle). With form_required
+      (the question fixes the form) the other form scores 0 as wrong_form when its converted value
+      would have earned credit. A plain dB value for a relative decibel reference (dBc, dBi, dBd,
+      dBFS) is read in that unit (2 above). Sign: a loss word (LOSS_WORDS) right before the value ("a
+      loss of 3 dB", "attenuated by 3 dB", "lags by 90 degrees") or right after it ("3 dB down",
+      "40 dBc below the carrier", "10 kHz below the carrier") negates a positive relative-decibel or
+      linear value when the reference is negative or marked quantity "gain" (loss_word_sign); a
+      positive reference without that mark is a loss quantity, so "a loss of 3 dB" stays 3 dB; a
+      negative value with a loss word goes to the judge (sign_unclear). Without a loss word next to
+      it, a value of the opposite sign scores 0 (with a sign word elsewhere in its clause, by P11).
+  P9  parts: two parts of one dimension decided on the same value, one of them without its label
+      (scope or anchor), go to the judge (part_unassigned): the rules cannot tell whose value it is.
+      A unit or order-of-magnitude error in any decided part scores the whole answer 0
       (PART_ZERO_REASONS; details["item_credit"] and reason "part_zero"); otherwise the item's credit
       is the mean over the parts. A label whose own segments give it only a value in another part's
       unit ("Ts = 1 ms and B = 1 ms") has a unit error. score()'s `credit` stays the mean over the
@@ -188,6 +226,10 @@ POLICIES that change credit (PROPOSAL, to be fixed in the G2 pre-registration):
       content, so the Tier-K prompt should ask for ANSWER_FORMAT_INSTRUCTION's final-answer line
       (proposed here; it is part of the prompt fixed at G2), and before G2 the deferral rate and the
       decided items' accuracy are measured on dev-split answers of the smoke-test model.
+  P11 tie-break (decision 7): a result, or a part, that still holds two readings of different credit
+      (details literal_credit and alt_credit, READING_REASONS) is decided with the lower one
+      (tie_break_lower). reading_counts gives, per model, the answers decided by the tie-break and the
+      answers scored 0 for the wrong form alone, reported next to every score.
 
 `./gb score-k --selftest` runs the hand-made cases in SELFTEST; `--answer/--reference` scores one
 answer; `--batch` scores a JSONL file: each row carries score()'s result and its rule_only_credit
@@ -198,6 +240,7 @@ and the exit code is 1). Nothing here calls a model. Outputs are deterministic.
 from __future__ import annotations
 
 import argparse
+import functools
 import itertools
 import json
 import math
@@ -205,11 +248,12 @@ import re
 import sys
 import unicodedata
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
 from grcbench.common.io import iter_jsonl, write_jsonl
+from grcbench.common.paths import REPORTS
 from grcbench.tier_f.grcfile import strip_reasoning as _strip_think
 
 # --- PROPOSAL values, to be fixed in the G2 pre-registration -------------------------------------
@@ -230,7 +274,7 @@ ANSWER_FORMAT_INSTRUCTION = (
     'for options or identifiers, list exactly the ones you choose: "Final answer: <option>, <option>". '
     "Write nothing after that line.")
 
-RULES_VERSION = "tier-k-rules 0.4 (proposal; fixed at G2)"
+RULES_VERSION = "tier-k-rules 0.5"
 _CLIP = 600                     # characters of final-answer text kept in details
 
 # --- units ---------------------------------------------------------------------------------------
@@ -300,7 +344,8 @@ def _tables() -> tuple[dict[str, tuple[Unit, ...]], dict[str, tuple[Unit, ...]],
         ("Vrms", volt, 1.0, "mμu", True), ("Vpk", volt, 1.0, "mμu", True), ("Vp", volt, 1.0, "mμu", True),
         ("A", _d(current=1), 1.0, "mμun", True), ("Ω", _d(voltage=1, current=-1), 1.0, "GMkm", True),
         ("J", _d(power=1, time=1), 1.0, "kmμunp", True),
-        ("bit", _d(bit=1), 1.0, "kMGT", True), ("bits", _d(bit=1), 1.0, "kMGT", True),
+        ("sec", _T, 1.0, "mμun", False), ("secs", _T, 1.0, "mμun", False),
+        ("bit", _d(bit=1), 1.0, "kKMGT", True), ("bits", _d(bit=1), 1.0, "kKMGT", True),
         ("b", _d(bit=1), 1.0, "kMGT", False), ("B", _d(bit=1), 8.0, "kKMGT", False),
         ("Sa", (), 1.0, "kMG", True), ("sample", (), 1.0, "kMG", True), ("samples", (), 1.0, "kMG", True),
         ("sym", _d(symbol=1), 1.0, "kMG", True), ("symbol", _d(symbol=1), 1.0, "kMG", True),
@@ -325,7 +370,7 @@ def _tables() -> tuple[dict[str, tuple[Unit, ...]], dict[str, tuple[Unit, ...]],
     # unit words, any case: (forms, dims, scale, takes word prefixes such as kilo/mega)
     words = [
         (("hertz",), _F, 1.0, True), (("second", "seconds"), _T, 1.0, True),
-        (("sec", "secs"), _T, 1.0, False), (("minute", "minutes", "mins"), _T, 60.0, False),
+        (("sec", "secs"), _T, 1.0, True), (("minute", "minutes", "mins"), _T, 60.0, False),
         (("hour", "hours", "hr", "hrs"), _T, 3600.0, False),
         (("meter", "meters", "metre", "metres"), _d(length=1), 1.0, True),
         (("watt", "watts"), _d(power=1), 1.0, True), (("volt", "volts"), volt, 1.0, True),
@@ -387,7 +432,19 @@ _EXACT, _FOLDED, _DENSITY = _tables()
 _RATE_PREFIX = {"": 1.0, "k": 1e3, "K": 1e3, "M": 1e6, "G": 1e9, "T": 1e12}
 _CELSIUS = Unit("°C", _TEMP, 1.0, zero=273.15)
 _FAHRENHEIT = Unit("°F", _TEMP, 5 / 9, zero=273.15 - 32 * 5 / 9)
+_V_PREFIX = {"": 1.0, "k": 1e3, "m": 1e-3, "μ": 1e-6, "u": 1e-6}
+
+
+def _volt_convention(m: re.Match) -> Unit:
+    """Vp-p, Vpk-pk, V peak-to-peak, volts p-p, V rms, V_rms, V pk (the voltage conventions as written)."""
+    name = "Vpp" if m[2] else "Vrms" if m[3] else "Vpk"
+    return Unit(m[1] + name, _d(voltage=1), _V_PREFIX[m[1]])
+
+
 _SPECIALS = (   # units that are not a plain quotient of two table entries
+    (re.compile(r"([kmμu]?)(?:V|[Vv]olts?)[ \t_]?(?i:(p-p|pp|pk-pk|peak[ \t-]*to[ \t-]*peak)|(rms)|(pk|peak|p))"
+                r"(?![\w-])"),
+     _volt_convention),
     (re.compile(r"([kKMGT]?)(?:Sa|S)/s(?![\w])"), lambda m: Unit(m[1] + "S/s", _F, _RATE_PREFIX[m[1]])),
     (re.compile(r"([kKMGT])s/s(?![\w])"), lambda m: Unit(m[1] + "S/s", _F, _RATE_PREFIX[m[1]])),
     (re.compile(r"([kKMGT]?)b/s(?![\w])"),
@@ -414,7 +471,12 @@ def _atom_at(text: str, i: int) -> tuple[tuple[Unit, ...], int, str] | None:
     for pat, make in _SPECIALS:
         m = pat.match(text, i)
         if m:
-            return (make(m),), m.end(), m.group(0)
+            units, j = (make(m),), m.end()
+            e = _EXP.match(text, j)
+            if e and not any(u.db or u.zero for u in units):          # Vrms^2
+                n = int(e.group(1) if e.group(1) else e.group(2).translate(_SUPER))
+                units, j = tuple(_pow(u, n) for u in units), e.end()
+            return units, j, m.group(0)
     m = _ATOM.match(text, i)
     if not m:
         return None
@@ -510,6 +572,7 @@ _CHAR_SUB = str.maketrans({"\u2212": "-", "\u2010": "-", "\u2011": "-", "\u00b5"
 def normalize(text: str) -> str:
     """Answer text with LaTeX and Markdown reduced to plain characters the number parser reads."""
     s = text.translate(_CHAR_SUB)
+    s = re.sub(r"(?<=[\d}$*])~(?=[A-Za-zμΩ°%\\])", " ", s)  # LaTeX's non-breaking space; "~30" stays "about"
     for _ in range(4):                                  # nested \text{...} and \frac{..}{..}
         new = _LATEX_WRAP.sub(r"\1", s)
         new = _LATEX_FRAC.sub(lambda m: (f"{m[1].strip()}/{m[2].strip()}"
@@ -556,6 +619,36 @@ _WORD_MULT_VALUE = {"thousand": 1e3, "million": 1e6, "billion": 1e9}
 _WORD_MULT = re.compile(r"[ \t ]+(thousand|million|billion)(?![\w])", re.I)
 # a word after a number that looks like a unit but is not one ("2500 kSamp/s", "4 taps per symbol")
 _UNPARSED = re.compile(r"[A-Za-zμΩ]+(?:[ \t]*/[ \t]*[A-Za-zμΩ]|[ \t]+per[ \t]+[A-Za-z])|[°º][ \t]?[A-Za-z]")
+# Words that may follow a bare number without being a unit (compared case-insensitively). Any other
+# word right after a bare candidate is a unit the rules do not know ("3.84 Mcps"): the judge decides.
+UNIT_STOP_WORDS = frozenset((
+    "of", "and", "or", "nor", "to", "for", "in", "at", "by", "with", "from", "per", "on", "into", "over",
+    "after", "before", "than", "times", "fold", "x", "is", "are", "was", "were", "be", "been", "being",
+    "which", "so", "gives", "giving", "because", "since", "as", "if", "when", "while", "then", "that",
+    "this", "these", "those", "it", "its", "the", "a", "an", "each", "every", "but", "not", "no", "has",
+    "have", "had", "can", "will", "would", "should", "must", "may", "might", "here", "there", "where",
+    "we", "you", "i", "they", "also", "only", "more", "less", "about", "approximately", "exactly",
+    "roughly", "total", "overall", "thus", "hence", "therefore", "given", "assuming", "using", "via",
+    "due", "respectively", "such", "instead", "dimensionless", "unitless", "complex", "real", "float",
+    "floats", "integer", "integers", "qam", "psk", "fsk", "ask", "ary", "filter", "fft",
+    "tap", "taps", "stage", "stages", "step", "steps", "item", "items", "bin", "bins", "point", "points",
+    "coefficient", "coefficients", "channel", "channels", "entry", "entries", "value", "values",
+    "output", "outputs", "input", "inputs", "element", "elements", "frame", "frames", "packet", "packets",
+    "block", "blocks", "port", "ports", "stream", "streams", "level", "levels", "state", "states",
+    "carrier", "carriers", "subcarrier", "subcarriers", "tone", "tones", "iteration", "iterations",
+    "row", "rows", "column", "columns", "digit", "digits", "decimal", "places",
+    # GNU Radio item types and the behaviour questions' nouns ("34 short items", "34 vectors")
+    "short", "shorts", "int", "ints", "char", "chars", "vector", "vectors", "message", "messages", "tag",
+    "tags", "pdu", "pdus", "zero", "zeros", "one", "ones", "chunk", "chunks",
+))
+# units that count items against a reference with no unit (P3): "34 bytes" is 34 byte items
+ITEM_COUNT_UNITS = ("bit", "bits", "byte", "bytes", "symbol", "symbols")
+_WORD_AFTER = re.compile(r"[A-Za-zμΩ]+(?![\w])")
+# words that make a bare number a plain ratio (decision 7): "1000 times", "1000x", "a 1000 ratio";
+# not before a number or a word, so "2 x 15 kHz" and "2 × B" stay expressions
+RATIO_WORDS = ("times", "x", "×", "ratio")
+_RATIO_WORD = re.compile(r"(?i:times|ratio|x|×)(?![\w])(?![ \t]*(?:[-+]?[\d(π]|\.\d|"
+                         r"(?!(?i:more|less|larger|higher|greater|bigger|smaller|lower)\b)[A-Za-zμΩ]))")
 # a number before ":" is a label only after a label word or a capitalised word, or opening a line
 _LABEL_WORD = re.compile(r"(?i:\b(?:step|part|case|example|method|option|question|problem|item|stage|figure|"
                          r"fig|table|eq|equation|note|scenario|q))\.?[ \t]*$|\b[A-Z][a-z]*[ \t]*$")
@@ -571,6 +664,8 @@ class Quantity:
     base: bool = False              # bare, with an attached multiplier (10k, 2.5M): in SI base units
     kilo_or_kelvin: bool = False    # an attached K with no unit after it (290K, 48K)
     unparsed: str = ""              # bare, followed by a unit-like word the parser does not know
+    unknown: str = ""               # bare, followed by a word that is no unit and not in UNIT_STOP_WORDS
+    ratio_word: str = ""            # bare, followed by a ratio word: "1000 times", "1000x" (P4)
 
 
 def _number_value(m: re.Match) -> float | None:
@@ -630,7 +725,7 @@ def extract_quantities(text: str, at_line_start: bool = True) -> list[Quantity]:
         value = _number_value(m)
         if value is None:
             continue
-        j, units, unit_text, base, kilo_or_kelvin, unparsed = m.end(), (), "", False, False, ""
+        j, units, unit_text, base, kilo_or_kelvin, unparsed, unknown, ratio = m.end(), (), "", False, False, "", "", ""
         run = _ATOM.match(s, j)
         word = _WORD_MULT.match(s, j)
         if word:                                                 # 1.5 million samples per second
@@ -665,6 +760,14 @@ def extract_quantities(text: str, at_line_start: bool = True) -> list[Quantity]:
                 u = _UNPARSED.match(s, g.end())
                 if u:
                     unparsed = u.group(0)
+        if not units and not unparsed:                           # bare, or a multiplier in SI base units
+            g = _GAP.match(s, j)
+            rw = _RATIO_WORD.match(s, g.end())
+            w = _WORD_AFTER.match(s, g.end()) if g.end() > j else None
+            if rw and (g.end() > j or rw.group(0) in "xX×"):        # "1000 times", "1000x"
+                ratio, j = rw.group(0), rw.end()
+            elif w and w.group(0).casefold() not in UNIT_STOP_WORDS:
+                unknown = w.group(0)
         if not units and j < len(s) and (s[j].isalnum() or s[j] == "_"):
             if not (s[j] in "x×" and (j + 1 >= len(s) or not s[j + 1].isalnum())):
                 continue                                         # glued to a word: 8PSK, 0.5z
@@ -676,7 +779,7 @@ def extract_quantities(text: str, at_line_start: bool = True) -> list[Quantity]:
             pos = max(pos, j)
             continue
         out.append(Quantity(value, unit_text.strip(), units, re.sub(r"\s+", " ", s[m.start():j].strip()),
-                            (m.start(), j), base, kilo_or_kelvin, unparsed))
+                            (m.start(), j), base, kilo_or_kelvin, unparsed, unknown, ratio))
         pos = max(pos, j)
     return out
 
@@ -947,6 +1050,10 @@ class NumericRef:
     accept_units: frozenset[str]
     labels: tuple[str, ...]
     db_tolerance: float = DB_TOLERANCE      # decibel references: allowance in dB
+    waveform: str | None = None             # "sine": an RMS voltage converts to peak (factor √2)
+    ratio_kind: str = "power"               # a linear ratio read for a decibel value: 10 or 20 log10 (P4, P8)
+    form_required: bool = False             # the question fixes the form: the other form scores 0 (P8)
+    quantity: str | None = None             # "gain": a loss word negates a positive value (P8)
 
     @property
     def dimensionless(self) -> bool:
@@ -1034,10 +1141,25 @@ def _numeric_ref(d: dict) -> NumericRef:
             db_tol = abs_tol = in_db
     elif tol_db is not None:
         raise ValueError(f"tolerance_db is for decibel units only: {d!r}")
+    waveform = d.get("waveform")
+    if waveform is not None and waveform not in WAVEFORMS:
+        raise ValueError(f"waveform must be one of {list(WAVEFORMS)}: {d!r}")
+    kind = d.get("ratio_kind")
+    if kind is not None and kind not in RATIO_KINDS:
+        raise ValueError(f"ratio_kind must be one of {list(RATIO_KINDS)}: {d!r}")
+    if unit_obj.log:                    # dBm, dBW: power; dBV, dBmV, dBuV: amplitude, fixed by the unit
+        fixed = "power" if unit_obj.log == 10 else "amplitude"
+        if kind is not None and kind != fixed:
+            raise ValueError(f"{unit} is a {fixed} level; ratio_kind {kind!r} contradicts it: {d!r}")
+        kind = fixed
+    quantity = d.get("quantity")
+    if quantity is not None and quantity not in QUANTITIES:
+        raise ValueError(f"quantity must be one of {list(QUANTITIES)}: {d!r}")
     label = d.get("label")
     labels = (label,) if isinstance(label, str) else tuple(label or ())
     return NumericRef(value, unit, unit_obj, tol, abs_tol, bool(d.get("unit_required", False)),
-                      frozenset(_norm_str(u) for u in d.get("accept_units") or ()), labels, db_tol)
+                      frozenset(_norm_str(u) for u in d.get("accept_units") or ()), labels, db_tol, waveform,
+                      kind or "power", bool(d.get("form_required", False)), quantity)
 
 
 def _set_ref(items: Any, universe: Any = None, aliases: Any = None) -> SetRef:
@@ -1226,57 +1348,79 @@ def _compare(x: float, u: Unit | None, ref: NumericRef) -> dict[str, Any]:
     return _credit_db(ru.log * math.log10(v / ru.scale), ref)
 
 
-def _ratio_credits(x: float, ref: NumericRef) -> list[float]:
-    """A decibel value read as a power ratio and as an amplitude ratio, against a linear reference."""
-    out = []
-    for log in (10, 20):
-        try:
-            out.append(_credit_linear(10.0 ** (x / log), ref)["credit"])
-        except OverflowError:
-            out.append(0.0)
-    return out
+RATIO_KINDS = ("power", "amplitude")
+QUANTITIES = ("gain",)
 
 
-def _power_of_1000(scale: float) -> bool:
-    k = round(math.log10(scale) / 3) if scale > 0 else 0
-    return scale > 0 and math.isclose(scale, 10.0 ** (3 * k), rel_tol=1e-9)
+def _ratio_log(ref: NumericRef) -> int:
+    """10 or 20: the dB of a linear ratio for this reference (its unit's own for dBm, dBV, ...;
+    ratio_kind for a relative decibel unit or a plain ratio)."""
+    return ref.unit_obj.log or (20 if ref.ratio_kind == "amplitude" else 10)
 
 
-_PREFIX_STEPS = tuple(10.0 ** (3 * k) for k in range(-4, 5) if k)     # p ... T, relative to the reference
+def _ratio_to_db(x: float, ref: NumericRef) -> dict[str, Any]:
+    """A linear ratio x graded against a decibel reference: to the unit's reference level for an
+    absolute unit (1 mW for dBm, 1 V for dBV), of kind ratio_kind for a relative one (P4, P8)."""
+    if not x > 0:
+        return {"credit": 0.0, "reason": "not_positive_for_db"}
+    return _credit_db(_ratio_log(ref) * math.log10(x), ref)
 
 
-def _bare_alternatives(x: float, ref: NumericRef) -> list[dict[str, Any]]:
-    """Other readings of a bare number: in the SI base unit (30000 for 30 kHz, 0.125 for 12.5 %,
-    1 W for 30 dBm, 290 K for 16.85 °C); for a reference with a dimension and an SI prefix (or none),
-    with any other SI prefix (30 for 30000 Hz read as 30 kHz); for a relative decibel reference, as a
-    power or amplitude ratio."""
-    ru = ref.unit_obj
-    if ru.db and not ru.log:
-        if x <= 0:
-            return []
-        return [_credit_db(10 * math.log10(x), ref), _credit_db(20 * math.log10(x), ref)]
-    out = []
-    if ru.log or ru.scale != 1.0 or ru.zero:
-        out.append(_compare(x, ref.base_unit, ref))
-    if ru.dims and not ru.log and not ru.zero and _power_of_1000(ru.scale):
-        out += [_credit_linear(x * f, ref) for f in _PREFIX_STEPS]
-    return out
+def _converted(g: dict[str, Any], reason: str, ref: NumericRef) -> dict[str, Any]:
+    """A value read in the other form (P4, P8): named by `reason` when it earns credit; with
+    form_required it scores 0 as wrong_form instead (and keeps its own reason when it earns none)."""
+    g = {"class": "compatible", "reading": "converted", **g}
+    if g["credit"] > 0:
+        if ref.form_required:
+            return {**g, "converted_credit": g["credit"], "credit": 0.0, "reason": "wrong_form"}
+        return {**g, "graded_reason": g["reason"], "reason": reason}
+    return g
 
 
 def _grade_bare(q: Quantity, ref: NumericRef) -> dict[str, Any]:
+    """P4: a bare number against a decibel reference is a linear ratio; against a dimensionless one
+    it is read as is; against any other reference it is read in the reference unit (in SI base units
+    with an attached multiplier: 10k, 2.5M), with no other reading. A ratio word ("1000 times",
+    "1000x") makes it a plain ratio with a unit, against a dimensionless or decibel reference."""
+    ru = ref.unit_obj
+    ratio_word = bool(q.ratio_word) and (ref.dimensionless or ru.db)
     cls = "compatible" if ref.dimensionless else "bare"
-    if cls == "bare" and ref.unit_required:
+    if cls == "bare" and ref.unit_required and not ratio_word:
         return {"class": cls, "credit": 0.0, "reason": "unit_missing"}
+    if ru.db:           # still a bare number (a ratio word makes it a ratio with a unit): it is the
+        # candidate only where no value has the reference's form, and the line around it is checked
+        g = _converted({"unit_assumed": "ratio", **_ratio_to_db(q.value, ref)}, "converted_ratio", ref)
+        return {**g, "class": "compatible" if ratio_word else cls}
     if q.base:          # 10k, 2.5M: the multiplier implies the SI base unit
-        u = None if (ref.unit_obj.db and not ref.unit_obj.log) else ref.base_unit
-        return {"class": cls, "unit_assumed": "SI base", **_compare(q.value, u, ref)}
-    g = {"class": cls, "unit_assumed": "reference" if cls == "bare" else None,
-         **_compare(q.value, None, ref)}
-    alts = _bare_alternatives(q.value, ref)
-    if alts:
-        g["alt_credit"] = max(a["credit"] for a in alts)
-        g["alt_reason"] = "bare_number_unit_unclear"
-    return g
+        return {"class": cls, "unit_assumed": "SI base", **_compare(q.value, ref.base_unit, ref)}
+    return {"class": cls, "unit_assumed": "reference" if cls == "bare" else None, **_compare(q.value, None, ref)}
+
+
+# Voltage conventions, in volts per volt of peak: Vpp = 2 Vpk exactly; Vrms = Vpk / √2 for a sine only
+# (a reference's `waveform`). dBV, dBmV and dBuV levels are RMS. A plain V names no convention and is
+# compared as written.
+WAVEFORMS = ("sine",)
+_V_CONVENTIONS = (("Vpp", "pp", 2.0), ("Vpk", "pk", 1.0), ("Vp", "pk", 1.0), ("Vrms", "rms", math.sqrt(0.5)))
+# relative decibel units a plain dB (dB/Hz) value is read in (round-2 finding R9)
+_RELATIVE_DB = ("dBc", "dBc/Hz", "dBi", "dBd", "dBFS")
+
+
+def _v_convention(u: Unit) -> tuple[str, float] | None:
+    if u.dims != _d(voltage=1):
+        return None
+    if u.log:                                       # dBV, dBmV, dBuV: referenced to 1 V (mV, μV) RMS
+        return "rms", math.sqrt(0.5)
+    return next(((conv, f) for suffix, conv, f in _V_CONVENTIONS if u.name.endswith(suffix)), None)
+
+
+def _voltage_value(x: float, u: Unit, ref: NumericRef) -> float | None:
+    """x in unit u expressed in the reference's voltage convention, or None if it cannot be."""
+    a, r = _v_convention(u), _v_convention(ref.unit_obj)
+    if a is None or r is None or a[0] == r[0]:
+        return x
+    if "rms" in (a[0], r[0]) and ref.waveform != "sine":
+        return None
+    return x + 20 * math.log10(r[1] / a[1]) if u.log else x / a[1] * r[1]
 
 
 def _grade(q: Quantity, ref: NumericRef) -> dict[str, Any]:
@@ -1286,34 +1430,49 @@ def _grade(q: Quantity, ref: NumericRef) -> dict[str, Any]:
     if not q.units:
         return _grade_bare(q, ref)
 
-    def signed(g: dict[str, Any], u: Unit | None) -> dict[str, Any]:
-        """The credit of the opposite sign, which a sign word may carry ("a loss of 3 dB" for -3 dB)."""
+    def signed(g: dict[str, Any], u: Unit | None, x: float | None = None) -> dict[str, Any]:
+        """The credit of the opposite sign, which a sign word may carry ("a loss of 3 dB" for -3 dB).
+        x: the value as compared (after a voltage-convention conversion), q.value by default."""
+        x = q.value if x is None else x
         uu = ru if u is None else u
         relative_db = ru.db and not ru.log and uu.db and not uu.log
         linear = not ru.db and not uu.db and not ru.zero and not uu.zero
-        if (relative_db or linear) and q.value * ref.value < 0:
-            alt = _compare(-q.value, u, ref)["credit"]
+        if (relative_db or linear) and x * ref.value < 0:
+            alt = _compare(-x, u, ref)["credit"]
             if alt > g["credit"]:
                 g.update(alt_credit=alt, alt_reason="db_sign_convention" if relative_db else "sign_convention")
         return g
 
     if _norm_str(q.unit) in ref.accept_units:
         return signed({"class": "compatible", **_compare(q.value, None, ref)}, None)
+    if not ref.unit and _norm_str(q.unit) in ITEM_COUNT_UNITS:        # P3: a count of items
+        return signed({"class": "compatible", "reading": "items", **_compare(q.value, None, ref)}, None)
     for u in q.units:
         if u.dims == ru.dims:
-            return signed({"class": "compatible", "reading": u.name, **_compare(q.value, u, ref)}, u)
-    g = {"class": "other_unit", "credit": 0.0, "reason": "unit_mismatch", "readings": [u.name for u in q.units]}
-    alts = []
+            x = _voltage_value(q.value, u, ref)
+            if x is None:
+                return {"class": "compatible", "reading": u.name, "credit": 0.0, "reason": "voltage_convention"}
+            return signed({"class": "compatible", "reading": u.name, **_compare(x, u, ref)}, u, x)
+    if ru.name in _RELATIVE_DB:                     # a plain dB value is read in the reference's unit
+        plain = _d(dB_per_Hz=1) if ru.name.endswith("/Hz") else _d(dB=1)
+        if any(u.db and not u.log and u.dims == plain for u in q.units):
+            return signed({"class": "compatible", "reading": ru.name, **_compare(q.value, None, ref)}, None)
+    # P8: the other form, converted ("20 dB" for a power ratio of 100, "90 degrees" for 1.5708, "1 %"
+    # for -20 dB); with form_required it scores 0 (wrong_form)
     for u in q.units:
-        if ref.dimensionless and u.db and not u.log:     # 20 dB for a ratio of 100 (power) or 10
-            alts += _ratio_credits(q.value + u.offset, ref)
-        elif ref.dimensionless and u.dims == _ANGLE:     # π/2 rad for a dimensionless 1.571
-            alts.append(_credit_linear(_to_si(q.value, u), ref)["credit"])
-        elif ru.db and not ru.log and not u.dims and not u.db:   # 0.0146 % for -38.4 dB: a ratio
-            alts += [a["credit"] for a in _bare_alternatives(_to_si(q.value, u), ref)]
-    if alts and max(alts) > 0:
-        g.update(alt_credit=max(alts), alt_reason="unit_reading_unclear")
-    return g
+        if ref.dimensionless and u.db and not u.log:
+            try:
+                lin = 10.0 ** ((q.value + u.offset) / _ratio_log(ref))
+            except OverflowError:
+                lin = math.inf
+            return _converted({"readings": [u.name], **_credit_linear(lin, ref)}, "converted_db", ref)
+        if ref.dimensionless and u.dims == _ANGLE:
+            return _converted({"readings": [u.name], **_credit_linear(_to_si(q.value, u), ref)},
+                              "converted_angle", ref)
+        if ru.db and not ru.log and not u.dims and not u.db:
+            return _converted({"readings": [u.name], **_ratio_to_db(_to_si(q.value, u), ref)},
+                              "converted_ratio", ref)
+    return {"class": "other_unit", "credit": 0.0, "reason": "unit_mismatch", "readings": [u.name for u in q.units]}
 
 
 def _rounded(d: dict[str, Any]) -> dict[str, Any]:
@@ -1371,6 +1530,21 @@ _OP_WORDS = (r"times|twice|half(?:\s+of)?|double|triple|quadruple|divided\s+by|m
 _OP_BEFORE = re.compile(rf"(?:[×*/÷+·^−–-]|(?<![\w])x|\b(?:{_OP_WORDS})(?:\s+(?:the|a|an|its|this|that))?)"
                         r"[\s(]*$", re.I)
 _OP_AFTER = re.compile(rf"^[\s)]*(?:[×*/÷+·^]|[−–-]\s*[\d.(]|x(?=\s*[\d(.])|\b(?:{_OP_WORDS})\b)", re.I)
+# multiplication and division by a written factor, sums and differences: an answer that is such a
+# term with no relation after it in its sentence is an expression left unevaluated (R8). "/" between
+# values and "-" are left out: lists, ranges and bullets use them ("10 / 20 / 30 kHz", "20-30 kHz",
+# "- 50 MS/s"); "+" counts with a space after it or between two terms ("15 kHz + 15 kHz",
+# "15+15 kHz"), as a sign glued to a number ("to +3 dB") belongs to the number
+_EXPR_WORDS = (r"times|twice|half(?:\s+of)?|double|triple|quadruple|divided\s+by|multiplied\s+by|"
+               r"plus|minus|over")
+# an operator symbol needs a term before it on the same line ("2 × 15 kHz", not a "* 30 kHz" bullet);
+# after the candidate, an operator needs a number after it ("30 kHz double-sided" is not a product)
+# Two terms side by side are a product ("(2)(15 kHz)", "2(15 kHz)"); "/" and a plain number after a
+# value with a unit is a division ("48 kHz / 4"), not a list
+_EXPR_BEFORE = re.compile(rf"(?:[\w)][ \t]*[×*÷·+]|[\w)][ \t]+x|[\d)][ \t]*\(|\b(?:{_EXPR_WORDS})(?:[ \t]+(?:the|a|an|its|this|that))?)"
+                          r"[ \t(]*$", re.I)
+_EXPR_AFTER = re.compile(rf"^\((?=[ \t]*[\d.])|^[ \t)]*(?:[×*÷·x+][ \t]*[\d(.]|/[ \t]*\d+(?:\.\d+)?(?![\w.]|[ \t]*[A-Za-zμΩ%])|"
+                         rf"(?:{_EXPR_WORDS})\b(?=[ \t]+(?:(?:the|a|an|its|this|that|of)[ \t]+)?[\d(.]))", re.I)
 _EXPLAINS = re.compile(rf"[×*/÷+=≈·^]|(?<![\w])x(?![\w])|\b(?:{_OP_WORDS}|i\.?e|that\s+is|since|because|from|"
                        r"per|as)\b", re.I)
 _NUM_WORD = (r"(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|"
@@ -1383,13 +1557,22 @@ _SIGN_WORD = re.compile(r"\b(?:loss|losses|lose|loses|attenuat\w*|below|beneath|
                         r"reduc\w*|decreas\w*|suppress\w*|reject\w*|rejection|lag|lags|lagging|lagged|behind|"
                         r"delay|delays|delayed|retard\w*)\b", re.I)
 _SIGN_REASONS = ("db_sign_convention", "sign_convention")
-# a plain dB value next to the words naming a relative decibel unit's reference ("40 dB below the
-# carrier" for dBc) may be that unit (P8)
-_DB_REFERENCE_WORDS = {"dBc": r"\bcarrier\b", "dBc/Hz": r"\bcarrier\b", "dBi": r"\bisotropic\w*",
-                       "dBd": r"\bdipole\b", "dBFS": r"\bfull[\s-]?scale\b"}
-_PLAIN_DB = (_d(dB=1), _d(dB_per_Hz=1))
+# the reasons of a result that still holds two readings (literal_credit, alt_credit); P11 decides it
+READING_REASONS = _SIGN_REASONS
+# Loss words (decision 7): next to a positive value they negate it when the reference is negative or
+# marked quantity "gain" ("a loss of 3 dB" for -3 dB, "3 dB down", "40 dBc below the carrier", "lags by
+# 90 degrees"). Every stem of _SIGN_WORD except "under", which is a comparator.
+LOSS_WORDS = ("loss", "losses", "lose", "loses", "losing", "attenuate", "attenuates", "attenuated",
+              "attenuating", "attenuation", "below", "beneath", "down", "drop", "drops", "dropped", "lower",
+              "lowered", "reduce", "reduces", "reduced", "reduction", "decrease", "decreases", "decreased",
+              "suppress", "suppressed", "suppression", "reject", "rejected", "rejection", "lag", "lags",
+              "lagging", "lagged", "behind", "delay", "delays", "delayed", "retard", "retarded", "retardation")
+_LOSS = "(?:" + "|".join(sorted(LOSS_WORDS, key=len, reverse=True)) + ")"
+_LOSS_BEFORE = re.compile(rf"\b{_LOSS}(?:[ \t]+(?:of|by|is|was|about|approximately|roughly|around))*[ \t]*[:=~≈]?[ \t]*\Z",
+                          re.I)
+_LOSS_AFTER = re.compile(rf"^[ \t]*(?:of[ \t]+)?{_LOSS}\b", re.I)
 # a part with one of these reasons zeroes the whole answer (as judge_prompt.DU_REASONS does)
-PART_ZERO_REASONS = ("unit_mismatch", "order_of_magnitude")
+PART_ZERO_REASONS = ("unit_mismatch", "order_of_magnitude", "voltage_convention")
 
 
 def _paren_spans(s: str) -> list[tuple[int, int]]:
@@ -1515,21 +1698,6 @@ def _comparator(s: str, q: Quantity) -> str | None:
     return m.group().strip() if m else None
 
 
-def _named_db_reference(clause: str, q: Quantity, ref: NumericRef) -> float:
-    """Credit for a plain dB value read as the reference's relative decibel unit when its clause names
-    that unit's reference ("40 dB below the carrier" for -40 dBc); 0 otherwise."""
-    ru = ref.unit_obj
-    word = _DB_REFERENCE_WORDS.get(ru.name)
-    if not (ru.db and not ru.log and word and re.search(word, clause, re.I)):
-        return 0.0
-    plain = [u for u in q.units if u.db and not u.log and u.dims in _PLAIN_DB
-             and (u.dims == _d(dB_per_Hz=1)) == ru.name.endswith("/Hz")]
-    if not plain:
-        return 0.0
-    values = [q.value] + ([-q.value] if q.value * ref.value < 0 and _SIGN_WORD.search(clause) else [])
-    return max(_credit_db(v, ref)["credit"] for v in values)
-
-
 def _revision(tail: str, credit: float, ref: NumericRef, keep: Any) -> str | None:
     """Whether the text after the final answer revises it (P5): a retraction; a revision word with a
     value of any unit (or a bare one) at another credit; a hedge word with a value of the reference's
@@ -1546,7 +1714,7 @@ def _revision(tail: str, credit: float, ref: NumericRef, keep: Any) -> str | Non
     for q in extract_quantities(tail, False):
         if (keep is not None and not keep(q)) or _is_operand(s, q):
             continue
-        g = _grade(q, ref)
+        g = _loss_word_grade(s, q, _grade(q, ref), ref)          # "the cable's loss is 3 dB" restates -3 dB
         if (strong or g["class"] == "compatible") and g["credit"] != credit:
             return q.text
     return None
@@ -1573,10 +1741,38 @@ def _unit_elsewhere(wider: list[str], fa: FinalAnswer, ref: NumericRef, credit: 
     return []
 
 
+def _loss_applies(q: Quantity, ref: NumericRef) -> bool:
+    """The sign rule applies to relative decibel and linear values (not dBm, dBV or temperatures);
+    against a decibel reference only to a decibel value (a ratio carries its own sign: "reduced by
+    50 %" is a ratio of 0.5)."""
+    ru = ref.unit_obj
+    if ru.log or ru.zero:
+        return False
+    if ru.db:
+        return any(u.db and not u.log for u in q.units)
+    return not any(u.log or u.zero for u in q.units)
+
+
+def _loss_word_grade(s: str, q: Quantity, g: dict[str, Any], ref: NumericRef) -> dict[str, Any]:
+    """Decision 7's sign rule (P8): a loss word right before the value ("a loss of 3 dB", "attenuated
+    by 3 dB") or right after it ("3 dB down", "10 kHz below the carrier") negates a positive value when
+    the reference is negative or marked quantity "gain"; a negative value with a loss word is unclear."""
+    if not (_LOSS_BEFORE.search(s[:q.span[0]]) or _LOSS_AFTER.match(s[q.span[1]:])) or not _loss_applies(q, ref):
+        return g
+    if q.value < 0:
+        return {**g, "sign_unclear": True}
+    if q.value == 0 or not (ref.value < 0 or ref.quantity == "gain"):
+        return g
+    neg = {k: v for k, v in _grade(replace(q, value=-q.value), ref).items() if k not in ("alt_credit", "alt_reason")}
+    if neg["credit"] > 0:
+        neg = {**neg, "graded_reason": neg["reason"], "reason": "loss_word_sign"}
+    return {**neg, "loss_word": True}
+
+
 def _decide_numeric(region: str, qs: list[Quantity], fa: FinalAnswer, ref: NumericRef,
                     wider: list[str] = (), keep: Any = None) -> dict[str, Any]:
     s = normalize(region)
-    graded = [(q, _grade(q, ref)) for q in qs]
+    graded = [(q, _loss_word_grade(s, q, _grade(q, ref), ref)) for q in qs]
     parens = _paren_spans(s)
 
     def paren_of(x: Quantity) -> tuple[int, int] | None:
@@ -1584,8 +1780,9 @@ def _decide_numeric(region: str, qs: list[Quantity], fa: FinalAnswer, ref: Numer
 
     main = [x for x in graded if paren_of(x[0]) is None] or graded
     compatible = [x for x in main if x[1]["class"] == "compatible"]
+    native = [x for x in compatible if x[1].get("reading") != "converted"]   # the reference's own form first
     other = [x for x in main if x[1]["class"] == "other_unit"]
-    q, g = (compatible or other or main)[-1]
+    q, g = (native or compatible or other or main)[-1]
     base = {"candidate": q.text, "candidates": sorted({p.text for p, _ in graded})}
 
     def undecided(reason: str, **more: Any) -> dict[str, Any]:
@@ -1595,6 +1792,8 @@ def _decide_numeric(region: str, qs: list[Quantity], fa: FinalAnswer, ref: Numer
         return undecided("unclear_digit_grouping")
     if q.unparsed:
         return undecided("unit_unparsed", unparsed=q.unparsed)
+    if q.unknown:
+        return undecided("unknown_unit", unknown_unit=q.unknown)
     if _number_words_unclear(s, g, ref):
         return undecided("number_in_words")
     clause = _clause_around(s, q.span)
@@ -1603,19 +1802,38 @@ def _decide_numeric(region: str, qs: list[Quantity], fa: FinalAnswer, ref: Numer
     comparator = _comparator(s, q)
     if comparator:
         return undecided("comparator_near_answer", comparator=comparator)
+    if g.get("sign_unclear"):
+        return undecided("sign_unclear")
     if g.get("alt_credit", 0.0) > g["credit"] and (g["alt_reason"] not in _SIGN_REASONS or _SIGN_WORD.search(clause)):
-        return undecided(g["alt_reason"], literal_credit=g["credit"], alt_credit=g["alt_credit"])
-    if g["class"] == "other_unit":
-        alt = _named_db_reference(clause, q, ref)
-        if alt > g["credit"]:
-            return undecided("unit_reading_unclear", literal_credit=g["credit"], alt_credit=alt)
+        return undecided(g["alt_reason"], literal_credit=g["credit"], alt_credit=g["alt_credit"],
+                         literal_reason=g["reason"])
     if _hedged(s, q, g, graded, ref):
         return undecided("hedged_answer")
     q_operand = _is_operand(s, q)
+    if _EXPR_BEFORE.search(s[:q.span[0]]) or _EXPR_AFTER.match(s[q.span[1]:]):
+        # the stated answer is a term of an expression left unevaluated ("2 × 15 kHz", "fs = 2 × 15 kHz";
+        # R8): no relation after it in its clause, and no value before a relation before it ("30 kHz =
+        # 2 × 15 kHz" states 30 kHz, which the rule for several numbers reads)
+        start = max((m.end() for m in _SENTENCE_END.finditer(s) if m.end() <= q.span[0]), default=0)
+        before = s[start:q.span[0]]
+        end = _SENTENCE_END.search(s, q.span[1])        # from the candidate, so "15 kHz." ends there
+        after = s[q.span[1]:end.start() if end else len(s)]
+        rel = list(_RELATION.finditer(before))
+        # the left side of the last relation is a value ("30 kHz =") rather than a name ("fs =")
+        lhs = normalize(before[:rel[-1].start()]) if rel else ""
+        lhs_qs = extract_quantities(lhs, False) if lhs else []
+        stated_before = bool(lhs_qs) and not lhs[lhs_qs[-1].span[1]:].strip()
+        if not _RELATION.search(after) and not stated_before:
+            return undecided("expression_answer")
     explicit = fa.rule.split("+")[0] in ("marker", "boxed")
     first = min((x[0] for x in main), key=lambda x: x.span[0])
+    native_q = g.get("reading") != "converted"
     rivals = sorted({p.text for p, pg in graded if p is not q and pg["class"] == g["class"]
                      and pg["credit"] != g["credit"]
+                     # a converted value is no rival of a native one ("13 dB at 25 % load") unless the
+                     # native one is a step towards it ("the voltage ratio is 10, so ... 20 dB")
+                     and not (native_q and pg.get("reading") == "converted"
+                              and not _explained(s, q, p, paren_of(q), False))
                      and not _explained(s, p, q, paren_of(p), q_operand, anchored=explicit and p is first)})
     if rivals:
         return undecided("ambiguous_final_answer", rivals=rivals)
@@ -1666,9 +1884,15 @@ def _score_numeric(text: str, ref: NumericRef, others: tuple[NumericRef, ...] = 
 
 
 def _part_zero(parts: list[dict[str, Any]]) -> str | None:
-    """The first decided part with a unit or order-of-magnitude error: it zeroes the whole answer."""
-    return next((p["details"]["reason"] for p in parts
-                 if p["method"] == "numeric" and p["details"].get("reason") in PART_ZERO_REASONS), None)
+    """The first decided part with a unit or order-of-magnitude error (also as the lower reading a
+    tie-break kept, P11): it zeroes the whole answer."""
+    for p in parts:
+        d = p["details"]
+        if p["method"] == "numeric":
+            for r in (d.get("reason"), d.get("lower_reason")):
+                if r in PART_ZERO_REASONS:
+                    return r
+    return None
 
 
 def _score_parts(text: str, refs: tuple[NumericRef, ...]) -> dict[str, Any]:
@@ -1677,6 +1901,16 @@ def _score_parts(text: str, refs: tuple[NumericRef, ...]) -> dict[str, Any]:
     a decided part has a unit or order-of-magnitude error; None while the judge must still read a part
     and none has)."""
     parts = [_score_numeric(text, r, refs[:i] + refs[i + 1:]) for i, r in enumerate(refs)]
+    # R3: two parts of one dimension decided on the same value, one of them without its label, could
+    # each be the other's value ("Decimating the 3 MS/s input by 4 gives an output rate of 0.75 MS/s")
+    for i, j in itertools.combinations(range(len(parts)), 2):
+        di, dj = parts[i]["details"], parts[j]["details"]
+        if (refs[i].unit_obj.dims == refs[j].unit_obj.dims and parts[i]["method"] == parts[j]["method"] == "numeric"
+                and di.get("candidate") == dj.get("candidate")):
+            for k, d in ((i, di), (j, dj)):
+                if "label" not in str(d.get("rule", "")):
+                    parts[k] = _judge("part_unassigned", "numeric", candidate=d.get("candidate"),
+                                      rule=d.get("rule"), final_answer=d.get("final_answer"))
     zero = _part_zero(parts)
     flag = {"part_zero": zero} if zero else {}
     if any(p["method"] == "judge" for p in parts):
@@ -1792,8 +2026,14 @@ def _set_verdict(found: set[str], ref: SetRef, fa: FinalAnswer, how: str) -> dic
 
 # the option letters leading an explicit final answer: "(A) and (C)", "options A, C", "B) text"
 _LETTER = r"(?:[(\[]\s*[A-Za-z]\s*[)\]]|[A-Z](?![\w]))"
+# the first letter of a leading list: a bare capital counts only where a letter answer can go on or
+# end (the end of the clause, punctuation, Markdown emphasis, a spaced dash, "&", "+", or "and"/"or"
+# and another letter), so in "A low-pass filter is needed" the "A" is the article (R7); a letter after
+# a separator cannot be the article
+_FIRST_LETTER = (r"(?:[(\[]\s*[A-Za-z]\s*[)\]]|[A-Z](?![\w])"
+                 r"(?=[*_]*(?:\s*(?:$|[,.;:)\]&+!?]|(?:and|or)\s+(?:[(\[]\s*)?[A-Za-z](?![\w]))|\s+[-–—](?:\s|$))))")
 _LEADING_LETTERS = re.compile(rf"\s*(?:(?i:options?|choices?)\s*:?\s*)?"
-                              rf"({_LETTER}(?:\s*(?:,|&|\+|\band\b)\s*{_LETTER})*)")
+                              rf"({_FIRST_LETTER}(?:\s*(?:,|&|\+|\band\b)\s*{_LETTER})*)")
 
 
 def _answer_clause(fa: FinalAnswer) -> str:
@@ -1862,6 +2102,16 @@ def _identifiers(clause: str, accepted: frozenset[str]) -> tuple[set[str], bool]
     return out, unclear
 
 
+BLOCK_CATALOG = REPORTS / "block_catalog.json"
+
+
+@functools.cache
+def _block_ids() -> frozenset[str]:
+    """The block ids of GNU Radio's catalog, as frozen in reports/block_catalog.json (`./gb blocks`), so
+    the rule reads the same on a machine without GNU Radio."""
+    return frozenset(b["id"].casefold() for b in json.loads(BLOCK_CATALOG.read_text(encoding="utf-8"))["blocks"])
+
+
 def _score_exact(text: str, ref: ExactRef) -> dict[str, Any]:
     fa = final_answer(text)
     known = {a: ref.target for a in ref.accepted} | {u: u for u in ref.universe} | dict(ref.aliases)
@@ -1888,6 +2138,9 @@ def _score_exact(text: str, ref: ExactRef) -> dict[str, Any]:
                                 _clause_tail(fa))
         if doubt:
             return _judge(doubt, "symbolic", fa, region, candidate=sorted(ids))
+    blocks = _block_ids()
+    if others and not hits and not unclear and not named and ref.target in blocks and not set(others) <= blocks:
+        return _judge("not_a_block_id", "symbolic", fa, region, candidate=others)     # R6
     if hits and not others and not unclear:
         return _decided("symbolic", 1.0, reason="identifier_match", rule=fa.rule, found=sorted(hits),
                         final_answer=_clip(clause))
@@ -1904,10 +2157,60 @@ def _score_exact(text: str, ref: ExactRef) -> dict[str, Any]:
 # --- the cascade ---------------------------------------------------------------------------------
 
 
+def tie_break(result: dict[str, Any]) -> dict[str, Any]:
+    """P11: a result (or a part) that still holds two readings of different credit (literal_credit and
+    alt_credit) is decided with the lower one (reason tie_break_lower); for parts, the mean and the
+    item credit (P9) are recomputed."""
+    d = result.get("details") or {}
+    parts = d.get("parts")
+    if parts is not None:
+        new = [tie_break(p) for p in parts]
+        if new == parts:
+            return result
+        zero = _part_zero(new)
+        flag = {"part_zero": zero} if zero else {}
+        rest = {k: v for k, v in d.items() if k not in ("parts", "item_credit", "part_zero", "reason")}
+        if any(p["method"] == "judge" for p in new):
+            return {"method": "judge", "credit": None,
+                    "details": {**rest, "reason": d.get("reason"), "parts": new,
+                                "item_credit": 0.0 if zero else None, **flag}}
+        mean = sum(p["credit"] for p in new) / len(new)
+        rest.pop("rule_method", None)
+        return _decided("numeric", mean, **rest, reason="part_zero" if zero else "parts",
+                        item_credit=0.0 if zero else round(mean, 6), **flag, parts=new)
+    if result.get("method") == "judge" and "literal_credit" in d and "alt_credit" in d:
+        rest = {k: v for k, v in d.items() if k not in ("reason", "rule_method")}
+        literal = d["literal_credit"] <= d["alt_credit"]
+        # the lower reading's own reason (an order-of-magnitude error still zeroes an item, P9)
+        lower = {"lower_reason": d["literal_reason"]} if literal and d.get("literal_reason") else {}
+        return _decided("numeric", min(d["literal_credit"], d["alt_credit"]), **rest,
+                        reason="tie_break_lower", undecided_reason=d.get("reason"), **lower)
+    return result
+
+
+def reading_counts(results: list[dict[str, Any]]) -> dict[str, int]:
+    """Per model, the answers the tie-break decided and the answers scored 0 for the wrong form
+    (decision 7: reported next to every score), counting the parts of an answer as one answer."""
+    def reasons(r: dict[str, Any]) -> set[str]:
+        d = r.get("details") or {}
+        own = {d.get("reason")}
+        return own.union(*(reasons(p) for p in d.get("parts") or ()))
+    sets = [reasons(r) for r in results]
+    return {"tie_break": sum("tie_break_lower" in s for s in sets),
+            "wrong_form": sum("wrong_form" in s for s in sets)}
+
+
 def score(answer_text: str | None, reference: Any, *, truncated: bool = False) -> dict[str, Any]:
-    """Score one Tier-K answer against its reference: parse -> numeric -> symbolic -> judge."""
+    """Score one Tier-K answer against its reference: parse -> numeric -> symbolic -> judge, and
+    the tie-break (P11) on what is still undecided between two readings."""
+    return tie_break(_score(answer_text, reference, truncated=truncated))
+
+
+def _score(answer_text: str | None, reference: Any, *, truncated: bool = False) -> dict[str, Any]:
     ref = parse_reference(reference)
-    method = "numeric" if isinstance(ref, (NumericRef, tuple)) else "symbolic"
+    # an open-ended rubric has no rule target: its early zeros are decided by rule (F9)
+    method = ("numeric" if isinstance(ref, (NumericRef, tuple)) else "rules" if isinstance(ref, NoRuleRef)
+              else "symbolic")
     if truncated:
         return _decided(method, 0.0, reason="truncated")
     text = strip_reasoning(answer_text or "")
@@ -2003,8 +2306,8 @@ SELFTEST: tuple[dict[str, Any], ...] = (
      "method": "numeric", "credit": 1.0},
     {"name": "cycles per second are hertz", "answer": "1000 cycles per second",
      "reference": {"value": 1, "unit": "kHz"}, "method": "numeric", "credit": 1.0},
-    {"name": "dB for a linear ratio goes to the judge", "answer": "Processing gain = 20 dB",
-     "reference": {"value": 100, "unit": ""}, "method": "judge", "credit": None},
+    {"name": "dB for a linear ratio is converted", "answer": "Processing gain = 20 dB",
+     "reference": {"value": 100, "unit": ""}, "method": "numeric", "credit": 1.0},
     {"name": "truncated answer", "answer": "The rate is 30 kHz", "truncated": True,
      "reference": _K30, "method": "numeric", "credit": 0.0},
     {"name": "samples per symbol", "answer": "Use 4 sps.", "reference": {"value": 4, "unit": "samples/symbol"},
@@ -2064,8 +2367,8 @@ SELFTEST: tuple[dict[str, Any], ...] = (
      "reference": {"value": 10, "unit": "kHz"}, "method": "numeric", "credit": 1.0},
     {"name": "48K is 48 000 for a rate", "answer": "48K", "reference": {"value": 48, "unit": "kHz"},
      "method": "numeric", "credit": 1.0},
-    {"name": "bare number in base units goes to the judge", "answer": "Answer: 10000",
-     "reference": {"value": 10, "unit": "kHz"}, "method": "judge", "credit": None},
+    {"name": "a bare number is read in the reference unit only", "answer": "Answer: 10000",
+     "reference": {"value": 10, "unit": "kHz"}, "method": "numeric", "credit": 0.0},
     {"name": "power of ten with **", "answer": "Throughput is 1.5*10**6 bit/s",
      "reference": {"value": 1.5, "unit": "Mbit/s"}, "method": "numeric", "credit": 1.0},
     {"name": "decimal comma goes to the judge", "answer": "2,5 MHz",
@@ -2100,16 +2403,18 @@ SELFTEST: tuple[dict[str, Any], ...] = (
      "reference": {"set": ["B"], "universe": ["A", "B", "C", "D"]}, "method": "judge", "credit": None},
     {"name": "a revised block id goes to the judge", "answer": "Answer: `blocks_throttle`. No wait, `blocks_head`.",
      "reference": "blocks_throttle", "method": "judge", "credit": None},
-    {"name": "a bare number with another SI prefix goes to the judge", "answer": "Answer: 30",
-     "reference": {"value": 30000, "unit": "Hz"}, "method": "judge", "credit": None},
-    {"name": "a sign carried by a direction word goes to the judge",
+    {"name": "a bare number takes no other SI prefix", "answer": "Answer: 30",
+     "reference": {"value": 30000, "unit": "Hz"}, "method": "numeric", "credit": 0.0},
+    {"name": "a direction word next to the value sets its sign",
      "answer": "The image lies 10 kHz below the carrier.", "reference": {"value": -10, "unit": "kHz"},
-     "method": "judge", "credit": None},
-    {"name": "dB below the carrier for a dBc value goes to the judge",
+     "method": "numeric", "credit": 1.0},
+    {"name": "dB below the carrier for a dBc value",
      "answer": "The spur is 40 dB below the carrier.", "reference": {"value": -40, "unit": "dBc"},
-     "method": "judge", "credit": None},
-    {"name": "plain dB for dBc elsewhere is a unit error", "answer": "The spur is at -40 dB.",
-     "reference": {"value": -40, "unit": "dBc"}, "method": "numeric", "credit": 0.0},
+     "method": "numeric", "credit": 1.0},
+    {"name": "plain dB for dBc is read as dBc", "answer": "The spur is at -40 dB.",
+     "reference": {"value": -40, "unit": "dBc"}, "method": "numeric", "credit": 1.0},
+    {"name": "plain dB for dBm is a unit error", "answer": "The level is -40 dB.",
+     "reference": {"value": -40, "unit": "dBm"}, "method": "numeric", "credit": 0.0},
 )
 
 

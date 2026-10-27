@@ -2,8 +2,8 @@
 model result.
 
 Build plan: "FunctionModel replay first, then Qwen3-4B on 3 dev tasks. Record whether --jinja
-grammar-constrains tool calls, and pin it, since that is the B0 vs. B2 distinction" (eval plan
-Table 6: B2 = "grammar-constrained tool calls"). The project rule is stricter than the plan's
+grammar-constrains tool calls, and pin it" (eval plan Table 6). Pre-registration §8, decision 1: B0 is
+the server default, so on this build its tool calls are grammar-constrained. The project rule is stricter than the plan's
 wording: no benchmark item (test OR dev) is ever run through a model before the run list allows it,
 so the smoke test uses the unit-test fixture tasks under tests/fixtures only (their records say
 source.kind "test_fixture"; `fixture_tasks` refuses anything else):
@@ -23,7 +23,8 @@ source.kind "test_fixture"; `fixture_tasks` refuses anything else):
                       the violating values, the default build constrains tool calls to the schema with
                       a grammar. The server logs' chat-format and grammar lines (the compiled GBNF
                       holds the tool's enum) are kept as the second source. `tool_call_settings` turns
-                      the verdict into the B0 vs. B2 flag settings (eval plan Table 6).
+                      the verdict into the flag settings of B0 (the server default) and of an
+                      unconstrained candidate (eval plan Table 6).
   3. real model       (with base_url, or start_server: the pinned llama.cpp build with the smoke model)
                       the server's /props and /v1/models, then `tier_f_samples` Tier-F samples ("one
                       lookup + one edit") of each Tier-F fixture in `tier_f_tasks`, then one graded
@@ -73,6 +74,7 @@ from typing import Any, Callable
 from ..common.io import read_json, sha256_file, write_json, write_text
 from ..common.paths import CACHE, FIXTURES, LLAMA_CPP_BUILD, REPORTS, WORK
 from . import isolation, models
+from .legacy_keys import OLD_SUMMARY_KEYS, OLD_SUMMARY_VALUES
 
 FIXTURE_A = FIXTURES / "tier_a" / "tasks"
 FIXTURE_F = FIXTURES / "tier_f_task"
@@ -566,7 +568,7 @@ def run_probe_cases(base_url: str, timeout: float = 900.0, log_path: Path | None
 
 
 def _b0_request_record(cases: list[dict[str, Any]]) -> dict[str, Any]:
-    """The request-level B0 candidate (role "b0_request") on one server, read from its record."""
+    """The request-level unconstrained candidate (role "b0_request") on one server, read from its record."""
     rec = next((r for r in cases if r.get("role") == "b0_request"), None)
     if rec is None:
         return {}
@@ -582,7 +584,7 @@ def _b0_request_record(cases: list[dict[str, Any]]) -> dict[str, Any]:
 def probe_verdict(servers: dict[str, dict[str, Any]]) -> dict[str, Any]:
     """The probe's reading (module docstring): is the DEFAULT server's tool-call output held to the
     tool schema while the CONTROL (no tool grammar) writes the schema-violating values? Only the
-    "constraint" cases decide it; the request-level B0 candidate is read separately."""
+    "constraint" cases decide it; the request-level unconstrained candidate is read separately."""
     default = (servers.get("default") or {}).get("cases") or []
     control = (servers.get("control_skip_chat_parsing") or {}).get("cases") or []
 
@@ -647,18 +649,19 @@ def _chat_format(lines: list[str]) -> str | None:
 
 
 def tool_call_settings(verdict: dict[str, Any]) -> dict[str, Any]:
-    """B0 (tool calls as the model writes them) vs. B2 ("grammar-constrained tool calls", eval plan
-    Table 6) on this build, read from the probe verdict. Only the tool-call flags differ; every
+    """B0 (the server default: "grammar-constrained tool calls" on this build, eval plan Table 6;
+    pre-registration §8, decision 1) and the unconstrained candidates (tool calls as the model writes
+    them), read from the probe verdict. Only the tool-call flags differ; every
     other server flag is the smoke command's (or the run's) own. A setting is usable by GRC-Agent
     as is only if the server returns the calls parsed (OpenAI `tool_calls`): GRC-Agent never reads
     a call out of the answer text."""
-    b2 = {"server_flags": "--jinja (Jinja chat template, chat parsing on: the build's default)",
+    b0 = {"server_flags": "--jinja (Jinja chat template, chat parsing on: the build's default)",
           "request": "tools with tool_choice \"auto\", as GRC-Agent sends them",
           "chat_format": (verdict.get("chat_formats") or {}).get("default"),
           "tool_calls_schema_constrained": bool(verdict.get("default_schema_constrained")),
           "grammar_in_log": (verdict.get("default_grammar_log_lines") or 0) > 0,
           "server_parses_tool_calls": (verdict.get("default_parsed_tool_calls") or 0) > 0}
-    b0 = {"server_flags": "--jinja --skip-chat-parsing",
+    unc = {"server_flags": "--jinja --skip-chat-parsing",
           "chat_format": (verdict.get("chat_formats") or {}).get("control_skip_chat_parsing"),
           "tool_calls_schema_constrained": not verdict.get("control_unconstrained"),
           "grammar_in_log": (verdict.get("control_grammar_log_lines") or 0) > 0,
@@ -667,12 +670,12 @@ def tool_call_settings(verdict: dict[str, Any]) -> dict[str, Any]:
                 "tool_requests_refused": verdict.get("no_jinja_tool_requests_refused"),
                 "server_parses_tool_calls": (verdict.get("no_jinja_parsed_tool_calls") or 0) > 0,
                 "error": verdict.get("no_jinja_error")}
-    b2["usable_by_grc_agent_as_is"] = b2["server_parses_tool_calls"]
     b0["usable_by_grc_agent_as_is"] = b0["server_parses_tool_calls"]
-    flag_only_b0 = (not b0["tool_calls_schema_constrained"]) and b0["server_parses_tool_calls"]
+    unc["usable_by_grc_agent_as_is"] = unc["server_parses_tool_calls"]
+    flag_only = (not unc["tool_calls_schema_constrained"]) and unc["server_parses_tool_calls"]
     r = verdict.get("default_b0_request") or {}
     parsed, violating = r.get("parsed_tool_calls") or 0, r.get("parsed_calls_violating") or 0
-    b0_request = {"server_flags": "--jinja (the B2 server)",
+    unc_request = {"server_flags": "--jinja (the B0 server)",
                   "request": "tool_choice \"none\" + \"parse_tool_calls\": true (a llama.cpp request field)",
                   "ran": bool(r), "http_status": r.get("http_status"), "error": r.get("error"),
                   "chat_format": r.get("chat_format"),
@@ -681,12 +684,24 @@ def tool_call_settings(verdict: dict[str, Any]) -> dict[str, Any]:
                   "arguments": r.get("arguments"),
                   # GRC-Agent sends tool_choice "auto"; the harness would have to rewrite the two fields
                   "usable_by_grc_agent_as_is": False}
-    request_b0 = bool(r) and r.get("http_status") == 200 and parsed > 0 and violating > 0
-    return {"B2": b2, "B0_candidate": b0, "B0_request_candidate": b0_request, "no_jinja": no_jinja,
+    request_level = bool(r) and r.get("http_status") == 200 and parsed > 0 and violating > 0
+    return {"B0": b0, "unconstrained_candidate": unc, "unconstrained_request_candidate": unc_request,
+            "no_jinja": no_jinja,
             "client_grammar_with_tools_refused": bool(verdict.get("own_grammar_with_tools_refused")),
             "default_is_grammar_constrained": bool(verdict.get("grammar_constrains_tool_calls")),
-            "flag_only_unconstrained_setting_with_parsed_calls": flag_only_b0,
-            "request_level_unconstrained_with_parsed_calls": request_b0}
+            "flag_only_unconstrained_setting_with_parsed_calls": flag_only,
+            "request_level_unconstrained_with_parsed_calls": request_level}
+
+
+def load_summary_dict(summary: Any) -> Any:
+    """A stored summary (or part of one) of a run made before decision 1, with the current names
+    (legacy_keys.OLD_SUMMARY_KEYS and OLD_SUMMARY_VALUES), so that --report-from renders it as a
+    run made now would."""
+    if isinstance(summary, dict):
+        return {OLD_SUMMARY_KEYS.get(k, k): load_summary_dict(v) for k, v in summary.items()}
+    if isinstance(summary, list):
+        return [load_summary_dict(v) for v in summary]
+    return OLD_SUMMARY_VALUES.get(summary, summary) if isinstance(summary, str) else summary
 
 
 def probe_log_evidence(text: str, width: int = 600, limit: int = 12) -> dict[str, list[str]]:
@@ -1092,23 +1107,25 @@ def _probe_section(probe: dict[str, Any] | None) -> list[str]:
 
 
 def _settings_section(s: dict[str, Any]) -> list[str]:
-    """The B0 vs. B2 flag settings (eval plan Table 6), from tool_call_settings."""
-    b2, b0, nj = s.get("B2") or {}, s.get("B0_candidate") or {}, s.get("no_jinja") or {}
-    br = s.get("B0_request_candidate") or {}
-    lines = ["### Tool-call settings for B0 and B2 (eval plan Table 6)", "",
+    """The flag settings of B0 and of the unconstrained candidates (eval plan Table 6), from
+    tool_call_settings."""
+    b0, unc, nj = s.get("B0") or {}, s.get("unconstrained_candidate") or {}, s.get("no_jinja") or {}
+    br = s.get("unconstrained_request_candidate") or {}
+    lines = ["### Tool-call settings: B0 and the unconstrained candidates (eval plan Table 6)", "",
              "Only the tool-call flags differ between the rows; every other server flag is the run's own "
              "(here the smoke command above). GRC-Agent reads tool calls only from the server's parsed "
              "`tool_calls`, never from the answer text.", "",
              "| Setting | Server flags | Chat format (log) | Tool grammar in the log | Calls held to the schema | "
              "Server returns parsed `tool_calls` | Usable by GRC-Agent as is |",
              "|---|---|---|---|---|---|---|",
-             f"| B2: grammar-constrained tool calls | `{b2.get('server_flags')}` | {b2.get('chat_format') or 'n/a'} | "
-             f"{_yn(b2.get('grammar_in_log'))} | {_yn(b2.get('tool_calls_schema_constrained'))} | "
-             f"{_yn(b2.get('server_parses_tool_calls'))} | {_yn(b2.get('usable_by_grc_agent_as_is'))} |",
-             f"| B0 candidate: calls as the model writes them | `{b0.get('server_flags')}` | "
-             f"{b0.get('chat_format') or 'n/a'} | {_yn(b0.get('grammar_in_log'))} | "
-             f"{_yn(b0.get('tool_calls_schema_constrained'))} | {_yn(b0.get('server_parses_tool_calls'))} | "
-             f"{_yn(b0.get('usable_by_grc_agent_as_is'))} |",
+             f"| B0: the server default (grammar-constrained tool calls) | `{b0.get('server_flags')}` | "
+             f"{b0.get('chat_format') or 'n/a'} | "
+             f"{_yn(b0.get('grammar_in_log'))} | {_yn(b0.get('tool_calls_schema_constrained'))} | "
+             f"{_yn(b0.get('server_parses_tool_calls'))} | {_yn(b0.get('usable_by_grc_agent_as_is'))} |",
+             f"| Unconstrained candidate: calls as the model writes them | `{unc.get('server_flags')}` | "
+             f"{unc.get('chat_format') or 'n/a'} | {_yn(unc.get('grammar_in_log'))} | "
+             f"{_yn(unc.get('tool_calls_schema_constrained'))} | {_yn(unc.get('server_parses_tool_calls'))} | "
+             f"{_yn(unc.get('usable_by_grc_agent_as_is'))} |",
              f"| No Jinja | `{nj.get('server_flags')}` | n/a | n/a | n/a | {_yn(nj.get('server_parses_tool_calls'))} "
              f"({nj.get('tool_requests_refused')}/{nj.get('cases')} tool requests refused"
              + (f": `{_cell(nj.get('error'), 120)}`" if nj.get("error") else "") + ") | "
@@ -1117,7 +1134,7 @@ def _settings_section(s: dict[str, Any]) -> list[str]:
         held = ("n/a" if not br.get("server_parses_tool_calls") else
                 "no" if br.get("parsed_calls_violating_schema") else "yes (or the model complied)")
         status = f"HTTP {br.get('http_status')}" + (f": `{_cell(br.get('error'), 100)}`" if br.get("error") else "")
-        lines.append(f"| B0 request-level candidate: {br.get('request')} | `{br.get('server_flags')}` | "
+        lines.append(f"| Unconstrained request-level candidate: {br.get('request')} | `{br.get('server_flags')}` | "
                      f"{br.get('chat_format') or 'n/a'} ({status}) | {_yn(br.get('grammar_in_log'))} | {held} | "
                      f"{_yn(br.get('server_parses_tool_calls'))}"
                      + (f" ({_cell(json.dumps(br.get('arguments')), 120)})" if br.get("arguments") else "")
@@ -1126,18 +1143,17 @@ def _settings_section(s: dict[str, Any]) -> list[str]:
     if s.get("request_level_unconstrained_with_parsed_calls"):
         lines += ["**Reading.** With `--jinja` (the default), llama.cpp b10333 compiles the request's tool "
                   "schemas into a grammar and applies it once the model opens a tool call, so the server's "
-                  "default IS the B2 setting (grammar-constrained tool calls)." if s.get("default_is_grammar_constrained")
+                  "default IS the B0 setting (grammar-constrained tool calls)." if s.get("default_is_grammar_constrained")
                   else "**Reading.** See the table for the default server.",
-                  "", "An unconstrained B0 is possible on the same server without a flag, at the request level: "
+                  "", "An unconstrained setting is possible on the same server without a flag, at the request level: "
                   "`tool_choice: \"none\"` with the llama.cpp field `parse_tool_calls: true` gave parsed calls that "
-                  "break the schema. GRC-Agent sends `tool_choice: \"auto\"`, so B0 needs the harness to rewrite "
-                  "these two request fields (for example through the model's `extra_body`), checked like the "
-                  "other harness parts before B0 runs; until then B0 and B2 run the same configuration.", ""]
+                  "break the schema. GRC-Agent sends `tool_choice: \"auto\"`, and GRC-Bench does not rewrite "
+                  "these two request fields: B0 is the server default (pre-registration §8, decision 1).", ""]
         return lines
     if s.get("default_is_grammar_constrained") and not s.get("flag_only_unconstrained_setting_with_parsed_calls"):
         lines += ["**Reading.** With `--jinja` (the default), llama.cpp b10333 compiles the request's tool "
                   "schemas into a grammar and applies it once the model opens a tool call, so the server's "
-                  "default IS the B2 setting (grammar-constrained tool calls). No flag of this build gives "
+                  "default IS the B0 setting (grammar-constrained tool calls). No flag of this build gives "
                   "parsed but unconstrained calls: the one setting without the tool grammar "
                   "(`--skip-chat-parsing`) also leaves the calls unparsed in the text, `--no-jinja` "
                   + ("refused the tool requests" if nj.get("tool_requests_refused") else
@@ -1147,16 +1163,16 @@ def _settings_section(s: dict[str, Any]) -> list[str]:
                   + (" (HTTP 400)" if s.get("client_grammar_with_tools_refused") else "")
                   + (", and the request-level candidate (`tool_choice: \"none\"` + `parse_tool_calls: true`) gave no "
                      "parsed calls that break the schema" if br.get("ran") else "") + ". An unconstrained "
-                  "B0 therefore needs harness work (an open decision for the team): llama-server with "
-                  "`--jinja --skip-chat-parsing` plus a parser in the harness that turns the model's own "
-                  "tool-call text into `tool_calls` (keeping malformed calls as malformed calls), or B0 is "
-                  "defined as the default server, in which case B0 and B2 are the same configuration.", ""]
+                  "setting would need llama-server with `--jinja --skip-chat-parsing` plus a parser in the "
+                  "harness that turns the model's own tool-call text into `tool_calls`; GRC-Bench does not "
+                  "use one: B0 is the server default (pre-registration §8, decision 1).", ""]
     elif s.get("flag_only_unconstrained_setting_with_parsed_calls"):
-        lines += ["**Reading.** B0 and B2 differ by flags alone: the B0 row returns parsed calls that "
-                  "are not held to the schema.", ""]
+        lines += ["**Reading.** An unconstrained setting differs from B0 by flags alone: its row returns "
+                  "parsed calls that are not held to the schema. B0 stays the server default "
+                  "(pre-registration §8, decision 1).", ""]
     else:
         lines += ["**Reading.** The probe did not show the default server holding tool calls to the schema; "
-                  "see the table above before pinning B0 and B2.", ""]
+                  "see the table above before pinning B0.", ""]
     return lines
 
 
@@ -1222,7 +1238,7 @@ def render_report(summary: dict[str, Any]) -> str:
     if summary.get("error"):
         out += [f"**The model step stopped with an error:** `{_cell(summary['error'], 400)}` (the server was "
                 "stopped; the tables below hold what finished).", ""]
-    out += ["## Does `--jinja` grammar-constrain tool calls? (B0 vs. B2)", ""] + _probe_section(summary.get("probe"))
+    out += ["## Does `--jinja` grammar-constrain tool calls? (the B0 setting)", ""] + _probe_section(summary.get("probe"))
     out += ["## Step 1: golden replays (FunctionModel through the real runner)", "",
             f"All passed: **{_yn(summary.get('golden_passed'))}**.", "",
             "| Tier | Task | Sample | Passed | Status | Tool calls |", "|---|---|--:|---|---|--:|"]

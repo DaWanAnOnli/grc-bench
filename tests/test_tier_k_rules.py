@@ -9,6 +9,7 @@ import math
 import pytest
 
 from grcbench.common.io import read_jsonl, write_jsonl
+from grcbench.common.paths import REPO
 from grcbench.tier_k import rules
 from grcbench.tier_k.rules import (extract_quantities, final_answer, parse_reference, parse_unit,
                                    rule_only_credit, score, strip_reasoning)
@@ -419,10 +420,10 @@ def test_three_parts_value_first():
 def test_bare_numbers():
     assert credit("Answer: 30", K30) == ("numeric", 1.0)                       # read in the reference unit
     assert reason("Answer: 30", {**K30, "unit_required": True}) == "unit_missing"
-    r = score("Answer: 30000", K30)                                            # Hz? kHz? the judge decides
-    assert (r["method"], r["details"]["reason"]) == ("judge", "bare_number_unit_unclear")
-    assert credit("Answer: 0.125", {"value": 12.5, "unit": "%"}) == JUDGE
-    assert credit("a voltage gain of 2", {"value": 6.02, "unit": "dB"}) == JUDGE
+    assert credit("Answer: 30000", K30) == ("numeric", 0.0)                     # read in kHz only (P4)
+    assert credit("Answer: 0.125", {"value": 12.5, "unit": "%"}) == ("numeric", 0.0)
+    assert credit("a voltage gain of 2", {"value": 6.02, "unit": "dB"}) == ("numeric", 0.0)   # power: 3.01 dB
+    assert credit("a voltage gain of 2", {"value": 6.02, "unit": "dB", "ratio_kind": "amplitude"}) == ("numeric", 1.0)
     assert credit("Answer: 10k", {"value": 10, "unit": "kHz"}) == ("numeric", 1.0)
     assert credit("48K", {"value": 48, "unit": "kHz"}) == ("numeric", 1.0)
     assert credit("290K", {"value": 290, "unit": "K"}) == ("numeric", 1.0)
@@ -465,19 +466,19 @@ def test_cycles_are_a_count():
     assert credit("1000 cycles per second", {"value": 6283.19, "unit": "rad/s"}) == ("numeric", 1.0)
 
 
-def test_other_readings_that_earn_credit_go_to_the_judge():
-    assert reason("Processing gain = 20 dB", {"value": 100, "unit": ""}) == "unit_reading_unclear"
-    assert credit("Processing gain = 20 dB", {"value": 10, "unit": ""}) == JUDGE      # amplitude ratio
-    assert credit("Processing gain = 100", {"value": 20, "unit": "dB"}) == JUDGE      # and the reverse
+def test_the_other_form_is_converted():
+    assert reason("Processing gain = 20 dB", {"value": 100, "unit": ""}) == "converted_db"
+    assert credit("Processing gain = 20 dB", {"value": 10, "unit": ""}) == ("numeric", 0.0)   # a power ratio
+    assert credit("Processing gain = 20 dB", {"value": 10, "unit": "", "ratio_kind": "amplitude"}) == ("numeric", 1.0)
+    assert credit("Processing gain = 100", {"value": 20, "unit": "dB"}) == ("numeric", 1.0)   # and the reverse
     assert credit("Gain = 30 dB", {"value": 4, "unit": ""}) == ("numeric", 0.0)      # no reading fits
     r = score("Final answer: 1 %", {"value": -20, "unit": "dB", "tolerance_db": 0.1})  # a ratio for a dB value
-    assert (r["method"], r["details"]["reason"]) == ("judge", "unit_reading_unclear")
-    assert (r["details"]["literal_credit"], r["details"]["alt_credit"]) == (0.0, 1.0)
+    assert (r["method"], r["credit"], r["details"]["reason"]) == ("numeric", 1.0, "converted_ratio")
     assert credit("Final answer: 50 %", {"value": -20, "unit": "dB"}) == ("numeric", 0.0)
     assert credit("Final answer: 1 %", {"value": -20, "unit": "dBm"}) == ("numeric", 0.0)   # not a ratio
-    assert reason("π/2 rad", {"value": 1.5708, "unit": ""}) == "unit_reading_unclear"
-    assert reason("There is a loss of 3 dB.", {"value": -3, "unit": "dB"}) == "db_sign_convention"
-    assert credit("The spur is 40 dBc below the carrier.", {"value": -40, "unit": "dBc"}) == JUDGE
+    assert reason("π/2 rad", {"value": 1.5708, "unit": ""}) == "converted_angle"
+    assert reason("There is a loss of 3 dB.", {"value": -3, "unit": "dB"}) == "loss_word_sign"
+    assert credit("The spur is 40 dBc below the carrier.", {"value": -40, "unit": "dBc"}) == ("numeric", 1.0)
     assert credit("Final answer: -3 dB", {"value": -3, "unit": "dB"}) == ("numeric", 1.0)
     assert credit("Final answer: -3 dB", {"value": -6, "unit": "dB", "tolerance_db": 0.1}) == ("numeric", 0.0)
     # without a loss word the sign is the answer's own: a sign error scores 0
@@ -559,7 +560,7 @@ def test_open_ended_rubric_goes_to_the_judge():
         r = score("Throttle paces a simulation without hardware.", rubric)
         assert (r["method"], r["credit"], r["details"]["reason"]) == ("judge", None, "no_rule_reference")
         assert r["details"]["final_answer"]
-    assert credit("x", {"numeric": None, "points": ["p1"]}, truncated=True) == ("symbolic", 0.0)
+    assert credit("x", {"numeric": None, "points": ["p1"]}, truncated=True) == ("rules", 0.0)   # F9
 
 
 def test_rubric_numeric_field():
@@ -831,17 +832,16 @@ def test_rule_only_summary_and_the_answer_format_line(tmp_path, capsys):
 
 
 def test_decibel_scale_and_bare_numbers_are_documented():
-    """F7: the reference's unit sets the scale (P1); a bare number's reading with another SI prefix
-    goes to the judge (P4)."""
+    """F7: the reference's unit sets the scale (P1); a bare number is read in the reference unit only
+    (P4)."""
     assert credit("1.02 mW", {"value": 0, "unit": "dBm"}) == ("numeric", 1.0)          # 0.086 dB
     assert credit("0.086 dBm", {"value": 1, "unit": "mW"}) == ("numeric", 0.5)         # 2 %
     assert credit("-114.05 dBm", {"value": -114, "unit": "dBm"}) == ("numeric", 1.0)   # rounded to 0.1 dB
     doc = " ".join(rules.__doc__.split())
     assert "dB items are graded somewhat more leniently than linear ones" in doc
     assert credit("Answer: 30", K30) == ("numeric", 1.0)
-    r = score("Answer: 30", {"value": 30000, "unit": "Hz"})
-    assert (r["method"], r["details"]["reason"]) == ("judge", "bare_number_unit_unclear")
-    assert credit("Answer: 2500", {"value": 2.5, "unit": "MS/s"}) == JUDGE             # 2500 kS/s?
+    assert credit("Answer: 30", {"value": 30000, "unit": "Hz"}) == ("numeric", 0.0)    # 30 Hz
+    assert credit("Answer: 2500", {"value": 2.5, "unit": "MS/s"}) == ("numeric", 0.0)  # 2500 MS/s
     assert credit("Answer: 25", {"value": 30000, "unit": "Hz"}) == ("numeric", 0.0)    # no reading fits
     assert credit("Answer: 30", {"value": 30000, "unit": "Hz", "unit_required": True}) == ("numeric", 0.0)
     assert credit("Answer: 4", {"value": 4, "unit": ""}) == ("numeric", 1.0)           # no prefix for a count
@@ -865,18 +865,378 @@ def test_comparators_elsewhere_and_arrows_do_not_count():
 
 
 def test_sign_words_on_linear_quantities_and_named_db_references():
-    """F8: a direction word carries the sign of a linear value as a loss word does of a dB value; a
-    plain dB value whose clause names the dBc/dBi reference may be that unit."""
-    assert reason("The image lies 10 kHz below the carrier.", {"value": -10, "unit": "kHz"}) == "sign_convention"
-    assert credit("The output lags by 90 degrees.", {"value": -90, "unit": "deg"}) == JUDGE
+    """F8: a direction word carries the sign of a linear value as a loss word does of a dB value; R9:
+    a plain dB value is read in the reference's relative decibel unit (dBc, dBi)."""
+    assert reason("The image lies 10 kHz below the carrier.", {"value": -10, "unit": "kHz"}) == "loss_word_sign"
+    assert credit("The output lags by 90 degrees.", {"value": -90, "unit": "deg"}) == ("numeric", 1.0)
     assert credit("The image lies 10 kHz above the carrier.", {"value": -10, "unit": "kHz"}) == ("numeric", 0.0)
     assert credit("Final answer: -10 kHz", {"value": 10, "unit": "kHz"}) == ("numeric", 0.0)
     r = score("The spur is 40 dB below the carrier.", {"value": -40, "unit": "dBc"})
-    assert (r["method"], r["details"]["reason"], r["details"]["alt_credit"]) == ("judge", "unit_reading_unclear", 1.0)
-    assert credit("The antenna gain is 6 dB over isotropic.", {"value": 6, "unit": "dBi"}) == JUDGE
-    assert credit("The spur is at -40 dB.", {"value": -40, "unit": "dBc"}) == ("numeric", 0.0)    # unit error
+    assert (r["method"], r["credit"], r["details"]["reason"]) == ("numeric", 1.0, "loss_word_sign")
+    assert credit("The antenna gain is 6 dB over isotropic.", {"value": 6, "unit": "dBi"}) == ("numeric", 1.0)
+    assert credit("The spur is at -40 dB.", {"value": -40, "unit": "dBc"}) == ("numeric", 1.0)    # read as dBc
     assert credit("The spur is 40 dB above the carrier.", {"value": -40, "unit": "dBc"}) == ("numeric", 0.0)
-    assert credit("The spur is 40 dB below the carrier.", {"value": -40, "unit": "dBc", "accept_units": ["dB"]}) == JUDGE
+    assert credit("The spur is 40 dB below the carrier.", {"value": -40, "unit": "dBc", "accept_units": ["dB"]}) == ("numeric", 1.0)
+
+
+# --- unit forms, relative decibels, voltage conventions (round-2 findings R4, R5, R9, R10) ---------
+
+
+def test_sec_family_and_kbit_units_are_read():
+    assert score("The symbol period is 1 msec.", {"value": 0.001, "unit": "s"})["credit"] == 1.0
+    assert score("Answer: 400 nsec", {"value": 0.4, "unit": "us"})["credit"] == 1.0
+    assert score("Answer: 20 usec", {"value": 2e-05, "unit": "s"})["credit"] == 1.0
+    assert score("Answer: 125 microsec", {"value": 0.000125, "unit": "s"})["credit"] == 1.0
+    assert score("Answer: 64 Kbit", {"value": 64000, "unit": "bit"})["credit"] == 1.0
+
+
+def test_unknown_unit_word_goes_to_the_judge():
+    r = score("Final answer: 3.84 Mcps", {"value": 3.84e6, "unit": "Hz"})
+    assert r["method"] == "judge" and r["details"]["reason"] == "unknown_unit"
+
+
+def test_count_words_after_a_number_are_not_units():
+    assert score("Final answer: 4 taps", {"value": 4, "unit": ""})["credit"] == 1.0
+
+
+def test_latex_tilde_between_number_and_unit_is_a_space():
+    assert score("Final answer: $30~\\text{kHz}$", {"value": 30000, "unit": "Hz"})["credit"] == 1.0
+
+
+def test_plain_db_reads_in_the_relative_family_of_the_reference():
+    assert score("Final answer: -40 dB", {"value": -40, "unit": "dBc"})["credit"] == 1.0
+    r = score("Final answer: -40 dB", {"value": -40, "unit": "dBm"})
+    assert r["credit"] == 0.0 and r["details"]["reason"] == "unit_mismatch"
+
+
+def test_voltage_conventions():
+    assert score("Final answer: 2 Vpp", {"value": 1, "unit": "Vpk"})["credit"] == 1.0
+    assert score("Final answer: 1 Vp", {"value": 2, "unit": "Vpp"})["credit"] == 1.0
+    assert score("Final answer: 500 mVpp", {"value": 0.25, "unit": "Vpk"})["credit"] == 1.0
+    assert score("Final answer: 0.7071 Vrms", {"value": 1, "unit": "Vpk", "waveform": "sine"})["credit"] == 1.0
+    r = score("Final answer: 0.7071 Vrms", {"value": 1, "unit": "Vpk"})
+    assert r["credit"] == 0.0 and r["details"]["reason"] == "voltage_convention"
+    assert score("Final answer: 1 V", {"value": 1, "unit": "Vpk"})["credit"] == 1.0   # no convention named
+    with pytest.raises(ValueError):
+        parse_reference({"value": 1, "unit": "Vpk", "waveform": "square"})
+    assert score("Final answer: 1.414 Vpk", {"value": 1, "unit": "Vrms", "waveform": "sine"})["credit"] == 1.0
+
+
+def test_voltage_conventions_in_other_spellings():
+    for ans in ("Final answer: 2 Vp-p", "Final answer: 2 Vpk-pk", "Final answer: 2 V peak-to-peak",
+                "Final answer: 2 volts p-p", "Final answer: 2000 mVp-p", "Final answer: 2 V pp",
+                "Final answer: 2 V peak to peak", "Final answer: 2 volts peak to peak"):
+        assert score(ans, {"value": 1, "unit": "Vpk"})["credit"] == 1.0, ans
+    for ans in ("Final answer: 1 V rms", "Final answer: $1\\,V_{rms}$", "Final answer: 1 V RMS"):
+        assert score(ans, {"value": 1, "unit": "Vpk"})["details"]["reason"] == "voltage_convention", ans
+    assert score("The 5 V pin is used.", {"value": 5, "unit": "V"})["credit"] == 1.0
+    assert score("Final answer: 1 Vrms^2", {"value": 1, "unit": "V^2"})["credit"] == 1.0   # an exponent stays
+
+
+def test_dbv_levels_are_rms():
+    assert score("Final answer: 1 Vpp", {"value": 0, "unit": "dBV"})["details"]["reason"] == "voltage_convention"
+    assert score("Final answer: 1 Vrms", {"value": 0, "unit": "dBV"})["credit"] == 1.0
+    assert score("Final answer: 0 dBV", {"value": 1.414, "unit": "Vpk", "waveform": "sine"})["credit"] == 1.0
+    assert score("Final answer: 0 dBV", {"value": 1, "unit": "Vpk"})["details"]["reason"] == "voltage_convention"
+
+
+def test_a_sign_word_flips_the_converted_voltage():
+    r = score("The output drops by 1 Vpp.", {"value": -0.5, "unit": "Vpk"})
+    assert (r["method"], r["credit"], r["details"]["reason"]) == ("numeric", 1.0, "loss_word_sign")
+    r = score("The output is 1 Vpp, after the drop.", {"value": -0.5, "unit": "Vpk"})   # a sign word, not next to it
+    assert (r["credit"], r["details"]["reason"], r["details"]["alt_credit"]) == (0.0, "tie_break_lower", 1.0)
+
+
+def test_a_voltage_convention_error_zeroes_a_multi_part_answer():
+    parts = [{"value": 1, "unit": "Vpk", "label": "amplitude"}, {"value": 1, "unit": "kHz", "label": "frequency"}]
+    r = score("Final answer: amplitude = 1 Vrms, frequency = 1 kHz", parts)
+    assert r["details"]["item_credit"] == 0.0 and r["details"]["part_zero"] == "voltage_convention"
+
+
+def test_plain_db_against_dbd_and_dbc_per_hz():
+    assert score("Final answer: 2 dB", {"value": 2, "unit": "dBd"})["credit"] == 1.0      # read as dBd
+    assert score("Final answer: -90 dB/Hz", {"value": -90, "unit": "dBc/Hz"})["credit"] == 1.0
+    assert score("Final answer: -90 dB", {"value": -90, "unit": "dBc/Hz"})["credit"] == 0.0
+
+
+def test_ordinary_words_after_a_bare_number_are_not_units():
+    for ans in ("Final answer: 4 dimensionless", "Final answer: 4 unitless", "Final answer: 4 complex samples",
+                "Final answer: 4-tap", "Final answer: 4 filter taps", "Final answer: 4 thus the output",
+                "Final answer: 4\nThe input is a stream.", "Final answer: 4 assuming a stream",
+                "Final answer: 4-QAM"):
+        assert score(ans, {"value": 4, "unit": ""})["credit"] == 1.0, ans
+
+
+def test_gnu_radio_item_words_after_a_count_are_not_units():
+    # the behaviour questions ask "How many short items / vectors of 4 values ..."
+    for ans in ("34 vectors", "34 short items", "34 int items", "34 char items", "34 messages", "34 tags",
+                "34 PDUs", "34 zeros", "34 ones", "34 chunks"):
+        r = score("Final answer: " + ans, {"value": 34, "unit": ""})
+        assert (r["method"], r["credit"]) == ("numeric", 1.0), ans
+
+
+def test_bits_bytes_and_symbols_count_items_against_a_reference_with_no_unit():
+    for ans in ("34 bytes", "34 byte items", "34 bits", "34 symbols"):
+        r = score("Final answer: " + ans, {"value": 34, "unit": ""})
+        assert (r["method"], r["credit"]) == ("numeric", 1.0), ans
+    assert score("Final answer: 34 bytes", {"value": 272, "unit": ""})["credit"] == 0.0       # 34 items
+    assert score("Final answer: 34 bytes", {"value": 272, "unit": "bits"})["credit"] == 1.0   # a unit: converted
+    r = score("Final answer: 34 symbols", {"value": 34, "unit": "samples"})
+    assert r["details"]["reason"] == "unit_mismatch"                                           # P3
+
+
+def test_an_unknown_word_after_a_multiplier_goes_to_the_judge():
+    for ans in ("Final answer: 3.84M chips", "Final answer: 3.84 million chips"):
+        r = score(ans, {"value": 3.84e6, "unit": "Hz"})
+        assert r["method"] == "judge" and r["details"]["reason"] == "unknown_unit", ans
+
+
+def test_latex_tilde_after_math_or_bold():
+    for ans in ("Final answer: $48$~kHz", "Final answer: **48**~kHz"):
+        assert score(ans, {"value": 48000, "unit": "Hz"})["credit"] == 1.0, ans
+
+
+# --- decision 7: one automatic reading for every answer (pre-registration §8) -----------------------
+
+DB30 = {"value": 30, "unit": "dB", "abs_tolerance": 0.1}
+
+
+def test_bare_number_against_a_db_reference_is_a_ratio():
+    r = score("Final answer: 1000", DB30)
+    assert r["credit"] == 1.0 and r["details"]["reason"] == "converted_ratio"
+    assert score("Final answer: 30", DB30)["credit"] == 0.0          # a ratio of 30 is 14.8 dB
+    assert score("Final answer: 10", {"value": 20, "unit": "dB", "ratio_kind": "amplitude"})["credit"] == 1.0
+    assert score("Final answer: 2", {"value": 6.02, "unit": "dBV"})["credit"] == 1.0   # ratio to 1 V
+    assert score("Final answer: 1000", {"value": 30, "unit": "dBm"})["credit"] == 1.0  # ratio to 1 mW
+    with pytest.raises(ValueError):
+        parse_reference({"value": 30, "unit": "dBm", "ratio_kind": "amplitude"})
+    with pytest.raises(ValueError):
+        parse_reference({"value": 3, "unit": "dB", "quantity": "Gain"})   # only "gain"
+
+
+def test_ratio_words_are_units_of_a_plain_ratio():
+    for ans in ("Final answer: 1000 times", "Final answer: 1000x", "Final answer: 1000 x"):
+        assert score(ans, DB30)["credit"] == 1.0, ans
+    assert score("Final answer: 1000 times", {**DB30, "unit_required": True})["credit"] == 1.0
+    assert score("Final answer: 1000", {**DB30, "unit_required": True})["details"]["reason"] == "unit_missing"
+    assert score("Final answer: 4 times", {"value": 4, "unit": ""})["credit"] == 1.0
+    assert score("Final answer: 4x", {"value": 4, "unit": "samples/symbol"})["credit"] == 1.0   # read bare
+
+
+def test_bare_number_elsewhere_is_read_in_the_reference_unit_only():
+    assert score("Final answer: 30", {"value": 30, "unit": "kHz"})["credit"] == 1.0
+    r = score("Final answer: 30000", {"value": 30, "unit": "kHz"})
+    assert r["method"] == "numeric" and r["credit"] == 0.0           # no SI-base second reading
+    assert score("Final answer: 30", {"value": 30000, "unit": "Hz"})["credit"] == 0.0
+
+
+def test_db_answer_against_a_ratio_reference_is_converted():
+    r = score("The power ratio is 20 dB.", {"value": 100, "unit": ""})
+    assert r["credit"] == 1.0 and r["details"]["reason"] == "converted_db"
+    assert score("The voltage gain is 20 dB.", {"value": 10, "unit": "", "ratio_kind": "amplitude"})["credit"] == 1.0
+    assert score("The voltage gain is 20 dB.", {"value": 10, "unit": ""})["credit"] == 0.0   # power: 100
+    r = score("Final answer: 90 degrees", {"value": 1.5708, "unit": ""})
+    assert r["credit"] == 1.0 and r["details"]["reason"] == "converted_angle"
+    assert score("Final answer: 1 %", {"value": -20, "unit": "dB", "tolerance_db": 0.1})["credit"] == 1.0
+    assert score("Final answer: 1 %", {"value": -20, "unit": "dBm"})["credit"] == 0.0   # not a ratio
+
+
+def test_form_required_zeroes_the_other_form_only_when_it_would_earn_credit():
+    r = score("Final answer: 20 dB", {"value": 100, "unit": "", "form_required": True})
+    assert r["credit"] == 0.0 and r["details"]["reason"] == "wrong_form"
+    assert score("Final answer: 1000", {**DB30, "form_required": True})["details"]["reason"] == "wrong_form"
+    r = score("Final answer: 25 dB", {"value": 100, "unit": "", "form_required": True})
+    assert r["credit"] == 0.0 and r["details"]["reason"] != "wrong_form"   # wrong in either form
+
+
+def test_loss_words_set_the_sign_for_a_gain():
+    r = score("Final answer: a loss of 3 dB", {"value": -3, "unit": "dB"})
+    assert r["credit"] == 1.0 and r["details"]["reason"] == "loss_word_sign"
+    assert score("Final answer: a loss of 3 dB", {"value": 3, "unit": "dB"})["credit"] == 1.0   # a loss quantity
+    assert score("Final answer: a loss of 3 dB", {"value": 3, "unit": "dB", "quantity": "gain"})["credit"] == 0.0
+    assert score("Final answer: 3 dB", {"value": -3, "unit": "dB"})["credit"] == 0.0
+    assert score("Final answer: -3 dB (a loss of 3 dB)", {"value": -3, "unit": "dB"})["credit"] == 1.0
+    for ans, ref in (("Final answer: 10 kHz below the carrier", {"value": -10, "unit": "kHz"}),
+                     ("The output is 3 dB down.", {"value": -3, "unit": "dB"}),
+                     ("The output lags by 90 degrees.", {"value": -90, "unit": "deg"}),
+                     ("The phase is lagging by 90 degrees.", {"value": -90, "unit": "deg"}),
+                     ("The spur is 40 dBc below the carrier.", {"value": -40, "unit": "dBc"}),
+                     ("The level is reduced by 3 dB.", {"value": -3, "unit": "dB"})):
+        assert score(ans, ref)["credit"] == 1.0, ans
+    assert score("Final answer: a loss of -3 dB", {"value": -3, "unit": "dB"})["details"]["reason"] == "sign_unclear"
+
+
+def test_unknown_unit_word_is_never_read_as_bare():
+    assert score("The symbol period is 1 msec.", {"value": 0.001, "unit": "s"})["credit"] == 1.0
+    assert score("Final answer: 3.84 Mcps", {"value": 3.84e6, "unit": "Hz"})["method"] == "judge"
+
+
+def test_tie_break_takes_the_lower_credit():
+    r = rules.tie_break({"method": "judge", "credit": None,
+                         "details": {"reason": "sign_convention", "literal_credit": 0.0, "alt_credit": 1.0}})
+    assert r["method"] == "numeric" and r["credit"] == 0.0 and r["details"]["reason"] == "tie_break_lower"
+    part = {"method": "judge", "credit": None, "details": {"reason": "sign_convention",
+                                                          "literal_credit": 0.0, "alt_credit": 1.0}}
+    done = {"method": "numeric", "credit": 1.0, "details": {"reason": "within_tolerance"}}
+    r = rules.tie_break({"method": "judge", "credit": None,
+                         "details": {"reason": "part_undecided", "parts": [part, done], "item_credit": None}})
+    assert r["method"] == "numeric" and r["credit"] == 0.5 and r["details"]["item_credit"] == 0.5
+    assert r["details"]["parts"][0]["details"]["reason"] == "tie_break_lower"
+    assert rules.reading_counts([r]) == {"tie_break": 1, "wrong_form": 0}
+
+
+def test_a_value_in_the_reference_form_is_the_candidate_before_a_converted_one():
+    db13 = {"value": 13, "unit": "dB"}
+    for ans in ("The gain is 13 dB, so N = 16.", "Final answer: 13 dB for 16-QAM", "Final answer: 13 dB at 25 % load"):
+        assert score(ans, db13)["credit"] == 1.0, ans
+    assert score("The processing gain is 20 dB, a factor of 100.", {"value": 100, "unit": ""})["credit"] == 1.0
+
+
+def test_a_ratio_word_before_a_word_or_a_full_stop():
+    assert score("Final answer: 1000 times.", {**DB30, "unit_required": True})["credit"] == 1.0
+    assert score("Final answer: 1000 times larger", {**DB30, "unit_required": True})["credit"] == 1.0
+    r = score("The voltage ratio is 10, so the power gain is 20 dB.", {"value": 100, "unit": ""})
+    assert r["method"] == "judge"                  # the native 10 is a step towards the converted 20 dB
+    r = score("Final answer: 24 kHz. Recheck: fs = 2 × B = 2 × 12 kHz = 24 kHz.", {"value": 24, "unit": "kHz"})
+    assert r["credit"] == 1.0
+
+
+def test_a_loss_word_leaves_a_ratio_against_a_db_reference_alone():
+    assert score("Final answer: the power is reduced by 50 %", {"value": -3, "unit": "dB"})["credit"] == 1.0
+    r = score("Final answer: a loss of 3 dB", {"value": 3, "unit": "dB", "quantity": "gain"})
+    assert r["credit"] == 0.0 and r["details"]["reason"] != "tie_break_lower"
+    assert rules.reading_counts([r])["tie_break"] == 0
+    assert score("Final answer: a loss\n3 dB", {"value": -3, "unit": "dB"})["credit"] == 0.0   # not across a line
+    r = score("Final answer: a loss of 3 dB. Actually the cable's loss is 3 dB.", {"value": -3, "unit": "dB"})
+    assert r["credit"] == 1.0
+
+
+def test_the_tie_break_keeps_the_error_of_the_lower_reading():
+    r = score("The spur is 40 dB, well below the carrier.", {"value": -40, "unit": "dBc"})
+    assert r["details"]["reason"] == "tie_break_lower" and r["details"]["lower_reason"] == "order_of_magnitude"
+    part = {"method": "judge", "credit": None, "details": {"reason": "db_sign_convention", "literal_credit": 0.0,
+                                                          "alt_credit": 1.0, "literal_reason": "order_of_magnitude"}}
+    done = {"method": "numeric", "credit": 1.0, "details": {"reason": "within_tolerance"}}
+    r = rules.tie_break({"method": "judge", "credit": None,
+                         "details": {"reason": "part_undecided", "parts": [part, done], "item_credit": None}})
+    assert r["details"]["item_credit"] == 0.0 and r["details"]["part_zero"] == "order_of_magnitude"
+    assert rule_only_credit(r) == 0.0
+
+
+READING_PROBES = [  # the inputs of the decision-7 tests above, as (answer, reference) cases
+    {"answer": a, "reference": ref} for a, ref in (
+        ("Final answer: 1000", DB30), ("Final answer: 30000", {"value": 30, "unit": "kHz"}),
+        ("The power ratio is 20 dB.", {"value": 100, "unit": ""}),
+        ("Final answer: 90 degrees", {"value": 1.5708, "unit": ""}),
+        ("Final answer: 3 dB, the loss of the cable", {"value": -3, "unit": "dB"}),
+        ("Final answer: Ts = 30, B = 1 kHz", [{"value": 30000, "unit": "Hz", "label": "Ts"},
+                                             {"value": 1, "unit": "kHz", "label": "B"}]))]
+
+
+def test_no_result_leaves_two_readings_open():
+    for case in list(rules.SELFTEST) + READING_PROBES:
+        d = score(case["answer"], case["reference"])
+        for p in d["details"].get("parts") or [d]:
+            assert not (p["method"] == "judge" and "alt_credit" in p["details"]), case["answer"]
+
+
+# --- round-2 findings R3, R7, R8, F9 and pins of those already handled -------------------------------
+
+DECIMATION = [{"value": 3, "unit": "MS/s", "label": ["input rate", "input"]},
+         {"value": 0.75, "unit": "MS/s", "label": ["output rate", "output"]}]
+
+
+def test_same_dimension_parts_without_matched_labels_go_to_the_judge():
+    for ans in ("Decimating the 3 MS/s input by 4 gives an output rate of 0.75 MS/s.",
+                "Interpolating the 0.75 MS/s input by 4 gives an output rate of 3 MS/s."):
+        r = score(ans, DECIMATION)
+        assert r["method"] == "judge", ans
+        assert "part_unassigned" in [p["details"]["reason"] for p in r["details"]["parts"]], ans
+    assert score("Final answer: input rate = 3 MS/s, output rate = 0.75 MS/s", DECIMATION)["credit"] == 1.0
+
+
+def test_sentence_initial_article_is_not_option_a():
+    r = score("Final answer: A low-pass filter is needed, so option C.",
+              {"set": ["C"], "universe": ["A", "B", "C", "D"]})
+    assert r["method"] == "judge" or r["credit"] == 1.0
+    assert score("Final answer: A", {"set": ["A"], "universe": ["A", "B", "C", "D"]})["credit"] == 1.0
+    assert score("Final answer: A, C", {"set": ["A", "C"], "universe": ["A", "B", "C", "D"]})["credit"] == 1.0
+    ac, abcd = {"set": ["A", "C"], "universe": list("ABCD")}, list("ABCD")
+    for ans in ("Final answer: A, C are correct.", "Final answer: A and C are needed"):
+        assert score(ans, ac)["credit"] == 1.0, ans
+        assert score(ans, {"set": ["A"], "universe": abcd})["credit"] == 0.0, ans     # C is an extra option
+    assert score("Final answer: B & D should both be selected", {"set": ["B", "D"], "universe": abcd})["credit"] == 1.0
+    for ans in ("**Final answer: B** — the low-pass filter before the decimator.", "Final answer: B – low-pass filter"):
+        assert score(ans, {"set": ["B"], "universe": abcd})["credit"] == 1.0, ans
+    r = score("Final answer: A **low-pass filter** before decimation (option C).", {"set": ["C"], "universe": abcd})
+    assert r["method"] == "judge" or r["credit"] == 1.0
+
+
+def test_unevaluated_expression_goes_to_the_judge():
+    for ans in ("Final answer: 2 × 15 kHz", "Final answer: 2 x 15 kHz"):
+        r = score(ans, {"value": 30, "unit": "kHz"})
+        assert r["method"] == "judge" and r["details"]["reason"] == "expression_answer", ans
+    assert score("Final answer: 2 × 15 kHz = 30 kHz", {"value": 30, "unit": "kHz"})["credit"] == 1.0
+    for ans, ref in (("Final answer: (2)(15 kHz)", {"value": 30, "unit": "kHz"}),
+                     ("Final answer: 2(15 kHz)", {"value": 30, "unit": "kHz"}),
+                     ("Final answer: 48 kHz / 4", {"value": 12, "unit": "kHz"})):
+        assert score(ans, ref)["details"]["reason"] == "expression_answer", ans
+    assert score("Final answer: 10 kHz / 20 kHz / 30 kHz", {"value": 90, "unit": "kHz"})["method"] == "numeric"
+    for ans in ("Final answer: fs = 2 × 15 kHz", "Final answer: with x = 5, fs = 2 × 15 kHz",
+                "The sample rate is 2 × 15 kHz. With N = 4 taps, the filter is short."):
+        r = score(ans, {"value": 30, "unit": "kHz"})
+        assert r["method"] == "judge" and r["details"]["reason"] == "expression_answer", ans
+    for ans, ref in (("Sample rate:\n* 30 kHz", {"value": 30, "unit": "kHz"}),
+                     ("Final answer: 30 kHz double-sided bandwidth", {"value": 30, "unit": "kHz"}),
+                     ("Final answer: 1000 times the input power", {"value": 1000, "unit": ""})):
+        assert score(ans, ref)["credit"] == 1.0, ans
+
+
+def test_empty_open_ended_answer_has_its_own_method():
+    assert score("", {"required_points": ["x"]})["method"] == "rules"
+    assert score("x", {"required_points": ["x"]}, truncated=True)["method"] == "rules"
+
+
+def test_prose_final_answer_is_never_a_marker():                       # F3
+    for ans in ("To get the final answer, multiply the 15 kHz bandwidth by 2. The sample rate is 30 kHz.",
+                "Before giving the final answer, note the 15 kHz bandwidth.\nThe sample rate must be 30 kHz."):
+        assert score(ans, {"value": 30, "unit": "kHz"})["credit"] != 0.0
+
+
+def test_part_zero_reaches_the_batch_rows(tmp_path):                  # F4, R11
+    p = tmp_path / "b.jsonl"
+    p.write_text(json.dumps({"answer": "Final answer: Ts = 1 s, B = 1 kHz",
+                             "reference": [{"value": 1, "unit": "ms", "label": "Ts"},
+                                           {"value": 1, "unit": "kHz", "label": "B"}]}) + "\n")
+    rows, errors = rules._batch(p)
+    assert errors == 0 and rows[0]["rule_only_credit"] == 0.0
+
+
+def test_rubric_guide_db_template_parses():                           # F6
+    guide = (REPO / "docs" / "guidelines" / "rubric_writing.md").read_text(encoding="utf-8")
+    assert '{"value": <number>, "unit": "dBm", "abs_tolerance": <tolerance in dB>}' in guide
+    parse_reference(json.loads('{"value": -90, "unit": "dBm", "abs_tolerance": 0.5}'))
+
+
+def test_comparator_and_named_block():                                # F8, R6
+    assert score("Final answer: at least 30 kHz", {"value": 30, "unit": "kHz"})["method"] == "judge"
+    assert score("Final answer: the Throttle block (set `sample_rate` to `samp_rate`).",
+                 {"exact": "blocks_throttle", "aliases": ["Throttle"]})["credit"] != 0.0
+
+
+def test_a_wrong_identifier_must_be_a_real_block_id():                       # R6
+    r = score("Add a Throttle block and set its `samples_per_second` to `samp_rate`.", {"exact": "blocks_throttle"})
+    assert r["method"] == "judge"
+    r = score("Final answer: `blocks_head`", {"exact": "blocks_throttle"})
+    assert (r["credit"], r["details"]["reason"]) == (0.0, "wrong_identifier")
+
+
+def test_sums_and_quotients_left_unevaluated_go_to_the_judge():               # R8
+    for ans, ref in (("Final answer: 15 kHz + 15 kHz", {"value": 30, "unit": "kHz"}),
+                     ("Final answer: 60 kHz over 2", {"value": 30, "unit": "kHz"}),
+                     ("Final answer: 35 kHz minus 5 kHz", {"value": 30, "unit": "kHz"})):
+        assert score(ans, ref)["details"]["reason"] == "expression_answer", ans
+    assert score("Final answer: 15 kHz + 15 kHz = 30 kHz", {"value": 30, "unit": "kHz"})["credit"] == 1.0
 
 
 # --- interface, determinism, CLI ------------------------------------------------------------------
@@ -885,7 +1245,7 @@ def test_sign_words_on_linear_quantities_and_named_db_references():
 def test_result_shape_and_json():
     for case in rules.SELFTEST:
         r = score(case["answer"], case["reference"], truncated=case.get("truncated", False))
-        assert set(r) == {"method", "credit", "details"} and r["method"] in {"numeric", "symbolic", "judge"}
+        assert set(r) == {"method", "credit", "details"} and r["method"] in {"numeric", "symbolic", "rules", "judge"}
         assert (r["credit"] is None) == (r["method"] == "judge")
         assert r["credit"] is None or 0.0 <= r["credit"] <= 1.0
         assert "reason" in r["details"]

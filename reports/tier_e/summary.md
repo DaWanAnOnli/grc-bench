@@ -12,4 +12,5 @@ Each of these exercises the protocol on a machine that is not a hardware tier, o
 
 | Run | Model | Quant | Hardware | Threads | Status | Generation tokens/s | Prompt tokens/s | Not measured |
 |---|---|---|---|--:|---|---|---|---|
+| [e2e_dev_qwen3_4b_rtx5090](e2e_dev_qwen3_4b_rtx5090.md) | Qwen3-4B-Q4_K_M.gguf | Q4_K_M | H3 | 24 | complete | 4K: 254.8 | 4K: 15,775.0 | 16K, 32K, 64K |
 | [plumbing_qwen3_4b_cpu](plumbing_qwen3_4b_cpu.md) | Qwen3-4B-Q4_K_M.gguf | Q4_K_M | H1 | 16 | failed | 4K: 12.7 | 4K: 95.1 | 16K, 32K, 64K |

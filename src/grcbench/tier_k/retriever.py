@@ -1,6 +1,6 @@
 """B1 baseline "base + documentation search": GRC-Agent's own retrieval, added to the prompt.
 
-Implements B1 as the evaluation plan defines it (Table 1, "Baselines B1 and B2": "B1 (documentation
+Implements B1 as the evaluation plan defines it (Table 1, the B1 baseline: "B1 (documentation
 search) runs on Tiers K and F, with the retrieved pages added to the prompt"; Table 6, "B1 +
 documentation search") and the proposal does (§6, "Models, Baselines, and Post-Training": "B1,
 base + GRC-Agent retrieval (query_knowledge)"), with the build plan's Phase 5 rule ("GRC-Agent's

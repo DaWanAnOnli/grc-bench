@@ -83,7 +83,7 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 | **H2b** preference stage | Defect-aware preference optimisation lowers the hallucinated-block rate by at least 30 % relative to SFT alone. | Tier F: the hallucinated-block rate of S1 + DPO and of S1 + DPOP against the best S1 checkpoint. H2b holds for a method if the relative reduction is at least 30 % and the paired test of the per-task rates is significant after Holm correction in the RQ2 family. |
 | **H3** curation | Adding validated repairs to PASS-only data raises accuracy and lowers the hallucinated-block rate at equal compute. | The curation comparison A2 runs on the dev split (eval plan §7.2): PASS + repaired against PASS-only, on Tier-K score and on the Tier-F hallucinated-block rate, paired tests, Holm-corrected in the RQ3 family. Because the dev split also served for model choices, H3 is reported with that limitation. |
 | **H4a** compression cost | 4-bit compression costs more on agentic (A) than on knowledge (K) metrics. | For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A minus the drop on Tier K, in percentage points, with a 95 % cluster-bootstrap interval (items resampled within each tier). H4a holds if the interval lies above 0 (`H4a-decision`, §8). Tier A's MDE of 23–28 points is printed beside the result. |
-| **H4b** speed | The MoE model (North-Mini-Code) reaches at least 80 tokens/s on the reference hardware at Q4_K_M. | Tier E on setup H2 (a laptop with a 4 GB GPU, MoE experts in CPU memory): the median generation speed of 5 warm llama-bench runs at 4K tokens of context is at least 80 tokens/s (`H4b-context`, §8). The other context lengths and setups are reported beside it. |
+| **H4b** speed | The MoE model (North-Mini-Code) reaches at least 80 tokens/s on the reference hardware at Q4_K_M. | Tier E on setup H2 (a laptop with a 4 GB GPU, MoE experts in CPU memory): the median generation speed of 5 warm llama-bench runs is at least 80 tokens/s, decided at each of 4K, 16K, 32K and 64K tokens of context. The result states the context range over which H4b holds ("holds up to 16K"); a context that cannot be run does not hold (`H4b-context`, §8). Setups H1 and H3 are reported beside it. |
 
 ## 4. Item quality before the freeze
 
@@ -114,8 +114,9 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 - **How a question is posed.** Tier K is closed-book. A model under test gets one message: a fixed
   instruction and the question, with no GRC-Agent system prompt and no tools
   (`grcbench.tier_k.answer_prompt`, version and hash in Appendix B). The instruction asks for a closing
-  line "Final answer: …". A reply is limited to 4,096 tokens, reasoning included. B1 places the
-  retrieved documentation before the same message.
+  line "Final answer: …" and for the unit after every number, and it states that a number without a
+  unit is never read as decibels. A reply is limited to 4,096 tokens, reasoning included. B1 places
+  the retrieved documentation before the same message.
 - **GNU Radio behaviour questions.** Each of the 100 asks for one number: the k-th output of a block set
   as stated on a stated finite input, or how many items it produces. The key is GNU Radio's own output.
   The generator runs the block twice in the sandbox and reads the recording, and keeps a question only
@@ -134,10 +135,33 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   numbers with units and tolerances, option letters, block identifiers and symbols. Numeric answers
   earn tiered credit by relative error, and a wrong unit or order of magnitude earns 0. Only answers
   the rules cannot decide go to the judge.
+- **Decibel values** are graded on the difference in dB: by default within 0.1 dB for full credit and
+  about 0.27 dB for half (about 2.3 % and 6.4 % in power), against 1 % and 5 % for linear values. This
+  is deliberately somewhat more lenient: 0.1 dB is the usual precision of a decibel value, and an
+  answer correctly rounded to it errs by up to 0.05 dB. For voltage levels (dBV, dBmV, dBµV), whose
+  decibels are 20·log10 of a voltage, the half band ends at about 0.44 dB (1.2 % and 5.2 % in
+  voltage).
+- **One reading for every number.** A number the rules could read two ways is read by fixed
+  conventions (`grcbench.tier_k.rules`, P4, P8 and P11):
+  - against a decibel reference a bare number is a linear ratio (1000 is 30 dB for a power ratio);
+    against any other reference it is read in the reference's unit, with no other reading;
+  - a decibel answer for a plain ratio, a ratio (%, "1000 times") for a decibel value and an angle
+    for a plain number are converted (as a power or an amplitude ratio, as the rubric records) and
+    graded, unless the question fixes the form: then the other form scores 0;
+  - a loss word next to a positive value ("a loss of 3 dB", "10 kHz below the carrier") makes it
+    negative when the reference is negative or the rubric marks the quantity as a gain;
+  - Vpp and Vpk convert exactly; an RMS voltage converts only when the rubric records a sine;
+  - against a reference with no unit, a GNU Radio item word after a number leaves the number, and
+    bits, bytes and symbols count items ("34 vectors", "34 short items" and "34 bytes" are 34 items);
+  - whatever still holds two readings of different credit gets the lower one (the tie-break).
 - **The judge.** MiniMax-M3 grades the remaining answers against the item's rubric, with the reasoning
-  text removed and without knowing which model wrote the answer. It returns a verdict per rubric point,
-  which is turned into a score in [0, 1]. The prompt version and its hash are fixed in Appendix B; any
-  change needs a new version.
+  text removed and without knowing which model wrote the answer (listed model and vendor names are
+  masked before the judge reads the answer). It returns a verdict per rubric point and the values it
+  reads for each graded number, which the rules grade (a value in a unit the rules do not read, such
+  as "3.84 Mcps", earns 0 for that number); the verdicts are turned into a score in [0, 1].
+  Every request uses temperature 0 and a fixed seed. A GNU Radio behaviour question that the rules
+  cannot read goes to the judge with a numbers-only rubric built from its key. The prompt version
+  and its hash are fixed in Appendix B; any change needs a new version.
 - **Judge calibration** (eval plan §8.1; `docs/guidelines/judge_calibration.md`). Before the judge
   grades any test answer, it is compared with human labels on 150 answers labelled by three annotators,
   one of them a Qoherent expert. The judge passes only if both gates hold: Cohen's κ on the per-point
@@ -146,14 +170,19 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   reported, for each task type too. If MiniMax-M3 fails, Kimi K2.6 is calibrated with the same prompt,
   and both results are reported. In week 8, 50 more answers from the final models are labelled and the
   judge–human gap is reported for each model.
-- **Numbers with two readings.** When the rules find a number that matches the reference under one
-  reading and not under another, the answer is not scored by the judge; it goes to a person
-  (`human` route).
+- **Every answer is scored automatically** (§8, decision 7); no answer is scored by a person. If the
+  judge returns no valid verdict in 3 attempts, the fallback judge (Kimi K2.6) is asked once; if it
+  also fails, the answer scores 0. An answer that carries the benchmark's canary scores 0 and is
+  counted. Each model's report gives, next to its Tier-K score, the number of answers decided by the
+  tie-break, scored 0 for the wrong form alone, scored 0 after failed judge replies, with a number
+  scored 0 for a unit the rules do not read, and sent to the judge with masked names.
 - **Limits.** Answers longer than 4K tokens are cut and scored as wrong. Reasoning text is removed
   before scoring.
 - **Reported groups.** Results are given by the cleaned task-type labels only, with no group of fewer
-  than 20 items (§8, item 4), for factual recall and reasoning separately (§8, item 5), and for clean
-  items and items with a near-twin in the training questions separately.
+  than 20 items: `gnuradio_usage` is reported with `design` as one group, design + gnuradio_usage
+  (§8, decision 4). Factual recall and reasoning are reported separately on the 185 frozen questions,
+  and the 100 GNU Radio behaviour questions as a group of their own (§8, decision 5). Clean items and
+  items with a near-twin in the training questions are reported separately.
 
 ### 5.2 Tier F
 
@@ -161,6 +190,13 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   prompt and tool schemas. The history already holds one `inspect_graph` call on the start graph. The
   model may make at most one `query_knowledge` call and must then submit one atomic `change_graph`
   call, within 3 model turns. GRC-Agent applies the edit; a rejected edit is not retried.
+- **Tool calls.** Every model served by llama.cpp runs with the server's default tool grammar
+  (`--jinja`), which holds tool calls to the tools' JSON schemas (§8, decision 1). API models use the
+  provider's tool calling, with strict mode where it is offered; their well-formed-call rates are
+  therefore not compared like for like with the llama.cpp models'. For the llama.cpp models, V1 and
+  the well-formed-call share mostly check the server rather than the model; the
+  hallucinated-block rate stays informative, since the grammar fixes a call's form but not the block
+  names in it, and V2–V5 compare as usual.
 - **Validity ladder.** V1 a well-formed `change_graph` call; V2 the graph loads with only real blocks;
   V3 it compiles (it validates and its Python code is generated); V4 it runs and every observation
   point receives data; V5 the task's oracle passes (signal checks and structural checks). Each check runs only if the previous one
@@ -178,7 +214,10 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 - **Harness, the same for every model.** The pinned GRC-Agent version (commit 6c98128) with its real
   system prompt and 22 tools; tool outputs cut to 4K tokens (beginning and end kept, plus error lines);
   64K tokens of context; at most 40 model requests; a time limit on each flowgraph run; web tools
-  offline; the shell in a sandbox without network. A run that hits a cap is a failure.
+  offline; the shell in a sandbox without network. A run that hits a cap is a failure. Tool calls as
+  in Tier F: the llama.cpp server's default tool grammar for every model it serves, the provider's
+  tool calling (strict mode where offered) for API models (§8, decision 1). For the llama.cpp models
+  the share of well-formed calls therefore mostly checks the server, as V1 does in Tier F.
 - **Scripted user.** Set replies for the questions a task expects; otherwise "please use your best
   judgement".
 - **Grading by end state.** The final saved flowgraph is re-run by the grader through the Tier-F
@@ -205,23 +244,23 @@ the tokens and the time, and the run's GPU-hours. All raw outputs are released w
 
 ## 6. The declared run list
 
-`run_list.yaml` lists every configuration that may run on the test split (eval plan Table 6), with
-its model, precision, tiers, samples per item (n) and Tier-A runs per task (k), and the hypotheses it
-serves. In summary:
+`run_list.yaml` lists the 38 configurations that may run on the test split (eval plan Table 6), with
+their model, precision, tiers, samples per item (n) and Tier-A runs per task (k), and the hypotheses
+they serve. In summary:
 
-- **Nanbeige4.2-3B** (BF16 unless stated): B0, B1, B2, the best S1 checkpoint, S1 + DPO and
+- **Nanbeige4.2-3B** (BF16 unless stated): B0, B1, the best S1 checkpoint, S1 + DPO and
   S1 + DPOP, the final model compressed to Q8_0, Q5_K_M and Q4_K_M, seeds 2 and 3 of the final
   setting, and four comparison arms.
 - **North-Mini-Code**, compared at the 4-bit deployment precision with BF16 as the anchor: B0 in BF16
-  and Q4, B1, B2 and the best S1 checkpoint at Q4, the final model in BF16, Q8_0, Q5_K_M and Q4,
+  and Q4, B1 and the best S1 checkpoint at Q4, the final model in BF16, Q8_0, Q5_K_M and Q4,
   seeds 2 and 3, and one comparison arm (attention-only adapters).
-- **References:** Qwen3-30B-A3B at Q4 and the B3 cloud teacher, DeepSeek-V4.1-Flash.
+- **References:** Qwen3-30B-A3B at Q4 and the B2 cloud teacher, DeepSeek-V4.1-Flash.
 - **The panel** (eval plan §7.3): six small open models, four open teachers and one closed frontier
   model. The panel's slots are declared now; its members are chosen and added at the freeze.
 
-Every configuration uses n = 5 samples per Tier-K and Tier-F item and k = 4 Tier-A runs per task,
-except the extra seeds and the comparison arms (n = 3, k = 2) and the closed frontier model (n = 1,
-k = 2).
+Every configuration uses n = 5 samples per Tier-K and Tier-F item and, where it runs Tier A, k = 4
+runs per task, except the extra seeds (n = 3, k = 2), the comparison arms (n = 3), North-Mini-Code's
+BF16 B0 (k = 2) and the closed frontier model (n = 1, k = 2).
 
 **Engines and settings** (eval plan §7.1). All open models run in llama.cpp b10333 from GGUF files,
 BF16 references included. Each model uses its recommended sampling settings; greedy decoding is
@@ -257,7 +296,7 @@ default settings on 10 tasks.
 - **Seeds.** The final setting of each model is trained with 3 seeds; the spread between seeds is
   reported separately from the item-level interval.
 - **Memorisation check (Tier K).** The headline configurations (B0 and the final model of each target,
-  and B3) also answer the private fresh set. The gap is the reference-minus-fresh mean item score over
+  and B2) also answer the private fresh set. The gap is the reference-minus-fresh mean item score over
   the paired slots, clustered by block, with both 95 % intervals; memorisation is flagged when both lie
   above 0 (`fresh-set-gap`). The headline Tier-K score stays the reference set's.
 - **Item analysis.** Difficulty and discrimination for every item; a Rasch model as an exploratory
@@ -270,26 +309,32 @@ default settings on 10 tasks.
   traces never save a block to the library or write files, and they never ran a flowgraph
   (`reports/agent_traces.md`).
 
-## 8. Decisions the team takes before signing
+## 8. Decisions at sign-off
 
-Each item states what has to be decided and the option this draft proposes.
+Decisions 1–7 were taken by the evaluation lead on 27 October 2026; the rule cascade, the judge
+template, the statistics package, the label groups and the run list implement them. Decisions 8–11
+are open; each states what has to be decided and the option this draft proposes.
 
-1. **B0 and B2 on Tier A.** In llama.cpp b10333, `--jinja` constrains tool calls with a grammar, so the
-   server's default behaviour is B2 (eval plan Table 1). An unconstrained B0 needs the harness to parse
-   tool calls from free text. *Proposed:* run B0 with the grammar switched off and the harness parser,
-   so that B2 remains a separate baseline; if the parser is not ready by the freeze, declare B0 = B2
-   for Tier A and say so.
-2. **The analysis proposals** in Appendix A: accept, change or reject each one.
-3. **H4a and H4b details** (both in Appendix A): the difference-of-drops rule of H4a (`H4a-decision`)
-   and the 4K context length of H4b (`H4b-context`).
-4. **The small `gnuradio_usage` group** (11 frozen test items; `reports/labels.md`). *Proposed:* merge
-   it into `design`. Alternative: apply the 20-item rule to Tier K as a whole, where the 100 block
-   questions bring the group to about 111 items.
-5. **Factual recall against reasoning:** the mapping of task types to the two families in
-   `reports/labels.md`.
-6. **Open scoring findings** (medium F3–F5, R3–R7; low F6–F8; `reports/scoring_reviews/round2_status.md`):
-   resolve or accept each before the rule cascade is frozen with this document.
-7. **The `human` route** for numbers with two readings (§5.1): confirm it, and who labels those answers.
+1. **B0 and the tool grammar.** B0 is the base model served with the default tool grammar
+   (`--jinja`) on Tiers A and F, as is every later stage of every model llama.cpp serves; there is
+   no separate grammar-constrained baseline (§5.2, §5.3, §10). The cloud teacher is B2.
+2. **The analysis proposals** in Appendix A are accepted as written, including the strict bootstrap
+   rule of H1a (95 % of pairs at τ ≥ 0.8, not the median τ).
+3. **H4a and H4b.** H4a as proposed (`H4a-decision`). H4b is decided at each of 4K, 16K, 32K and 64K
+   tokens of context, and the result is stated as a range (`H4b-context`, §3).
+4. **The small `gnuradio_usage` group** (11 frozen test items) is reported with `design`: one group,
+   design + gnuradio_usage, of 50 frozen test items (`reports/labels.md`).
+5. **Recall and reasoning,** on the 185 frozen questions: recall is `factual` (30 items); reasoning is
+   `reasoning`, `calculation`, `diagnosis`, `design` and `gnuradio_usage` (155 items). The 100 GNU
+   Radio behaviour questions are a group of their own.
+6. **Open scoring findings** (`reports/scoring_reviews/round2_status.md`): every finding is resolved
+   in the rule cascade, the judge template or the statistics package, with two exceptions. Rules
+   finding F7 stands as a rule: decibel values are graded on the difference in dB (§5.1). Finding
+   F5, the rule cascade's deferral rate on dev answers, stays open until the dev split has rubrics
+   with graded numbers (below).
+7. **No human route.** Every Tier-K answer is scored automatically, by the rules' fixed conventions
+   and the judge, with the fallback judge's single attempt and a score of 0 after failed replies
+   (§5.1).
 8. **Tier-F decisions** of `reports/tier_f_reviews/fix_plan.md` §7: the level rule, the boundary
    between modify and parameter-tune, the hand-composed L2 tasks, the role-table declaration, the
    canary policy, GPL attribution, documented output-only limits, and the overlap between dev-10 and
@@ -300,6 +345,13 @@ Each item states what has to be decided and the option this draft proposes.
     twice; if it fails a third time it is scored as a failure and listed.
 11. **The code version:** the commit of the `grc-bench` repository made at sign-off, which this
     document cites for the analysis code.
+
+Work that remains before any test run: the judge runner, which sends the answers the rules hand
+over to MiniMax-M3, applies the fallback step and counts the failed replies; dev-split rubrics
+with graded numbers, so that the rule cascade's deferral rate on dev answers (round-2 finding F5)
+can be measured; and, in the Tier-A harness, a context-cap failure for a request that the model
+server refuses because the model's own context (below the 64K cap) is full, which the harness
+records as an infrastructure error (§5.3).
 
 ## 9. Fixed at the freeze (13 November)
 
@@ -328,6 +380,11 @@ Each item states what has to be decided and the option this draft proposes.
 - **Agent traces** were collected on GNU Radio 3.10.9.2, where flowgraph execution was not available.
   The benchmark runs on 3.10.12 with execution.
 - **Web tools** return a fixed "offline" message in Tier A.
+- **The grammar-constrained baseline.** Eval plan Table 1 lists a baseline with grammar-constrained
+  tool calls on Tier A. In llama.cpp b10333 the server's default already constrains tool calls, so
+  B0 is that setting and no separate baseline runs; GRC-Bench does not measure the grammar's
+  contribution, or whether fine-tuning alone makes tool calls well formed. The cloud teacher upper
+  bound, numbered 3 in the approved plans, is B2 here.
 - **L3 tasks** of Tier F are added after G2 (week 5), and Tier F and Tier A scale from their first
   sets only after the team's decision on them.
 - **The language-model paraphrase detector** of the contamination audit waits for API access; the
@@ -427,8 +484,8 @@ Proposals for G2 (deviation = changes a stated definition; extension = decides a
 ### H4b-context (extension): The speed that decides H4b
 
 - Stated: proposal H4: the MoE reaches >= 80 tok/s on reference hardware at Q4_K_M; eval plan §3: the reference hardware is setup H2 (4 GB GPU, MoE experts in CPU memory).
-- Proposal: Generation speed (llama-bench tg) of North-Mini-Code at Q4_K_M on H2, median of 5 warm runs, at 4K tokens of context. The 16K, 32K and 64K speeds and setups H1 and H3 are reported beside it.
-- Code: tier_e.bench.CONTEXTS, tier_e.bench.REPETITIONS
+- Proposal: Generation speed (llama-bench tg) of North-Mini-Code at Q4_K_M on H2, median of 5 warm runs, decided at each of 4K, 16K, 32K and 64K tokens of context; the result states the context range over which H4b holds. A context that cannot be run (for example out of memory) does not hold. Setups H1 and H3 are reported beside it.
+- Code: tier_e.bench.CONTEXTS, tier_e.bench.REPETITIONS, functions.h4b_decision
 - Evidence: the protocol of eval plan §4.5 (median of 5 warm runs, 4K-64K).
 
 ### judge-gate (extension): What the judge's kappa is computed on
@@ -447,7 +504,7 @@ Proposals for G2 (deviation = changes a stated definition; extension = decides a
 
 ### fresh-set-gap (extension): Memorisation check on Tier K's GNU Radio questions
 
-- Proposal: The 100 published GNU Radio questions are the reference set. A fresh set of the same composition comes from a private seed whose SHA-256 is published with this document (tier_k.blockgen). The headline configurations (B0 and the final model of each target, and B3) also answer the fresh set. The gap is the reference-minus-fresh mean item score over paired slots, clustered by block, with the clustered t and cluster-bootstrap 95% intervals; memorisation is flagged when both lie above 0. The headline Tier-K score stays the reference set's.
+- Proposal: The 100 published GNU Radio questions are the reference set. A fresh set of the same composition comes from a private seed whose SHA-256 is published with this document (tier_k.blockgen). The headline configurations (B0 and the final model of each target, and B2) also answer the fresh set. The gap is the reference-minus-fresh mean item score over paired slots, clustered by block, with the clustered t and cluster-bootstrap 95% intervals; memorisation is flagged when both lie above 0. The headline Tier-K score stays the reference set's.
 - Code: functions.fresh_gap
 - Evidence: ./gb stats selfcheck: equal sets give a gap of 0 and no flag; a fresh set 0.5 lower on 6 of 8 slots gives 0.375, flagged.
 <!-- END stats-proposals -->
@@ -460,15 +517,15 @@ Generated by `./gb prereg` from `grcbench.tier_k.answer_prompt` and `grcbench.ti
 <!-- BEGIN judge-prompt (generated; do not edit by hand) -->
 | Item | Value |
 |---|---|
-| Tier-K question prompt version | `tier-k-answer-v1` |
-| Tier-K question prompt SHA-256 | `16891eff0f9f05392c48e461148daef38e5b8b502e8c5c5b52296c57378f0d65` |
+| Tier-K question prompt version | `tier-k-answer-v2` |
+| Tier-K question prompt SHA-256 | `e6c73d16e2f40b4ca4e207c2be7405dd222f94e055ee3e25c84b148e691f4b34` |
 | Tier-K answer limit | 4,096 tokens, reasoning included |
-| Judge prompt version | `tier-k-judge-v2` |
-| Judge prompt SHA-256 | `0c462ae7b577601e4c4fef248d66c0a5bfb7af146bcef1ba758f0d549141a6d5` |
+| Judge prompt version | `tier-k-judge-v3` |
+| Judge prompt SHA-256 | `26e0b2285cd832aeb5b64cf150c9db6e632425a406ea98c50f92b648b82005b1` |
 | Judges | MiniMax-M3 (fallback: Kimi K2.6) |
-| Rule cascade | `tier-k-rules 0.4 (proposal; fixed at G2)` |
-| Entity index | 187,802 names, SHA-256 `7e30ea3dbb8ea15d4620991029eb917f7faf58d67803a8b5da180260842b32a5` |
-| Probe requests in the hash | 6 toy items x 10 answers |
+| Rule cascade | `tier-k-rules 0.5` |
+| Entity index | 187,829 names, SHA-256 `f2610360dce1da1e2cd2fff7b4fa7d461f4766a81e95b2d458150500944028e6` |
+| Probe requests in the hash | 6 toy items x 11 answers |
 
 Tier K is closed-book: a model under test gets one message, the question prompt's instruction and the question (`grcbench.tier_k.answer_prompt`); B1 places the retrieved documentation before it. The fallback judge uses the judge template unchanged, so both judges share one version and one hash. The full template, rubric rendering, verdict schema and aggregation rules are in `docs/preregistration/judge_prompt_snapshot.json`.
 <!-- END judge-prompt -->

@@ -403,15 +403,17 @@ def cluster_bootstrap_ci(values: Sequence[float], clusters: Sequence | None = No
                          B: int = BOOTSTRAP_B, seed: int = SEED, alpha: float = ALPHA) -> dict:
     """Percentile cluster-bootstrap interval for a mean (clusters resampled with replacement).
 
-    Each resample's mean is the item-weighted mean over the items of its drawn clusters.
+    Each resample's mean is the item-weighted mean over the items of its drawn clusters. Fewer than 2
+    clusters give no interval (NaN bounds).
     """
     y = _vector(values)
     w = bootstrap_weights(y.size, clusters, B, seed)
     means = (w @ y) / w.sum(axis=1)
-    lo, hi = _percentile_ci(means, alpha)
     _, g = cluster_codes(clusters, y.size)
+    # with one cluster every resample is the data itself: no interval (round-2 finding C4)
+    lo, hi = _percentile_ci(means, alpha) if g >= 2 else (float("nan"), float("nan"))
     return {"mean": float(y.mean()), "lo": lo, "hi": hi,
-            "se_boot": float(means.std(ddof=1)) if B > 1 else float("nan"),
+            "se_boot": float(means.std(ddof=1)) if B > 1 and g >= 2 else float("nan"),
             "B": B, "seed": seed, "n_items": int(y.size), "n_clusters": g, "alpha": alpha}
 
 
@@ -480,12 +482,47 @@ def compression_cost_difference(a_full: Sequence[float], a_comp: Sequence[float]
     w_a = bootstrap_weights(d_a.size, a_clusters, B, seed)
     w_k = bootstrap_weights(d_k.size, k_clusters, B, seed + 1)
     stats_ = (w_a @ d_a) / w_a.sum(axis=1) - (w_k @ d_k) / w_k.sum(axis=1)
-    lo, hi = _percentile_ci(stats_, alpha)
+    g_a, g_k = cluster_codes(a_clusters, d_a.size)[1], cluster_codes(k_clusters, d_k.size)[1]
+    # a tier with one cluster has no resampling spread: no interval, and H4a does not hold
+    lo, hi = _percentile_ci(stats_, alpha) if min(g_a, g_k) >= 2 else (float("nan"), float("nan"))
     return {"drop_A": float(d_a.mean()), "drop_K": float(d_k.mean()),
             "difference": float(d_a.mean() - d_k.mean()), "lo": lo, "hi": hi, "holds": bool(lo > 0),
             "n_items": {"A": int(d_a.size), "K": int(d_k.size)},
-            "n_clusters": {"A": cluster_codes(a_clusters, d_a.size)[1], "K": cluster_codes(k_clusters, d_k.size)[1]},
+            "n_clusters": {"A": g_a, "K": g_k},
             "B": B, "seed": seed, "alpha": alpha}
+
+
+def h4b_decision(speeds: Mapping[int, Sequence[float] | None], threshold: float | None = None) -> dict:
+    """PROPOSAL H4b-context (G2 pre-registration): H4b decided at each context length.
+
+    speeds: context length -> the generation speeds (tok/s, llama-bench tg) of the warm runs, exactly
+    tier_e.bench.REPETITIONS runs at each of tier_e.bench.CONTEXTS; a context that did not run (out of
+    memory, skipped after a failure; None, [] or absent) does not hold. H4b holds at a context if the
+    median run reaches `threshold` (default tier_e.bench.H4_TARGET_TS, proposal H4's 80 tok/s).
+    "holds_up_to" is the largest context c such that H4b holds at every context <= c (None if it fails
+    at the shortest), so the result reads "holds up to 16K"."""
+    from grcbench.tier_e.bench import CONTEXTS, H4_TARGET_TS, REPETITIONS
+    threshold = H4_TARGET_TS if threshold is None else threshold
+    if set(speeds) - set(CONTEXTS):
+        raise ValueError(f"speeds are taken at the contexts {list(CONTEXTS)}, got {sorted(speeds)}")
+    contexts: dict[int, dict] = {}
+    holds_up_to, unbroken = None, True
+    for c in sorted(CONTEXTS):
+        given = speeds.get(c)
+        if given is None or len(given) == 0:
+            contexts[c] = {"median": None, "runs": 0, "holds": False}
+            unbroken = False
+            continue
+        runs = _vector(speeds[c], f"speeds at {c}")
+        if runs.size != REPETITIONS:
+            raise ValueError(f"{REPETITIONS} warm runs are needed at {c} tokens, got {runs.size}")
+        median = float(np.median(runs))
+        holds = median >= threshold
+        contexts[c] = {"median": median, "runs": int(runs.size), "holds": holds}
+        unbroken = unbroken and holds
+        if unbroken:
+            holds_up_to = c
+    return {"threshold": threshold, "contexts": contexts, "holds_up_to": holds_up_to}
 
 
 # ---------------------------------------------------------------- paired tests -------------------
@@ -723,23 +760,53 @@ def cohens_h(p1: float, p2: float) -> float:
     return 2.0 * math.asin(math.sqrt(p1)) - 2.0 * math.asin(math.sqrt(p2))
 
 
+def _odds(p: float) -> float:
+    return math.inf if p >= 1.0 else p / (1.0 - p)
+
+
 def matched_odds_ratio(a_only: int, b_only: int, alpha: float = ALPHA) -> dict:
     """Matched-pairs (McNemar) odds ratio a_only / b_only with its exact conditional interval:
-    the Clopper-Pearson interval of pi = a_only / (a_only + b_only) mapped by pi / (1 - pi)."""
+    the Clopper-Pearson interval of pi = a_only / (a_only + b_only) mapped by pi / (1 - pi). It
+    assumes independent items; with clustered items use clustered_odds_ratio."""
     if a_only < 0 or b_only < 0:
         raise ValueError("counts must be >= 0")
     m = a_only + b_only
     if m == 0:
         nan = float("nan")
-        return {"odds_ratio": nan, "lo": nan, "hi": nan, "a_only": 0, "b_only": 0, "alpha": alpha}
+        return {"odds_ratio": nan, "lo": nan, "hi": nan, "a_only": 0, "b_only": 0, "alpha": alpha,
+                "interval": "exact_conditional"}
     ci = _st.binomtest(a_only, m, 0.5).proportion_ci(confidence_level=1.0 - alpha, method="exact")
-
-    def odds(p: float) -> float:
-        return math.inf if p >= 1.0 else p / (1.0 - p)
-
     return {"odds_ratio": math.inf if b_only == 0 else a_only / b_only,
-            "lo": odds(float(ci.low)), "hi": odds(float(ci.high)),
-            "a_only": a_only, "b_only": b_only, "alpha": alpha}
+            "lo": _odds(float(ci.low)), "hi": _odds(float(ci.high)),
+            "a_only": a_only, "b_only": b_only, "alpha": alpha, "interval": "exact_conditional"}
+
+
+def clustered_odds_ratio(a_pass: Sequence[bool], b_pass: Sequence[bool], clusters: Sequence | None,
+                         B: int = BOOTSTRAP_B, seed: int = SEED, alpha: float = ALPHA) -> dict:
+    """Matched-pairs odds ratio a_only / b_only with a percentile cluster-bootstrap interval (round-2
+    finding C3): clusters are resampled with replacement, the interval of pi = a_only / (a_only +
+    b_only) over the resamples is mapped by pi / (1 - pi), as matched_odds_ratio maps its exact
+    interval. Resamples without a discordant item are dropped and counted; fewer than 2 clusters, or
+    resamples that all give the same pi (every discordant item one way, or all in one cluster), give
+    no interval (NaN bounds)."""
+    a, b = _bools(a_pass, "a_pass"), _bools(b_pass, "b_pass")
+    if a.size != b.size:
+        raise ValueError("paired outcomes must have the same length")
+    x_i, y_i = (a & ~b).astype(float), (~a & b).astype(float)
+    point = matched_odds_ratio(int(x_i.sum()), int(y_i.sum()), alpha)
+    _, g = cluster_codes(clusters, a.size)
+    w = bootstrap_weights(a.size, clusters, B, seed)
+    x, y = w @ x_i, w @ y_i
+    defined = (x + y) > 0
+    pi = x[defined] / (x + y)[defined]
+    lo = hi = float("nan")
+    # no interval without spread: every resample has the same pi when all discordant items go one way
+    # or sit in one cluster, and a point "interval" would contradict the clustered test
+    if g >= 2 and pi.size and not math.isnan(point["odds_ratio"]) and pi.min() < pi.max():
+        p_lo, p_hi = _percentile_ci(pi, alpha)
+        lo, hi = _odds(p_lo), _odds(p_hi)
+    return {**point, "lo": lo, "hi": hi, "interval": "cluster_bootstrap", "B": B, "seed": seed,
+            "n_clusters": g, "n_undefined_resamples": int(B - pi.size)}
 
 
 def _mde_row(n: int, alpha: float, scale: float = 1.0) -> dict:
@@ -779,7 +846,7 @@ def compare_paired(a: Mapping[str, Sequence[float]], b: Mapping[str, Sequence[fl
       pass_fail  McNemar on the majority-reduced items (ties fail). Estimand: the difference in the
                  share of items passed by majority, with clustered-t and cluster-bootstrap
                  intervals; Cohen's h on those two shares; the matched-pairs odds ratio
-                 a_only / b_only.
+                 a_only / b_only (exact conditional interval; with clusters, cluster bootstrap).
       score      Wilcoxon signed-rank on the per-item mean scores. Estimand: the mean per-item score
                  difference with its intervals; the matched-pairs rank-biserial correlation.
     "p_primary" is the p-value that enters holm_bonferroni. For pass_fail, "secondary" is the
@@ -824,7 +891,8 @@ def compare_paired(a: Mapping[str, Sequence[float]], b: Mapping[str, Sequence[fl
                    "p_value": test["p_value"], "share_a": share_a, "share_b": share_b,
                    "difference": paired_difference(ma, mb, cl, B, seed, alpha),
                    "cohens_h": cohens_h(share_a, share_b),
-                   "odds_ratio": matched_odds_ratio(test["a_only"], test["b_only"], alpha),
+                   "odds_ratio": (clustered_odds_ratio(ma.astype(bool), mb.astype(bool), cl, B, seed, alpha)
+                                  if cl is not None else matched_odds_ratio(test["a_only"], test["b_only"], alpha)),
                    "detail": test}
         sec = score_test(sa, sb, cl)
         secondary = {"test": score_name, "estimand": "mean per-item pass@1, a - b",
