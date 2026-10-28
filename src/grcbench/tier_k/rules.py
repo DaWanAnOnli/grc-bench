@@ -206,10 +206,13 @@ POLICIES that change credit (PROPOSAL, to be fixed in the G2 pre-registration):
       would have earned credit. A plain dB value for a relative decibel reference (dBc, dBi, dBd,
       dBFS) is read in that unit (2 above). Sign: a loss word (LOSS_WORDS) right before the value ("a
       loss of 3 dB", "attenuated by 3 dB", "lags by 90 degrees") or right after it ("3 dB down",
-      "40 dBc below the carrier", "10 kHz below the carrier") negates a positive relative-decibel or
+      "40 dBc below the carrier", "10 kHz below the carrier", or with one LOSS_MODIFIERS word before
+      "loss"/"losses": "3 dB insertion loss") negates a positive relative-decibel or
       linear value when the reference is negative or marked quantity "gain" (loss_word_sign); a
       positive reference without that mark is a loss quantity, so "a loss of 3 dB" stays 3 dB; a
-      negative value with a loss word goes to the judge (sign_unclear). Without a loss word next to
+      negative value with a loss word goes to the judge (sign_unclear), except after a modifier
+      ("-20 dB return loss", value + modifier + loss, keeps its literal reading; "a return loss of
+      -20 dB" goes to the judge). Without a loss word next to
       it, a value of the opposite sign scores 0 (with a sign word elsewhere in its clause, by P11).
   P9  parts: two parts of one dimension decided on the same value, one of them without its label
       (scope or anchor), go to the judge (part_unassigned): the rules cannot tell whose value it is.
@@ -229,7 +232,7 @@ POLICIES that change credit (PROPOSAL, to be fixed in the G2 pre-registration):
   P11 tie-break (decision 7): a result, or a part, that still holds two readings of different credit
       (details literal_credit and alt_credit, READING_REASONS) is decided with the lower one
       (tie_break_lower). reading_counts gives, per model, the answers decided by the tie-break and the
-      answers scored 0 for the wrong form alone, reported next to every score.
+      answers with a number scored 0 for the wrong form, reported next to every score.
 
 `./gb score-k --selftest` runs the hand-made cases in SELFTEST; `--answer/--reference` scores one
 answer; `--batch` scores a JSONL file: each row carries score()'s result and its rule_only_credit
@@ -274,7 +277,7 @@ ANSWER_FORMAT_INSTRUCTION = (
     'for options or identifiers, list exactly the ones you choose: "Final answer: <option>, <option>". '
     "Write nothing after that line.")
 
-RULES_VERSION = "tier-k-rules 0.5"
+RULES_VERSION = "tier-k-rules 0.6"
 _CLIP = 600                     # characters of final-answer text kept in details
 
 # --- units ---------------------------------------------------------------------------------------
@@ -1571,6 +1574,10 @@ _LOSS = "(?:" + "|".join(sorted(LOSS_WORDS, key=len, reverse=True)) + ")"
 _LOSS_BEFORE = re.compile(rf"\b{_LOSS}(?:[ \t]+(?:of|by|is|was|about|approximately|roughly|around))*[ \t]*[:=~≈]?[ \t]*\Z",
                           re.I)
 _LOSS_AFTER = re.compile(rf"^[ \t]*(?:of[ \t]+)?{_LOSS}\b", re.I)
+# one modifier before a loss noun: "3 dB insertion loss" (only "loss" and "losses" take one)
+LOSS_MODIFIERS = ("insertion", "return", "path", "conversion", "cable", "propagation", "mismatch", "coupling",
+                  "transmission")
+_LOSS_AFTER_MODIFIED = re.compile(rf"^[ \t]*(?:{'|'.join(LOSS_MODIFIERS)})[ \t]+loss(?:es)?\b", re.I)
 # a part with one of these reasons zeroes the whole answer (as judge_prompt.DU_REASONS does)
 PART_ZERO_REASONS = ("unit_mismatch", "order_of_magnitude", "voltage_convention")
 
@@ -1756,11 +1763,13 @@ def _loss_applies(q: Quantity, ref: NumericRef) -> bool:
 def _loss_word_grade(s: str, q: Quantity, g: dict[str, Any], ref: NumericRef) -> dict[str, Any]:
     """Decision 7's sign rule (P8): a loss word right before the value ("a loss of 3 dB", "attenuated
     by 3 dB") or right after it ("3 dB down", "10 kHz below the carrier") negates a positive value when
-    the reference is negative or marked quantity "gain"; a negative value with a loss word is unclear."""
-    if not (_LOSS_BEFORE.search(s[:q.span[0]]) or _LOSS_AFTER.match(s[q.span[1]:])) or not _loss_applies(q, ref):
+    the reference is negative or marked quantity "gain"; a negative value with a loss word is unclear,
+    except after a modifier ("-20 dB return loss": the literal reading)."""
+    plain = bool(_LOSS_BEFORE.search(s[:q.span[0]]) or _LOSS_AFTER.match(s[q.span[1]:]))
+    if not (plain or _LOSS_AFTER_MODIFIED.match(s[q.span[1]:])) or not _loss_applies(q, ref):
         return g
     if q.value < 0:
-        return {**g, "sign_unclear": True}
+        return {**g, "sign_unclear": True} if plain else g
     if q.value == 0 or not (ref.value < 0 or ref.quantity == "gain"):
         return g
     neg = {k: v for k, v in _grade(replace(q, value=-q.value), ref).items() if k not in ("alt_credit", "alt_reason")}

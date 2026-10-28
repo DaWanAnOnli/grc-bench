@@ -9,17 +9,17 @@ from grcbench.tier_k import answer_prompt as ap
 from grcbench.tier_k import retriever, rules
 from grcbench.tier_k.judge_prompt import CanaryError
 
-PINNED = "e6c73d16e2f40b4ca4e207c2be7405dd222f94e055ee3e25c84b148e691f4b34"
+PINNED = "1fd9a7e2488adc2970742f41382337963b7ab47a670711c260e31ebf8f2f158a"
 
 
 def test_prompt_is_pinned():
     # changing what a model under test sees needs a new PROMPT_VERSION and a new pinned hash
-    assert ap.PROMPT_VERSION == "tier-k-answer-v2"
+    assert ap.PROMPT_VERSION == "tier-k-answer-v3" and ap.MAX_ANSWER_TOKENS == 16384
     assert ap.prompt_sha256() == PINNED
 
 
-def test_v2_states_the_unit_convention():
-    assert ap.PROMPT_VERSION == "tier-k-answer-v2"
+def test_the_prompt_states_the_unit_convention():
+    assert ap.PROMPT_VERSION == "tier-k-answer-v3"
     assert ("write dB (or dBm, dBc, dBi, ...) after any value in decibels: a number without a unit is "
             "never read as decibels") in ap.INSTRUCTION
 

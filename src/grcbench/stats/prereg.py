@@ -10,22 +10,24 @@ code exactly, each kept between BEGIN/END markers:
                     docs/preregistration/judge_prompt_snapshot.json)
 
     ./gb prereg            rewrite both appendices and the snapshot
-    ./gb prereg --check    exit 1 if an appendix differs from what the code would write
+    ./gb prereg --check    exit 1 if an appendix or the snapshot differs from what the code would write
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
 
-from ..common.io import write_json
+from ..common.io import read_json, write_json
 from ..common.paths import DOCS
 from . import proposals
 
 PREREG = DOCS / "preregistration" / "preregistration.md"
-SNAPSHOT = DOCS / "preregistration" / "judge_prompt_snapshot.json"
+SNAPSHOT_NAME = "docs/preregistration/judge_prompt_snapshot.json"      # as the appendix names it
+SNAPSHOT = DOCS.parent / SNAPSHOT_NAME
 MARK = "<!-- {edge} {name}{note} -->"
 NOTE = " (generated; do not edit by hand)"
 
@@ -61,7 +63,7 @@ def judge_block(snap: dict, answer: dict | None = None) -> str:
         "the question (`grcbench.tier_k.answer_prompt`); B1 places the retrieved documentation before it. "
         "The fallback judge uses the judge template unchanged, so both judges share one version and one "
         "hash. The full template, rubric rendering, verdict schema and aggregation rules are in "
-        f"`{SNAPSHOT.relative_to(DOCS.parent).as_posix()}`."])
+        f"`{SNAPSHOT_NAME}`."])
 
 
 def _replace(text: str, name: str, body: str) -> str:
@@ -87,8 +89,11 @@ def main(argv: list[str]) -> int:
     new = render(text, snap, answer_prompt.snapshot())
     if args.check:
         current = new == text
+        # the snapshot file as JSON, against what write_json would write
+        snap_current = SNAPSHOT.is_file() and read_json(SNAPSHOT) == json.loads(json.dumps(snap))
         print(f"{PREREG.name}: generated appendices {'current' if current else 'OUT OF DATE (run ./gb prereg)'}")
-        return 0 if current else 1
+        print(f"{SNAPSHOT.name}: {'current' if snap_current else 'OUT OF DATE (run ./gb prereg)'}")
+        return 0 if current and snap_current else 1
     PREREG.write_text(new, encoding="utf-8", newline="\n")
     write_json(SNAPSHOT, snap)
     print(f"wrote {PREREG} and {SNAPSHOT}")

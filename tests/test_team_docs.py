@@ -331,6 +331,13 @@ def test_rubric_examples_follow_the_judges_rubric_contract():
     assert with_numeric and all(r["numeric_tolerance"] for r in with_numeric)
 
 
+def test_rubric_guide_states_both_decibel_bands():
+    flat = " ".join(_text(GUIDELINES / "rubric_writing.md").split())
+    assert "half credit up to about 0.27 dB" in flat
+    assert "dBV, dBmV and dBµV" in flat and "about 0.34 dB beyond the tolerance" in flat
+    assert "half credit up to about 0.44 dB" in flat
+
+
 def test_rubric_guide_states_the_role_table_rules():
     doc = _text(GUIDELINES / "rubric_writing.md")
     assert "Claude does not draft rubric prose" in doc
@@ -520,7 +527,9 @@ def test_calibration_guide_follows_the_judges_contract():
 def test_calibration_guide_has_no_early_b2_run():
     flat = " ".join(_text(GUIDELINES / "judge_calibration.md").split())
     assert "So there is no early B2 run." in flat
-    assert "Session teacher; B3 upper bound | DeepSeek" in _eval_plan()
+    assert "Session teacher; B2 upper bound | DeepSeek" in _eval_plan()
+    assert "grammar-constrained tool calls |" not in _eval_plan()        # no separate grammar baseline
+    assert "16,384 tokens for Tier K" in _eval_plan()
     proposal = SPECS_TEXT / "Methodology_Proposal_to_7Dec.txt"
     if proposal.exists():
         assert "is run once, on the frozen benchmark in week 8" in proposal.read_text(encoding="utf-8")

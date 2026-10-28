@@ -124,8 +124,9 @@ def test_section_8_records_decisions_1_to_7():
         item = re.search(rf"(?:^|\s){n}\. (.*?)(?=\s{n + 1}\. \*\*|$)", s8)
         assert item and d in item[1], (n, d)
     assert "stays open" in re.search(r"\s6\. (.*?)\s7\. \*\*", s8)[1]
-    assert "judge runner" in s8 and re.search(r"\s11\. \*\*The code version", s8)
-    assert "context-cap failure" in s8                         # the Tier-A harness work
+    assert re.search(r"\s11\. \*\*The code version", s8)
+    assert "judge calibration" in s8 and "./gb tier-k judge" in s8     # the work that remains
+    assert "context-cap failure" not in s8 and "the judge runner, which" not in s8
     assert "38 configurations" in " ".join(section(TEXT, "## 6.").split())
     assert "North-Mini-Code's BF16 B0 (k = 2)" in " ".join(section(TEXT, "## 6.").split())
 
@@ -149,4 +150,41 @@ def test_tool_grammar_consequences_are_stated():
     assert "mostly check the server" in s52 and "hallucinated-block rate stays informative" in s52
     assert "V2–V5" in s52 and "mostly checks the server" in s53
     assert "or whether fine-tuning alone makes tool calls well formed" in s10
-    assert "numbered 3 in the approved plans" in s10
+    assert "numbered 3 in the methodology proposals and in the evaluation plan as approved at gate G1" in s10
+    assert "Eval plan Table 1" not in s10 and "numbered 3 in the approved plans" not in s10
+
+
+def test_check_covers_the_judge_snapshot(tmp_path, monkeypatch, capsys):
+    stale = tmp_path / "judge_prompt_snapshot.json"
+    stale.write_text("{}\n", encoding="utf-8")
+    monkeypatch.setattr(prereg, "SNAPSHOT", stale)
+    assert prereg.main(["--check"]) == 1
+    assert "judge_prompt_snapshot.json: OUT OF DATE" in capsys.readouterr().out
+    monkeypatch.setattr(prereg, "SNAPSHOT", tmp_path / "missing.json")
+    assert prereg.main(["--check"]) == 1
+
+
+def test_a_failed_request_is_not_a_failed_reply():
+    s51 = " ".join(section(TEXT, "### 5.1").split())
+    assert "never counts as a failed reply" in s51 and "is not scored and is listed" in s51
+
+
+def test_the_tier_k_answer_limit_is_16384_tokens():
+    from grcbench.tier_k import answer_prompt
+    s51 = " ".join(section(TEXT, "### 5.1").split())
+    s10 = " ".join(section(TEXT, "## 10.").split())
+    assert "A reply is limited to 16,384 tokens, reasoning included" in s51
+    assert "Answers longer than 16,384 tokens are cut" in s51 and "4K tokens are cut" not in s51
+    assert "The evaluation plan as approved at gate G1 limits Tier-K answers to 4K tokens (§7.1)" in s10
+    assert "9 finished" in s10
+    assert RUN_LIST["defaults"]["max_answer_tokens"]["K"] == answer_prompt.MAX_ANSWER_TOKENS == 16384
+
+
+def test_the_tier_a_context_cap_is_the_models_own_if_shorter():
+    s53 = " ".join(section(TEXT, "### 5.3").split())
+    assert "64K tokens of context, or the model's own context if shorter" in s53
+
+
+def test_the_wrong_form_count_matches_the_code():
+    s51 = " ".join(section(TEXT, "### 5.1").split())
+    assert "with a number scored 0 for the wrong form," in s51 and "wrong form alone" not in s51

@@ -1,13 +1,19 @@
-"""`./gb tier-k run | score`: answer a split's Tier-K questions with one model, then score the answers.
+"""`./gb tier-k run | score | judge`: answer a split's Tier-K questions with one model, then score the answers.
 
     ./gb tier-k run --split dev --base-url URL --model NAME [--config-id ID] [--reason TEXT] [--n N]
                     [--b1] [--sampling JSON] [--limit M] [--out DIR]
     ./gb tier-k score DIR
+    ./gb tier-k judge DIR --base-url URL --fallback-base-url URL ...   (tier_k/judge_run.py)
 
 run   sends each question once per sample to an OpenAI-compatible /chat/completions endpoint with the
       fixed Tier-K prompt (answer_prompt: B0, or B1 with the retriever's documentation block), at most
       answer_prompt.MAX_ANSWER_TOKENS tokens (the request's model, messages and max_tokens cannot be
-      overridden by --sampling), and writes DIR/answers.jsonl (item_id, sample, text, reasoning,
+      overridden by --sampling). A server that reports its context (llama-server /props) must hold
+      MAX_ANSWER_TOKENS + CONTEXT_MARGIN tokens per slot (+ retriever.B1_TOKEN_CAP for B1), or the run
+      is refused before any request. --parallel N keeps up to N requests in flight; the rows are written
+      in item/sample order. A reply that stops below the limit (the server's context is full) is an
+      error row.
+      It writes DIR/answers.jsonl (item_id, sample, text, reasoning,
       finish_reason, truncated, usage, seconds; error for a request that failed MAX_TRIES times) and
       DIR/manifest.json (split, model, configuration, settings, prompt version and hash, rules version,
       git commit). DIR must not hold a run already. A test-split run needs a configuration of the
@@ -43,10 +49,13 @@ import time
 import urllib.error
 import urllib.request
 from collections import Counter
+from collections.abc import Iterator
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from pathlib import Path
 from typing import Any
 
 from grcbench.common.io import read_json, read_jsonl, write_json, write_jsonl
+from grcbench.common.llama_server import server_info
 from grcbench.common.paths import ITEMS, WORK
 from grcbench.runlog import log as runlog
 from grcbench.runlog.log import RunRefused
@@ -61,6 +70,10 @@ KEY_FILES = ("block_answers.jsonl",)          # calc_answers.jsonl holds proposa
 RESERVED_KEYS = ("model", "messages", "max_tokens", "max_completion_tokens", "n_predict", "stream", "n")
 MAX_TRIES = 3                 # requests per answer before it is recorded as failed
 MAX_FAILED_IN_A_ROW = 3       # failed answers in a row: the server is down, the run stops (ChatError)
+# room in a server's context for the prompt next to the answer limit: the instruction, the question and the
+# chat template; a B1 run also needs retriever.B1_TOKEN_CAP for the retrieved documentation
+CONTEXT_MARGIN = 4096
+TIMEOUT_S = 1800.0            # per request: a 16,384-token answer at 10 tokens/s
 
 
 class ChatError(RuntimeError):
@@ -161,15 +174,29 @@ def route_answer(item: dict[str, Any], text: str, *, truncated: bool = False,
             "redactions": jp.redact_self_names(rules.strip_reasoning(text))[1]}
 
 
+def server_props(base_url: str, timeout: float = 5.0) -> dict[str, int | None]:
+    """What a llama-server reports in /props: its context per slot (default_generation_settings.n_ctx)
+    and its slots (total_slots); None for what a server does not report (an API, a reply that is not
+    JSON). A server for --parallel N is started with -np N and no -kvu, so that each slot has c/N
+    tokens: with llama.cpp's shared cache every slot reports the whole -c."""
+    info = server_info(base_url, timeout=timeout)
+    return {"n_ctx": info["n_ctx"], "total_slots": info["total_slots"]}
+
+
+def server_context(base_url: str, timeout: float = 5.0) -> int | None:
+    """The context per slot a llama-server reports (server_props), or None."""
+    return server_props(base_url, timeout)["n_ctx"]
+
+
 def run(split: str, *, base_url: str, model: str, config_id: str, reason: str, n: int = 1, b1: bool = False,
         sampling: dict[str, Any] | None = None, out_dir: Path, allow_test: bool = False,
-        limit: int | None = None, timeout: float = 600.0, retry_wait: float = 5.0,
+        limit: int | None = None, timeout: float = TIMEOUT_S, retry_wait: float = 5.0, parallel: int = 1,
         log_path: Path = runlog.LOG, run_list: Path = runlog.RUN_LIST) -> Path:
     """Answer the split's questions n times each (module docstring) and return out_dir."""
     if split == "test" and not allow_test:
         raise RunRefused("a test-split Tier-K run needs allow_test (--allow-test) and a declared configuration")
-    if n < 1:
-        raise ValueError("n must be >= 1")
+    if n < 1 or parallel < 1:
+        raise ValueError("n and parallel must be >= 1")
     sampling = dict(sampling or {})
     reserved = sorted(set(sampling) & set(RESERVED_KEYS))
     if reserved:
@@ -177,9 +204,22 @@ def run(split: str, *, base_url: str, model: str, config_id: str, reason: str, n
     out_dir = Path(out_dir)
     if (out_dir / "answers.jsonl").exists():
         raise ValueError(f"{out_dir} already holds a run; use a new directory")
+    props = server_props(base_url)
+    ctx, slots = props["n_ctx"], props["total_slots"]
+    if slots is not None and parallel > slots:
+        raise RunRefused(f"--parallel {parallel} needs as many server slots; the server has {slots} "
+                         f"(start it with -np {parallel})")
+    need = answer_prompt.MAX_ANSWER_TOKENS + CONTEXT_MARGIN
+    if b1:
+        from grcbench.tier_k.retriever import B1_TOKEN_CAP
+        need += B1_TOKEN_CAP
+    if ctx is not None and ctx < need:
+        raise RunRefused(f"the server's context ({ctx} tokens per slot) cannot hold a prompt and a "
+                         f"{answer_prompt.MAX_ANSWER_TOKENS}-token answer; start it with at least {need}")
     items = load_split(split)[:limit]
     settings = {"tier": "K", "n": n, "b1": b1, "sampling": sampling, "max_tokens": answer_prompt.MAX_ANSWER_TOKENS,
-                "answer_prompt": answer_prompt.PROMPT_VERSION, "question_set": "reference"}
+                "answer_prompt": answer_prompt.PROMPT_VERSION, "question_set": "reference", "timeout_s": timeout,
+                "parallel": parallel}
     runlog.start_run(split=split, config_id=config_id, model=model, settings=settings,
                      items=[i["id"] for i in items], reason=reason, tier="K", log_path=log_path, run_list=run_list)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -188,38 +228,80 @@ def run(split: str, *, base_url: str, model: str, config_id: str, reason: str, n
         "answer_prompt_version": answer_prompt.PROMPT_VERSION, "answer_prompt_sha256": answer_prompt.prompt_sha256(),
         "rules_version": rules.RULES_VERSION, "judge_prompt_version": jp.PROMPT_VERSION,
         "git_commit": runlog.git_commit(), "git_dirty": runlog.git_dirty(), "n_items": len(items), "n": n,
+        "server_context": ctx, "server_slots": slots,
         "started": runlog.utc_now()})
     max_tokens = answer_prompt.MAX_ANSWER_TOKENS
-    failed_in_a_row = 0
-    with open(out_dir / "answers.jsonl", "w", encoding="utf-8", newline="\n") as fh:
-        for item in items:
+
+    def jobs() -> Iterator[tuple[str, int, list[dict[str, str]]]]:
+        for item in items:                          # retrieval and prompts on this thread, in item order
             retrieved = None
             if b1:
                 from grcbench.tier_k.retriever import b1_context
                 retrieved = b1_context(item["question"])
             messages = answer_prompt.build_messages(item["question"], retrieved)
             for sample in range(n):
-                row: dict[str, Any] = {"item_id": item["id"], "sample": sample}
-                for attempt in range(MAX_TRIES):
-                    try:
-                        got = chat(base_url, model, messages, max_tokens=max_tokens, sampling=sampling, timeout=timeout)
-                    except ChatError as exc:
-                        row.update(text="", reasoning=None, finish_reason=None, usage=None, seconds=None,
-                                   truncated=False, error=str(exc), attempts=attempt + 1)
-                        if attempt + 1 < MAX_TRIES:
-                            time.sleep(retry_wait)
-                        continue
-                    used = (got.get("usage") or {}).get("completion_tokens")
-                    row = {"item_id": item["id"], "sample": sample, **got,
-                           "truncated": got["finish_reason"] == "length" or (isinstance(used, int) and used >= max_tokens)}
-                    break
-                fh.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
-                fh.flush()
-                failed_in_a_row = failed_in_a_row + 1 if row.get("error") else 0
-                if failed_in_a_row >= MAX_FAILED_IN_A_ROW:
-                    raise ChatError(f"{failed_in_a_row} answers in a row failed (last: {row['error']}); "
-                                    f"the run stops, {out_dir / 'answers.jsonl'} holds what was answered")
+                yield item["id"], sample, messages
+
+    kw = {"base_url": base_url, "model": model, "max_tokens": max_tokens, "sampling": sampling,
+          "timeout": timeout, "retry_wait": retry_wait}
+    failed_in_a_row = 0
+    pending = enumerate(jobs())
+    running: dict[Future, int] = {}                 # request in flight -> its row index
+    finished_rows: dict[int, dict[str, Any]] = {}   # rows answered but not yet written
+    next_row = 0
+    with open(out_dir / "answers.jsonl", "w", encoding="utf-8", newline="\n") as fh, \
+            ThreadPoolExecutor(max_workers=parallel) as pool:
+
+        def submit_next() -> None:
+            job = next(pending, None)
+            if job is not None:
+                running[pool.submit(_answer, *job[1], **kw)] = job[0]
+
+        for _ in range(parallel):                   # at most `parallel` requests in flight
+            submit_next()
+        try:
+            while running:
+                done, _ = wait(running, return_when=FIRST_COMPLETED)
+                for f in done:
+                    finished_rows[running.pop(f)] = f.result()
+                    submit_next()                   # a slot is refilled as soon as its request ends
+                while next_row in finished_rows:    # rows are written in item/sample order
+                    row = finished_rows.pop(next_row)
+                    next_row += 1
+                    fh.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+                    fh.flush()
+                    failed_in_a_row = failed_in_a_row + 1 if row.get("error") else 0
+                    if failed_in_a_row >= MAX_FAILED_IN_A_ROW:
+                        raise ChatError(f"{failed_in_a_row} answers in a row failed (last: {row['error']}); "
+                                        f"the run stops, {out_dir / 'answers.jsonl'} holds what was answered")
+        finally:
+            for f in running:                       # requests not started yet are dropped
+                f.cancel()
     return out_dir
+
+
+def _answer(item_id: str, sample: int, messages: list[dict[str, str]], *, base_url: str, model: str,
+            max_tokens: int, sampling: dict[str, Any], timeout: float, retry_wait: float) -> dict[str, Any]:
+    """One answer row: at most MAX_TRIES requests. A reply that stops ("length") below max_tokens is an
+    error row, not a truncation: the server's context filled first, and the same prompt is not sent again."""
+    row: dict[str, Any] = {"item_id": item_id, "sample": sample}
+    for attempt in range(MAX_TRIES):
+        try:
+            got = chat(base_url, model, messages, max_tokens=max_tokens, sampling=sampling, timeout=timeout)
+        except ChatError as exc:
+            row.update(text="", reasoning=None, finish_reason=None, usage=None, seconds=None,
+                       truncated=False, error=str(exc), attempts=attempt + 1)
+            if attempt + 1 < MAX_TRIES:
+                time.sleep(retry_wait)
+            continue
+        used = (got.get("usage") or {}).get("completion_tokens")
+        if got["finish_reason"] == "length" and isinstance(used, int) and used < max_tokens:
+            return {"item_id": item_id, "sample": sample, **got, "truncated": False, "attempts": attempt + 1,
+                    "error": f"the reply stopped at {used} of {max_tokens} tokens, below the limit (the server's "
+                             f"context is full or the server caps replies)"}
+        return {"item_id": item_id, "sample": sample, **got,
+                "truncated": got["finish_reason"] == "length" or (isinstance(used, int) and used >= max_tokens)}
+    return row
 
 
 def score(out_dir: Path) -> dict[str, Any]:
@@ -277,6 +359,9 @@ def score(out_dir: Path) -> dict[str, Any]:
 
 
 def main(argv: list[str]) -> int:
+    if argv[:1] == ["judge"]:                       # ./gb tier-k judge DIR ... (tier_k/judge_run.py)
+        from grcbench.tier_k import judge_run
+        return judge_run.main(argv[1:])
     ap = argparse.ArgumentParser(prog="gb tier-k", description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="answer a split's questions with one model")
@@ -291,6 +376,8 @@ def main(argv: list[str]) -> int:
     r.add_argument("--limit", type=int, default=None)
     r.add_argument("--allow-test", action="store_true", help="a declared test-split run (sign-off only)")
     r.add_argument("--out", type=Path, default=None)
+    r.add_argument("--parallel", type=int, default=1, help="requests in flight at once (the server's slots)")
+    r.add_argument("--timeout", type=float, default=TIMEOUT_S, help="seconds per request")
     s = sub.add_parser("score", help="route and score a run's answers")
     s.add_argument("dir", type=Path)
     a = ap.parse_args(argv)
@@ -298,7 +385,8 @@ def main(argv: list[str]) -> int:
         out = a.out or WORK / "tier_k" / f"{a.config_id}-{runlog.utc_now().replace(':', '')}"
         try:
             run(a.split, base_url=a.base_url, model=a.model, config_id=a.config_id, reason=a.reason, n=a.n,
-                b1=a.b1, sampling=json.loads(a.sampling), out_dir=out, allow_test=a.allow_test, limit=a.limit)
+                b1=a.b1, sampling=json.loads(a.sampling), out_dir=out, allow_test=a.allow_test, limit=a.limit,
+                parallel=a.parallel, timeout=a.timeout)
         except (RunRefused, ValueError) as exc:
             print(f"refused: {exc}")
             return 2

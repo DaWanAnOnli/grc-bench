@@ -169,28 +169,56 @@ def _live_flow_graph(deps: Any) -> Any:
         return None
 
 
+def error_body_transport(inner: Any) -> Any:
+    """`inner` (an httpx2 async transport) with the body of every response of status >= 400 read before
+    it is returned, so the HTTPStatusError that GRC-Agent's retrying transport raises carries the
+    server's reason (caps.classify_exception reads llama-server's exceed_context_size_error from it).
+    Other responses, streamed replies among them, pass through unread."""
+    import httpx2
+
+    class ReadErrorBodies(httpx2.AsyncBaseTransport):
+        async def handle_async_request(self, request: Any) -> Any:
+            response = await inner.handle_async_request(request)
+            if response.status_code >= 400:
+                await response.aread()
+            return response
+
+        async def aclose(self) -> None:
+            await inner.aclose()
+
+    return ReadErrorBodies()
+
+
+def retrying_client(inner: Any = None) -> Any:
+    """GRC-Agent's retrying httpx2 client (agent_factory._retrying_http_client: its timeouts, retry
+    config and raise_for_status check) around `inner` (default httpx2.AsyncHTTPTransport()), with the
+    bodies of error replies read (error_body_transport)."""
+    import httpx2
+    from grc_agent import agent_factory as af
+    from pydantic_ai.retries import AsyncHTTPX2TenacityTransport
+    inner = httpx2.AsyncHTTPTransport() if inner is None else inner
+    return httpx2.AsyncClient(
+        timeout=httpx2.Timeout(**af._HTTP_TIMEOUT),
+        transport=AsyncHTTPX2TenacityTransport(
+            config=af._retry_config(httpx2.TransportError, httpx2.HTTPStatusError),
+            wrapped=error_body_transport(inner), validate_response=lambda r: r.raise_for_status()))
+
+
 def make_openai_compatible_model(base_url: str, model_name: str, *, uds_path: str | None = None,
                                  transport: Any = None) -> Any:
-    """The model GRC-Agent itself builds for provider openai_compatible (agent_factory._build_model).
-
-    Default: exactly GRC-Agent's construction, including its retrying httpx2 client. `uds_path`
-    reaches a llama-server listening on a UNIX socket; `transport` substitutes the innermost
-    httpx2 transport (tests capture the wire request with httpx2.MockTransport). In both cases the
-    retry wrapper and timeouts are GRC-Agent's.
+    """The model GRC-Agent itself builds for provider openai_compatible (agent_factory._build_model),
+    on GRC-Agent's retrying client with error bodies read (retrying_client). `uds_path` reaches a
+    llama-server listening on a UNIX socket; `transport` substitutes the innermost httpx2 transport
+    (tests capture the wire request with httpx2.MockTransport). The retry wrapper and timeouts are
+    GRC-Agent's in every case.
     """
     from grc_agent import agent_factory as af
     cfg = {"provider": "openai_compatible", "model": model_name, "openai_compatible_base_url": base_url}
     if uds_path is None and transport is None:
-        return af._build_model(cfg, af._retrying_http_client("openai_compatible"))
+        return af._build_model(cfg, retrying_client())
     import httpx2
-    from pydantic_ai.retries import AsyncHTTPX2TenacityTransport
     inner = transport if transport is not None else httpx2.AsyncHTTPTransport(uds=uds_path)
-    client = httpx2.AsyncClient(
-        timeout=httpx2.Timeout(**af._HTTP_TIMEOUT),
-        transport=AsyncHTTPX2TenacityTransport(
-            config=af._retry_config(httpx2.TransportError, httpx2.HTTPStatusError),
-            wrapped=inner, validate_response=lambda r: r.raise_for_status()))
-    return af._build_model(cfg, client)
+    return af._build_model(cfg, retrying_client(inner))
 
 
 def capability_names(agent: Any) -> list[str]:
@@ -285,6 +313,11 @@ def build_benchmark_agent(model: Any, deps: Any, project_dir: Path,
         "shell commands: nested bubblewrap sandbox (project dir writable, no network)",
     ]
     patches: dict[str, Any] = {}
+    grc_client = af._retrying_http_client
+    patches["_retrying_http_client"] = (
+        lambda provider="": grc_client(provider) if provider in af._HTTPX1_ONLY_PROVIDERS else retrying_client())
+    substitutions.append("HTTP client: GRC-Agent's retrying client with the body of an error reply read "
+                         "(a model server's context refusal is the context cap)")
     if model is not None:
         patches["_build_model"] = lambda _cfg, _http_client: model
         substitutions.append(f"model: given {type(model).__name__} instead of GRC-Agent's own build")

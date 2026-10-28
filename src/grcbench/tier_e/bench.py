@@ -1021,6 +1021,23 @@ def _context_rows(rec: dict[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
+def h4b_line(rec: dict[str, Any]) -> str:
+    """The H4b verdict of a record (stats.functions.h4b_decision, pre-registration H4b-context): a
+    context that did not run all REPETITIONS warm runs does not hold."""
+    from grcbench.stats.functions import h4b_decision
+    speeds = {r["context"]: _get(r, "generation", "samples_ts") for r in rec["contexts"]
+              if r["context"] in CONTEXTS and r.get("ok")}
+    d = h4b_decision({c: s for c, s in speeds.items() if s and len(s) == REPETITIONS})
+
+    def k(c: int) -> str:
+        return f"{c // 1024}K"
+    verdict = f"holds up to {k(d['holds_up_to'])}" if d["holds_up_to"] else f"does not hold at {k(min(CONTEXTS))}"
+    medians = "; ".join(f"{k(c)} {v['median']:.1f}" if v["median"] is not None else f"{k(c)} not run"
+                        for c, v in d["contexts"].items())
+    return (f"H4b (at least {H4_TARGET_TS:.0f} generation tokens/s at Q4_K_M on H2): {verdict} "
+            f"(median generation tokens/s: {medians}).")
+
+
 def render_run(rec: dict[str, Any]) -> str:
     s, m, mach, hw = rec["settings"], rec["model"], rec["machine"], rec["hardware"]
     build = rec.get("llama_cpp") or {}
@@ -1064,9 +1081,7 @@ def render_run(rec: dict[str, Any]) -> str:
     if problems:
         L += ["Problems: " + "; ".join(problems) + ".", ""]
     if hw["label"] == "H2" and m.get("quant") == "Q4_K_M" and not plumbing and rec["contexts"]:
-        met = [r["label"] for r in rec["contexts"] if (_get(r, "generation", "median_ts") or 0) >= H4_TARGET_TS]
-        L += [f"H4 (at least {H4_TARGET_TS:.0f} generation tokens/s at Q4_K_M on H2): met at "
-              f"{', '.join(met) if met else 'no measured context'}.", ""]
+        L += [h4b_line(rec), ""]
     L += ["Time to first token = median prefill time of the C-token prompt + one decode step at depth C. "
           "Peak RAM is the larger of the context's two llama-bench processes (mapped weights included)."
           + _rss_crosscheck(rec), ""]

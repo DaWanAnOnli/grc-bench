@@ -115,7 +115,7 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   instruction and the question, with no GRC-Agent system prompt and no tools
   (`grcbench.tier_k.answer_prompt`, version and hash in Appendix B). The instruction asks for a closing
   line "Final answer: …" and for the unit after every number, and it states that a number without a
-  unit is never read as decibels. A reply is limited to 4,096 tokens, reasoning included. B1 places
+  unit is never read as decibels. A reply is limited to 16,384 tokens, reasoning included. B1 places
   the retrieved documentation before the same message.
 - **GNU Radio behaviour questions.** Each of the 100 asks for one number: the k-th output of a block set
   as stated on a stated finite input, or how many items it produces. The key is GNU Radio's own output.
@@ -172,11 +172,13 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   judge–human gap is reported for each model.
 - **Every answer is scored automatically** (§8, decision 7); no answer is scored by a person. If the
   judge returns no valid verdict in 3 attempts, the fallback judge (Kimi K2.6) is asked once; if it
-  also fails, the answer scores 0. An answer that carries the benchmark's canary scores 0 and is
+  also fails, the answer scores 0. A request that fails (an HTTP error or a timeout) is sent again; it
+  never counts as a failed reply, and an answer whose requests keep failing is not scored and is listed.
+  An answer that carries the benchmark's canary scores 0 and is
   counted. Each model's report gives, next to its Tier-K score, the number of answers decided by the
-  tie-break, scored 0 for the wrong form alone, scored 0 after failed judge replies, with a number
-  scored 0 for a unit the rules do not read, and sent to the judge with masked names.
-- **Limits.** Answers longer than 4K tokens are cut and scored as wrong. Reasoning text is removed
+  tie-break, with a number scored 0 for the wrong form, scored 0 after failed judge replies, with a
+  number scored 0 for a unit the rules do not read, and sent to the judge with masked names.
+- **Limits.** Answers longer than 16,384 tokens are cut and scored as wrong. Reasoning text is removed
   before scoring.
 - **Reported groups.** Results are given by the cleaned task-type labels only, with no group of fewer
   than 20 items: `gnuradio_usage` is reported with `design` as one group, design + gnuradio_usage
@@ -213,7 +215,7 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 
 - **Harness, the same for every model.** The pinned GRC-Agent version (commit 6c98128) with its real
   system prompt and 22 tools; tool outputs cut to 4K tokens (beginning and end kept, plus error lines);
-  64K tokens of context; at most 40 model requests; a time limit on each flowgraph run; web tools
+  64K tokens of context, or the model's own context if shorter; at most 40 model requests; a time limit on each flowgraph run; web tools
   offline; the shell in a sandbox without network. A run that hits a cap is a failure. Tool calls as
   in Tier F: the llama.cpp server's default tool grammar for every model it serves, the provider's
   tool calling (strict mode where offered) for API models (§8, decision 1). For the llama.cpp models
@@ -346,12 +348,10 @@ are open; each states what has to be decided and the option this draft proposes.
 11. **The code version:** the commit of the `grc-bench` repository made at sign-off, which this
     document cites for the analysis code.
 
-Work that remains before any test run: the judge runner, which sends the answers the rules hand
-over to MiniMax-M3, applies the fallback step and counts the failed replies; dev-split rubrics
-with graded numbers, so that the rule cascade's deferral rate on dev answers (round-2 finding F5)
-can be measured; and, in the Tier-A harness, a context-cap failure for a request that the model
-server refuses because the model's own context (below the 64K cap) is full, which the harness
-records as an infrastructure error (§5.3).
+Work that remains before any test run: the judge calibration (§5.1), which needs API access to
+MiniMax-M3 and produces the record that the judge runner (`./gb tier-k judge`) requires before it
+grades a test answer; and dev-split rubrics with graded numbers, so that the rule cascade's deferral
+rate on dev answers (round-2 finding F5) can be measured.
 
 ## 9. Fixed at the freeze (13 November)
 
@@ -380,11 +380,17 @@ records as an infrastructure error (§5.3).
 - **Agent traces** were collected on GNU Radio 3.10.9.2, where flowgraph execution was not available.
   The benchmark runs on 3.10.12 with execution.
 - **Web tools** return a fixed "offline" message in Tier A.
-- **The grammar-constrained baseline.** Eval plan Table 1 lists a baseline with grammar-constrained
-  tool calls on Tier A. In llama.cpp b10333 the server's default already constrains tool calls, so
+- **The Tier-K answer limit.** The evaluation plan as approved at gate G1 limits Tier-K answers to 4K
+  tokens (§7.1). Here the limit is
+  16,384 tokens, reasoning included. On the dev split the smoke model reached 4,096 tokens on 48 of
+  200 answers while still reasoning; asked again with the larger limit, 9 finished between 4K and 16K
+  tokens, 23 within 4K and 16 not at all.
+- **The grammar-constrained baseline.** The methodology proposals and the evaluation plan as approved at
+  gate G1 (Table 1) list a baseline with grammar-constrained tool calls on Tier A. In llama.cpp b10333 the server's default already constrains tool calls, so
   B0 is that setting and no separate baseline runs; GRC-Bench does not measure the grammar's
   contribution, or whether fine-tuning alone makes tool calls well formed. The cloud teacher upper
-  bound, numbered 3 in the approved plans, is B2 here.
+  bound, numbered 3 in the methodology proposals and in the evaluation plan as approved at gate G1,
+  is B2 here.
 - **L3 tasks** of Tier F are added after G2 (week 5), and Tier F and Tier A scale from their first
   sets only after the team's decision on them.
 - **The language-model paraphrase detector** of the contamination audit waits for API access; the
@@ -517,13 +523,13 @@ Generated by `./gb prereg` from `grcbench.tier_k.answer_prompt` and `grcbench.ti
 <!-- BEGIN judge-prompt (generated; do not edit by hand) -->
 | Item | Value |
 |---|---|
-| Tier-K question prompt version | `tier-k-answer-v2` |
-| Tier-K question prompt SHA-256 | `e6c73d16e2f40b4ca4e207c2be7405dd222f94e055ee3e25c84b148e691f4b34` |
-| Tier-K answer limit | 4,096 tokens, reasoning included |
-| Judge prompt version | `tier-k-judge-v3` |
-| Judge prompt SHA-256 | `26e0b2285cd832aeb5b64cf150c9db6e632425a406ea98c50f92b648b82005b1` |
+| Tier-K question prompt version | `tier-k-answer-v3` |
+| Tier-K question prompt SHA-256 | `1fd9a7e2488adc2970742f41382337963b7ab47a670711c260e31ebf8f2f158a` |
+| Tier-K answer limit | 16,384 tokens, reasoning included |
+| Judge prompt version | `tier-k-judge-v4` |
+| Judge prompt SHA-256 | `34ce062b5dd91321294df5c33217f9f8c45ab251a7a23c60c71ad0e46d2a8b35` |
 | Judges | MiniMax-M3 (fallback: Kimi K2.6) |
-| Rule cascade | `tier-k-rules 0.5` |
+| Rule cascade | `tier-k-rules 0.6` |
 | Entity index | 187,829 names, SHA-256 `f2610360dce1da1e2cd2fff7b4fa7d461f4766a81e95b2d458150500944028e6` |
 | Probe requests in the hash | 6 toy items x 11 answers |
 

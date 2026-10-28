@@ -2,7 +2,7 @@
 
 The rule cascade (`rules.py`), the judge template (`judge_prompt.py`) and the statistics package (`stats/`) had a second review on 18 Oct, two lenses each (correctness, methodology; the judge had one combined review). The full findings are in `round2_<part>_<lens>.json` in this folder.
 
-**All 6 high-severity findings are resolved (6 of 6).** At sign-off (28 Oct, pre-registration §8, decisions 6 and 7) every medium and low finding is resolved, each with a test, except two: rules F7 stands as a pre-registered rule, and rules F5 is measured once the dev rubrics have graded numbers. Checks: `./gb test` (Tier-K rules, judge and statistics tests), `./gb score-k --selftest` (86 of 86, `tier-k-rules 0.5`) and `./gb stats selfcheck` (39 of 39).
+**All 6 high-severity findings are resolved (6 of 6).** At sign-off (28 Oct, pre-registration §8, decisions 6 and 7) every medium and low finding is resolved, each with a test, except two: rules F7 stands as a pre-registered rule, and rules F5 is measured once the dev rubrics have graded numbers. Checks: `./gb test` (Tier-K rules, judge and statistics tests), `./gb score-k --selftest` (86 of 86, `tier-k-rules 0.6`) and `./gb stats selfcheck` (39 of 39).
 
 ## rules (`src/grcbench/tier_k/rules.py`)
 

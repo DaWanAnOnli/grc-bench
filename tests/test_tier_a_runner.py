@@ -506,6 +506,171 @@ def test_context_cap_is_a_failure(root, guard):
     assert res.caps_hit[0]["limit"] == 65536 and res.usage["max_request_input_tokens"] == 70000
 
 
+# llama-server b10333's reply to a prompt longer than the slot's context (e2e dev run, 28 Oct 2026)
+LLAMA_CONTEXT_BODY = (b'{"error":{"code":400,"message":"request (41041 tokens) exceeds the available context size '
+                      b'(40960 tokens), try increasing it","type":"exceed_context_size_error"}}')
+
+
+def _refusal_chain(body: bytes, read: bool) -> BaseException:
+    """ModelAPIError("Connection error.") <- openai.APIConnectionError <- httpx2.HTTPStatusError(400), the
+    chain GRC-Agent's retrying client produces for a refused streamed request."""
+    import httpx2
+    import openai
+    from pydantic_ai.exceptions import ModelAPIError
+    req = httpx2.Request("POST", "http://127.0.0.1:9/v1/chat/completions")
+    resp = httpx2.Response(400, request=req, stream=httpx2.ByteStream(body))
+    if read:
+        resp.read()
+    try:
+        try:
+            raise httpx2.HTTPStatusError("Client error '400 Bad Request'", request=req, response=resp)
+        except httpx2.HTTPStatusError as status:
+            raise openai.APIConnectionError(request=req) from status
+    except openai.APIConnectionError as conn:
+        api = ModelAPIError(model_name="m", message="Connection error.")
+        api.__cause__ = conn
+        return api
+
+
+def test_a_context_refusal_in_the_exception_chain_is_the_context_cap():
+    caps = capsmod.Caps.for_setting("benchmark")
+    hit = capsmod.classify_exception(_refusal_chain(LLAMA_CONTEXT_BODY, read=True), caps, 7)
+    assert hit is not None and hit.cap == capsmod.CAP_CONTEXT and "exceed_context_size_error" in hit.detail
+    assert hit.limit == 65536 and hit.at_request == 7
+    assert capsmod.classify_exception(_refusal_chain(LLAMA_CONTEXT_BODY, read=False), caps) is None  # unread
+    assert capsmod.classify_exception(_refusal_chain(b'{"error": "invalid tool schema"}', read=True), caps) is None
+    a, b = RuntimeError("a"), RuntimeError("b")
+    a.__context__, b.__context__ = b, a
+    assert capsmod.classify_exception(a, caps) is None                                 # a cycle ends
+
+
+def test_error_bodies_are_read_and_success_streams_are_not():
+    import asyncio
+
+    import httpx2
+
+    from grcbench.tier_a import agent_build
+
+    def handler(request):
+        if request.url.path.endswith("/bad"):
+            return httpx2.Response(400, stream=httpx2.ByteStream(LLAMA_CONTEXT_BODY))
+        return httpx2.Response(200, stream=httpx2.ByteStream(b"data: {}\n\n"))
+
+    transport = agent_build.error_body_transport(httpx2.MockTransport(handler))
+
+    async def go():
+        return (await transport.handle_async_request(httpx2.Request("POST", "http://x/bad")),
+                await transport.handle_async_request(httpx2.Request("POST", "http://x/ok")))
+
+    bad, ok = asyncio.run(go())
+    assert b"exceed_context_size_error" in bad.content
+    with pytest.raises(httpx2.ResponseNotRead):
+        ok.content                                                                     # noqa: B018
+
+
+def test_the_benchmark_client_keeps_grc_agents_retries_and_reads_error_bodies():
+    import asyncio
+
+    import httpx2
+    from grc_agent import agent_factory as af
+
+    from grcbench.tier_a import agent_build
+    calls = []
+
+    def handler(request):
+        calls.append(request)
+        return httpx2.Response(400, stream=httpx2.ByteStream(LLAMA_CONTEXT_BODY))
+
+    client = agent_build.retrying_client(httpx2.MockTransport(handler))
+    assert client.timeout == httpx2.Timeout(**af._HTTP_TIMEOUT)
+
+    async def go():
+        try:
+            await client.post("http://x/v1/chat/completions", json={})
+        except httpx2.HTTPStatusError as exc:
+            return exc
+        return None
+
+    exc = asyncio.run(go())
+    assert exc is not None and len(calls) == 3                       # GRC-Agent's stop_after_attempt(3)
+    hit = capsmod.classify_exception(exc, capsmod.Caps.for_setting("benchmark"))
+    assert hit is not None and hit.cap == capsmod.CAP_CONTEXT
+
+
+@pytest.mark.parametrize("n_ctx, n_ctx_train, status", [
+    (None, None, "cap_failure"),                # an API, or a server that reports no context
+    (40960, 40960, "cap_failure"),              # the model's own context is full
+    (16384, 40960, "infrastructure_error"),     # the server was started below the model's context
+])
+def test_a_refusal_is_the_models_failure_only_if_the_server_is_not_set_below_it(n_ctx, n_ctx_train, status):
+    server = {"n_ctx": n_ctx, "n_ctx_train": n_ctx_train}
+    hit = {"cap": capsmod.CAP_CONTEXT, "detail": "engine refused the prompt: HTTP 400 ...", "limit": 65536}
+    assert runner.refusal_status("cap_failure", [hit], server, capsmod.Caps.for_setting("benchmark")) == status
+    other = {"cap": capsmod.CAP_CONTEXT, "detail": "per_request_input_tokens_limit", "limit": 65536}
+    assert runner.refusal_status("cap_failure", [other], server, capsmod.Caps.for_setting("benchmark")) == "cap_failure"
+
+
+def _refusing_server(n_ctx):
+    """A stand-in llama-server that refuses every prompt as llama.cpp does for an over-long one; it reports
+    a context of n_ctx per slot (None: it reports none) and a model context of 40,960."""
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    class Refuse(BaseHTTPRequestHandler):
+        def log_message(self, *args) -> None:
+            pass
+
+        def do_GET(self) -> None:                                    # noqa: N802 - llama-server /props, /v1/models
+            if n_ctx is None:
+                self.send_error(404)
+                return
+            body = ({"default_generation_settings": {"n_ctx": n_ctx}} if self.path == "/props"
+                    else {"data": [{"id": "stub", "meta": {"n_ctx_train": 40960}}]})
+            data = json.dumps(body).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+
+        def do_POST(self) -> None:                                   # noqa: N802 - http.server API
+            self.rfile.read(int(self.headers.get("Content-Length") or 0))
+            self.send_response(400)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(LLAMA_CONTEXT_BODY)))
+            self.end_headers()
+            self.wfile.write(LLAMA_CONTEXT_BODY)
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Refuse)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server
+
+
+def test_a_server_set_below_the_models_context_is_refused_before_the_episode(root, guard):
+    server = _refusing_server(16384)
+    try:
+        spec = models.openai_compatible(f"http://127.0.0.1:{server.server_address[1]}/v1", "stub")
+        with pytest.raises(runlog.RunRefused, match="context"):
+            runner.run_episode(MODIFY, spec, "benchmark", root, config_id="pytest", sample=6, **guard)
+    finally:
+        server.shutdown()
+
+
+@pytest.mark.slow
+@pytest.mark.gnuradio
+@pytest.mark.parametrize("n_ctx", [None, 40960])
+def test_a_context_refusal_by_the_model_server_is_a_context_cap_failure(root, guard, n_ctx):
+    server = _refusing_server(n_ctx)
+    try:
+        spec = models.openai_compatible(f"http://127.0.0.1:{server.server_address[1]}/v1", "stub")
+        res = runner.run_episode(MODIFY, spec, "benchmark", root, config_id="pytest",
+                                 sample=4 if n_ctx is None else 5, **guard)
+    finally:
+        server.shutdown()
+    assert res.status == "cap_failure" and res.caps_hit[0]["cap"] == "context" and res.valid
+    assert res.harness["model_server"] == {"n_ctx": n_ctx, "n_ctx_train": None if n_ctx is None else 40960}
+
+
 @pytest.mark.slow
 @pytest.mark.gnuradio
 def test_grc_agent_stop_gracefully_counts_as_a_cap_failure(root, guard):

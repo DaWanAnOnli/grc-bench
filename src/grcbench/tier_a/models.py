@@ -5,9 +5,10 @@ episode a Python model object; it hands it a ModelSpec, and the episode builds t
 
   openai_compatible  the real-run path: any OpenAI-compatible server (llama.cpp llama-server).
                      Without `uds_path`, `build_model` returns None and GRC-Agent builds the model
-                     itself from the run's .env (provider openai_compatible -> OpenAIChatModel with
-                     GRC-Agent's retrying HTTP client); with `uds_path` the same construction goes
-                     over a UNIX socket (agent_build.make_openai_compatible_model).
+                     itself from the run's .env (provider openai_compatible -> OpenAIChatModel), on
+                     GRC-Agent's retrying HTTP client with error bodies read (agent_build patches
+                     _retrying_http_client with retrying_client); with `uds_path` the same
+                     construction goes over a UNIX socket (agent_build.make_openai_compatible_model).
                      `hosted(...)` is the same path to a hosted OpenAI-compatible API: the spec
                      carries `relay` = {"upstream": <https base URL>, "api_key_env": <variable
                      NAME>}, and the runner starts relay.Relay for the episode and points the model

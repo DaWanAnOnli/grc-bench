@@ -25,9 +25,9 @@ from grcbench.common.schemas import REVIEW_STATUSES
 from grcbench.tier_k import judge_prompt as jp
 from grcbench.tier_k import rules
 
-# Pinned on 28 Oct 2026 for PROMPT_VERSION tier-k-judge-v3. If this fails, the prompt changed:
+# Pinned on 28 Oct 2026 for PROMPT_VERSION tier-k-judge-v4. If this fails, the prompt changed:
 # bump PROMPT_VERSION and re-pin (and never after the G2 pre-registration without a recorded reason).
-PINNED_SHA256 = "26e0b2285cd832aeb5b64cf150c9db6e632425a406ea98c50f92b648b82005b1"
+PINNED_SHA256 = "34ce062b5dd91321294df5c33217f9f8c45ab251a7a23c60c71ad0e46d2a8b35"
 
 QUESTION = "Toy question for the template tests: name two primary colours of light."
 ANSWER = "Red and green are two of them."
@@ -930,7 +930,7 @@ def test_inputs_carrying_the_canary_are_refused(where):
 # ---------------------------------------------------------------- pre-registration ---------------
 
 def test_prompt_version_and_pinned_hash():
-    assert jp.PROMPT_VERSION == "tier-k-judge-v3"
+    assert jp.PROMPT_VERSION == "tier-k-judge-v4"
     assert re.fullmatch(r"[0-9a-f]{64}", jp.prompt_sha256())
     assert jp.prompt_sha256() == jp.prompt_sha256() == PINNED_SHA256
 
@@ -951,7 +951,7 @@ def test_probes_cover_every_rubric_shape_and_reasoning_format():
 
 
 @pytest.mark.parametrize("name, value", [
-    ("PROMPT_VERSION", "tier-k-judge-v4"),
+    ("PROMPT_VERSION", "tier-k-judge-v5"),
     ("SYSTEM", jp.SYSTEM + " "),
     ("USER_TEMPLATE", jp.USER_TEMPLATE.replace("Grade the answer", "Grade this answer")),
     ("NO_TOLERANCE", "none"),
@@ -1146,8 +1146,8 @@ def test_explain_score_reports_the_rule_reasons_and_redactions():
     assert r["score"] == 0.0 and "wrong_form" in r["rule_reasons"] and r["redactions"] == 0
 
 
-def test_v3_asks_for_no_unit_when_none_is_written():
-    assert jp.PROMPT_VERSION == "tier-k-judge-v3"
+def test_the_judge_asks_for_no_unit_when_none_is_written():
+    assert jp.PROMPT_VERSION == "tier-k-judge-v4"
     assert '"unit": ""' in jp.SYSTEM and "the unit the answer clearly means" not in jp.SYSTEM
 
 
@@ -1158,6 +1158,26 @@ def test_a_multiplier_without_a_unit_is_graded_as_the_rules_read_it():
     assert jp.grade_value({"value": 2.5, "unit": "Million", "unit_written": True}, num)["credit"] == 1.0
     assert "2.5M samples/s is value 2500000 with unit" in " ".join(jp.SYSTEM.split())
     assert "48K means 48000" not in jp.SYSTEM and '"unit": "M"' in jp.SYSTEM
+
+
+def test_real_technical_names_survive_masking():
+    for keep in ("Claude Berrou co-invented turbo codes.", "Claude-Shannon capacity", "Use a GPT partition table.",
+                 "a GPT Partition scheme", "an OpenAI-Compatible Server", "an OpenAI compatible API",
+                 "an OpenAI-compatible API", "Claude E. Shannon"):
+        assert jp.redact_self_names(keep) == (keep, 0), keep
+    for mask in ("As Claude, I think so.", "GPT-4o says so.", "OpenAI's model says so.", "Claude 3.5 says so.",
+                 "Shannon (Claude) says so."):                     # the last one: a known case, masked
+        assert jp.redact_self_names(mask)[1] == 1, mask
+
+
+def test_v4_request_limit_and_failure_policy():
+    assert jp.JUDGE_REQUEST["max_tokens"] == 16384
+    policy = " ".join(jp.FAILURE_POLICY.split())
+    assert "seed + attempt index" in policy and "the base seed" in policy
+    assert "A reply cut at max_tokens is a malformed verdict" in policy
+    assert "never counts as a malformed verdict" in policy and "request_failed" in policy
+    zero_if = jp.snapshot()["aggregation"]["zero_if"]
+    assert any("canary" in z for z in zero_if)
 
 
 def test_versioned_self_names_are_redacted():

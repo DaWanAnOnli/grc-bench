@@ -33,8 +33,8 @@ from typing import Any
 from grcbench.common.io import sha256_text
 from grcbench.tier_k.judge_prompt import CanaryError, contains_canary
 
-PROMPT_VERSION = "tier-k-answer-v2"
-MAX_ANSWER_TOKENS = 4096                 # eval plan §7.1: Tier-K answers are limited to 4K tokens
+PROMPT_VERSION = "tier-k-answer-v3"
+MAX_ANSWER_TOKENS = 16384                # pre-registration §5.1 and §10 (the eval plan approved at G1: 4K)
 INSTRUCTION = (
     "Answer the following question about radio, signal processing or GNU Radio. You may reason step by "
     "step first. End your reply with one line of the form\n"

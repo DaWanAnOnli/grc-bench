@@ -1101,6 +1101,19 @@ def test_a_ratio_word_before_a_word_or_a_full_stop():
     assert r["credit"] == 1.0
 
 
+def test_a_loss_noun_may_take_one_modifier():
+    r = score("Final answer: 3 dB insertion loss", {"value": -3, "unit": "dB"})
+    assert (r["method"], r["credit"], r["details"]["reason"]) == ("numeric", 1.0, "loss_word_sign")
+    assert score("Final answer: 3 dB return loss", {"value": 3, "unit": "dB"})["credit"] == 1.0    # a loss quantity
+    r = score("Final answer: -20 dB return loss", {"value": -20, "unit": "dB"})
+    assert (r["method"], r["credit"]) == ("numeric", 1.0)                         # its literal reading, decided
+    assert score("Final answer: 3 dB of margin loss", {"value": -3, "unit": "dB"})["details"]["reason"] == "tie_break_lower"
+    assert score("Final answer: 3 dB path delay", {"value": -3, "unit": "dB"})["details"]["reason"] != "loss_word_sign"
+    assert score("Final answer: -3 dB insertion loss", {"value": 3, "unit": "dB"})["details"]["reason"] == "tie_break_lower"
+    assert score("The return loss of -20 dB.", {"value": -20, "unit": "dB"})["details"]["reason"] == "sign_unclear"
+    assert rules.RULES_VERSION == "tier-k-rules 0.6"
+
+
 def test_a_loss_word_leaves_a_ratio_against_a_db_reference_alone():
     assert score("Final answer: the power is reduced by 50 %", {"value": -3, "unit": "dB"})["credit"] == 1.0
     r = score("Final answer: a loss of 3 dB", {"value": 3, "unit": "dB", "quantity": "gain"})

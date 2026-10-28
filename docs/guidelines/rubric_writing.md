@@ -211,6 +211,9 @@ exact values are the constants in `rules.py` (`CREDIT_TIERS`, `HALF_BAND_EXTRA`,
   - For a decibel unit, the cap is the same 4% in dB: about 0.17 dB beyond the tolerance. With the
     default 0.1 dB: full credit up to 0.1 dB, half credit up to about 0.27 dB. With 0.5 dB: full up
     to 0.5 dB, half up to about 0.67 dB.
+  - For voltage levels (dBV, dBmV and dBµV), whose decibels are 20·log10 of a voltage, the 4% applies
+    to the voltage: about 0.34 dB beyond the tolerance. With the default 0.1 dB, half credit up to
+    about 0.44 dB.
 - More than that gets 0.
 - A wrong dimension (dB vs dBm, Hz vs s, bit/s vs Hz) scores 0.
 - An answer 9.5 or more times too large or too small scores 0 (an order-of-magnitude error). So does

@@ -187,22 +187,26 @@ from grcbench.common.schemas import REVIEW_STATUSES
 from grcbench.tier_k import catalog as _catalog
 from grcbench.tier_k import rules as _rules     # module import: safe if rules ever imports this module
 
-PROMPT_VERSION = "tier-k-judge-v3"
+PROMPT_VERSION = "tier-k-judge-v4"
 JUDGE_MODELS = {"primary": "MiniMax-M3", "fallback": "Kimi K2.6"}   # eval plan §8.1, Table 5
 # the request settings every judge call uses (pre-registered; the run log records them per request)
-JUDGE_REQUEST = {"temperature": 0.0, "top_p": 1.0, "max_tokens": 4096, "seed": 20261014,
+JUDGE_REQUEST = {"temperature": 0.0, "top_p": 1.0, "max_tokens": 16384, "seed": 20261014,
                  "response_format": {"type": "json_object"},
                  "reasoning": "off where the API allows it; the setting used is recorded with every request",
                  "retry_seed": "seed + attempt index"}
-FAILURE_POLICY = ("After MAX_ATTEMPTS malformed verdicts from the primary judge, the fallback judge (Kimi K2.6) "
-                  "is asked once with the same messages; if that verdict is also malformed, the answer scores 0 "
-                  "(judge_failed).")
+FAILURE_POLICY = ("After MAX_ATTEMPTS malformed verdicts from the primary judge (seed + attempt index), the "
+                  "fallback judge (Kimi K2.6) is asked once with the same messages and the base seed; if that "
+                  "verdict is also malformed, the answer scores 0 (judge_failed). A reply cut at max_tokens is a "
+                  "malformed verdict. A request that fails (an HTTP error or a timeout) is sent again and never "
+                  "counts as a malformed verdict; an answer whose requests keep failing is recorded as "
+                  "request_failed and is not scored.")
 # A rubric built by code from an execution-derived key (a GNU Radio behaviour question): numbers only,
 # no prose, so no rubric writer is involved (key_rubric)
 KEY_REVIEW = "generated-from-key"
 KEY_TOLERANCE_TEXT = "The scoring code applies the tolerance recorded with the key."
 # Names a model may give itself or its maker; the judge never sees them (bias control, [52]). Whole
-# words, case-sensitive; "Llama" before ".cpp" and "Claude" before "Shannon" / "E. Shannon" are kept.
+# words, case-sensitive; kept: "Llama.cpp", "Claude Shannon" / "Claude E. Shannon" / "Claude-Shannon",
+# "Claude Berrou", "GPT partition" and "OpenAI compatible" / "OpenAI-compatible" (any case after the name).
 # The panel's members are added at the freeze.
 REDACT_TERMS = ("North-Mini-Code", "Nanbeige", "Qwen", "DeepSeek", "Kimi", "Moonshot AI", "MiniMax", "Mistral",
                 "Llama", "Gemma", "ChatGPT", "GPT", "Claude", "Anthropic", "OpenAI", "Alibaba Cloud",
@@ -734,10 +738,12 @@ def contains_canary(text: str) -> bool:
     return CANARY_GUID in low or CANARY_GUID.replace("-", "") in re.sub(r"[^0-9a-f]", "", low)
 
 
-# Llama.cpp and Claude (E., Elwood) Shannon are kept; a version or a capitalised variant after a name
+# Llama.cpp, Claude (E., Elwood) Shannon, Claude-Shannon, Claude Berrou (turbo codes), a GPT partition
+# (table) and OpenAI-compatible APIs are kept; a version or a capitalised variant after a name
 # is part of it ("GPT-4o", "DeepSeek-V3", "Qwen2.5", "Llama-3.1-8B", "DeepSeek-Coder", "Qwen-VL"), a
 # word after it is not ("GPTQ", "GPT-style", "Mistral-like")
-_KEEP_AFTER = {"Llama": r"\.cpp", "Claude": r"(?:\s+[A-Z]\w*\.?)?\s*Shannon"}
+_KEEP_AFTER = {"Llama": r"\.cpp", "Claude": r"(?:(?:\s+[A-Z]\w*\.?)?\s*|-)Shannon|\s+Berrou",
+               "GPT": r"\s+(?i:partition)", "OpenAI": r"[\s-](?i:compatible)"}
 _VERSION = r"(?:[-.]?[A-Za-z]?\d[\w.-]*|-[A-Z][\w.-]*)?"
 _REDACT = re.compile("|".join(rf"(?<![\w-]){re.escape(t)}" + (rf"(?!{_KEEP_AFTER[t]})" if t in _KEEP_AFTER else "")
                               + rf"{_VERSION}(?!-?[A-Za-z_])" for t in sorted(REDACT_TERMS, key=len, reverse=True)))
@@ -1271,7 +1277,9 @@ def snapshot() -> dict[str, Any]:
                                     f"a graded number's rules reason is one of {list(DU_REASONS)}",
                                     "a flagged entity of a checked kind is absent from the entity "
                                     "index (only when the rubric has points or errors)",
-                                    f"the answer is truncated or empty ({list(EARLY_ZERO)})"],
+                                    f"the answer is truncated or empty ({list(EARLY_ZERO)})",
+                                    "the answer or its reasoning carries the benchmark's canary "
+                                    "(canary_in_answer, tier_k.run.route_answer)"],
                         "hallucination_disqualifies": HALLUCINATION_DISQUALIFIES,
                         "judge_failed": "0: " + FAILURE_POLICY,
                         "otherwise": "weighted mean of the point credits (rubric weights, default 1) "

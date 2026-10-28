@@ -435,6 +435,23 @@ def test_report_is_deterministic_and_separates_results(tmp_path, monkeypatch):
     assert bench.render_run(rec) == bench.render_run(json.loads(json.dumps(rec)))
 
 
+def test_the_h4_line_states_the_h4b_verdict(tmp_path, monkeypatch):
+    rec = _run(tmp_path, monkeypatch, budget=0.0, purpose="result", name="fake_h2")
+    rec["hardware"]["label"] = "H2"
+    base = rec["contexts"][0]
+    # holds at 4K and 32K but not at 16K; 64K not run: the verdict is the unbroken range from 4K
+    speeds = {4096: [90.0] * 5, 16384: [70.0] * 5, 32768: [85.0] * 5}
+    rec["contexts"] = [json.loads(json.dumps({**base, "context": c, "label": f"{c // 1024}K",
+                                              "generation": {**base["generation"], "samples_ts": s,
+                                                             "median_ts": s[0]}}))
+                       for c, s in speeds.items()]
+    md = bench.render_run(rec)
+    assert "H4b (at least 80 generation tokens/s at Q4_K_M on H2): holds up to 4K" in md
+    assert "64K not run" in md and "met at" not in md
+    rec["contexts"][0]["generation"]["samples_ts"] = [70.0] * 5
+    assert "H4b (at least 80 generation tokens/s at Q4_K_M on H2): does not hold at 4K" in bench.render_run(rec)
+
+
 def test_rss_crosscheck_sentence():
     rec = {"contexts": [{"invocations": [_inv("prompt", 1000, 1.0, vmhwm_sampled_bytes=1002),
                                          _inv("depth", 2000, 1.0, vmhwm_sampled_bytes=None)]}]}

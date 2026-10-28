@@ -16,17 +16,18 @@
    ]
   ],
   "hallucination_disqualifies": true,
-  "judge_failed": "0: After MAX_ATTEMPTS malformed verdicts from the primary judge, the fallback judge (Kimi K2.6) is asked once with the same messages; if that verdict is also malformed, the answer scores 0 (judge_failed).",
+  "judge_failed": "0: After MAX_ATTEMPTS malformed verdicts from the primary judge (seed + attempt index), the fallback judge (Kimi K2.6) is asked once with the same messages and the base seed; if that verdict is also malformed, the answer scores 0 (judge_failed). A reply cut at max_tokens is a malformed verdict. A request that fails (an HTTP error or a timeout) is sent again and never counts as a malformed verdict; an answer whose requests keep failing is recorded as request_failed and is not scored.",
   "magnitude_ratio": 9.5,
   "number_weight": 1.0,
   "numbers": "rules.score's credit where the rules read the number, else rules.score on each value the judge reports; a hedge earns its lowest credit, no value earns 0, a written unit the rules do not read earns 0 (unknown_unit)",
   "otherwise": "weighted mean of the point credits (rubric weights, default 1) and the number credits (NUMBER_WEIGHT each)",
-  "rules_version": "tier-k-rules 0.5",
+  "rules_version": "tier-k-rules 0.6",
   "zero_if": [
    "a disqualifying error is present (the rubric's own or DU)",
    "a graded number's rules reason is one of ['unit_mismatch', 'order_of_magnitude', 'voltage_convention']",
    "a flagged entity of a checked kind is absent from the entity index (only when the rubric has points or errors)",
-   "the answer is truncated or empty (['truncated', 'empty_answer'])"
+   "the answer is truncated or empty (['truncated', 'empty_answer'])",
+   "the answer or its reasoning carries the benchmark's canary (canary_in_answer, tier_k.run.route_answer)"
   ]
  },
  "entity_check": {
@@ -75,10 +76,10 @@
    }
   ]
  },
- "failure_policy": "After MAX_ATTEMPTS malformed verdicts from the primary judge, the fallback judge (Kimi K2.6) is asked once with the same messages; if that verdict is also malformed, the answer scores 0 (judge_failed).",
+ "failure_policy": "After MAX_ATTEMPTS malformed verdicts from the primary judge (seed + attempt index), the fallback judge (Kimi K2.6) is asked once with the same messages and the base seed; if that verdict is also malformed, the answer scores 0 (judge_failed). A reply cut at max_tokens is a malformed verdict. A request that fails (an HTTP error or a timeout) is sent again and never counts as a malformed verdict; an answer whose requests keep failing is recorded as request_failed and is not scored.",
  "fallback_note": "the fallback judge uses this same template unchanged (same version and hash)",
  "judge_request": {
-  "max_tokens": 4096,
+  "max_tokens": 16384,
   "reasoning": "off where the API allows it; the setting used is recorded with every request",
   "response_format": {
    "type": "json_object"
@@ -102,13 +103,15 @@
   "answers": 11,
   "items": 6
  },
- "prompt_sha256": "26e0b2285cd832aeb5b64cf150c9db6e632425a406ea98c50f92b648b82005b1",
- "prompt_version": "tier-k-judge-v3",
+ "prompt_sha256": "34ce062b5dd91321294df5c33217f9f8c45ab251a7a23c60c71ad0e46d2a8b35",
+ "prompt_version": "tier-k-judge-v4",
  "reasoning_removal": "grcbench.tier_k.rules.strip_reasoning (the rule cascade's rule; pinned through the probe requests in prompt_sha256)",
  "redaction": {
   "kept": {
-   "Claude": "(?:\\s+[A-Z]\\w*\\.?)?\\s*Shannon",
-   "Llama": "\\.cpp"
+   "Claude": "(?:(?:\\s+[A-Z]\\w*\\.?)?\\s*|-)Shannon|\\s+Berrou",
+   "GPT": "\\s+(?i:partition)",
+   "Llama": "\\.cpp",
+   "OpenAI": "[\\s-](?i:compatible)"
   },
   "replacement": "[model]",
   "terms": [

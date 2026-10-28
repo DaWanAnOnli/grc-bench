@@ -94,10 +94,11 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 from ..common.io import read_json, sha256_file, write_json, write_text
+from ..common.llama_server import server_info
 from ..common.paths import ITEMS
 from ..runlog import log as runlog
 from . import isolation
-from .caps import Caps, CapHit, EpisodeMeter, HarnessCapability, classify_exception
+from .caps import CAP_CONTEXT, ENGINE_REFUSAL, Caps, CapHit, EpisodeMeter, HarnessCapability, classify_exception
 from .models import ModelSpec, as_spec, build_model
 from .task import Task, load_task, task_from_dict
 from .user import reply_text
@@ -239,6 +240,35 @@ def _carry_over(parent: Path, run_dir: Path) -> dict[str, Any]:
     return {"parent": str(parent), "page": page}
 
 
+def model_server_context(base_url: str | None, uds_path: str | None = None,
+                         timeout: float = 5.0) -> dict[str, int | None]:
+    """A llama-server's context per slot and the model's own (common.llama_server, over TCP or the
+    socket); None where the server reports neither (an API)."""
+    info = server_info(base_url, uds_path=uds_path, timeout=timeout)
+    return {"n_ctx": info["n_ctx"], "n_ctx_train": info["n_ctx_train"]}
+
+
+def server_below_model(server: dict[str, Any] | None, caps: Caps) -> bool:
+    """The model server's context per slot is below min(the context cap, the model's own context); with
+    the model's context unknown, below the cap. False when the server reports no context (an API)."""
+    n_ctx = (server or {}).get("n_ctx")
+    bounds = [x for x in (caps.context_tokens, (server or {}).get("n_ctx_train")) if isinstance(x, int)]
+    return isinstance(n_ctx, int) and bool(bounds) and n_ctx < min(bounds)
+
+
+def refusal_status(status: str, caps_hit: list[dict[str, Any]], server: dict[str, Any] | None, caps: Caps) -> str:
+    """A model server's context refusal (caps.classify_exception) is the model's failure only if the
+    server is not set below the model's own context: n_ctx >= min(the context cap, n_ctx_train), or the
+    server reports no context (an API, whose context is the model's). Otherwise the episode is an
+    infrastructure error (pre-registration §5.3)."""
+    if status != "cap_failure" or not caps_hit:
+        return status
+    hit = caps_hit[0]
+    if hit.get("cap") != CAP_CONTEXT or not str(hit.get("detail", "")).startswith(ENGINE_REFUSAL):
+        return status
+    return "infrastructure_error" if server_below_model(server, caps) else status
+
+
 def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callable[..., Any],
                 setting: str = "benchmark", run_root: Path | None = None, *, config_id: str = "adhoc",
                 sample: int = 0, caps: Caps | None = None, mode: str = "evaluation", reason: str = "",
@@ -272,6 +302,13 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
         raise ValueError("invalid_gate must be 'pinned' or 'intended'")
     if resume_from is not None and (task.start_files or task.active_graph is not None):
         raise ValueError("a resumed episode starts from its parent's state: the task must have no start files")
+    # a local model server reports its context per slot and the model's own (server_below_model)
+    server = (model_server_context(spec.base_url, spec.uds_path)
+              if spec.kind == "openai_compatible" and spec.relay is None else None)
+    if server_below_model(server, caps):
+        raise runlog.RunRefused(f"the model server's context per slot ({server['n_ctx']} tokens) is below the "
+                                f"model's own ({server['n_ctx_train'] or 'not reported'}) and the "
+                                f"{caps.context_tokens}-token cap: start it with a larger -c (or fewer slots)")
     if run_log_entry is None:
         run_log_entry = runlog.start_run(
             split=task.split, config_id=config_id, model=spec.describe(),
@@ -313,6 +350,13 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
         result = _failed_result(episode, run_dir, task, spec, caps, proc.timed_out, process)
     result.process = process
     result.run_log_entry = run_log_entry
+    if server is not None:
+        result.harness = {**(result.harness or {}), "model_server": server}
+        status = refusal_status(result.status, result.caps_hit, server, caps)
+        if status != result.status:
+            result.status = status
+            result.end_reason = (f"model server set below the model's context (n_ctx {server['n_ctx']}, "
+                                 f"model {server['n_ctx_train'] or 'not reported'}, cap {caps.context_tokens})")
     if grade_episode:
         from .grader import grade
         try:

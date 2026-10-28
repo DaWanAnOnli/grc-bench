@@ -159,6 +159,31 @@ def stop_gracefully_reason(output: Any) -> str | None:
     return f"repeated_failure:{m.group('tool')}" if m else None
 
 
+ENGINE_REFUSAL = "engine refused the prompt"      # the detail of a context cap the model server reported
+
+
+def _context_refusal(exc: BaseException) -> str | None:
+    """An HTTP 400/413 reply in the exception's chain (__cause__, and __context__ unless suppressed)
+    whose read body says the prompt does not fit the engine's context: GRC-Agent's retrying client
+    raises httpx2.HTTPStatusError, which the OpenAI SDK and pydantic-ai wrap as "Connection error."
+    A body nobody read (httpx2.ResponseNotRead) is not a refusal."""
+    seen: set[int] = set()
+    e: BaseException | None = exc
+    while e is not None and id(e) not in seen:
+        seen.add(id(e))
+        response = getattr(e, "response", None)
+        status = getattr(response, "status_code", None)
+        if status in (400, 413):
+            try:
+                body = response.text
+            except Exception:              # noqa: BLE001 - httpx2.ResponseNotRead: a streamed body never read
+                body = ""
+            if body and _ENGINE_CONTEXT.search(body):
+                return f"HTTP {status} {body[:300]}"
+        e = e.__cause__ if e.__cause__ is not None else (None if e.__suppress_context__ else e.__context__)
+    return None
+
+
 def classify_exception(exc: BaseException, caps: Caps, requests: int | None = None) -> CapHit | None:
     """The cap an exception from an agent run stands for, or None if it is not a cap."""
     from pydantic_ai.exceptions import ModelHTTPError, UsageLimitExceeded
@@ -174,8 +199,11 @@ def classify_exception(exc: BaseException, caps: Caps, requests: int | None = No
     if isinstance(exc, ModelHTTPError) and exc.status_code in (400, 413) and caps.context_tokens is not None:
         body = exc.body if isinstance(exc.body, str) else json.dumps(exc.body, default=str)
         if _ENGINE_CONTEXT.search(f"{exc.message} {body}"):
-            return CapHit(CAP_CONTEXT, f"engine refused the prompt: HTTP {exc.status_code} {body[:300]}",
+            return CapHit(CAP_CONTEXT, f"{ENGINE_REFUSAL}: HTTP {exc.status_code} {body[:300]}",
                           caps.context_tokens, requests)
+    refused = _context_refusal(exc) if caps.context_tokens is not None else None
+    if refused:
+        return CapHit(CAP_CONTEXT, f"{ENGINE_REFUSAL}: {refused}", caps.context_tokens, requests)
     if isinstance(exc, TimeoutError):
         return CapHit(CAP_EPISODE_TIME, "episode wall-clock limit reached", caps.episode_seconds, requests)
     return None
