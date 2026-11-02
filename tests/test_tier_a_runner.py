@@ -597,6 +597,23 @@ def test_the_benchmark_client_keeps_grc_agents_retries_and_reads_error_bodies():
     assert hit is not None and hit.cap == capsmod.CAP_CONTEXT
 
 
+def test_an_episode_reads_from_the_model_server_for_as_long_as_its_time_cap(monkeypatch):
+    """GRC-Agent's client ends a streamed request after 120 s without a byte (agent_factory._HTTP_TIMEOUT); on a
+    slow GPU a long reasoning stretch is that quiet. An episode's client reads for as long as the episode's
+    wall-clock cap instead, so only the pre-registered cap ends it; the other timeouts and the retries stay
+    GRC-Agent's."""
+    import httpx2
+    from grc_agent import agent_factory as af
+
+    from grcbench.tier_a import agent_build
+    client = agent_build.retrying_client(httpx2.MockTransport(lambda r: httpx2.Response(200)), read_seconds=900.0)
+    assert client.timeout == httpx2.Timeout(**{**af._HTTP_TIMEOUT, "read": 900.0})
+    seen, real = [], agent_build.retrying_client
+    monkeypatch.setattr(agent_build, "retrying_client", lambda inner=None, **kw: seen.append(kw) or real(inner, **kw))
+    models.build_model(models.wire_scripted([{"text": "ok"}]), read_seconds=1800.0)
+    assert seen == [{"read_seconds": 1800.0}]
+
+
 @pytest.mark.parametrize("n_ctx, n_ctx_train, status", [
     (None, None, "cap_failure"),                # an API, or a server that reports no context
     (40960, 40960, "cap_failure"),              # the model's own context is full
@@ -717,10 +734,37 @@ def test_flowgraph_run_time_cap(root, guard):
 
 # ================================================================ Tier-F setting (slow)
 
-def tier_f(task_dir, turns, root, guard, *, sample=0, wire=False, grade_sample=True):
-    spec = models.wire_scripted(turns) if wire else models.scripted(turns)
+def tier_f(task_dir, turns, root, guard, *, sample=0, wire=False, stream=False, grade_sample=True):
+    spec = models.wire_scripted(turns, stream=stream) if wire else models.scripted(turns)
     return tier_f_mode.run_tier_f_sample(task_dir, spec, root, config_id="pytest-f", sample=sample,
                                          grade_sample=grade_sample, **guard)
+
+
+def test_only_the_tier_f_setting_limits_a_reply():
+    """Tier-F answers are limited to 8K tokens, reasoning included (pre-registration §5.2); Tier A has no
+    answer limit. The limit goes to the model as the max_tokens setting."""
+    f_caps, a_caps = tier_f_mode.tier_f_caps(), capsmod.Caps.for_setting("benchmark")
+    assert f_caps.reply_tokens == tier_f_mode.TIER_F_REPLY_TOKENS == 8192
+    assert f_caps.model_settings() == {"max_tokens": 8192}
+    assert a_caps.reply_tokens is None and a_caps.model_settings() is None
+    assert capsmod.CAP_REPLY_TOKENS in capsmod.CAP_NAMES
+
+
+@pytest.mark.slow
+@pytest.mark.gnuradio
+def test_a_tier_f_reply_cut_at_the_answer_limit_fails_the_sample(root, guard):
+    """Every Tier-F request carries the limit (pydantic-ai sends it as max_completion_tokens, which
+    llama-server b10333 honours); a reply the server ends at the limit (finish_reason "length") ends the
+    sample as a cap failure, before pydantic-ai's own token-limit errors, graded as every cap failure is."""
+    turns = [{"reasoning_content": "Let me think about the mixer. " * 40, "finish_reason": "length",
+              "usage": {"prompt_tokens": 6000, "completion_tokens": 8192}}]
+    res = tier_f(F_MODIFY, turns, root, guard, wire=True, stream=True)
+    assert res.status == "cap_failure" and res.caps_hit[0]["cap"] == capsmod.CAP_REPLY_TOKENS, (res.status, res.error)
+    assert res.model_requests[0]["finish_reason"] == "length"
+    grade = res.tier_f["grade"]
+    assert grade["passed"] is False and grade["failure"] == f"cap:{capsmod.CAP_REPLY_TOKENS}"
+    body = json.loads(json.loads((Path(res.run_dir) / models.WIRE_FILE).read_text().splitlines()[0])["body"])
+    assert body["max_completion_tokens"] == 8192 and body["stream"] is True
 
 
 @pytest.mark.slow
@@ -828,10 +872,11 @@ def test_tier_f_build_task_starts_from_samp_rate_only_graph(root, guard):
 @pytest.mark.slow
 @pytest.mark.gnuradio
 def test_tier_f_prefill_is_byte_identical_to_a_real_inspect_graph_call(root, guard, tmp_path):
-    """The request the model gets after the prefilled inspect_graph equals, byte for byte on the
-    wire (the JSON body an OpenAI-compatible server receives), the request a Tier-A episode sends
+    """The request the model gets after the prefilled inspect_graph equals, on the wire (the JSON body
+    an OpenAI-compatible server receives, field by field in order), the request a Tier-A episode sends
     after the model itself called inspect_graph with the same id. Only each run's own directory
-    path (in the active-flowgraph note and the inspect_graph result) differs."""
+    path (in the active-flowgraph note and the inspect_graph result) differs, and Tier F adds its
+    answer limit (max_completion_tokens)."""
     lookup = {"id": "call0lookup000000000000000000000", "name": "query_knowledge",
               "arguments": json.dumps(LOOKUP)}
     fres = tier_f(F_MODIFY, [{"tool_calls": [lookup]}, {"text": "ok"}], root, guard, sample=5, wire=True,
@@ -854,16 +899,21 @@ def test_tier_f_prefill_is_byte_identical_to_a_real_inspect_graph_call(root, gua
                               "benchmark", root, config_id="pytest-conformance", **guard)
     arun = Path(ares.run_dir)
     assert ares.status == "completed" and fres.status == "completed"
+    for res, cap in ((fres, tier_f_mode.TIER_F_EPISODE_SECONDS), (ares, capsmod.Caps.for_setting("benchmark").episode_seconds)):
+        assert f"HTTP read timeout: {cap:g} s" in " ".join(res.agent_info["substitutions"])
     fw = [json.loads(line) for line in (frun / models.WIRE_FILE).read_text().splitlines()]
     aw = [json.loads(line) for line in (arun / models.WIRE_FILE).read_text().splitlines()]
     assert len(fw) == 2 and len(aw) == 3
 
-    def norm(body: str, run: Path) -> str:
-        return body.replace(str(run), "<RUN>")
-    # request 1 of Tier F == request 2 of Tier A; and the next request (after the lookup) too
+    def norm(body: str, run: Path) -> list:
+        return list(json.loads(body.replace(str(run), "<RUN>")).items())
+    # request 1 of Tier F == request 2 of Tier A, and the next request (after the lookup) too, field by field
+    # in order; Tier F adds only its answer limit (pre-registration §5.2)
     for f_i, a_i in ((0, 1), (1, 2)):
         assert fw[f_i]["path"] == aw[a_i]["path"]
-        assert norm(fw[f_i]["body"], frun) == norm(aw[a_i]["body"], arun)
+        f_items, a_items = norm(fw[f_i]["body"], frun), norm(aw[a_i]["body"], arun)
+        assert ("max_completion_tokens", tier_f_mode.TIER_F_REPLY_TOKENS) in f_items
+        assert [kv for kv in f_items if kv[0] != "max_completion_tokens"] == a_items
     body = json.loads(fw[0]["body"])
     assert len([t for t in body["tools"] if t["function"]["name"] != "final_result"]) == 22
     # GRC-Agent's system prompt, then its active-flowgraph note, then the prefilled turn

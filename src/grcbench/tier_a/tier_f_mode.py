@@ -3,7 +3,8 @@
 GRC-Agent never lets the model write a .grc file (its file tools refuse .grc writes; the model edits
 only through change_graph), so a Tier-F sample is a short episode in the SAME harness as Tier A,
 with IDENTICAL inputs: GRC-Agent's real executor (agent_build), its real system prompt, the 22 tool
-schemas, the per-turn active-flowgraph note and the model's own chat template.
+schemas, the per-turn active-flowgraph note and the model's own chat template. The one addition on the
+wire is the answer limit (max_completion_tokens 8192, TIER_F_REPLY_TOKENS).
 
 The episode
   start graph  the task's start.grc (modify / repair / parameter-tune), converted from the compact
@@ -28,7 +29,8 @@ The episode
   end          the episode ends as soon as the in-budget change_graph call has been processed
                (applied, rejected by GRC-Agent, or refused at argument validation), or when the
                model answers without editing, or at the cap of 3 model requests (TIER_F_REQUESTS;
-               the prefilled call is not a model request). No applied change_graph = failure.
+               the prefilled call is not a model request), or when a reply reaches the 8K answer
+               limit (pre-registration §5.2; caps "reply tokens"). No applied change_graph = failure.
 
 Grading (host side, `grade`)
   V1       the in-budget change_graph call is well formed: its arguments, as the model emitted them
@@ -83,6 +85,7 @@ from .task import Task
 BLOCKED_TEXT = "not available in this task; submit your edit with change_graph"
 TIER_F_REQUESTS = 3
 TIER_F_EPISODE_SECONDS = 900.0
+TIER_F_REPLY_TOKENS = 8192                       # the answer limit, reasoning included (pre-registration §5.2)
 START_GRAPH_NAME = "flowgraph.grc"
 DEFAULT_SAMP_RATE = "32000"                      # GRC's File > New default
 LOOKUP, EDIT, INSPECT = "query_knowledge", "change_graph", "inspect_graph"
@@ -178,8 +181,10 @@ def prefill_messages(instruction: str, call_id: str) -> list[Any]:
 
 
 def tier_f_caps(setting: str = "benchmark", **overrides: Any) -> Caps:
-    """The caps of the Tier-F setting: the setting's caps with 3 model requests."""
-    base: dict[str, Any] = {"requests": TIER_F_REQUESTS, "episode_seconds": TIER_F_EPISODE_SECONDS}
+    """The caps of the Tier-F setting: the setting's caps with 3 model requests, a 15-minute sample and
+    the 8K answer limit per reply."""
+    base: dict[str, Any] = {"requests": TIER_F_REQUESTS, "episode_seconds": TIER_F_EPISODE_SECONDS,
+                            "reply_tokens": TIER_F_REPLY_TOKENS}
     base.update(overrides)
     return Caps.for_setting(setting, **base)
 

@@ -98,7 +98,7 @@ def test_agent_shell_commands_see_only_the_project_folder(runs):
     needed = [project / "flowgraph.grc", GRC_AGENT / "src"]
     cmd = [sys.executable, "-c", NESTED_SHELL, str(project), _probe([*hidden, *needed])]
     # the CPU limit of an episode process (isolation.run_episode_process), above the shell's own
-    res = sandbox.run(cmd, run, timeout=60, cpu_seconds=3600, env=_env())
+    res = sandbox.run(cmd, run, timeout=60, cpu_seconds=3600, env=_env(), starts_sandboxes=True)
     seen = _readable(res.stdout)
     assert {str(p) for p in needed} <= seen, res.stderr
     assert not seen & {str(p) for p in hidden}
@@ -117,3 +117,31 @@ def test_flowgraph_runs_see_only_their_own_paths(runs):
     seen = _readable(res.stdout)
     assert {str(p) for p in needed} <= seen, res.stderr
     assert not seen & {str(p) for p in hidden}
+
+
+def test_every_sandbox_follows_the_namespace_settings(runs, monkeypatch):
+    """GRC_BENCH_BWRAP_USERNS=1 and GRC_BENCH_BWRAP_PROC=host (a Colab runtime) reach all three bubblewrap
+    commands: sandbox.run, the agent's shell commands and the flowgraph runs."""
+    run, _ = runs
+    project = (run / "project").resolve()
+    me = SimpleNamespace(_sandbox_root=(run / "fg").resolve())
+    me._sandbox_root.mkdir()
+    seen, real = [], sandbox.subprocess.Popen
+    monkeypatch.setattr(sandbox.subprocess, "Popen", lambda args, **kw: seen.append(args) or real(args, **kw))
+
+    def argvs():
+        seen.clear()
+        sandbox.run(["true"], run, timeout=60, env=_env())
+        isolation._SHELL_PROJECTS.add(project)
+        try:
+            shell = isolation.shell_sandbox_argv("true", project)
+        finally:
+            isolation._SHELL_PROJECTS.discard(project)
+        return [seen[0], shell, HeadlessFlowgraphProxy._bwrap_argv(me, project, [project], [])]
+
+    for argv in argvs():
+        assert "--proc" in argv and "--unshare-user" not in argv
+    monkeypatch.setenv("GRC_BENCH_BWRAP_USERNS", "1")
+    monkeypatch.setenv("GRC_BENCH_BWRAP_PROC", "host")
+    for argv in argvs():                                # model-written code keeps a PID namespace of its own
+        assert "--proc" not in argv and "--unshare-user" in argv and "--unshare-pid" in argv

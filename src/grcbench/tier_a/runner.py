@@ -456,7 +456,8 @@ async def _agent_turn(agent: Any, deps: Any, prompt: str | None, state: _State, 
         try:
             async with agent.iter(prompt if deferred is None else None, message_history=state.history or None,
                                   deferred_tool_results=deferred, deps=deps, usage=meter.usage,
-                                  usage_limits=meter.caps.usage_limits(), capabilities=[capability],
+                                  usage_limits=meter.caps.usage_limits(), model_settings=meter.caps.model_settings(),
+                                  capabilities=[capability],
                                   conversation_id=conversation_id) as run:
                 active = run
                 node = run.next_node
@@ -604,7 +605,7 @@ async def _episode(spec: dict[str, Any]) -> dict[str, Any]:
     proxy = None
     timing: dict[str, Any] = {}
     try:
-        model = build_model(model_spec)
+        model = build_model(model_spec, read_seconds=caps.episode_seconds)
         active = task.active_graph
         kwargs = {"project_dir": lay.project, "max_run_seconds": caps.flowgraph_run_seconds,
                   "invalid_gate": spec.get("invalid_gate", "pinned")}
@@ -624,7 +625,8 @@ async def _episode(spec: dict[str, Any]) -> dict[str, Any]:
             proxy = (HeadlessFlowgraphProxy.open(lay.project / active, **kwargs) if active is not None
                      else HeadlessFlowgraphProxy.new_untitled(**kwargs))
         meter.flowgraph_cap_probe = lambda: next((r for r in proxy.runs if r.get("hard_cap_hit")), None)
-        agent, info = agent_build.build_benchmark_agent(model, proxy, lay.project, setting)
+        agent, info = agent_build.build_benchmark_agent(model, proxy, lay.project, setting,
+                                                        read_seconds=caps.episode_seconds)
         # key order kept (name, description, parameters; schemas as GRC-Agent builds them)
         write_text(lay.run_dir / TOOLS_FILE, json.dumps(await agent_build.freeze_tools(agent, proxy),
                                                         indent=1, ensure_ascii=False))

@@ -189,36 +189,39 @@ def error_body_transport(inner: Any) -> Any:
     return ReadErrorBodies()
 
 
-def retrying_client(inner: Any = None) -> Any:
+def retrying_client(inner: Any = None, *, read_seconds: float | None = None) -> Any:
     """GRC-Agent's retrying httpx2 client (agent_factory._retrying_http_client: its timeouts, retry
     config and raise_for_status check) around `inner` (default httpx2.AsyncHTTPTransport()), with the
-    bodies of error replies read (error_body_transport)."""
+    bodies of error replies read (error_body_transport). `read_seconds` replaces GRC-Agent's 120 s read
+    timeout: an episode passes its wall-clock cap, so a streamed request whose server is quiet for a
+    while (long reasoning on a slow GPU) is ended by the pre-registered cap only."""
     import httpx2
     from grc_agent import agent_factory as af
     from pydantic_ai.retries import AsyncHTTPX2TenacityTransport
     inner = httpx2.AsyncHTTPTransport() if inner is None else inner
+    timeout = {**af._HTTP_TIMEOUT, **({"read": read_seconds} if read_seconds else {})}
     return httpx2.AsyncClient(
-        timeout=httpx2.Timeout(**af._HTTP_TIMEOUT),
+        timeout=httpx2.Timeout(**timeout),
         transport=AsyncHTTPX2TenacityTransport(
             config=af._retry_config(httpx2.TransportError, httpx2.HTTPStatusError),
             wrapped=error_body_transport(inner), validate_response=lambda r: r.raise_for_status()))
 
 
 def make_openai_compatible_model(base_url: str, model_name: str, *, uds_path: str | None = None,
-                                 transport: Any = None) -> Any:
+                                 transport: Any = None, read_seconds: float | None = None) -> Any:
     """The model GRC-Agent itself builds for provider openai_compatible (agent_factory._build_model),
     on GRC-Agent's retrying client with error bodies read (retrying_client). `uds_path` reaches a
     llama-server listening on a UNIX socket; `transport` substitutes the innermost httpx2 transport
     (tests capture the wire request with httpx2.MockTransport). The retry wrapper and timeouts are
-    GRC-Agent's in every case.
+    GRC-Agent's in every case, apart from the read timeout when `read_seconds` is given.
     """
     from grc_agent import agent_factory as af
     cfg = {"provider": "openai_compatible", "model": model_name, "openai_compatible_base_url": base_url}
     if uds_path is None and transport is None:
-        return af._build_model(cfg, retrying_client())
+        return af._build_model(cfg, retrying_client(read_seconds=read_seconds))
     import httpx2
     inner = transport if transport is not None else httpx2.AsyncHTTPTransport(uds=uds_path)
-    return af._build_model(cfg, retrying_client(inner))
+    return af._build_model(cfg, retrying_client(inner, read_seconds=read_seconds))
 
 
 def capability_names(agent: Any) -> list[str]:
@@ -265,7 +268,8 @@ async def freeze_tools(agent: Any, deps: Any = None) -> list[dict[str, Any]]:
 
 
 def build_benchmark_agent(model: Any, deps: Any, project_dir: Path,
-                          setting: Setting = "benchmark") -> tuple[Any, dict[str, Any]]:
+                          setting: Setting = "benchmark", *,
+                          read_seconds: float | None = None) -> tuple[Any, dict[str, Any]]:
     """Build GRC-Agent's executor for one episode; returns (agent, info).
 
     model        a pydantic-ai Model, or None to let GRC-Agent build it from the run's .env
@@ -274,6 +278,8 @@ def build_benchmark_agent(model: Any, deps: Any, project_dir: Path,
     project_dir  the episode project folder (inside the run directory): root of the file tools,
                  working directory of the (sandboxed) shell tools
     setting      "benchmark" (compaction off) or "grc_agent_defaults" (GRC-Agent's compaction)
+    read_seconds the HTTP read timeout of GRC-Agent's client (retrying_client); the runner passes the
+                 episode's wall-clock cap
 
     `info` records the pinned commit, the setting, the model, the capability list, the store and
     settings paths, and every substitution made, for the run record.
@@ -315,9 +321,13 @@ def build_benchmark_agent(model: Any, deps: Any, project_dir: Path,
     patches: dict[str, Any] = {}
     grc_client = af._retrying_http_client
     patches["_retrying_http_client"] = (
-        lambda provider="": grc_client(provider) if provider in af._HTTPX1_ONLY_PROVIDERS else retrying_client())
+        lambda provider="": grc_client(provider) if provider in af._HTTPX1_ONLY_PROVIDERS
+        else retrying_client(read_seconds=read_seconds))
     substitutions.append("HTTP client: GRC-Agent's retrying client with the body of an error reply read "
                          "(a model server's context refusal is the context cap)")
+    if read_seconds:
+        substitutions.append(f"HTTP read timeout: {read_seconds:g} s, the episode's wall-clock cap, instead of "
+                             f"GRC-Agent's {af._HTTP_TIMEOUT['read']:g} s")
     if model is not None:
         patches["_build_model"] = lambda _cfg, _http_client: model
         substitutions.append(f"model: given {type(model).__name__} instead of GRC-Agent's own build")

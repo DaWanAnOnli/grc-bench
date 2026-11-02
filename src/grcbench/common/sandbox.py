@@ -11,8 +11,20 @@ generated code, so every rung from V2 up and every agent tool that executes code
   * no network (--unshare-net), its own PID namespace, killed with the parent;
   * CPU-time and address-space limits plus a wall-clock timeout.
 
-GRC_BENCH_BWRAP_USERNS=1 adds --unshare-user: a root shell in a container without CAP_SYS_ADMIN (a
-Colab runtime) can create the other namespaces only inside a user namespace of its own.
+GRC_BENCH_BWRAP_USERNS=1 adds --unshare-user: a root shell in a container without CAP_SYS_ADMIN or
+CAP_NET_ADMIN (a Colab runtime) can create the other namespaces, and bring up the loopback, only inside a
+user namespace of its own.
+
+GRC_BENCH_BWRAP_PROC=host binds the machine's /proc instead of a fresh one, which a Colab runtime refuses
+to mount (writable, as a fresh one is: the kernel checks each write, and bubblewrap inside writes its id
+maps there). It is accepted only together with GRC_BENCH_BWRAP_USERNS=1: the sandbox then
+sees the numbers and command lines of the processes outside, but from its own user namespace it cannot
+inspect them (/proc/<pid>/root, environ, fd: refused). All three bubblewrap commands (run, the Tier-A
+shell sandbox and flowgraph runs) take these settings from proc_args() and userns_args(), and a sandbox
+passes them on to the sandboxes started inside it. In that mode bubblewrap must find its own processes
+under the machine's /proc, so the one sandbox that starts sandboxes itself (the Tier-A episode process,
+run(starts_sandboxes=True), which runs GRC-Agent's harness) stays in the machine's PID namespace; the
+sandboxes it starts for model-written code (shell commands, flowgraph runs) have their own.
 """
 
 from __future__ import annotations
@@ -58,6 +70,9 @@ def sandbox_env(run_dir: Path, extra: dict[str, str] | None = None) -> dict[str,
         if key in os.environ:
             # the sandbox runs in run_dir, so relative entries must be made absolute
             env[key] = os.pathsep.join(str(Path(p).resolve()) for p in os.environ[key].split(os.pathsep) if p)
+    for key in ("GRC_BENCH_BWRAP_USERNS", "GRC_BENCH_BWRAP_PROC"):
+        if key in os.environ:            # a sandbox started inside (Tier A) runs with the same settings
+            env[key] = os.environ[key]
     if "TIKTOKEN_CACHE_DIR" not in env:
         # the cl100k file cached by `./gb fetch` (tokens.py counts tool outputs with it); without it
         # tiktoken would try to download the file, which the sandbox's missing network refuses. Set
@@ -152,23 +167,44 @@ def _limits(cpu_seconds: int, mem_bytes: int):
     return apply
 
 
+def userns_args() -> list[str]:
+    """--unshare-user when GRC_BENCH_BWRAP_USERNS=1 (see the module text)."""
+    return ["--unshare-user"] if os.environ.get("GRC_BENCH_BWRAP_USERNS") == "1" else []
+
+
+def proc_args() -> list[str]:
+    """A fresh /proc for the sandbox's PID namespace, or a bind of the machine's when
+    GRC_BENCH_BWRAP_PROC=host, which needs GRC_BENCH_BWRAP_USERNS=1 (see the module text)."""
+    mode = os.environ.get("GRC_BENCH_BWRAP_PROC", "new")
+    if mode == "new":
+        return ["--proc", "/proc"]
+    if mode != "host":
+        raise ValueError(f"GRC_BENCH_BWRAP_PROC={mode!r}: use 'new' (the default) or 'host'")
+    if not userns_args():
+        raise ValueError("GRC_BENCH_BWRAP_PROC=host needs GRC_BENCH_BWRAP_USERNS=1: without a user namespace "
+                         "of its own the sandbox could inspect the processes outside through /proc")
+    return ["--bind", "/proc", "/proc"]
+
+
 def run(cmd: list[str], run_dir: Path, *, timeout: float = 60.0, cpu_seconds: int = 120,
         mem_bytes: int = 4 << 30, env: dict[str, str] | None = None, network: bool = False,
-        stdin: str | None = None, extra_ro_binds: list[Path] | None = None) -> Result:
-    """Run `cmd` inside the sandbox with `run_dir` as the only writable path and working dir."""
+        stdin: str | None = None, extra_ro_binds: list[Path] | None = None,
+        starts_sandboxes: bool = False) -> Result:
+    """Run `cmd` inside the sandbox with `run_dir` as the only writable path and working dir.
+    starts_sandboxes: `cmd` starts sandboxes itself (see the module text on the PID namespace)."""
     run_dir = Path(run_dir).resolve()
     for sub in ("home/.cache", "home/.config", "home/.local/share", "home/.local/state",
                 "home/.grc_gnuradio"):
         (run_dir / sub).mkdir(parents=True, exist_ok=True)
     full_env = sandbox_env(run_dir, env)
-    args = [BWRAP, "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc", "--tmpfs", "/tmp",
+    proc = proc_args()
+    pidns = ["--unshare-pid"] if proc[0] == "--proc" or not starts_sandboxes else []
+    args = [BWRAP, "--ro-bind", "/", "/", "--dev", "/dev", *proc, "--tmpfs", "/tmp",
             *hidden_view_args(full_env),
             "--bind", str(run_dir), str(run_dir), "--chdir", str(run_dir),
-            "--unshare-pid", "--die-with-parent", "--new-session"]
+            *pidns, "--die-with-parent", "--new-session", *userns_args()]
     if not network:
         args.append("--unshare-net")
-    if os.environ.get("GRC_BENCH_BWRAP_USERNS") == "1":
-        args.append("--unshare-user")
     for path in extra_ro_binds or []:
         args += ["--ro-bind", str(path), str(path)]
     args += [*readonly_args(hidden_roots()), "--"]

@@ -3,12 +3,20 @@ test split."""
 
 from __future__ import annotations
 
+import importlib.util
 import json
+import os
+import shutil
+import subprocess
+import sys
 import zipfile
+from pathlib import Path
 
 import pytest
 
 from grcbench.common import colab_package
+
+U2604 = colab_package.COLAB_HANDOFF / "u2604.py"
 
 
 @pytest.fixture(scope="module")
@@ -43,3 +51,34 @@ def test_a_file_quoting_a_test_question_is_refused():
     test_text = colab_package.test_texts()[0]
     with pytest.raises(colab_package.PackageRefused, match="test item"):
         colab_package.check_content({"notes.md": f"see: {test_text}".encode()}, [test_text])
+
+
+def _u2604():
+    spec = importlib.util.spec_from_file_location("u2604", U2604)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_u2604_binds_the_machines_proc_and_enters_with_pivot_root():
+    """Colab refuses a fresh /proc, and Linux refuses a user namespace (GRC-Bench's sandbox on Colab) to a chrooted
+    process: the container binds the machine's /proc and enters its root with pivot_root."""
+    script = _u2604().inside_script("/opt/u", [("/content", "/content")])
+    assert "mount --rbind /proc /opt/u/proc" in script and "mount --rbind /content /opt/u/content" in script
+    assert "chroot" not in script and "--mount-proc" not in script
+
+
+@pytest.mark.skipif(not shutil.which("bwrap") or not shutil.which("unshare"), reason="bubblewrap or unshare missing")
+def test_u2604_runs_a_sandbox_with_a_user_namespace_of_its_own_inside(tmp_path):
+    root = tmp_path / "rootfs"
+    for d in ("etc", "tmp", "usr"):
+        (root / d).mkdir(parents=True)
+    for link in ("bin", "sbin", "lib", "lib64"):
+        if Path("/" + link).is_symlink():
+            (root / link).symlink_to(os.readlink("/" + link))
+    shutil.copy("/etc/os-release", root / "etc" / "os-release")
+    cmd = ("test -e /proc/self/status && echo proc; "
+           "bwrap --ro-bind / / --dev /dev --tmpfs /tmp --unshare-user --unshare-net --unshare-pid -- true && echo nested")
+    res = subprocess.run([sys.executable, str(U2604), str(root), "--bind", "/usr", "--", cmd],
+                         capture_output=True, text=True, timeout=60)
+    assert res.returncode == 0 and res.stdout.split() == ["proc", "nested"], res.stdout + res.stderr

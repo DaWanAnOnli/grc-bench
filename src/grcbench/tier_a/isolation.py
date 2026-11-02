@@ -293,7 +293,8 @@ def run_episode_process(run_dir: Path, module: str, args: list[str], env: dict[s
     run_dir = check_run_dir(run_dir)
     cmd = [sys.executable, "-m", module, *args]
     return sandbox.run(cmd, run_dir, timeout=timeout, cpu_seconds=cpu_seconds, mem_bytes=mem_bytes,
-                       env=env, network=(network == "host"), extra_ro_binds=extra_ro_binds)
+                       env=env, network=(network == "host"), extra_ro_binds=extra_ro_binds,
+                       starts_sandboxes=True)
 
 
 # --------------------------------------------------------------------------------------------
@@ -322,7 +323,7 @@ def shell_sandbox_argv(command: str, cwd: Path) -> list[str]:
         raise PermissionError("GRC-Bench shell sandbox: commands may only run in the episode "
                               "project directory")
     args = [PRLIMIT, f"--cpu={SHELL_CPU_SECONDS}", f"--as={SHELL_MEM_BYTES}", "--",
-            sandbox.BWRAP, "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc",
+            sandbox.BWRAP, "--ro-bind", "/", "/", "--dev", "/dev", *sandbox.proc_args(),
             "--tmpfs", "/tmp", *sandbox.hidden_view_args(dict(os.environ))]
     agent_hidden = sandbox.agent_hidden_roots(hide_src=True)
     args += sandbox.hide_args(agent_hidden)
@@ -332,7 +333,7 @@ def shell_sandbox_argv(command: str, cwd: Path) -> list[str]:
         args += ["--tmpfs", str(Path(home).resolve())]
     args += ["--bind", str(project), str(project), *sandbox.readonly_args(sandbox.hidden_roots() + agent_hidden),
              "--chdir", str(project), "--unshare-pid", "--unshare-net", "--die-with-parent", "--new-session",
-             "--", "/bin/sh", "-c", command]
+             *sandbox.userns_args(), "--", "/bin/sh", "-c", command]
     return args
 
 

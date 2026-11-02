@@ -215,7 +215,8 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   (reaching V5, over the tasks that have a V5 oracle), with the unbiased pass@k estimator; the
   hallucinated-block rate (the share of samples whose edit names a block that does not exist in the
   pinned GNU Radio catalog); a partial-credit score over blocks, parameters and connections. Answers
-  are limited to 8K tokens, reasoning included.
+  are limited to 8K tokens (8,192 per reply, sent with every request), reasoning included; a reply that
+  reaches the limit fails the sample.
 - **Perturbed examples.** Scores on tasks built from public GNU Radio examples (numbers changed) are
   also reported separately from scores on composed tasks.
 
@@ -223,7 +224,9 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 
 - **Harness, the same for every model.** The pinned GRC-Agent version (commit 6c98128) with its real
   system prompt and 22 tools; tool outputs cut to 4K tokens (beginning and end kept, plus error lines);
-  64K tokens of context, or the model's own context if shorter; at most 40 model requests; a time limit on each flowgraph run; web tools
+  64K tokens of context, or the model's own context if shorter; at most 40 model requests; 30 minutes per
+  episode (15 minutes for a Tier-F sample), with GRC-Agent's HTTP client waiting for the model server as long
+  as that (§10); a time limit on each flowgraph run; web tools
   offline; the shell in a sandbox without network. A run that hits a cap is a failure. Tool calls as
   in Tier F: the llama.cpp server's default tool grammar for every model it serves, the provider's
   tool calling (strict mode where offered) for API models (§8, decision 1). For the llama.cpp models
@@ -388,6 +391,12 @@ rate on dev answers (round-2 finding F5) can be measured.
 - **Agent traces** were collected on GNU Radio 3.10.9.2, where flowgraph execution was not available.
   The benchmark runs on 3.10.12 with execution.
 - **Web tools** return a fixed "offline" message in Tier A.
+- **The model server's time to answer.** GRC-Agent's HTTP client gives up on a request after 120 seconds
+  without data from the model server. In Tiers F and A it waits as long as the episode's time limit
+  instead (§5.3). Long reasoning can pass 120 seconds without output: in the dev-split run of 28 October
+  on the RTX 5090, 3 of 10 Tier-F samples ended that way, and on a Colab T4 both Tier-F samples of the
+  pipeline test. With GRC-Agent's value, a model's Tier-F and Tier-A results would depend on how long it
+  reasons and on the speed of the GPU it runs on, not only on the pre-registered limits.
 - **The Tier-K dev split.** Eval plan §4.1 (Table 4) holds 200 of the 1,668 training questions back
   as the dev split. Here the dev split comes from the training team's validation split, so that
   training and GRC-Bench hold back the same questions (§2): 107 questions. Every dev-split choice,

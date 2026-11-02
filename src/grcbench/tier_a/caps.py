@@ -21,6 +21,11 @@ Caps and how each is enforced
                   is NOT a failure; it only shortens what the model sees (build plan Phase 4).
   episode time    a wall-clock limit for the whole episode (asyncio timeout in the episode process,
                   plus a process timeout on the host).
+  reply tokens    the Tier-F answer limit (pre-registration §5.2: 8K tokens, reasoning included;
+                  tier_f_mode.TIER_F_REPLY_TOKENS), none in Tier A. Every model request carries it as
+                  pydantic-ai's max_tokens setting (sent as max_completion_tokens, which llama-server
+                  honours); a reply the server ends at the limit (finish_reason "length") is the cap,
+                  raised in wrap_model_request before pydantic-ai's own token-limit errors.
   flowgraph run   a wall-clock limit for each flowgraph run (HeadlessFlowgraphProxy max_run_seconds,
                   headless_proxy D6): the run's sandbox is killed at the limit, and the episode ends
                   as a cap failure at the next step.
@@ -77,7 +82,9 @@ CAP_CONTEXT = "context"
 CAP_EPISODE_TIME = "episode_time"
 CAP_FLOWGRAPH_RUN_TIME = "flowgraph_run_time"
 CAP_STOP_GRACEFULLY = "grc_agent_stop_gracefully"
-CAP_NAMES = (CAP_REQUESTS, CAP_CONTEXT, CAP_EPISODE_TIME, CAP_FLOWGRAPH_RUN_TIME, CAP_STOP_GRACEFULLY)
+CAP_REPLY_TOKENS = "reply_tokens"
+CAP_NAMES = (CAP_REQUESTS, CAP_CONTEXT, CAP_EPISODE_TIME, CAP_FLOWGRAPH_RUN_TIME, CAP_STOP_GRACEFULLY,
+             CAP_REPLY_TOKENS)
 
 DEFAULT_EPISODE_SECONDS = 1800.0
 DEFAULT_FLOWGRAPH_RUN_SECONDS = 300.0       # = headless_proxy.DEFAULT_MAX_RUN_SECONDS
@@ -105,6 +112,7 @@ class Caps:
     tool_output_tokens: int | None = 4096
     episode_seconds: float = DEFAULT_EPISODE_SECONDS
     flowgraph_run_seconds: float = DEFAULT_FLOWGRAPH_RUN_SECONDS
+    reply_tokens: int | None = None
 
     @classmethod
     def for_setting(cls, setting: str, **overrides: Any) -> "Caps":
@@ -127,6 +135,10 @@ class Caps:
     def usage_limits(self) -> UsageLimits:
         """pydantic-ai limits for every agent run of the episode (with the shared RunUsage)."""
         return UsageLimits(request_limit=self.requests, per_request_input_tokens_limit=self.context_tokens)
+
+    def model_settings(self) -> dict[str, Any] | None:
+        """pydantic-ai model settings for every agent run of the episode: the answer limit, if any."""
+        return {"max_tokens": self.reply_tokens} if self.reply_tokens else None
 
 
 @dataclass
@@ -385,6 +397,11 @@ class HarnessCapability(AbstractCapability[Any]):
         rec.update(seconds=round(time.monotonic() - t0, 3), input_tokens=usage.input_tokens,
                    output_tokens=usage.output_tokens, model_name=response.model_name,
                    finish_reason=getattr(response, "finish_reason", None))
+        limit = self.meter.caps.reply_tokens
+        if limit and rec["finish_reason"] == "length":
+            raise CapExceeded(self.meter.hit(CapHit(
+                CAP_REPLY_TOKENS, f"the reply reached the {limit:,}-token answer limit (reasoning included)",
+                limit, self.meter.usage.requests)))
         return response
 
     # -- graph nodes ---------------------------------------------------------------------------

@@ -8,7 +8,9 @@ The notebook runs `./gb` on a Colab GPU in one of two setups (GR_SETUP):
   conda-forge   GNU Radio 3.10.12.0 from conda-forge on Colab itself: GRC-Agent 6c98128 does not run on it, so
                 Tier K and E only. It is also the fallback when the Ubuntu container cannot be made.
 In both, ./gb sees the same paths (/root/grc-bench-colab, /root/grc-bench-work, /root/grc-bench-cache,
-/root/grc-agent). Every code cell must compile (checked here).
+/root/grc-agent). Step 7 picks the first sandbox setting that keeps the root read-only, cuts the network and cannot
+inspect the notebook's own process (on Colab: GRC_BENCH_BWRAP_USERNS=1 and GRC_BENCH_BWRAP_PROC=host). Every code
+cell must compile (checked here).
 """
 import json
 import sys
@@ -36,16 +38,21 @@ This notebook checks whether GRC-Bench's own command, `./gb`, runs end to end on
 **feasibility test, not an evaluation**: dev-split items only, the pinned smoke model (Qwen3-4B Q4_K_M),
 placeholder rubrics, and a few items per tier.
 
-GRC-Bench pins Ubuntu 26.04's GNU Radio package (3.10.12.0-6), which Colab's Ubuntu 22.04 cannot install. So by
-default (`GR_SETUP = "ubuntu-26.04"`) the notebook downloads Ubuntu 26.04's base system (about 30 MB), installs
-Ubuntu's own GNU Radio into it and runs `./gb` inside it, the way a container would (`colab/u2604.py`: Linux
-namespaces, no Docker). If Colab does not allow that, it falls back to conda-forge's GNU Radio on Colab itself,
-where Tier K and E run but Tier F and A cannot (GRC-Agent does not run on that GNU Radio).
+GRC-Bench pins Ubuntu 26.04's GNU Radio package (3.10.12.0-6), which Colab's own Ubuntu (24.04 in November 2026)
+cannot install. So by default (`GR_SETUP = "ubuntu-26.04"`) the notebook downloads Ubuntu 26.04's base system
+(about 30 MB), installs Ubuntu's own GNU Radio into it and runs `./gb` inside it, the way a container would
+(`colab/u2604.py`: Linux namespaces, no Docker). If Colab does not allow that, it falls back to conda-forge's GNU
+Radio on Colab itself, where Tier K and E run but Tier F and A cannot (GRC-Agent does not run on that GNU Radio).
+
+GRC-Bench's sandbox (bubblewrap) runs model-written flowgraphs and the agent's commands. Colab refuses to mount a
+fresh `/proc` and gives root no network-admin right, so here the sandbox makes a user namespace of its own and keeps
+Colab's `/proc` (`GRC_BENCH_BWRAP_USERNS=1`, `GRC_BENCH_BWRAP_PROC=host`): no network, a read-only root, the hidden
+view, and no way to inspect the processes outside. Step 7 checks this before any model-written code runs.
 
 | Step | What it checks |
 |---|---|
 | 1 | the machine: GPU, driver, CUDA version, OS, Python, CPUs, memory, disk |
-| 2 | Google Drive, and the GRC-Bench package (`grc-bench-colab.zip`) from your Drive |
+| 2 | Google Drive, and the GRC-Bench package (`grc-bench-colab.zip`) from your Drive or the Files pane |
 | 3 | Linux namespaces and bubblewrap on Colab itself |
 | 4 | **GNU Radio**: the Ubuntu 26.04 container with gnuradio 3.10.12.0-6 (or conda-forge's 3.10.12.0) |
 | 5 | **GRC-Agent** at the pinned commit `6c98128`, its knowledge databases and the tokenizer |
@@ -60,7 +67,9 @@ where Tier K and E run but Tier F and A cannot (GRC-Agent does not run on that G
 1. Put `grc-bench-colab.zip` in **My Drive/grc-bench-colab/** (no need to unzip it). Optional: put
    `llama-b10333-cuda-sm75-cu12.4.tar.gz` in **My Drive/grc-bench-colab/cache/** to skip compiling llama.cpp on a T4.
 2. *Runtime → Change runtime type → **T4 GPU***.
-3. *Runtime → **Run all***, and allow Google Drive access when asked.
+3. *Runtime → **Run all***, and allow Google Drive access when asked: choose the Google account this notebook runs
+   under and tick every box. Without Drive, upload `grc-bench-colab.zip` (and the llama.cpp archive) to the Files
+   pane on the left before *Run all*; the results zip is then offered as a download at the end.
 4. Keep the tab open. **First run: about 45 minutes with the llama.cpp archive in Drive, 1.5–2 hours without.**
 
 **What comes back:** `My Drive/grc-bench-colab/results/<run>/results_<run>.zip`, which holds `feasibility.json` (one
@@ -113,7 +122,7 @@ INNER_ENV = {"PYTHONDONTWRITEBYTECODE": "1", "QT_QPA_PLATFORM": "offscreen", "GR
              "GRC_BENCH_LLAMA_BACKEND": "cuda"}          # "auto" looks for WSL's GPU library, which Colab does not have
 os.environ.update({**INNER_ENV, "MAMBA_ROOT_PREFIX": "/opt/mamba"})
 STAMP = time.strftime("%Y%m%d-%H%M%S", time.gmtime())
-RESULT = {"notebook": "grcbench_colab_test 2", "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+RESULT = {"notebook": "grcbench_colab_test 3", "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
           "settings": {"gr_setup": GR_SETUP, "tiers": TIERS, "limit_k": LIMIT_K, "limit_f": LIMIT_F,
                        "limit_a": LIMIT_A, "judge_in_colab": JUDGE_IN_COLAB}, "steps": {}}
 OUT = Path("/content/grcbench-results") / STAMP       # copied to Drive at each save
@@ -215,12 +224,18 @@ def gb(args, step_key, *, name, show=60, timeout=None, env=None):
 
 
 def step(key, title, fn):
-    """Run one step; record ok / failed (with the error) and its time. Later steps still run."""
+    """Run one step; record ok / failed (with the error) and its time. Later steps still run. A step that returns
+    {"failed": reason, ...} is recorded as failed with its details."""
     print("=" * 100 + f"\n{key}: {title}\n" + "=" * 100, flush=True)
     t0 = time.time()
     try:
         detail = fn() or {}
-        detail = {("result_" + k if k in ("title", "status", "seconds") else k): v for k, v in detail.items()}
+        failed = detail.pop("failed", None)
+        detail = {("result_" + k if k in ("title", "status", "seconds", "error") else k): v for k, v in detail.items()}
+        if failed:
+            record(key, title=title, status="failed", seconds=round(time.time() - t0, 1), error=failed, **detail)
+            log(key, f"FAILED: {failed}  (recorded; the notebook goes on)")
+            return
         record(key, title=title, status="ok", seconds=round(time.time() - t0, 1), **detail)
     except StopHere:
         record(key, title=title, status="failed", seconds=round(time.time() - t0, 1))
@@ -263,14 +278,21 @@ md("## Step 2: Google Drive and the GRC-Bench package")
 code(r'''
 def package():
     global DRIVE_OUT
-    from google.colab import drive
-    drive.mount("/content/drive")
-    root = Path("/content/drive/MyDrive") / DRIVE_FOLDER
-    zpath = root / PACKAGE
-    if not zpath.exists():
-        raise StopHere(f"{zpath} not found: put {PACKAGE} in My Drive/{DRIVE_FOLDER}/ and Run all again.")
+    root, drive_error = None, None
+    try:
+        from google.colab import drive
+        drive.mount("/content/drive")
+        root = Path("/content/drive/MyDrive") / DRIVE_FOLDER
+    except Exception as exc:                            # e.g. "credential propagation was unsuccessful"
+        drive_error = f"{type(exc).__name__}: {exc}"
+        log("step 2", f"Google Drive did not mount ({drive_error}); looking for /content/{PACKAGE} (the Files pane)")
+    zpath = next((p for p in ([root / PACKAGE] if root else []) + [Path("/content") / PACKAGE] if p.exists()), None)
+    if zpath is None:
+        raise StopHere(f"{PACKAGE} not found: put it in My Drive/{DRIVE_FOLDER}/, or upload it to the Files pane, "
+                       "and Run all again.")
     gpu = re.sub(r"[^A-Za-z0-9]+", "-", GPU["gpu"]).strip("-")
-    DRIVE_OUT = root / "results" / f"{STAMP}_{gpu}"
+    if root is not None:
+        DRIVE_OUT = root / "results" / f"{STAMP}_{gpu}"
     if HOST_PKG.exists():
         shutil.rmtree(HOST_PKG)
     with zipfile.ZipFile(zpath) as z:
@@ -280,32 +302,39 @@ def package():
     version = (HOST_PKG / "VERSION.txt").read_text().splitlines()[:3]
     for line in version:
         log("step 2", line)
-    return {"package": str(zpath), "package_bytes": zpath.stat().st_size, "version": version, "drive_results": str(DRIVE_OUT)}
+    return {"package": str(zpath), "package_bytes": zpath.stat().st_size, "version": version, "drive": root is not None,
+            "drive_error": drive_error, "drive_results": str(DRIVE_OUT) if DRIVE_OUT else None}
 
 step("2_package", "Google Drive and the package", package)
 ''')
 
 md("""
 ## Step 3: Linux namespaces and bubblewrap on Colab itself
-The Ubuntu container (step 4) needs Linux user namespaces; GRC-Bench's sandbox (bubblewrap) needs them too.
+The Ubuntu container (step 4) needs a user namespace and a bind of Colab's `/proc`; GRC-Bench's sandbox needs
+bubblewrap with a user namespace of its own (a fresh `/proc` is recorded too: Colab refuses it).
 """)
 code(r'''
 def namespaces():
     probes = {}
-    for label, cmd in (("user namespace", "unshare --user --map-root-user true"),
-                       ("user + mount namespaces", "unshare --user --map-root-user --mount true"),
-                       ("user + mount + pid namespaces", "unshare --user --map-root-user --mount --pid --fork --mount-proc true")):
-        c, out, _ = sh(cmd, "step 3", name="03_" + label.replace(" ", "_").replace("+", ""))
-        probes[label] = {"exit": c, "output": out[-2:]}
     sh("apt-get -qq update >/dev/null && apt-get -qq install -y bubblewrap >/dev/null && bwrap --version", "step 3",
        name="03_bubblewrap_install")
-    base = "bwrap --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp --unshare-pid --unshare-net --die-with-parent --new-session"
-    for label, extra in (("bwrap plain", ""), ("bwrap with --unshare-user", " --unshare-user")):
-        c, out, _ = sh(f"{base}{extra} -- true", "step 3", name="03_" + label.replace(" ", "_").replace("--", ""))
+    bw = "bwrap --ro-bind / / --dev /dev --tmpfs /tmp --unshare-pid --unshare-net --die-with-parent --new-session"
+    for label, cmd in (("user namespace", "unshare --user --map-root-user true"),
+                       ("user + mount ns, Colab's /proc bound",
+                        "unshare --user --map-root-user --mount sh -c 'mkdir -p /tmp/pb && mount --rbind /proc /tmp/pb'"),
+                       ("bwrap, own user ns, Colab's /proc", f"{bw} --unshare-user -- true"),
+                       ("bwrap, fresh /proc (not needed)", f"{bw} --proc /proc --unshare-user -- true")):
+        c, out, _ = sh(cmd, "step 3", name="03_" + re.sub(r"[^a-z0-9]+", "_", label.lower()).strip("_"))
         probes[label] = {"exit": c, "output": out[-2:]}
     for k, v in probes.items():
-        log("step 3", f"{k:32s} {'works' if v['exit'] == 0 else 'fails: ' + ' '.join(v['output'])[:120]}")
-    return {"probes": probes}
+        if v["exit"] == 0:
+            log("step 3", f"{k:40s} works")
+        elif k.endswith("(not needed)"):
+            log("step 3", f"{k:40s} refused, as expected on Colab")
+        else:
+            log("step 3", f"{k:40s} fails: {' '.join(v['output'])[:120]}")
+    needed = [k for k in list(probes)[:3] if probes[k]["exit"] != 0]
+    return {"probes": probes, **({"failed": "not allowed here: " + ", ".join(needed)} if needed else {})}
 
 step("3_namespaces", "Linux namespaces and bubblewrap", namespaces)
 ''')
@@ -318,6 +347,8 @@ GNU Radio 3.10.12.0 from conda-forge on Colab itself.
 """)
 code(r'''
 def ubuntu_container():
+    if not (HOST_PKG / "colab" / "u2604.py").exists():
+        raise RuntimeError(f"the package is not unpacked in {HOST_PKG} (step 2)")
     tarball = Path("/content") / BASE_URL.rsplit("/", 1)[1]
     c, _, _ = sh(f"curl -Ls -o {tarball} {BASE_URL} && echo '{BASE_SHA256}  {tarball}' | sha256sum -c -", "step 4",
                  name="04_ubuntu_base")
@@ -417,9 +448,11 @@ def grc_agent():
     c_tok, _, _ = run_in(f"mkdir -p {CACHE}/tiktoken && TIKTOKEN_CACHE_DIR={CACHE}/tiktoken {py} -c "
                          "\"import tiktoken; tiktoken.get_encoding('cl100k_base')\"", "step 5", name="05_tiktoken")
     vec = host(AGENT) / "src/grc_agent/vectors"
-    return {"head": head, "install_seconds": secs, "imports": imp[-1:],
-            "knowledge_dbs": c_db == 0 and (vec / "catalog_lexical.db").exists() and (vec / "docs_lexical.db").exists(),
-            "knowledge_dbs_error": None if c_db == 0 else db_out[-1:], "tokenizer": c_tok == 0}
+    dbs = c_db == 0 and (vec / "catalog_lexical.db").exists() and (vec / "docs_lexical.db").exists()
+    bad = [name for name, ok in (("knowledge databases", dbs), ("tokenizer", c_tok == 0)) if not ok]
+    return {"head": head, "install_seconds": secs, "imports": imp[-1:], "knowledge_dbs": dbs,
+            "knowledge_dbs_error": None if c_db == 0 else db_out[-1:], "tokenizer": c_tok == 0,
+            **({"failed": " and ".join(bad) + " did not work (logs 05_*)"} if bad else {})}
 
 step("5_grc_agent", "GRC-Agent 6c98128", grc_agent)
 ''')
@@ -441,11 +474,13 @@ def llama():
     drv = tuple(int(x) for x in (GPU["driver_cuda"] or "12.4").split("."))
     cuda = "12.9" if drv >= (12, 9) else f"{drv[0]}.{drv[1]}"
     out_dir = host(CACHE / "llama.cpp" / "b10333-cuda")
-    cache = Path("/content/drive/MyDrive") / DRIVE_FOLDER / "cache"
+    cache = Path("/content/drive/MyDrive") / DRIVE_FOLDER / "cache"          # kept between sessions (Drive)
     saved = cache / f"llama-b10333-cuda-sm{cc}-cu{cuda}.tar.gz"
-    # a build kept earlier (or put there by hand) for this GPU, made with a CUDA version this driver supports
+    # a build kept earlier (or put there by hand: Drive or the Files pane) for this GPU, made with a CUDA version this
+    # driver supports
     cu_of = lambda p: tuple(int(x) for x in re.search(r"-cu(\d+)\.(\d+)\.tar\.gz$", p.name).groups())
-    usable = [p for p in cache.glob(f"llama-b10333-cuda-sm{cc}-cu*.tar.gz") if cu_of(p) <= drv[:2]]
+    usable = [p for d in (cache, Path("/content")) for p in d.glob(f"llama-b10333-cuda-sm{cc}-cu*.tar.gz")
+              if cu_of(p) <= drv[:2]]
     if usable:
         saved = max(usable, key=cu_of)
     how, build_s = "built", None
@@ -453,7 +488,7 @@ def llama():
         out_dir.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(saved) as t:
             t.extractall(out_dir.parent)
-        how = f"reused from Drive ({saved.name})"
+        how = f"reused from {saved}"
     else:
         gcc = "13" if drv >= (12, 6) else "12"           # conda-forge's nvcc below 12.6 accepts GCC 12 at most
         c, _, build_s = gb("fetch --cuda", "step 6", name="06_build_cuda", show=40,
@@ -461,9 +496,10 @@ def llama():
                                 "JOBS": str(os.cpu_count() or 2)})
         if c:
             raise RuntimeError("the CUDA build failed (log 06_build_cuda.log)")
-        saved.parent.mkdir(parents=True, exist_ok=True)
-        with tarfile.open(saved, "w:gz") as t:
-            t.add(out_dir, arcname=out_dir.name)
+        if DRIVE_OUT is not None:                        # kept in Drive for the next session
+            saved.parent.mkdir(parents=True, exist_ok=True)
+            with tarfile.open(saved, "w:gz") as t:
+                t.add(out_dir, arcname=out_dir.name)
     d = CACHE / "llama.cpp" / "b10333-cuda"
     _, version, _ = run_in(f"LD_LIBRARY_PATH={d}:$LD_LIBRARY_PATH {d}/llama-server --version", "step 6", name="06_version")
     log("step 6", f"llama.cpp {how}: {version[-2:]}")
@@ -478,10 +514,15 @@ code(r'''
 SANDBOX_PROBE = ("from pathlib import Path; import tempfile; from grcbench.common import sandbox; "
                  "w = Path('/root/grc-bench-work'); w.mkdir(parents=True, exist_ok=True); d = Path(tempfile.mkdtemp(dir=w)); "
                  "r = sandbox.run(['bash', '-c', 'echo hi > x; echo y > /etc/nope 2>/dev/null || echo ro; "
-                 "(exec 3<>/dev/tcp/1.1.1.1/53) 2>/dev/null && echo net || echo nonet'], d, timeout=60); "
+                 "(exec 3<>/dev/tcp/1.1.1.1/53) 2>/dev/null && echo net || echo nonet; "
+                 f"cat /proc/{os.getpid()}/environ >/dev/null 2>&1 && echo environ || echo noenviron'], d, timeout=60); "
                  "print('SANDBOX', r.returncode, ' '.join(r.stdout.split()), r.stderr.strip()[-200:])")
+SANDBOX_MODES = (("plain", {}), ("user namespace", {"GRC_BENCH_BWRAP_USERNS": "1"}),
+                 ("user namespace, Colab's /proc", {"GRC_BENCH_BWRAP_USERNS": "1", "GRC_BENCH_BWRAP_PROC": "host"}))
+SANDBOX_MODE = None
 
 def pins():
+    global SANDBOX_MODE
     c, out, _ = gb("env", "step 7", name="07_env")
     env = json.loads(host(PKG / "reports/environment.json").read_text())
     py = AGENT / ".venv/bin/python"
@@ -490,22 +531,28 @@ def pins():
                        name="07_catalog")
     parts = next((l.split()[1:] for l in cat if l.startswith("CATALOG")), [])
     sandbox = {}
-    for mode, extra in (("plain", {}), ("user namespace", {"GRC_BENCH_BWRAP_USERNS": "1"})):
+    for mode, extra in SANDBOX_MODES:
         _, sb, _ = run_in(f"cd {PKG} && PYTHONPATH=src {py} -c \"{SANDBOX_PROBE}\"", "step 7",
-                          name="07_sandbox_" + mode.replace(" ", "_"), env=extra)
+                          name="07_sandbox_" + re.sub(r"[^a-z0-9]+", "_", mode.lower()).strip("_"), env=extra)
         line = next((l for l in sb if l.startswith("SANDBOX")), "SANDBOX none")
         sandbox[mode] = line
-        if line.startswith("SANDBOX 0 ro nonet"):      # ran, the root is read-only, no network
+        # ran; the root is read-only; no network; the notebook's own process cannot be inspected
+        if line.startswith("SANDBOX 0 ro nonet noenviron"):
             INNER_ENV.update(extra)
+            SANDBOX_MODE = mode
             break
-    sandbox_ok = any(v.startswith("SANDBOX 0 ro nonet") for v in sandbox.values())
     shutil.copy(host(PKG / "reports/environment.json"), OUT / "environment.json")
-    log("step 7", f"pins: {out[-1] if out else ''}; catalog matches pin: {parts[1:] == ['True']}; sandbox: {sandbox}")
-    return {"pins_ok": c == 0 and any("pins ok" in l for l in out), "pin_message": out[-1] if out else "",
+    pins_ok, catalog_ok = c == 0 and any("pins ok" in l for l in out), parts[1:] == ["True"]
+    log("step 7", f"pins: {out[-1] if out else ''}; catalog matches pin: {catalog_ok}; sandbox: {SANDBOX_MODE} {sandbox}")
+    bad = [name for name, ok in (("version pins", pins_ok), ("block catalog hash", catalog_ok),
+                                 ("sandbox", SANDBOX_MODE is not None)) if not ok]
+    return {"pins_ok": pins_ok, "pin_message": out[-1] if out else "",
             "gnuradio_version": env.get("gnuradio_version"), "grc_agent_commit": env.get("grc_agent_commit"),
             "python": env.get("python"), "packages": env.get("packages"),
-            "catalog_hash": parts[0] if parts else None, "catalog_matches_pin": parts[1:] == ["True"],
-            "sandbox": sandbox, "sandbox_ok": sandbox_ok}
+            "catalog_hash": parts[0] if parts else None, "catalog_matches_pin": catalog_ok,
+            "sandbox": sandbox, "sandbox_ok": SANDBOX_MODE is not None, "sandbox_mode": SANDBOX_MODE,
+            "sandbox_env": {k: v for k, v in INNER_ENV.items() if k.startswith("GRC_BENCH_BWRAP")},
+            **({"failed": " / ".join(bad) + " not as required"} if bad else {})}
 
 step("7_pins", "./gb env, pins, catalog and sandbox", pins)
 ''')
@@ -530,7 +577,8 @@ def e2e():
         log("step 8", f"Tier {', '.join(skipped)} not run: GRC-Agent (step 5) or the sandbox (step 7) did not work here")
     tiers = [t for t in tiers if t not in skipped]
     setup = "Ubuntu 26.04 container" if UBUNTU else "conda-forge GNU Radio"
-    label = "Google Colab (" + GPU["gpu"] + ", driver " + GPU["driver"] + "; " + setup + ")"
+    label = ("Google Colab (" + GPU["gpu"] + ", driver " + GPU["driver"] + "; " + setup + "; sandbox: "
+             + str(SANDBOX_MODE) + ")")
     args = (f"e2e --out {E2E} --only {','.join(tiers)} --limit-k {LIMIT_K} --limit-f {LIMIT_F} --limit-a {LIMIT_A} "
             f"--rubrics colab/dev_placeholder.jsonl --report {OUT}/e2e_colab.md --e-name {E_NAME} "
             f"--machine-label {shlex.quote(label)}")
@@ -541,7 +589,8 @@ def e2e():
                                                                      "samples", "episodes", "passed", "funnel",
                                                                      "generation_tps", "error", "seconds") if x in v}))
     return {"exit": c, "seconds": secs, "setup": setup, "tiers_run": tiers, "tiers_not_run": skipped,
-            "tiers": s.get("tiers"), "server": s.get("server")}
+            "tiers": s.get("tiers"), "server": s.get("server"),
+            **({"failed": f"./gb e2e exited {c} (log 08_e2e.log)"} if c else {})}
 
 step("8_e2e", "./gb e2e on the dev split", e2e)
 ''')
@@ -587,6 +636,8 @@ def speeds():
     log("step 9", f"generation tokens/s: {gen}; Tier-K answers: {k_tps}")
     log("step 9", f"GPU before: {before}")
     log("step 9", f"GPU after:  {after}")
+    if c or len(gen) != 2:
+        out["failed"] = f"the repeat Tier-E run exited {c}; {len(gen)} of 2 speeds recorded (log 09_tier_e_repeat.log)"
     return out
 
 step("9_speeds", "speeds: Tier E twice, GPU clocks", speeds)
@@ -618,7 +669,8 @@ def judge():
     c, out, secs = run_in(f"cd {PKG} && PYTHONPATH={PKG}/src {AGENT}/.venv/bin/python {OUT}/judge_plumbing.py {E2E}/tier_k",
                           "step 10", name="10_judge")
     last = next((l for l in reversed(out) if l.startswith("{")), None)
-    return {"exit": c, "seconds": secs, "summary": json.loads(last) if last else None}
+    return {"exit": c, "seconds": secs, "summary": json.loads(last) if last else None,
+            **({"failed": f"the judge runner exited {c} (log 10_judge.log)"} if c or not last else {})}
 
 step("10_judge", "the judge runner (plumbing)", judge)
 ''')
@@ -636,7 +688,10 @@ def results():
     shutil.make_archive(str(z.with_suffix("")), "zip", OUT)
     if DRIVE_OUT is not None:
         shutil.copy(z, DRIVE_OUT / z.name)
-    return {"zip": str((DRIVE_OUT or OUT) / z.name)}
+    else:                                               # no Drive: the browser downloads it
+        from google.colab import files
+        files.download(str(z))
+    return {"zip": str(DRIVE_OUT / z.name if DRIVE_OUT is not None else z)}
 
 step("11_results", "results", results)
 print("\n" + "=" * 100)

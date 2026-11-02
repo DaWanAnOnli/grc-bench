@@ -944,7 +944,7 @@ class HeadlessFlowgraphProxy:
         The user's files (sandbox.hidden_view_args), the run folders and the cache
         (sandbox.agent_hidden_roots) are hidden first; the paths below come back on top."""
         agent_hidden = sandbox.agent_hidden_roots(hide_src=False)
-        args = [sandbox.BWRAP, "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc",
+        args = [sandbox.BWRAP, "--ro-bind", "/", "/", "--dev", "/dev", *sandbox.proc_args(),
                 "--tmpfs", "/tmp", *sandbox.hidden_view_args(sandbox.sandbox_env(self._sandbox_root)),
                 *sandbox.hide_args(agent_hidden)]
         for path in writable:
@@ -953,7 +953,7 @@ class HeadlessFlowgraphProxy:
             args += ["--ro-bind", str(path), str(path)]
         args += [*sandbox.readonly_args(sandbox.hidden_roots() + agent_hidden),
                  "--chdir", str(cwd), "--unshare-pid", "--die-with-parent", "--new-session",
-                 "--unshare-net", "--"]
+                 "--unshare-net", *sandbox.userns_args(), "--"]
         return args
 
     def _hier_dir(self) -> Path:

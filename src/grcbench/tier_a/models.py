@@ -27,7 +27,9 @@ episode a Python model object; it hands it a ModelSpec, and the episode builds t
                      chat completion and appends the exact request body to <run>/wire.jsonl. Turns:
                          {"text": str, "reasoning_content": str,
                           "tool_calls": [{"id": str, "name": str, "arguments": str | dict}],
-                          "usage": {"prompt_tokens": int, "completion_tokens": int}}
+                          "usage": {"prompt_tokens": int, "completion_tokens": int},
+                          "finish_reason": str}   (default "tool_calls" or "stop"; "length" = a
+                                                   reply the server ended at max_completion_tokens)
                      Used for the byte-level conformance of the Tier-F setting (the body is what
                      llama-server would receive) and for golden replays through the wire format.
   factory            "module:function" or "/abs/path/file.py:function", called with **kwargs and
@@ -38,9 +40,12 @@ Streaming (`ModelSpec.streams()`). GRC-Agent's desktop turn driver streams every
 same turn driver (experiments/dataset_collection/runner_contract.py). The runner does the same for
 the real-run path: `openai_compatible` streams by default. This matters beyond rendering: GRC-Agent's
 HTTP client has a 120 s READ timeout (agent_factory._HTTP_TIMEOUT) and retries on it. A streamed
-request only needs a byte every 120 s (llama-server sends tokens, and SSE pings every 30 s by
-default, --sse-ping-interval), whereas a non-streamed one must be completely generated within 120 s,
-so long reasoning or a slow engine would be cut off and re-requested. What the model is sent is the
+request only needs a byte every 120 s, whereas a non-streamed one must be completely generated within
+120 s. A stream can still be quiet that long while llama-server keeps generating reasoning: GRC-Agent's
+client ended 3 of 10 Tier-F samples of the 28 Oct dev run (RTX 5090) and both of a Colab T4 run
+(2 Nov 2026) that way. So an
+episode's client reads for as long as the episode's wall-clock cap (build_model and
+agent_build.build_benchmark_agent with `read_seconds`): only the pre-registered cap ends a request. What the model is sent is the
 same either way except `"stream": true` (instead of false) and `"stream_options": {"include_usage":
 true}` in the body (tests/test_tier_a_smoke.py compares both bodies). `scripted` never streams (a FunctionModel without
 a stream function); `wire_scripted` streams when asked (`stream=True`: it then answers with
@@ -148,7 +153,7 @@ def wire_scripted(turns: list[dict[str, Any]], model_name: str = DEFAULT_MODEL,
     """GRC-Agent's OpenAIChatModel over a scripted chat-completions transport (module docstring);
     stream=True makes the runner stream and the transport answer with server-sent events."""
     for i, turn in enumerate(turns):
-        unknown = set(turn) - {"text", "reasoning_content", "tool_calls", "usage"}
+        unknown = set(turn) - {"text", "reasoning_content", "tool_calls", "usage", "finish_reason"}
         if unknown:
             raise ValueError(f"turn {i}: unknown keys {sorted(unknown)}")
         for call in turn.get("tool_calls") or []:
@@ -193,12 +198,14 @@ def _load_ref(ref: str) -> Callable[..., Any]:
     return obj
 
 
-def build_model(spec: ModelSpec) -> Any:
-    """The pydantic-ai model for `spec` (None = let GRC-Agent build it from the run's .env)."""
+def build_model(spec: ModelSpec, *, read_seconds: float | None = None) -> Any:
+    """The pydantic-ai model for `spec` (None = let GRC-Agent build it from the run's .env).
+    read_seconds: the HTTP read timeout of an OpenAI-compatible model's client (agent_build.retrying_client)."""
     if spec.kind == "openai_compatible":
         if spec.uds_path:
             from .agent_build import make_openai_compatible_model
-            return make_openai_compatible_model(spec.base_url, spec.model_name, uds_path=spec.uds_path)
+            return make_openai_compatible_model(spec.base_url, spec.model_name, uds_path=spec.uds_path,
+                                                read_seconds=read_seconds)
         return None
     if spec.kind == "scripted":
         from pydantic_ai.models.function import FunctionModel
@@ -212,7 +219,7 @@ def build_model(spec: ModelSpec) -> Any:
         record = Path(os.environ.get("GRC_BENCH_RUN_DIR") or ".") / WIRE_FILE
         server = WireScript(spec.turns, spec.on_exhausted, spec.model_name, record)
         return make_openai_compatible_model(spec.base_url, spec.model_name,
-                                            transport=httpx2.MockTransport(server))
+                                            transport=httpx2.MockTransport(server), read_seconds=read_seconds)
     if spec.kind == "factory":
         return _load_ref(str(spec.factory))(**spec.kwargs)
     raise ValueError(f"unknown model kind {spec.kind!r}")
@@ -290,7 +297,7 @@ class WireScript:
         return {"id": f"chatcmpl-grcbench-{index:03d}", "object": "chat.completion", "created": 0,
                 "model": self.model_name, "usage": usage,
                 "choices": [{"index": 0, "message": message,
-                             "finish_reason": "tool_calls" if calls else "stop"}]}
+                             "finish_reason": turn.get("finish_reason") or ("tool_calls" if calls else "stop")}]}
 
     @staticmethod
     def stream_chunks(completion: dict[str, Any]) -> list[dict[str, Any]]:
