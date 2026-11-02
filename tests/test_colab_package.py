@@ -20,7 +20,8 @@ def test_the_package_runs_gb_on_the_dev_split(package):
     names = set(zipfile.ZipFile(package).namelist())
     root = colab_package.NAME + "/"
     for rel in ("gb", "src/grcbench/__main__.py", "items/tier_k/dev/questions.jsonl", "reports/block_catalog.json",
-                "docs/preregistration/run_list.yaml", colab_package.RUBRICS, colab_package.NOTEBOOK, "VERSION.txt"):
+                "docs/preregistration/run_list.yaml", colab_package.RUBRICS, colab_package.NOTEBOOK, "colab/u2604.py",
+                "VERSION.txt"):
         assert root + rel in names, rel
     assert any(n.startswith(root + "items/tier_f/dev/") for n in names)
     assert any(n.startswith(root + "items/tier_a/dev/") for n in names)

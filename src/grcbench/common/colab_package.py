@@ -9,7 +9,8 @@ run there as they do here:
   reports/block_catalog.json (the rule cascade reads it), docs/preregistration/run_list.yaml (the run log
   reads it)
   colab/dev_placeholder.jsonl     placeholder rubrics for the dev questions (tier_k/placeholder_rubrics.py)
-  colab/grcbench_colab_test.ipynb, colab/README.md                         from handoff/colab/
+  colab/grcbench_colab_test.ipynb, colab/README.md, colab/u2604.py         from handoff/colab/ (u2604.py runs
+                                  ./gb inside an Ubuntu 26.04 root filesystem: the pinned GNU Radio)
   VERSION.txt                     the GRC-Bench commit, the pins, the build time, the SHA-256 of every file
 
 No test item is packaged: no path under items/*/test*, and the build fails (PackageRefused) if any
@@ -78,7 +79,7 @@ def _collect() -> dict[str, bytes]:
                 files[p.relative_to(REPO).as_posix()] = p.read_bytes()
     rows, _ = placeholder_rubrics.records(krun.load_split("dev"), release.validation_reference_answers())
     files[RUBRICS] = "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows).encode("utf-8")
-    for name in ("grcbench_colab_test.ipynb", "README.md"):
+    for name in ("grcbench_colab_test.ipynb", "README.md", "u2604.py"):
         files[f"colab/{name}"] = (COLAB_HANDOFF / name).read_bytes()
     return files
 
