@@ -6,6 +6,8 @@ import copy
 
 from grcbench.common import audit
 from grcbench.common.canary import CANARY, CANARY_GUID
+from grcbench.common.io import read_json
+from grcbench.common.paths import SPLITS
 
 
 def _records():
@@ -48,3 +50,16 @@ def test_split_checks_catch_cross_split_reuse_and_duplicate_ids():
     moved["source"]["ref"] = "gbf-test-01/reference.grc"
     assert not audit.check_tier_a_splits([(path, moved, kind)])["passed"]
     assert not audit.check_unique_ids([(path, rec, kind), (path, rec, kind)])["passed"]
+
+
+def test_training_data_check_catches_dev_and_test_questions_and_the_canary(monkeypatch):
+    recs = _records()
+    assert audit.check_training_release(recs)["passed"]
+    dev_ids = read_json(SPLITS / "tier_k_dev.json")["dev_ids"]
+    dev_id = dev_ids[0]
+    test_id = next(r["id"] for _, r, _ in recs if r.get("item_kind") == "frozen_question")
+    monkeypatch.setattr(audit.release, "training_question_ids", lambda: {dev_id, test_id})
+    monkeypatch.setattr(audit.release, "training_files_containing", lambda text: ["train.jsonl"])
+    monkeypatch.setattr(audit.release, "validation_question_ids", lambda: dev_ids[1:])
+    res = audit.check_training_release(recs)
+    assert not res["passed"] and res["n_failures"] == 4

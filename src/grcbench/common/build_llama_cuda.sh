@@ -6,8 +6,17 @@
 # "version: 10333 (08659901c)" like the official build. Output: ~/grc-bench-cache/llama.cpp/b10333-cuda
 # (llama-server, llama-bench, llama-cli and the libraries they need), used by `./gb tier-a smoke
 # --backend cuda` and `./gb tier-e --llama-dir`. The last step runs llama-bench on the GPU as a check.
+# On another GPU (a Colab T4): CUDA_ARCH=75, CUDA_VERSION = one the driver supports (nvidia-smi's "CUDA
+# Version"; below 12.6 also GCC_VERSION=12, as conda-forge's nvcc requires), JOBS = the CPU count, and
+# SYSROOT=2.28, so that the binaries need glibc 2.28 at most (conda-forge's default sysroot is newer than
+# the glibc 2.35 of Ubuntu 22.04). The C++ runtime is copied next to the binaries.
 set -euo pipefail
-CACHE="$HOME/grc-bench-cache"
+CACHE="${GRC_BENCH_CACHE:-$HOME/grc-bench-cache}"
+CUDA_ARCH="${CUDA_ARCH:-120}"
+CUDA_VERSION="${CUDA_VERSION:-12.9}"
+JOBS="${JOBS:-20}"
+GCC_VERSION="${GCC_VERSION:-13}"
+SYSROOT="${SYSROOT:-}"
 TOOLS="$CACHE/tools"
 ENVP="$CACHE/buildenv-cuda"
 SRC="$CACHE/llama.cpp/src-b10333"
@@ -29,7 +38,7 @@ fi
 echo "== 2. toolchain"
 if [ ! -x "$ENVP/bin/nvcc" ]; then
   "$TOOLS/bin/micromamba" create -y -q -p "$ENVP" -c conda-forge \
-    cmake ninja "gcc_linux-64=13" "gxx_linux-64=13" "cuda-version=12.9" cuda-nvcc cuda-cudart-dev libcublas-dev
+    cmake ninja "gcc_linux-64=$GCC_VERSION" "gxx_linux-64=$GCC_VERSION" "cuda-version=$CUDA_VERSION" cuda-nvcc cuda-cudart-dev libcublas-dev ${SYSROOT:+"sysroot_linux-64=$SYSROOT"}
 fi
 "$ENVP/bin/nvcc" --version | tail -2
 
@@ -47,10 +56,10 @@ micromamba activate "$ENVP"
 set -u
 echo "CC=${CC:-} CXX=${CXX:-} CUDAHOSTCXX=${CUDAHOSTCXX:-}"
 cmake -S "$SRC" -B "$SRC/build-cuda" -G Ninja -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON \
-  -DCMAKE_CUDA_ARCHITECTURES=120 -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
+  -DCMAKE_CUDA_ARCHITECTURES="$CUDA_ARCH" -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
   -DBUILD_SHARED_LIBS=ON -DLLAMA_BUILD_NUMBER=10333 -DLLAMA_BUILD_COMMIT=08659901c \
   > "$SRC/cmake-configure.log" 2>&1 || { tail -40 "$SRC/cmake-configure.log"; exit 1; }
-cmake --build "$SRC/build-cuda" --target llama-server llama-bench llama-cli -j 20 > "$SRC/cmake-build.log" 2>&1 \
+cmake --build "$SRC/build-cuda" --target llama-server llama-bench llama-cli -j "$JOBS" > "$SRC/cmake-build.log" 2>&1 \
   || { tail -60 "$SRC/cmake-build.log"; exit 1; }
 set +u
 micromamba deactivate
@@ -61,11 +70,11 @@ rm -rf "$OUT"
 mkdir -p "$OUT"
 cp -a "$SRC/build-cuda/bin/llama-server" "$SRC/build-cuda/bin/llama-bench" "$SRC/build-cuda/bin/llama-cli" "$OUT/"
 cp -a "$SRC"/build-cuda/bin/*.so* "$OUT/" 2>/dev/null || true
-for lib in libcudart.so.12 libcublas.so.12 libcublasLt.so.12 libgomp.so.1; do
-  for f in "$ENVP"/lib/"$lib"*; do [ -e "$f" ] && cp -a "$f" "$OUT/"; done
+for lib in libcudart.so.12 libcublas.so.12 libcublasLt.so.12 libgomp.so.1 libstdc++.so.6 libgcc_s.so.1; do
+  [ -e "$ENVP/lib/$lib" ] && cp -L "$ENVP/lib/$lib" "$OUT/"   # the file itself, not a link into the build env
 done
 ls "$OUT"
-export LD_LIBRARY_PATH="$OUT:/usr/lib/wsl/lib"
+export LD_LIBRARY_PATH="$OUT:/usr/lib/wsl/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 ldd "$OUT/llama-server" | grep -E "not found|cuda|cublas" || true
 "$OUT/llama-server" --version 2>&1 | tail -3
 

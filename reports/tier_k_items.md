@@ -9,11 +9,11 @@ only this tooling and the labels it reuses (`splits/task_type_labels.jsonl`). No
 | file | records | sha256 |
 |---|---|---|
 | `items/tier_k/test/frozen_questions.jsonl` | 185 | `325c076bd75c764421d1e15cc579df17ef21cc4dcbfe46865bac41fb126083cc` |
-| `items/tier_k/dev/questions.jsonl` | 200 | `e57f83b2379cfcdaef28ab2cd41cbcc365381d6ac3c0f341230bbc7d3c17c7f1` |
+| `items/tier_k/dev/questions.jsonl` | 107 | `531d7d48dba8b11c545f8b3559b1b4d33d10cf253f81c83f487dc7736533a667` |
 
 Every record passes `grcbench.common.schemas.validate` (tier K) and carries the GRC-Bench canary. Test
 records follow the manifest order of `eval_manifest.json`; dev records follow `dev_ids` of
-`splits/tier_k_dev.json` (dev split v1; its status: "draft: twin thresholds are Claude's reading, pending team review"). Dev records name their
+`splits/tier_k_dev.json` (dev split v2; its status: "draft: twin thresholds are Claude's reading, pending team review"). Dev records name their
 subsets: anchor 60, ci 20.
 
 Inputs (paths under `project/data/` or the repository):
@@ -25,8 +25,8 @@ Inputs (paths under `project/data/` or the repository):
 | `GRC_dataset_20261007/dataset/04_eval_frozen/eval_questions.jsonl` | `db4cc52ea49a14075a78ecb01f342fe2e82f670382f98cb53ab16eb9a8acaf55` |
 | `GRC_dataset_20261007/dataset/04_eval_frozen/train_questions.jsonl` | `7e3df67853dd23dd010e5218fb946898ea4e263f8a8136f5cca67e5cc261e799` |
 | `splits/task_type_labels.jsonl` | `ebbdc51a0cb1338f230adc821359106872dda3cf72d02c3763c2cc884e6dc38d` |
-| `splits/tier_k_dev.json` | `02342682e1f7ceeb875c62ee30bf57741bc241eb698c537c073bbfd9e261e2ab` |
-| `splits/tier_k_twin_groups.json` | `2a3e176923a4c3c1a82f5b1c68c497a36fb63d302d261e6626b2367da5b3e31d` |
+| `splits/tier_k_dev.json` | `3b81bb0ffaf68a4f4d7f29672ebb7a5a9eec284a74b3c5dd25383b88c7a8ae31` |
+| `splits/tier_k_twin_groups.json` | `e2f961b4610e2f3a5b84de3299ee82c17f3eb05a331e6f417299c2769dccd522` |
 
 ## Fields
 
@@ -39,7 +39,7 @@ Inputs (paths under `project/data/` or the repository):
 - `review`: `not-required` for the question text (frozen dataset question); rubrics are reviewed separately.
 - `task_type` is the clean label, `task_type_raw` the dataset spelling, `task_type_labeller` who mapped it
   (`splits/task_type_labels.jsonl`). 11 test and
-  14 dev labels come from Claude's reading of an ambiguous
+  5 dev labels come from Claude's reading of an ambiguous
   spelling; the test ones await the team's blind double labelling (`reports/labels.md`).
 - `near_twin_in_train`, `near_twin_train_ids`, `train_neighbour_ids`: see the reporting split below.
 - `license`: the dataset README states no licence for question records, so every record says
@@ -50,7 +50,7 @@ Inputs (paths under `project/data/` or the repository):
 
 **Dev.** Rule of `splits/tier_k_twin_groups.json`: a training question in a twin group takes the group id,
 every other question is a singleton with its own id. The dev split excludes every twin-group member, so all
-200 dev questions are singletons (cluster sizes {1: 200}). Checked again here:
+107 dev questions are singletons (cluster sizes {1: 107}). Checked again here:
 0 dev questions share an 8-gram with a training question outside dev, and
 0 have a semantic, lexical or keep_both edge to one.
 
@@ -121,25 +121,25 @@ By question writer (Table 5):
 
 | writer family | test | dev |
 |---|---|---|
-| Mistral | 145 | 155 |
-| Gemma | 11 | 15 |
-| Qwen | 10 | 12 |
-| gpt-oss | 11 | 9 |
-| Nemotron | 8 | 9 |
+| Mistral | 145 | 82 |
+| Qwen | 10 | 8 |
+| Gemma | 11 | 6 |
+| Nemotron | 8 | 7 |
+| gpt-oss | 11 | 4 |
 
 Mistral wrote 145 of the 185 test questions
 (eval plan: 145). Per model, as recorded:
 
 | model | test | dev |
 |---|---|---|
-| Mistral Large | 79 | 86 |
-| Mistral Vibe | 31 | 33 |
-| Mistral Large 2 | 23 | 25 |
-| Gemma 4 | 11 | 15 |
-| Qwen | 10 | 12 |
-| gpt-oss | 11 | 9 |
-| Mistral Large 3 | 8 | 9 |
-| Nemotron | 8 | 9 |
+| Mistral Large | 79 | 48 |
+| Mistral Vibe | 31 | 16 |
+| Mistral Large 2 | 23 | 10 |
+| Qwen | 10 | 8 |
+| Gemma 4 | 11 | 6 |
+| Nemotron | 8 | 7 |
+| gpt-oss | 11 | 4 |
+| Mistral Large 3 | 8 | 6 |
 | Mistral Small | 4 | 2 |
 
 Model names are the dataset's labels made readable (`mistral_large2` -> Mistral Large 2, `gemma4/gemma` ->
@@ -149,23 +149,23 @@ Gemma 4); the question records do not state exact model versions.
 
 | task_type (clean) | test | dev |
 |---|---|---|
-| reasoning | 60 | 66 |
-| design | 39 | 41 |
-| factual | 30 | 33 |
-| calculation | 25 | 28 |
-| diagnosis | 20 | 20 |
-| gnuradio_usage | 11 | 12 |
+| reasoning | 60 | 44 |
+| design | 39 | 28 |
+| factual | 30 | 15 |
+| calculation | 25 | 8 |
+| diagnosis | 20 | 8 |
+| gnuradio_usage | 11 | 4 |
 
 | difficulty | test | dev |
 |---|---|---|
-| intermediate | 86 | 94 |
-| advanced | 60 | 65 |
-| basic | 39 | 41 |
+| intermediate | 86 | 54 |
+| advanced | 60 | 32 |
+| basic | 39 | 21 |
 
 | origin | test | dev |
 |---|---|---|
-| source | 110 | 120 |
-| blind | 75 | 80 |
+| source | 110 | 64 |
+| blind | 75 | 43 |
 
 ## Open points for the team
 

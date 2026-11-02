@@ -34,7 +34,7 @@ assistant inside GNU Radio Companion. It has four tiers.
 
 | Tier | What it measures | Dev split (for every choice) | Test split v1.0 (frozen 13 Nov) | Built by G2 |
 |---|---|---|---|---|
-| K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 200 questions held back from the 1,668 training questions | 285: the 185 frozen questions and 100 GNU Radio behaviour questions, each answered by running GNU Radio (the public reference set; any seed draws a fresh set of the same composition) | all 285 test and 200 dev questions; rubric templates (prose written by the team) |
+| K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 107 questions: the training team's validation questions that have no twin left in training and are not close to a test question | 285: the 185 frozen questions and 100 GNU Radio behaviour questions, each answered by running GNU Radio (the public reference set; any seed draws a fresh set of the same composition) | all 285 test questions and the dev questions; rubric templates (prose written by the team) |
 | F: flowgraphs | Making a correct flowgraph edit for a stated goal: one documentation lookup and one edit inside GRC-Agent, judged by running the result | 45 tasks | 150 tasks (60 L1, 60 L2, 30 L3) | a first set of 30 (20 test, 10 dev), all gates passed, pending team review |
 | A: agent | Completing a realistic multi-step task with GRC-Agent's tools (8–20 tool calls), judged by the end state | 12 tasks | 30 tasks | 10 test and 12 dev tasks built, all gates passed; 20 test tasks drafted as specifications |
 | E: speed and memory | Prompt and generation speed, time to first token and peak memory on the target hardware | — | — | the llama-bench protocol, tested on a small model |
@@ -42,6 +42,12 @@ assistant inside GNU Radio Companion. It has four tiers.
 **Splits and the test-run log** (eval plan §4.1).
 - Every choice (checkpoints, data mixes, adapter placement, early stopping, the CI gate) uses the dev
   split.
+- **The training data and the Tier-K dev split.** The training data is the training team's release,
+  Qoherent cleaned dataset v3 (1 November 2026, archive SHA-256 `c0705e6b…121a50b`), with its own
+  train, validation and test splits. The Tier-K dev split is the part of its validation split that
+  passes the dev rule: 107 of its 148 Q&A questions. The other 41 belong to a twin group of
+  training questions or are close to a frozen test question. `./gb audit` checks that the release's
+  training files hold no Tier-K dev or test question and no canary.
 - A run on the test split must name a configuration declared in `run_list.yaml`. The harness refuses
   any other test run.
 - Every test run is appended to `runs/test_run_log.jsonl` before it starts, with its model, settings,
@@ -57,7 +63,9 @@ assistant inside GNU Radio Companion. It has four tiers.
 - Every item record carries the canary string; the canary never appears in anything a model sees.
 - Benchmark items are never sent to a model that creates training data.
 - **Agent traces used for training.** Qoherent's 1,853 agent traces of 15–18 October (DeepSeek-V4.1-Flash
-  in GRC-Agent's harness) are used in full for training. `./gb traces` checks them against the
+  in GRC-Agent's harness) are training data: the release puts 1,195 of them in its training file
+  and 261 more in an optional training file, and holds 396 back for its own validation and test
+  (1 is excluded). `./gb traces` checks all 1,853 against the
   benchmark (`reports/agent_traces.md`):
   - no trace has the goal or the start graph of a Tier-F or Tier-A task (the task-level check of eval
     plan §6);
@@ -380,10 +388,15 @@ rate on dev answers (round-2 finding F5) can be measured.
 - **Agent traces** were collected on GNU Radio 3.10.9.2, where flowgraph execution was not available.
   The benchmark runs on 3.10.12 with execution.
 - **Web tools** return a fixed "offline" message in Tier A.
+- **The Tier-K dev split.** Eval plan §4.1 (Table 4) holds 200 of the 1,668 training questions back
+  as the dev split. Here the dev split comes from the training team's validation split, so that
+  training and GRC-Bench hold back the same questions (§2): 107 questions. Every dev-split choice,
+  and the curation comparison A2 of H3, rests on those 107 questions, and the anchor (60) and CI
+  (20) subsets are drawn from them.
 - **The Tier-K answer limit.** The evaluation plan as approved at gate G1 limits Tier-K answers to 4K
   tokens (§7.1). Here the limit is
-  16,384 tokens, reasoning included. On the dev split the smoke model reached 4,096 tokens on 48 of
-  200 answers while still reasoning; asked again with the larger limit, 9 finished between 4K and 16K
+  16,384 tokens, reasoning included. On the dev split of 14 October (200 questions) the smoke model
+  reached 4,096 tokens on 48 of 200 answers while still reasoning; asked again with the larger limit, 9 finished between 4K and 16K
   tokens, 23 within 4K and 16 not at all.
 - **The grammar-constrained baseline.** The methodology proposals and the evaluation plan as approved at
   gate G1 (Table 1) list a baseline with grammar-constrained tool calls on Tier A. In llama.cpp b10333 the server's default already constrains tool calls, so

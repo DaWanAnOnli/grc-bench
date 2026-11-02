@@ -45,7 +45,7 @@ def test_counts_and_ids_match_the_manifests(built):
     manifest = read_json(FROZEN / "eval_manifest.json")
     dev = read_json(SPLITS / "tier_k_dev.json")
     assert len(built.test) == 185 and [r["id"] for r in built.test] == manifest["eval_ids"]
-    assert len(built.dev) == 200 and [r["id"] for r in built.dev] == dev["dev_ids"]
+    assert len(built.dev) == 107 and [r["id"] for r in built.dev] == dev["dev_ids"]
     assert {r["split"] for r in built.test} == {"test"} and {r["split"] for r in built.dev} == {"dev"}
     assert not {r["id"] for r in built.test} & {r["id"] for r in built.dev}
 
@@ -222,7 +222,7 @@ def test_two_runs_are_byte_identical(runs):
         assert (a / rel).read_bytes() == (b / rel).read_bytes(), f"{rel} differs between runs"
     lines = (a / items.OUT_TEST).read_bytes().split(b"\n")
     assert lines[-1] == b"" and b"\r" not in (a / items.OUT_TEST).read_bytes()
-    assert len(read_jsonl(a / items.OUT_TEST)) == 185 and len(read_jsonl(a / items.OUT_DEV)) == 200
+    assert len(read_jsonl(a / items.OUT_TEST)) == 185 and len(read_jsonl(a / items.OUT_DEV)) == 107
 
 
 def test_repository_outputs_are_current(runs):

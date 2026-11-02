@@ -87,3 +87,26 @@ def test_report_only_rerenders_from_the_summary(tmp_path, monkeypatch):
 def test_notes_are_rendered():
     s = {**FIXTURE_SUMMARY, "notes": ["Two episodes ended with server errors."]}
     assert "## Notes" in e2e.render_report(s) and "Two episodes ended" in e2e.render_report(s)
+
+
+def test_limits_rubrics_machine_and_report_reach_the_tiers(tmp_path, monkeypatch):
+    """The options a run on another machine (Colab) needs: fewer tasks, a rubric file, its own Tier-E
+    record name and machine label, and a report outside the repository."""
+    from grcbench.tier_a import smoke
+    seen = {}
+    monkeypatch.setattr(smoke, "native_context", lambda model: 40960)
+    monkeypatch.setattr(smoke, "LocalServer", lambda *a, **kw: type("S", (), {
+        "load_seconds": 1.0, "__enter__": lambda self: "http://127.0.0.1:9/v1", "__exit__": lambda self, *e: None})())
+    monkeypatch.setattr(e2e, "_tier_k", lambda *a, **kw: seen.setdefault("K", (a, kw)) and {"items": 1})
+    monkeypatch.setattr(e2e, "_tier_f", lambda *a, **kw: seen.setdefault("F", (a, kw)) and {"tasks": 1})
+    monkeypatch.setattr(e2e, "_tier_a", lambda *a, **kw: seen.setdefault("A", (a, kw)) and {"tasks": 1})
+    monkeypatch.setattr(e2e, "_tier_e", lambda *a, **kw: seen.setdefault("E", (a, kw)) and {"runs": 5})
+    monkeypatch.setattr(e2e, "REPORT", tmp_path / "must_not_be_written.md")
+    report, rubrics = tmp_path / "colab_report.md", tmp_path / "placeholder.jsonl"
+    assert e2e.main(["--out", str(tmp_path / "run"), "--limit-k", "3", "--limit-f", "2", "--limit-a", "1",
+                     "--rubrics", str(rubrics), "--report", str(report), "--e-name", "colab_t4",
+                     "--machine-label", "Colab T4"]) == 0
+    assert seen["K"][1]["rubrics"] == rubrics and seen["K"][0][4] == 3
+    assert seen["F"][1]["limit"] == 2 and seen["A"][1]["limit"] == 1
+    assert seen["E"][1] == {"name": "colab_t4", "machine_label": "Colab T4"}
+    assert report.exists() and not (tmp_path / "must_not_be_written.md").exists()

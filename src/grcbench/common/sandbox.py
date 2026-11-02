@@ -10,6 +10,9 @@ generated code, so every rung from V2 up and every agent tool that executes code
   * only the run directory is writable; HOME and the XDG directories point inside it;
   * no network (--unshare-net), its own PID namespace, killed with the parent;
   * CPU-time and address-space limits plus a wall-clock timeout.
+
+GRC_BENCH_BWRAP_USERNS=1 adds --unshare-user: a root shell in a container without CAP_SYS_ADMIN (a
+Colab runtime) can create the other namespaces only inside a user namespace of its own.
 """
 
 from __future__ import annotations
@@ -164,6 +167,8 @@ def run(cmd: list[str], run_dir: Path, *, timeout: float = 60.0, cpu_seconds: in
             "--unshare-pid", "--die-with-parent", "--new-session"]
     if not network:
         args.append("--unshare-net")
+    if os.environ.get("GRC_BENCH_BWRAP_USERNS") == "1":
+        args.append("--unshare-user")
     for path in extra_ro_binds or []:
         args += ["--ro-bind", str(path), str(path)]
     args += [*readonly_args(hidden_roots()), "--"]

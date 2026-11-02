@@ -200,25 +200,25 @@
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.8512,
+     "max": 0.8438,
      "min": 0.7774,
      "p10": 0.7936,
-     "p25": 0.8059,
-     "p50": 0.8212,
-     "p75": 0.8301,
-     "p90": 0.8399,
-     "p95": 0.8442,
-     "p99": 0.8498
+     "p25": 0.8033,
+     "p50": 0.8156,
+     "p75": 0.8241,
+     "p90": 0.8365,
+     "p95": 0.8397,
+     "p99": 0.843
     },
-    "passages_embedded": 41,
+    "passages_embedded": 44,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
     "status": "done",
     "threshold": 0.88
    },
-   "n_docs": 3042,
-   "n_passages": 40896,
+   "n_docs": 3232,
+   "n_passages": 43955,
    "ngram": {
     "items_coverage_ge_50pct": 0,
     "items_with_twin": 2,
@@ -226,7 +226,7 @@
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
-    "3042 repaired answers; 423 rows for dev questions dropped"
+    "3232 repaired answers; 233 rows for dev questions dropped"
    ],
    "signal_overlap": {
     "ngram+embed": 0,
@@ -243,15 +243,15 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.3106,
-     "min": 0.1823,
-     "p10": 0.2119,
-     "p25": 0.2295,
-     "p50": 0.2481,
-     "p75": 0.2685,
-     "p90": 0.2822,
-     "p95": 0.3023,
-     "p99": 0.3089
+     "max": 0.3146,
+     "min": 0.1822,
+     "p10": 0.2086,
+     "p25": 0.2194,
+     "p50": 0.2476,
+     "p75": 0.2693,
+     "p90": 0.2842,
+     "p95": 0.2992,
+     "p99": 0.3115
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -259,23 +259,13 @@
    },
    "top_pairs": [
     {
-     "doc_id": "nemotron3-super-120b/q_20b479577147d8ea",
-     "doc_ref": "q_20b479577147d8ea",
-     "embed": 0.8512,
-     "item": "This flowgraph is meant to clean up a test tone. It runs at a sample rate of 32 kHz. The Signal Source block tone produces a 1.2 kHz cosine (float samples, amp…",
-     "item_id": "gbf-test-10",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "GNU Radio Flowgraph – Band‑Pass FIR Filter on a Noisy Signal** | Block (in order) | Purpose | Key Settings (typical values) | |------------------|---------|------------------------------| | **Signal Source** (e.g., *Signal Source* or *File…"
-    },
-    {
      "doc_id": "devstral-small2-24b/q_dafdb0d3b587bf61",
      "doc_ref": "q_dafdb0d3b587bf61",
      "embed": 0.8438,
      "item": "In this empty flowgraph, build a loopback test for a narrowband FM voice link: frequency-modulate a test tone and then demodulate it again. Set samp_rate to 40…",
      "item_id": "gbf-test-14",
      "ngram_shared": 0,
-     "tfidf": 0.2648,
+     "tfidf": 0.2654,
      "training": "A GNU Radio flowgraph to generate and demodulate an AM signal. Assumptions - Carrier frequency fc = 100 kHz - Audio (modulating) frequency 1 kHz, baseband bandwidth fbw = 5 kHz - Sampling rate fs = 1 MHz (enough to represent the carrier) -…"
     },
     {
@@ -285,28 +275,18 @@
      "item": "This flowgraph runs at a sample rate of 48 kHz and writes a complex tone to a File Sink that stores complex samples in the file qtgui_time_sink_x_0_0.dat. When…",
      "item_id": "gbf-test-06",
      "ngram_shared": 0,
-     "tfidf": 0.2692,
+     "tfidf": 0.2712,
      "training": "1 kHz or native rate. 2. **(Optional) Rational Resampler** - 48 kHz -> 44.1 kHz. 3. **(Optional) Float-to-Short** - for integer PCM. 4. **File Sink** (or **WAV File Sink**) - writes the samples to disk. 5. **(Optional) Head** - to limit re…"
     },
     {
-     "doc_id": "nemotron3-super-120b/q_20b479577147d8ea",
+     "doc_id": "muse-glimmer-30b/q_20b479577147d8ea",
      "doc_ref": "q_20b479577147d8ea",
-     "embed": 0.8382,
-     "item": "In this flowgraph, make band-limited Gaussian noise at a sample rate of 40 kHz. Generate real-valued (float) Gaussian noise with a standard deviation of 2.0 an…",
-     "item_id": "gbf-test-03",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "GNU Radio Flowgraph – Band‑Pass FIR Filter on a Noisy Signal** | Block (in order) | Purpose | Key Settings (typical values) | |------------------|---------|------------------------------| | **Signal Source** (e.g., *Signal Source* or *File…"
-    },
-    {
-     "doc_id": "nemotron3-super-120b/q_20b479577147d8ea",
-     "doc_ref": "q_20b479577147d8ea",
-     "embed": 0.8364,
+     "embed": 0.8362,
      "item": "This flowgraph runs at a sample rate of 64 kHz (64,000 samples per second). It adds a complex tone at 3.1 kHz with amplitude 0.5 to complex Gaussian noise with…",
      "item_id": "gbf-test-15",
      "ngram_shared": 0,
-     "tfidf": 0.2267,
-     "training": "GNU Radio Flowgraph – Band‑Pass FIR Filter on a Noisy Signal** | Block (in order) | Purpose | Key Settings (typical values) | |------------------|---------|------------------------------| | **Signal Source** (e.g., *Signal Source* or *File…"
+     "tfidf": 0.2281,
+     "training": "Flowgraph** Signal Source + Noise Source -> Add -> FIR Filter -> Sinks or for a recorded noisy signal File Source -> FIR Filter -> File Sink / QT GUI Sinks 1. **Signal generation / input** * `Signal Source` for a test tone, or `File Source…"
     },
     {
      "doc_id": "gpt-oss-120b/q_609d652cf5167382",
@@ -315,18 +295,8 @@
      "item": "This flowgraph runs at a sample rate of 48 kHz and simulates a receiver recording with weak and strong bursts: a complex Signal Source makes a 1.2 kHz tone wit…",
      "item_id": "gbf-test-11",
      "ngram_shared": 0,
-     "tfidf": null,
+     "tfidf": 0.1978,
      "training": "1 kHz or native rate. 2. **(Optional) Rational Resampler** - 48 kHz -> 44.1 kHz. 3. **(Optional) Float-to-Short** - for integer PCM. 4. **File Sink** (or **WAV File Sink**) - writes the samples to disk. 5. **(Optional) Head** - to limit re…"
-    },
-    {
-     "doc_id": "nemotron3-super-120b/q_20b479577147d8ea",
-     "doc_ref": "q_20b479577147d8ea",
-     "embed": 0.8271,
-     "item": "This flowgraph sends a test tone through a Channel Model at a sample rate of 48 kHz: a Signal Source makes a complex tone at +3 kHz with amplitude 0.5, which i…",
-     "item_id": "gbf-test-12",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "GNU Radio Flowgraph – Band‑Pass FIR Filter on a Noisy Signal** | Block (in order) | Purpose | Key Settings (typical values) | |------------------|---------|------------------------------| | **Signal Source** (e.g., *Signal Source* or *File…"
     },
     {
      "doc_id": "laguna-s21/q_cf67069275519be2",
@@ -335,7 +305,7 @@
      "item": "This flowgraph is a baseband test transmitter running at a sample rate of 48 kHz (samp_rate = 48000). A Vector Source repeats eight data bytes, 0x1B, 0x9C, 0x4…",
      "item_id": "gbf-test-20",
      "ngram_shared": 0,
-     "tfidf": 0.2253,
+     "tfidf": 0.2264,
      "training": "on (+A). - Symbol rate 2 kHz, carrier 10 kHz, samples/symbol = 100 (samp_rate 200 kSa/s). ## Transmitter (TX) 1. **Random/Vector Source** (Byte, values 0/1). 2. **Unpack K Bits / Char-to-Float** -> a 0/1 float stream (0 V / 1 V NRZ). 3. **…"
     },
     {
@@ -345,18 +315,48 @@
      "item": "Build a small data transmitter in this flowgraph, which is empty apart from the samp_rate variable. Use a sample rate of 32 kHz (samp_rate = 32000). 1. Symbols…",
      "item_id": "gbf-test-13",
      "ngram_shared": 0,
-     "tfidf": 0.2451,
+     "tfidf": 0.2467,
      "training": "on (+A). - Symbol rate 2 kHz, carrier 10 kHz, samples/symbol = 100 (samp_rate 200 kSa/s). ## Transmitter (TX) 1. **Random/Vector Source** (Byte, values 0/1). 2. **Unpack K Bits / Char-to-Float** -> a 0/1 float stream (0 V / 1 V NRZ). 3. **…"
     },
     {
-     "doc_id": "nemotron3-super-120b/q_20b479577147d8ea",
+     "doc_id": "muse-glimmer-30b/q_20b479577147d8ea",
      "doc_ref": "q_20b479577147d8ea",
-     "embed": 0.8236,
+     "embed": 0.8218,
+     "item": "In this flowgraph, make band-limited Gaussian noise at a sample rate of 40 kHz. Generate real-valued (float) Gaussian noise with a standard deviation of 2.0 an…",
+     "item_id": "gbf-test-03",
+     "ngram_shared": 0,
+     "tfidf": 0.2384,
+     "training": "test tone, or `File Source` for a real noisy recording. * Waveform: Sine, frequency f0 e.g. 100 kHz, amplitude 1 * Sample Rate Fs: e.g. 1e6 sps * Output type: float or complex as required by the filter * `Noise Source` if you want to synth…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_dafdb0d3b587bf61",
+     "doc_ref": "q_dafdb0d3b587bf61",
+     "embed": 0.8215,
+     "item": "This flowgraph sends a test tone through a Channel Model at a sample rate of 48 kHz: a Signal Source makes a complex tone at +3 kHz with amplitude 0.5, which i…",
+     "item_id": "gbf-test-12",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "A GNU Radio flowgraph to generate and demodulate an AM signal. Assumptions - Carrier frequency fc = 100 kHz - Audio (modulating) frequency 1 kHz, baseband bandwidth fbw = 5 kHz - Sampling rate fs = 1 MHz (enough to represent the carrier) -…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8187,
+     "item": "This flowgraph runs at a sample rate of 48 kHz. A float Signal Source makes a 1.5 kHz cosine with amplitude 0.8. The cosine goes straight to a File Sink that w…",
+     "item_id": "gbf-test-07",
+     "ngram_shared": 0,
+     "tfidf": 0.2477,
+     "training": "to the output file. ### Example Flowgraph (With Processing): - **File Source** → **Throttle** (rate control) → **Multiply Const** (amplification) → **File Sink**. ### Key Considerations: - **Sample Type**: Ensure the file source and sink u…"
+    },
+    {
+     "doc_id": "gpt-oss-120b/q_609d652cf5167382",
+     "doc_ref": "q_609d652cf5167382",
+     "embed": 0.8172,
      "item": "This flowgraph generates a GMSK test signal from random bytes and passes it through the HW Impairments block, which is set so that it changes nothing (phase no…",
      "item_id": "gbf-test-19",
      "ngram_shared": 0,
      "tfidf": null,
-     "training": "GNU Radio Flowgraph – Band‑Pass FIR Filter on a Noisy Signal** | Block (in order) | Purpose | Key Settings (typical values) | |------------------|---------|------------------------------| | **Signal Source** (e.g., *Signal Source* or *File…"
+     "training": "1 kHz or native rate. 2. **(Optional) Rational Resampler** - 48 kHz -> 44.1 kHz. 3. **(Optional) Float-to-Short** - for integer PCM. 4. **File Sink** (or **WAV File Sink**) - writes the samples to disk. 5. **(Optional) Head** - to limit re…"
     }
    ]
   },
@@ -369,25 +369,25 @@
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.8627,
+     "max": 0.8419,
      "min": 0.7914,
      "p10": 0.8,
-     "p25": 0.8046,
-     "p50": 0.8175,
-     "p75": 0.8325,
-     "p90": 0.8408,
-     "p95": 0.8472,
-     "p99": 0.8596
+     "p25": 0.804,
+     "p50": 0.8137,
+     "p75": 0.8257,
+     "p90": 0.8361,
+     "p95": 0.8403,
+     "p99": 0.8416
     },
-    "passages_embedded": 43,
+    "passages_embedded": 45,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
     "status": "done",
     "threshold": 0.88
    },
-   "n_docs": 3042,
-   "n_passages": 55753,
+   "n_docs": 3232,
+   "n_passages": 59300,
    "ngram": {
     "items_coverage_ge_50pct": 0,
     "items_with_twin": 3,
@@ -395,7 +395,7 @@
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
-    "3042 repaired answers; 423 rows for dev questions dropped"
+    "3232 repaired answers; 233 rows for dev questions dropped"
    ],
    "signal_overlap": {
     "ngram+embed": 0,
@@ -412,15 +412,15 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.3004,
-     "min": 0.1996,
-     "p10": 0.2183,
-     "p25": 0.2298,
-     "p50": 0.2521,
-     "p75": 0.2625,
-     "p90": 0.274,
-     "p95": 0.2957,
-     "p99": 0.2995
+     "max": 0.3034,
+     "min": 0.2,
+     "p10": 0.2132,
+     "p25": 0.2322,
+     "p50": 0.2532,
+     "p75": 0.264,
+     "p90": 0.2747,
+     "p95": 0.2832,
+     "p99": 0.2994
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -428,24 +428,14 @@
    },
    "top_pairs": [
     {
-     "doc_id": "nemotron3-super-120b/q_a9e2d6d1105261f4",
-     "doc_ref": "q_a9e2d6d1105261f4",
-     "embed": 0.8627,
-     "item": "In this empty flowgraph, set the sample rate to 48 kHz and build a test signal for a DAC input that only accepts values between 0 and 1: a 1.25 kHz sinusoid th…",
-     "item_id": "gbf-test-04",
-     "ngram_shared": 0,
-     "tfidf": 0.2198,
-     "training": "e.g. 48 kHz) | Must satisfy Nyquist for 1 kHz sine. | | | Waveform | **Sine** | Generates a pure tone. | | | Frequency | **1 kHz** | Desired tone frequency. | | | Amplitude | **0.5** (or 1.0) | Sets peak-to-peak amplitude; keep < 1 to avoi…"
-    },
-    {
-     "doc_id": "nemotron3-super-120b/q_a9e2d6d1105261f4",
-     "doc_ref": "q_a9e2d6d1105261f4",
-     "embed": 0.8464,
+     "doc_id": "nemotron3-super-120b/q_a575129c52598319",
+     "doc_ref": "q_a575129c52598319",
+     "embed": 0.8419,
      "item": "This flowgraph sends a test tone through a Channel Model at a sample rate of 48 kHz: a Signal Source makes a complex tone at +3 kHz with amplitude 0.5, which i…",
      "item_id": "gbf-test-12",
      "ngram_shared": 0,
-     "tfidf": 0.2585,
-     "training": "e.g. 48 kHz) | Must satisfy Nyquist for 1 kHz sine. | | | Waveform | **Sine** | Generates a pure tone. | | | Frequency | **1 kHz** | Desired tone frequency. | | | Amplitude | **0.5** (or 1.0) | Sets peak-to-peak amplitude; keep < 1 to avoi…"
+     "tfidf": null,
+     "training": "constant: `k_pm` (e.g., 0.5) - PM Modulator: - Carrier frequency: 455 kHz (IF) - Modulation sensitivity: 1.0 (rad/V) – actual deviation = Gain × sensitivity - Throttle sample rate: 48 kHz (or resampled rate) - File sink: `pm_signal.dat`, f…"
     },
     {
      "doc_id": "gpt-oss-120b/q_609d652cf5167382",
@@ -454,7 +444,7 @@
      "item": "This flowgraph runs at a sample rate of 48 kHz and writes a complex tone to a File Sink that stores complex samples in the file qtgui_time_sink_x_0_0.dat. When…",
      "item_id": "gbf-test-06",
      "ngram_shared": 0,
-     "tfidf": 0.2601,
+     "tfidf": 0.263,
      "training": "native rate. 2. **(Optional) Rational Resampler** (from `gnuradio.filter`) – 48 kHz → 44.1 kHz. 3. **(Optional) Float‑to‑Short** – for integer PCM. 4. **File Sink** (or **WAV File Sink**) – writes the samples to disk. 5. **(Optional) Head*…"
     },
     {
@@ -468,23 +458,13 @@
      "training": "amplitude 0.5 - **Noise**: Gaussian, RMS = 0.15 → ~10 dB SNR - **FIR**: 151 taps, Hamming-windowed band-pass (8–12 kHz), stop-band attenuation ~45 dB - **GUI FFT**: shows suppression of out-of-band noise, clear peak at 10 kHz. With these b…"
     },
     {
-     "doc_id": "nemotron3-super-120b/q_a9e2d6d1105261f4",
-     "doc_ref": "q_a9e2d6d1105261f4",
-     "embed": 0.8331,
-     "item": "I want to see what a full-wave rectifier does to a mains-like waveform. In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to generate a 50 Hz…",
-     "item_id": "gbf-test-01",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "e.g. 48 kHz) | Must satisfy Nyquist for 1 kHz sine. | | | Waveform | **Sine** | Generates a pure tone. | | | Frequency | **1 kHz** | Desired tone frequency. | | | Amplitude | **0.5** (or 1.0) | Sets peak-to-peak amplitude; keep < 1 to avoi…"
-    },
-    {
      "doc_id": "devstral-small2-24b/q_2aa48378c037617f",
      "doc_ref": "q_2aa48378c037617f",
      "embed": 0.8323,
      "item": "This flowgraph should mark the peaks of a sawtooth wave. Its Signal Source generates a 600 Hz sawtooth as float samples at a sample rate of 48 kHz, with amplit…",
      "item_id": "gbf-test-09",
      "ngram_shared": 0,
-     "tfidf": 0.2436,
+     "tfidf": 0.2456,
      "training": "for floating-point output). ### Key Details: 1. **Block Name**: `Signal Source` (found under the `Analog` category in GNU Radio Companion). 2. **Parameters**: - **Sample Rate**: the rate at which samples are generated (must match your flow…"
     },
     {
@@ -494,7 +474,7 @@
      "item": "In this empty flowgraph, build a loopback test for a narrowband FM voice link: frequency-modulate a test tone and then demodulate it again. Set samp_rate to 40…",
      "item_id": "gbf-test-14",
      "ngram_shared": 0,
-     "tfidf": 0.3004,
+     "tfidf": 0.3034,
      "training": "Sink: 48 kHz (with an additional rational resampler as needed), no de‑emphasis With these settings the flowgraph captures a genuinely 2 MHz‑wide FM carrier at 100 MHz, filters to the full ±1 MHz occupied bandwidth, demodulates with a discr…"
     },
     {
@@ -514,7 +494,7 @@
      "item": "This flowgraph runs at a sample rate of 64 kHz (64,000 samples per second). It adds a complex tone at 3.1 kHz with amplitude 0.5 to complex Gaussian noise with…",
      "item_id": "gbf-test-15",
      "ngram_shared": 0,
-     "tfidf": 0.2318,
+     "tfidf": 0.232,
      "training": "Here is a concise GNU Radio flowgraph design that applies a band-pass FIR filter to a noisy signal: **Blocks and Configuration** 1. **Signal Source** (for simulation) or **File Source** - For a simulated noisy signal: **Noise Source** (e.g…"
     },
     {
@@ -526,6 +506,26 @@
      "ngram_shared": 0,
      "tfidf": null,
      "training": "Sink: 48 kHz (with an additional rational resampler as needed), no de‑emphasis With these settings the flowgraph captures a genuinely 2 MHz‑wide FM carrier at 100 MHz, filters to the full ±1 MHz occupied bandwidth, demodulates with a discr…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_0ed028a9be934926",
+     "doc_ref": "q_0ed028a9be934926",
+     "embed": 0.8147,
+     "item": "This flowgraph is a baseband test transmitter running at a sample rate of 48 kHz (samp_rate = 48000). A Vector Source repeats eight data bytes, 0x1B, 0x9C, 0x4…",
+     "item_id": "gbf-test-20",
+     "ngram_shared": 0,
+     "tfidf": 0.2538,
+     "training": "A GNU Radio BPSK transmitter flowgraph: ### Key blocks 1. **Data source** - **Random Source** (or **Vector Source** for deterministic test bits), output type Byte. If the source emits packed bytes, follow with **Packed to Unpacked** (bits/…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_2aa48378c037617f",
+     "doc_ref": "q_2aa48378c037617f",
+     "embed": 0.8139,
+     "item": "In this empty flowgraph, set the sample rate to 48 kHz and build a test signal for a DAC input that only accepts values between 0 and 1: a 1.25 kHz sinusoid th…",
+     "item_id": "gbf-test-04",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "for floating-point output). ### Key Details: 1. **Block Name**: `Signal Source` (found under the `Analog` category in GNU Radio Companion). 2. **Parameters**: - **Sample Rate**: the rate at which samples are generated (must match your flow…"
     }
    ]
   },
@@ -881,24 +881,24 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.8575,
-     "min": 0.766,
-     "p10": 0.7909,
-     "p25": 0.8023,
+     "min": 0.7702,
+     "p10": 0.799,
+     "p25": 0.8025,
      "p50": 0.8109,
-     "p75": 0.8266,
+     "p75": 0.8232,
      "p90": 0.8397,
      "p95": 0.8409,
      "p99": 0.8542
     },
-    "passages_embedded": 42,
+    "passages_embedded": 45,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
     "status": "done",
     "threshold": 0.88
    },
-   "n_docs": 10262,
-   "n_passages": 267068,
+   "n_docs": 10912,
+   "n_passages": 282145,
    "ngram": {
     "items_coverage_ge_50pct": 0,
     "items_with_twin": 2,
@@ -906,9 +906,9 @@
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
-    "7 teachers; 10262 (question_id, model) answers",
-    "104 duplicate (question_id, model) rows replaced by the later row (laguna-s21 re-runs)",
-    "1415 rows for dev questions dropped",
+    "7 teachers; 10912 (question_id, model) answers",
+    "111 duplicate (question_id, model) rows replaced by the later row (laguna-s21 re-runs)",
+    "758 rows for dev questions dropped",
     "0 rows with no text skipped"
    ],
    "signal_overlap": {
@@ -950,15 +950,15 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.3192,
-     "min": 0.2287,
-     "p10": 0.2354,
-     "p25": 0.2499,
-     "p50": 0.2641,
-     "p75": 0.2809,
-     "p90": 0.3125,
-     "p95": 0.3169,
-     "p99": 0.3187
+     "max": 0.3178,
+     "min": 0.2268,
+     "p10": 0.2304,
+     "p25": 0.2422,
+     "p50": 0.2638,
+     "p75": 0.2856,
+     "p90": 0.2965,
+     "p95": 0.3165,
+     "p99": 0.3175
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -972,7 +972,7 @@
      "item": "This flowgraph is meant to clean up a test tone. It runs at a sample rate of 32 kHz. The Signal Source block tone produces a 1.2 kHz cosine (float samples, amp…",
      "item_id": "gbf-test-10",
      "ngram_shared": 0,
-     "tfidf": 0.2654,
+     "tfidf": 0.2656,
      "training": "GNU Radio Flowgraph for Low‑Pass Filtering a Noisy Signal** | Block (GNU Radio) | Purpose | Key Parameters (example) | |-------------------|---------|--------------------------| | **Signal Source** (e.g., `Waveform Source` → *Cosine* or *N…"
     },
     {
@@ -982,7 +982,7 @@
      "item": "This flowgraph runs at a sample rate of 64 kHz (64,000 samples per second). It adds a complex tone at 3.1 kHz with amplitude 0.5 to complex Gaussian noise with…",
      "item_id": "gbf-test-15",
      "ngram_shared": 0,
-     "tfidf": 0.235,
+     "tfidf": 0.236,
      "training": "GNU Radio Flowgraph for Low‑Pass Filtering a Noisy Signal** | Block (GNU Radio) | Purpose | Key Parameters (example) | |-------------------|---------|--------------------------| | **Signal Source** (e.g., `Waveform Source` → *Cosine* or *N…"
     },
     {
@@ -996,16 +996,6 @@
      "training": "rate conversion is needed) 3. **File Sink** ## Flowgraph Design ``` Audio Source → Rational Resampler → File Sink ``` ### Block Parameters: - **Audio Source**: Set Sample Rate = 44.1 kHz - **Rational Resampler**: - Interpolation = 1 - Deci…"
     },
     {
-     "doc_id": "nemotron3-super-120b/q_a9e2d6d1105261f4",
-     "doc_ref": "q_a9e2d6d1105261f4",
-     "embed": 0.838,
-     "item": "In this empty flowgraph, set the sample rate to 48 kHz and build a test signal for a DAC input that only accepts values between 0 and 1: a 1.25 kHz sinusoid th…",
-     "item_id": "gbf-test-04",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "sine. | | | Waveform | **Sine** | Generates a pure tone. | | | Frequency | **1 kHz** | Desired tone frequency. | | | Amplitude | **0.5** (or 1.0) | Sets peak‑to‑peak amplitude; keep < 1 to avoid clipping. | | | Offset | **0** | No DC offse…"
-    },
-    {
      "doc_id": "nemotron3-super-120b/q_b656b3ba8bb9cdb7",
      "doc_ref": "q_b656b3ba8bb9cdb7",
      "embed": 0.8293,
@@ -1016,24 +1006,24 @@
      "training": "GNU Radio Flowgraph for Low‑Pass Filtering a Noisy Signal** | Block (GNU Radio) | Purpose | Key Parameters (example) | |-------------------|---------|--------------------------| | **Signal Source** (e.g., `Waveform Source` → *Cosine* or *N…"
     },
     {
-     "doc_id": "nemotron3-super-120b/q_a9e2d6d1105261f4",
-     "doc_ref": "q_a9e2d6d1105261f4",
-     "embed": 0.8257,
-     "item": "This flowgraph sends a test tone through a Channel Model at a sample rate of 48 kHz: a Signal Source makes a complex tone at +3 kHz with amplitude 0.5, which i…",
-     "item_id": "gbf-test-12",
-     "ngram_shared": 0,
-     "tfidf": 0.2634,
-     "training": "sine. | | | Waveform | **Sine** | Generates a pure tone. | | | Frequency | **1 kHz** | Desired tone frequency. | | | Amplitude | **0.5** (or 1.0) | Sets peak‑to‑peak amplitude; keep < 1 to avoid clipping. | | | Offset | **0** | No DC offse…"
-    },
-    {
-     "doc_id": "gpt-oss-120b/q_609d652cf5167382",
-     "doc_ref": "q_609d652cf5167382",
-     "embed": 0.822,
+     "doc_id": "gpt-oss-120b/q_1abd02848f9b4159",
+     "doc_ref": "q_1abd02848f9b4159",
+     "embed": 0.8263,
      "item": "This flowgraph runs at a sample rate of 48 kHz and simulates a receiver recording with weak and strong bursts: a complex Signal Source makes a 1.2 kHz tone wit…",
      "item_id": "gbf-test-11",
      "ngram_shared": 0,
      "tfidf": null,
-     "training": "native rate. 2. **(Optional) Rational Resampler** – 48 kHz → 44.1 kHz. 3. **(Optional) Float‑to‑Short** – for integer PCM. 4. **File Sink** (or **WAV File Sink**) – writes the samples to disk. 5. **(Optional) Head** – to limit recording le…"
+     "training": "pass (auto‑designed Kaiser with ~60 dB stopband attenuation), * Writes the 48 kHz result to `upsampled_48k.dat`. Replace `vector_source_f` with any source that produces a **float** (or use the complex variant `rational_resampler_ccc`) and…"
+    },
+    {
+     "doc_id": "laguna-s21/q_adff30cd72dfbaa5",
+     "doc_ref": "q_adff30cd72dfbaa5",
+     "embed": 0.8221,
+     "item": "This flowgraph sends a test tone through a Channel Model at a sample rate of 48 kHz: a Signal Source makes a complex tone at +3 kHz with amplitude 0.5, which i…",
+     "item_id": "gbf-test-12",
+     "ngram_shared": 0,
+     "tfidf": 0.253,
+     "training": "Cutoff = 15 kHz`, `Transition Width = 5 kHz` | | **Audio Sink** | Play recovered audio | `Audio Sink` | `Sample Rate = 48 kHz` (must match audio‑rate after decimation) | --- ### 2. Detailed Block‑by‑Block Specification | Block | Type | Par…"
     },
     {
      "doc_id": "devstral-small2-24b/q_adff30cd72dfbaa5",
@@ -1042,18 +1032,28 @@
      "item": "In this empty flowgraph, build a loopback test for a narrowband FM voice link: frequency-modulate a test tone and then demodulate it again. Set samp_rate to 40…",
      "item_id": "gbf-test-14",
      "ngram_shared": 0,
-     "tfidf": 0.2849,
+     "tfidf": 0.2863,
      "training": "the FM carrier) and low-pass filtering. - **Sample Rate**: 1 MS/s is sufficient for a 1 kHz tone with 75 kHz deviation. - **Deviation**: 75 kHz is standard for narrowband FM (NBFM). --- **Assumptions** - The FM carrier frequency is 1 MHz (…"
     },
     {
-     "doc_id": "nemotron3-super-120b/q_a9e2d6d1105261f4",
-     "doc_ref": "q_a9e2d6d1105261f4",
-     "embed": 0.813,
+     "doc_id": "gpt-oss-120b/q_1abd02848f9b4159",
+     "doc_ref": "q_1abd02848f9b4159",
+     "embed": 0.8141,
+     "item": "In this empty flowgraph, set the sample rate to 48 kHz and build a test signal for a DAC input that only accepts values between 0 and 1: a 1.25 kHz sinusoid th…",
+     "item_id": "gbf-test-04",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "pass (auto‑designed Kaiser with ~60 dB stopband attenuation), * Writes the 48 kHz result to `upsampled_48k.dat`. Replace `vector_source_f` with any source that produces a **float** (or use the complex variant `rational_resampler_ccc`) and…"
+    },
+    {
+     "doc_id": "gpt-oss-120b/q_1abd02848f9b4159",
+     "doc_ref": "q_1abd02848f9b4159",
+     "embed": 0.8136,
      "item": "I want to see what a full-wave rectifier does to a mains-like waveform. In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to generate a 50 Hz…",
      "item_id": "gbf-test-01",
      "ngram_shared": 0,
      "tfidf": null,
-     "training": "sine. | | | Waveform | **Sine** | Generates a pure tone. | | | Frequency | **1 kHz** | Desired tone frequency. | | | Amplitude | **0.5** (or 1.0) | Sets peak‑to‑peak amplitude; keep < 1 to avoid clipping. | | | Offset | **0** | No DC offse…"
+     "training": "pass (auto‑designed Kaiser with ~60 dB stopband attenuation), * Writes the 48 kHz result to `upsampled_48k.dat`. Replace `vector_source_f` with any source that produces a **float** (or use the complex variant `rational_resampler_ccc`) and…"
     },
     {
      "doc_id": "laguna-s21/q_cf07cf6fc3d5485f",
@@ -1062,7 +1062,7 @@
      "item": "This flowgraph is a baseband test transmitter running at a sample rate of 48 kHz (samp_rate = 48000). A Vector Source repeats eight data bytes, 0x1B, 0x9C, 0x4…",
      "item_id": "gbf-test-20",
      "ngram_shared": 0,
-     "tfidf": 0.2555,
+     "tfidf": 0.2548,
      "training": "Sample rate` = same as throttle; `Center frequency`, `Gain`, etc., as needed for RF transmission. | --- ### 4. How the data flow works 1. **Bit source** produces a stream of bytes. 2. **Constellation Modulator** maps each byte (or groups o…"
     }
    ]
@@ -1086,15 +1086,15 @@
      "p95": 0.8195,
      "p99": 0.8265
     },
-    "passages_embedded": 1468,
+    "passages_embedded": 1561,
     "rate": 0.0,
     "scope": "every passage",
     "signal": "semantic",
     "status": "done",
     "threshold": 0.88
    },
-   "n_docs": 1468,
-   "n_passages": 1468,
+   "n_docs": 1561,
+   "n_passages": 1561,
    "ngram": {
     "items_coverage_ge_50pct": 0,
     "items_with_twin": 0,
@@ -1102,7 +1102,7 @@
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
-    "1668 training questions; 200 dev questions removed"
+    "1668 training questions; 107 dev questions removed"
    ],
    "signal_overlap": {
     "ngram+embed": 0,
@@ -1119,15 +1119,15 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.299,
-     "min": 0.1761,
-     "p10": 0.2052,
-     "p25": 0.2258,
-     "p50": 0.2451,
-     "p75": 0.2561,
-     "p90": 0.2662,
-     "p95": 0.29,
-     "p99": 0.2972
+     "max": 0.287,
+     "min": 0.1735,
+     "p10": 0.2026,
+     "p25": 0.2192,
+     "p50": 0.2365,
+     "p75": 0.2577,
+     "p90": 0.2632,
+     "p95": 0.2804,
+     "p99": 0.2857
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -1141,7 +1141,7 @@
      "item": "This flowgraph generates a GMSK test signal from random bytes and passes it through the HW Impairments block, which is set so that it changes nothing (phase no…",
      "item_id": "gbf-test-19",
      "ngram_shared": 0,
-     "tfidf": 0.2259,
+     "tfidf": 0.2222,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     },
     {
@@ -1151,7 +1151,7 @@
      "item": "This flowgraph runs at a sample rate of 64 kHz (64,000 samples per second). It adds a complex tone at 3.1 kHz with amplitude 0.5 to complex Gaussian noise with…",
      "item_id": "gbf-test-15",
      "ngram_shared": 0,
-     "tfidf": 0.2602,
+     "tfidf": 0.2587,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     },
     {
@@ -1161,7 +1161,7 @@
      "item": "This flowgraph runs at a sample rate of 48 kHz and simulates a receiver recording with weak and strong bursts: a complex Signal Source makes a 1.2 kHz tone wit…",
      "item_id": "gbf-test-11",
      "ngram_shared": 0,
-     "tfidf": 0.2345,
+     "tfidf": 0.2322,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     },
     {
@@ -1171,7 +1171,7 @@
      "item": "This flowgraph runs at a sample rate of 48 kHz and writes a complex tone to a File Sink that stores complex samples in the file qtgui_time_sink_x_0_0.dat. When…",
      "item_id": "gbf-test-06",
      "ngram_shared": 0,
-     "tfidf": 0.2895,
+     "tfidf": 0.287,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     },
     {
@@ -1181,7 +1181,7 @@
      "item": "This flowgraph is meant to clean up a test tone. It runs at a sample rate of 32 kHz. The Signal Source block tone produces a 1.2 kHz cosine (float samples, amp…",
      "item_id": "gbf-test-10",
      "ngram_shared": 0,
-     "tfidf": 0.255,
+     "tfidf": 0.2527,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     },
     {
@@ -1191,7 +1191,7 @@
      "item": "This flowgraph is a baseband test transmitter running at a sample rate of 48 kHz (samp_rate = 48000). A Vector Source repeats eight data bytes, 0x1B, 0x9C, 0x4…",
      "item_id": "gbf-test-20",
      "ngram_shared": 0,
-     "tfidf": 0.1617,
+     "tfidf": 0.1611,
      "training": "A GNU Radio flowgraph uses a vector source to generate a known preamble sequence, followed by a stream-to-tagged-stream block, then a modulator, then a USRP sink. The preamble is 128 complex samples. The modulator uses 4 samples/symbol. Th…"
     },
     {
@@ -1201,7 +1201,7 @@
      "item": "This flowgraph is meant to compare the phase of two oscillators at a sample rate of 8 kHz: a reference oscillator at 1 kHz and a test oscillator at 1.005 kHz,…",
      "item_id": "gbf-test-08",
      "ngram_shared": 0,
-     "tfidf": 0.2297,
+     "tfidf": 0.2271,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     },
     {
@@ -1211,7 +1211,7 @@
      "item": "This flowgraph simulates a QPSK link to demonstrate symbol timing recovery. It runs at a sample rate of 48 kHz. The transmitter takes random QPSK symbols (GNU…",
      "item_id": "gbf-test-17",
      "ngram_shared": 0,
-     "tfidf": 0.1811,
+     "tfidf": 0.178,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     },
     {
@@ -1221,7 +1221,7 @@
      "item": "This flowgraph runs at a sample rate of 48 kHz. A float Signal Source makes a 1.5 kHz cosine with amplitude 0.8. The cosine goes straight to a File Sink that w…",
      "item_id": "gbf-test-07",
      "ngram_shared": 0,
-     "tfidf": 0.2838,
+     "tfidf": 0.2801,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     },
     {
@@ -1231,7 +1231,7 @@
      "item": "This flowgraph should mark the peaks of a sawtooth wave. Its Signal Source generates a 600 Hz sawtooth as float samples at a sample rate of 48 kHz, with amplit…",
      "item_id": "gbf-test-09",
      "ngram_shared": 0,
-     "tfidf": 0.2118,
+     "tfidf": 0.2075,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     }
    ]

@@ -1,0 +1,217 @@
+diff --git a/colab/eval.ipynb b/colab/eval.ipynb
+index c76e492..2a54475 100644
+--- a/colab/eval.ipynb
++++ b/colab/eval.ipynb
+@@ -66,6 +66,8 @@
+     "QUANT = \"q8_0\"  #@param [\"q8_0\", \"q4_k_m\"]\n",
+     "THINKING = \"off\"  #@param [\"off\", \"on\"]\n",
+     "MAX_TOKENS = 1536  #@param {type:\"integer\"}\n",
++    "#@markdown **Answer settings.** `grc-bench`: GRC-Bench's Tier-K settings (its question prompt, 16,384 tokens including reasoning, thinking on, the model's recommended sampling); `THINKING` and `MAX_TOKENS` above are then not used. `trial`: the team's system prompt, temperature 0 and the two settings above.\n",
++    "ANSWER_SETTINGS = \"grc-bench\"  #@param [\"grc-bench\", \"trial\"]\n",
+     "#@markdown **Model source.** Leave both blank for the pinned base model. For a fine-tuned version, give its *merged* Hugging Face repo and revision (and add an `HF_TOKEN` secret if that repo is private).\n",
+     "HF_REPO = \"\"  #@param {type:\"string\"}\n",
+     "REVISION = \"\"  #@param {type:\"string\"}\n",
+@@ -74,12 +76,14 @@
+     "REPO_URL = \"https://github.com/No1Joycia/grc-model-eval.git\"  #@param {type:\"string\"}\n",
+     "BRANCH = \"main\"  #@param {type:\"string\"}\n",
+     "\n",
++    "if ANSWER_SETTINGS == \"grc-bench\":\n",
++    "    THINKING, MAX_TOKENS = \"on\", 16384\n",
+     "if not 1 <= START <= END:\n",
+     "    raise ValueError(\"START and END must satisfy 1 <= START <= END\")\n",
+     "if HF_REPO and not REVISION:\n",
+     "    raise ValueError(\"With HF_REPO, also give REVISION (a commit hash or branch name), so the run is reproducible\")\n",
+     "print(f\"Settings: questions #{START}-#{END} of {QUESTIONS or 'the trial set in the repo'} | model {MODEL} ({QUANT}) | \"\n",
+-    "      f\"thinking {THINKING} | max_tokens {MAX_TOKENS}\")\n",
++    "      f\"answer settings {ANSWER_SETTINGS} | thinking {THINKING} | max_tokens {MAX_TOKENS}\")\n",
+     "print(f\"          source: {HF_REPO + ' @ ' + REVISION if HF_REPO else 'pinned base model (serve/models.json)'}\")\n",
+     "print(f\"          results: Google Drive > MyDrive/{DRIVE_FOLDER}/runs/\")\n",
+     "if THINKING == \"on\" and MAX_TOKENS < 4096:\n",
+@@ -244,6 +248,8 @@
+     "RUN_NAME = f\"{label}-{SRC_REV[:7]}-{QUANT}-think_{THINKING}-{LLAMA_BUILD}\"\n",
+     "if MAX_TOKENS != 1536:\n",
+     "    RUN_NAME += f\"-mt{MAX_TOKENS}\"\n",
++    "if ANSWER_SETTINGS == \"grc-bench\":                 # GRC-Bench's prompt and sampling: their own run folder\n",
++    "    RUN_NAME += \"-grcbench\"\n",
+     "if QUESTIONS:                                       # another question set gets its own run folder\n",
+     "    RUN_NAME += \"-\" + os.path.splitext(os.path.basename(QUESTIONS))[0]\n",
+     "RUN_DIR = f\"{DRIVE}/runs/{RUN_NAME}\"\n",
+@@ -265,7 +271,8 @@
+     "## Step 3/7: Install llama.cpp\n",
+     "\n",
+     "Downloads llama.cpp's own **prebuilt Linux CUDA release** of the pinned build (about 740 MB, 1–2 min), the same build\n",
+-    "every host uses (`serve/models.json`), and checks that it can see the GPU.\n",
++    "every host uses (`serve/models.json`), and checks that it can see the GPU. The pinned build, b10333, has no prebuilt\n",
++    "Linux CUDA release, so the cell compiles it here the first time (below) and keeps a copy in your Drive.\n",
+     "\n",
+     "*Fallback:* if the prebuilt version can't use this GPU (Colab's NVIDIA driver too old for CUDA 12.8), the cell compiles\n",
+     "the same build here instead (about 20–40 min, first time only) and keeps a copy in your Drive. This path hasn't been\n",
+@@ -293,7 +300,11 @@
+     "      \"the prebuilt llama.cpp is built with CUDA 12.8\")\n",
+     "code, _ = h.run([\"bash\", \"serve/install_llamacpp.sh\"], env={\"VARIANT\": \"cuda\"}, check=False)\n",
+     "if not os.path.exists(f\"{LLAMA_DIR}/llama-server\"):\n",
+-    "    h.fail(f\"the llama.cpp download failed (exit code {code})\",\n",
++    "    # b10333 has no prebuilt Linux CUDA release: compile it (or reuse the copy in Drive)\n",
++    "    h.log(f\"no prebuilt Linux CUDA download of {LLAMA_BUILD} (exit code {code}): compiling it for this GPU instead\")\n",
++    "    h.build_llamacpp_from_source(LLAMA_BUILD, LLAMA_DIR, f\"{DRIVE}/cache\", GPU[\"compute_cap\"])\n",
++    "if not os.path.exists(f\"{LLAMA_DIR}/llama-server\"):\n",
++    "    h.fail(f\"llama.cpp {LLAMA_BUILD} could not be installed (exit code {code})\",\n",
+     "           \"read the output above (usually a network problem), then run this cell again\")\n",
+     "DEVICES, out = h.cuda_devices(LLAMA_DIR)\n",
+     "if not DEVICES:\n",
+@@ -440,8 +451,8 @@
+    "source": [
+     "## Step 6/7: Answer the questions\n",
+     "\n",
+-    "`trial_eval/run_trial.py` sends each question in your range to the local model, with the team's fixed system prompt,\n",
+-    "temperature 0 and your thinking setting, and **saves each answer to Drive as soon as it arrives**.\n",
++    "`trial_eval/run_trial.py` sends each question in your range to the local model, with the answer settings\n",
++    "chosen at the top (`grc-bench` by default: GRC-Bench's question prompt, 16,384 tokens, thinking on, the model's sampling), and **saves each answer to Drive as soon as it arrives**.\n",
+     "\n",
+     "- The first line is a time **ESTIMATE**; before any answer is timed it's a rough guess, and it improves on later runs.\n",
+     "- Then `asking #N ...` before each question and one line after it: tokens, seconds, speed, `stop`\n",
+@@ -467,7 +478,7 @@
+     "{ANSWERS}\"\"\")\n",
+     "h.run([sys.executable, \"trial_eval/run_trial.py\", \"--base-url\", BASE_URL,\n",
+     "       \"--model\", MODEL, \"--thinking\", THINKING, \"--max-tokens\", str(MAX_TOKENS),\n",
+-    "       \"--start\", str(START), \"--end\", str(END), \"--questions\", QUESTIONS_FILE, \"--out\", ANSWERS],\n",
++    "       \"--settings\", ANSWER_SETTINGS, \"--start\", str(START), \"--end\", str(END), \"--questions\", QUESTIONS_FILE, \"--out\", ANSWERS],\n",
+     "      on_fail=\"answers so far are saved. If the server stopped, rerun step 5, then this step\")\n",
+     "n_answers = sum(1 for line in open(ANSWERS) if line.strip())\n",
+     "h.done(f\"{n_answers} answers in {ANSWERS}\")"
+@@ -525,7 +536,8 @@
+     "                  \"start\": START, \"end\": END, \"answers_in_file\": sum(1 for l in open(ANSWERS) if l.strip())},\n",
+     "    \"model\": {\"name\": MODEL, \"hf_repo\": SRC_REPO, \"revision\": SRC_REV, \"quant\": QUANT,\n",
+     "              \"gguf\": os.path.basename(GGUF), \"sha256\": GGUF_SHA, \"sha256_check\": GGUF_CHECK},\n",
+-    "    \"settings\": {\"thinking\": THINKING, \"max_tokens\": MAX_TOKENS, \"temperature\": 0},\n",
++    "    \"settings\": {\"answer_settings\": ANSWER_SETTINGS, \"thinking\": THINKING, \"max_tokens\": MAX_TOKENS,\n",
++    "                 \"temperature\": 0 if ANSWER_SETTINGS == \"trial\" else \"the model's recommended (server defaults)\"},\n",
+     "    \"llama_cpp\": LLAMA_VERSION,\n",
+     "    \"gpu\": {\"device\": DEVICES[0], **GPU},\n",
+     "    \"system\": h.system_info(),\n",
+diff --git a/serve/models.json b/serve/models.json
+index fed953f..cfa8392 100644
+--- a/serve/models.json
++++ b/serve/models.json
+@@ -1,9 +1,9 @@
+ {
+   "_about": "How every host (Mac, Modal, Qoherent's GPU) runs llama-server. Change settings here and nowhere else, so results stay comparable across hosts.",
+   "llama_cpp": {
+-    "build": "b12020",
+-    "commit": "0ec4027a2",
+-    "why": "Has Nanbeige4.2 support (PR #25994), its tool-call fix (PR #26252) and the Metal fix for macOS 14/15 (PR #31360; release 0.8.0 fails on this Mac). Every host must run this same build."
++    "build": "b10333",
++    "commit": "08659901c",
++    "why": "The build GRC-Bench pre-registers (§6 Engines and settings) and GRC-Agent pins. Has Nanbeige4.2 support (PR #25994) and its tool-call parser (PR #26252). llama.cpp publishes no Linux CUDA download of b10333, so Colab compiles it once (step 3) and keeps it in Drive. It lacks the Metal fix for macOS 14/15 (PR #31360, from b12020 on), so it does not run on those Macs. Every host must run this same build."
+   },
+   "server_args": [
+     "-c", "65536",
+@@ -29,11 +29,11 @@
+         "q4_k_m": "Nanbeige4.2-3B-Q4_K_M.gguf"
+       },
+       "sha256": {
+-        "bf16": "6bc9e931aee6e92ce1e023610b022e06db52565c3b32a61e070904682ef2def4",
+-        "q8_0": {"Darwin-arm64": "a1317a0a6b913f56661934d607c8f7f3104f7254e9efa78de5eb6e700ff087e1", "Linux-x86_64": null},
+-        "q4_k_m": {"Darwin-arm64": "a27b7702431b0eb6e62da987bc5f94c4e4a61d703e12d7e17e2d1230a15b9575", "Linux-x86_64": null}
++        "bf16": null,
++        "q8_0": {"Darwin-arm64": null, "Linux-x86_64": null},
++        "q4_k_m": {"Darwin-arm64": null, "Linux-x86_64": null}
+       },
+-      "sha256_why": "Files made by convert/to_gguf.sh from source.revision with the pinned build. BF16 comes from plain Python and must match on every machine. Quantizing can round differently on different processors, so q8_0/q4_k_m keep one reference per platform (uname -s, uname -m); null = not recorded yet, and the first conversion there prints the value to add (colab/COLAB_PLAN.md).",
++      "sha256_why": "Files made by convert/to_gguf.sh from source.revision with the pinned build. BF16 comes from plain Python and must match on every machine. Quantizing can round differently on different processors, so q8_0/q4_k_m keep one reference per platform (uname -s, uname -m); null = not recorded yet, and the first conversion there prints the value to add (colab/COLAB_PLAN.md). The values recorded with b12020 (BF16 6bc9e931..., Darwin-arm64 Q8_0 a1317a0a..., Q4_K_M a27b7702...) are not references for b10333's converter.",
+       "default_quant": "q8_0",
+       "modal_gpu": "L4",
+       "chat_template": "templates/nanbeige42.jinja",
+diff --git a/trial_eval/run_trial.py b/trial_eval/run_trial.py
+index 917352f..4254f39 100644
+--- a/trial_eval/run_trial.py
++++ b/trial_eval/run_trial.py
+@@ -12,6 +12,7 @@ Usage:
+     python3 trial_eval/run_trial.py --start 1 --end 30 --out answers.jsonl     # local llama-server
+     python3 trial_eval/run_trial.py --thinking on --max-tokens 4096 --out answers_think.jsonl
+     python3 trial_eval/run_trial.py --start 31 --end 60 --estimate-only
++    python3 trial_eval/run_trial.py --settings grc-bench --out answers_grcbench.jsonl   # GRC-Bench's Tier-K settings
+     # the Modal endpoint, until it is retired (MODAL_KEY / MODAL_SECRET from ../modal/.env):
+     python3 trial_eval/run_trial.py --base-url "$MODAL_URL/v1" --model Nanbeige/Nanbeige4.2-3B
+ """
+@@ -31,6 +32,17 @@ SYSTEM_PROMPT = (
+     "software-defined radio, and GNU Radio. Answer the question accurately and completely. "
+     "For calculations, show the key steps and state the final result with units."
+ )
++# GRC-Bench's Tier-K answer settings (prompt tier-k-answer-v3, pre-registration §5.1 and §7.1): one user message
++# with this instruction and the question, no system prompt, 16,384 tokens including reasoning, thinking on, and
++# the model's recommended sampling (the server defaults in serve/models.json, so no temperature is sent).
++GRCBENCH_INSTRUCTION = (
++    "Answer the following question about radio, signal processing or GNU Radio. You may reason step by "
++    "step first. End your reply with one line of the form\n"
++    "Final answer: <your answer>\n"
++    "If the answer is a number, write its unit after it (for example 30 kHz or 2.5 MS/s), and write dB "
++    "(or dBm, dBc, dBi, ...) after any value in decibels: a number without a unit is never read as "
++    "decibels. If the question asks you to choose, name the option.")
++GRCBENCH = {"prompt": "grc-bench tier-k-answer-v3", "max_tokens": 16384, "thinking": "on", "temperature": None}
+ GUESS_TOK_S = 20     # first-run guess before any answer is timed (llama.cpp Q8_0 on a T4)
+ # Settings that must match between answers in one file (others, e.g. timeout, may differ).
+ COMPARED = ("model", "endpoint", "system_prompt", "max_tokens", "temperature", "enable_thinking")
+@@ -80,17 +92,18 @@ def check_settings(out, settings):
+                              f"Use another --out file so the two runs are not mixed.")
+ 
+ 
+-def ask(url, headers, model, question, max_tokens, temperature, thinking, timeout):
+-    body = json.dumps({
+-        "model": model,
+-        "messages": [
+-            {"role": "system", "content": SYSTEM_PROMPT},
+-            {"role": "user", "content": question},
+-        ],
+-        "max_tokens": max_tokens,
+-        "temperature": temperature,
+-        "chat_template_kwargs": {"enable_thinking": thinking},
+-    }).encode()
++def messages_for(question, grcbench):
++    if grcbench:
++        return [{"role": "user", "content": f"{GRCBENCH_INSTRUCTION}\n\nQuestion:\n{question.strip()}"}]
++    return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": question}]
++
++
++def ask(url, headers, model, question, max_tokens, temperature, thinking, timeout, grcbench=False):
++    request = {"model": model, "messages": messages_for(question, grcbench), "max_tokens": max_tokens,
++               "chat_template_kwargs": {"enable_thinking": thinking}}
++    if temperature is not None:                  # None: the server's defaults (the model's recommended sampling)
++        request["temperature"] = temperature
++    body = json.dumps(request).encode()
+     req = urllib.request.Request(url + "/chat/completions", data=body, method="POST", headers=headers)
+     # urllib follows redirects (Modal sends a 303 for requests over 150 s).
+     with urllib.request.urlopen(req, timeout=timeout) as resp:
+@@ -113,15 +126,22 @@ def main():
+     ap.add_argument("--temperature", type=float, default=0.0)
+     ap.add_argument("--timeout", type=int, default=900)
+     ap.add_argument("--retries", type=int, default=2)
++    ap.add_argument("--settings", choices=["trial", "grc-bench"], default="trial",
++                    help="grc-bench: GRC-Bench's Tier-K prompt, 16384 tokens, thinking on, the model's sampling "
++                         "(overrides --thinking, --max-tokens and --temperature)")
+     args = ap.parse_args()
+ 
+     base = args.base_url.rstrip("/")
+     host = urllib.parse.urlparse(base).hostname or base
+     modal = host.endswith(".modal.run")
++    grcbench = args.settings == "grc-bench"
++    if grcbench:
++        args.max_tokens, args.thinking, args.temperature = GRCBENCH["max_tokens"], GRCBENCH["thinking"], GRCBENCH["temperature"]
+     thinking = args.thinking == "on"
+     if modal and thinking:
+         raise SystemExit("--thinking on is not possible on the Modal endpoint: its server always turns thinking off")
+-    settings = {"model": args.model, "endpoint": host, "system_prompt": SYSTEM_PROMPT,
++    settings = {"model": args.model, "endpoint": host,
++                "system_prompt": GRCBENCH["prompt"] if grcbench else SYSTEM_PROMPT,
+                 "max_tokens": args.max_tokens, "temperature": args.temperature, "enable_thinking": thinking}
+ 
+     all_questions = [json.loads(l) for l in open(args.questions) if l.strip()]
+@@ -165,7 +185,7 @@ def main():
+                 started = time.time()
+                 try:
+                     r = ask(base, headers, args.model, q["question"], args.max_tokens,
+-                            args.temperature, thinking, args.timeout)
++                            args.temperature, thinking, args.timeout, grcbench)
+                     break
+                 except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
+                     detail = exc.read().decode()[:300] if isinstance(exc, urllib.error.HTTPError) else exc

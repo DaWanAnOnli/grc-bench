@@ -10,7 +10,7 @@ import pytest
 
 from grcbench.common.io import read_json, read_jsonl
 from grcbench.common.paths import FROZEN, REPO
-from grcbench.splits import dev, frozen, twins
+from grcbench.splits import dev, frozen, release, twins
 
 
 # ---------------------------------------------------------------- frozen algorithm ---------------
@@ -141,12 +141,27 @@ def test_dev_split_shape_and_disjointness(built):
     train = {r["id"] for r in read_jsonl(FROZEN / "train_questions.jsonl")}
     test = set(read_json(FROZEN / "eval_manifest.json")["eval_ids"])
     ids = d["dev_ids"]
-    assert len(ids) == len(set(ids)) == 200
+    assert len(ids) == len(set(ids)) == 107
     assert set(ids) <= train and not set(ids) & test
     assert len(d["anchor_ids"]) == 60 and set(d["anchor_ids"]) <= set(ids)
     assert len(d["ci_ids"]) == 20 and set(d["ci_ids"]) <= set(ids)
-    assert d["seeds"] == {"dev": "grc-bench-dev-v1-2026-10-14", "anchor": "grc-bench-anchor-v1-2026-10-14",
-                          "ci": "grc-bench-ci-v1-2026-10-14", "frozen_test": "grc-agent-eval-v1-2026-08-13"}
+    assert d["version"] == 2
+    assert d["seeds"] == {"anchor": "grc-bench-anchor-v2-2026-11-02", "ci": "grc-bench-ci-v2-2026-11-02",
+                          "frozen_test": "grc-agent-eval-v1-2026-08-13"}
+
+
+def test_dev_is_the_eligible_part_of_the_release_validation(built):
+    _, d, _ = built
+    train = [r["id"] for r in read_jsonl(FROZEN / "train_questions.jsonl")]
+    val = set(release.validation_question_ids())
+    src = d["dev_source"]
+    excluded = set(src["excluded_ids"])
+    assert d["dev_ids"] == [i for i in train if i in val and i not in excluded]
+    assert excluded == val - set(d["dev_ids"]) and len(val) == src["validation_questions"] == 148
+    assert all(r in dev.REASONS for rs in src["excluded_ids"].values() for r in rs)
+    assert sum(src["excluded_by_reason"].values()) >= len(excluded)
+    assert src["release"] == release.describe()
+    assert not set(d["dev_ids"]) & release.training_question_ids()
 
 
 def test_dev_has_no_twin_test_twin_neighbour_or_all_reject(built, evidence):
@@ -163,17 +178,17 @@ def test_dev_has_no_twin_test_twin_neighbour_or_all_reject(built, evidence):
     assert all(set(c) == {"REJECT"} for c in status.values())
 
 
-def test_dev_strata_follow_full_training_pool(built):
+def test_dev_strata_count_the_dev_questions(built):
     _, d, _ = built
     train = read_jsonl(FROZEN / "train_questions.jsonl")
-    quota = frozen.largest_remainder(Counter(frozen.stratum_of(r) for r in train), 200)
     by_id = {r["id"]: r for r in train}
     got = Counter(frozen.stratum_of(by_id[i]) for i in d["dev_ids"])
-    if not d["algorithm"]["capacity_rounds"]["dev"]:
-        assert {s: q for s, q in quota.items() if q} == dict(got)
-    assert sum(got.values()) == 200
-    comp = d["composition"]["max_abs_share_difference_pp_dev_vs_test"]
-    assert all(v < 3.0 for v in comp.values()), comp
+    rows = {tuple(s["stratum"]): s for s in d["strata"]}
+    assert {s: r["dev"] for s, r in rows.items() if r["dev"]} == dict(got)
+    assert all(r["dev"] <= r["validation"] <= r["training_pool"] and r["anchor"] <= r["dev"]
+               and r["ci"] <= r["dev"] for r in rows.values())
+    assert sum(r["training_pool"] for r in rows.values()) == len(train)
+    assert d["composition"]["pools"]["dev"] == len(d["dev_ids"])
 
 
 def test_handoff_files(built):
@@ -182,7 +197,7 @@ def test_handoff_files(built):
     assert all(x.startswith("#") for x in lines[:3])
     assert [x for x in lines if not x.startswith("#")] == sorted(d["dev_ids"])
     readme = files[dev.OUT_README]
-    for word in ("SFT", "DPO", "RAFT", "SliCK", "where possible"):
+    for word in ("SFT", "DPO", "RAFT", "SliCK", "where possible", "validation", release.RELEASE_SHA256):
         assert word in readme
     tsv_ids = [x.split("\t")[0] for x in files[dev.OUT_TWINS_TSV].splitlines()[5:]]
     assert len(tsv_ids) == len(set(tsv_ids))

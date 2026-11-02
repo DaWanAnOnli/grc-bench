@@ -11,7 +11,7 @@ folder covers one kind of data. Start with the table, then read the file for the
 
 | File | Covers | What you do |
 |---|---|---|
-| `README.md` and `exclude_question_ids.txt` | Tier-K questions (the 200 dev questions) | Exclude the 200 dev questions, and everything built from them, from every training use. |
+| `README.md` and `exclude_question_ids.txt` | Tier-K questions (the 107 dev questions, all in the validation split of Qoherent cleaned dataset v3) | Exclude the 107 dev questions, and everything built from them, from every training use; keep the whole validation split out of training, as v3 does. |
 | `test_twins.tsv` (and `README.md` §2–3) | training questions that overlap the 185 test questions | Remove the test twins' answers where possible; the team decides on the flagged neighbours. |
 | this file, below | generated questions about GNU Radio blocks | Any block may be used, including what a block outputs for a given input. Write your own wording and templates. |
 | `flowgraph_seed_split.md` | flowgraph and agent tasks built from GNU Radio example files | Never use a test or dev seed file, also not edited or with a fault planted in it. |

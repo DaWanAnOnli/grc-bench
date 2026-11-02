@@ -2,7 +2,7 @@
 
     ./gb tier-k run --split dev --base-url URL --model NAME [--config-id ID] [--reason TEXT] [--n N]
                     [--b1] [--sampling JSON] [--limit M] [--out DIR]
-    ./gb tier-k score DIR
+    ./gb tier-k score DIR [--rubrics FILE]
     ./gb tier-k judge DIR --base-url URL --fallback-base-url URL ...   (tier_k/judge_run.py)
 
 run   sends each question once per sample to an OpenAI-compatible /chat/completions endpoint with the
@@ -23,7 +23,12 @@ score routes every answer (route_answer) and writes DIR/scores.jsonl (one row pe
       DIR/judge_queue.jsonl (the judge requests of the answers the rules cannot decide),
       DIR/no_reference.jsonl (answers with neither an approved rubric nor a block-question key) and
       DIR/summary.json (rules.rule_only_summary, counts per route and reason, and the per-model counts
-      of decision 7). It refuses a run with fewer answer rows than questions x samples. A request that
+      of decision 7). With --rubrics FILE (dev split only), the rubrics in FILE take the place of the
+      repository's for the questions it lists, a placeholder rubric (judge_prompt.PLACEHOLDER_REVIEW)
+      included; the run keeps a copy (DIR/rubrics_used.jsonl), which the judge runner reads, and
+      summary.json names the file, its SHA-256 and its placeholder count. Scored again without
+      --rubrics, the run uses the repository's rubrics. It refuses a run with fewer answer rows than
+      questions x samples. A request that
       failed is not an answer: its row is "failed" (request_failed, no credit) and counted. The judge is
       not called here: the judge runner sends the queue and counts judge_failed
       (judge_prompt.report_counts).
@@ -43,6 +48,7 @@ route_answer(item, text, reasoning=None):
 from __future__ import annotations
 
 import argparse
+import hashlib
 import http.client
 import json
 import time
@@ -62,7 +68,8 @@ from grcbench.runlog.log import RunRefused
 from grcbench.tier_k import answer_prompt, rules
 from grcbench.tier_k import judge_prompt as jp
 
-__all__ = ["RunRefused", "chat", "load_split", "reference_for", "rubric_for", "route_answer", "run", "score"]
+__all__ = ["RunRefused", "chat", "load_split", "reference_for", "rubric_for", "route_answer", "run", "score",
+           "with_rubric_file"]
 
 ITEMS_K = ITEMS / "tier_k"
 SPLIT_FILES = {"dev": ("questions.jsonl",), "test": ("frozen_questions.jsonl", "block_questions.jsonl")}
@@ -73,6 +80,7 @@ MAX_FAILED_IN_A_ROW = 3       # failed answers in a row: the server is down, the
 # room in a server's context for the prompt next to the answer limit: the instruction, the question and the
 # chat template; a B1 run also needs retriever.B1_TOKEN_CAP for the retrieved documentation
 CONTEXT_MARGIN = 4096
+RUBRICS_COPY = "rubrics_used.jsonl"   # a run's copy of the rubric file it was scored with (score --rubrics)
 TIMEOUT_S = 1800.0            # per request: a 16,384-token answer at 10 tokens/s
 
 
@@ -120,13 +128,38 @@ def load_split(split: str) -> list[dict[str, Any]]:
     return items
 
 
+def with_rubric_file(items: list[dict[str, Any]], path: Path, split: str) -> list[dict[str, Any]]:
+    """The items, each question that the rubric file lists with that file's rubric. Dev split only;
+    every record must name a question of the split and the SHA-256 of its current text."""
+    if split != "dev" or any(i.get("split", "dev") != "dev" for i in items):
+        raise ValueError("a rubric file replaces rubrics on the dev split only")
+    by_id = {i["id"]: i for i in items}
+    records: dict[str, dict[str, Any]] = {}
+    for r in read_jsonl(Path(path)):
+        qid = r.get("question_id")
+        if qid not in by_id:
+            raise ValueError(f"{path}: {qid} is not in the dev split")
+        if qid in records:
+            raise ValueError(f"{path}: {qid} has two rubrics")
+        if r.get("question_sha256") != hashlib.sha256(by_id[qid]["question"].encode("utf-8")).hexdigest():
+            raise ValueError(f"{path}: {qid}: the rubric is for another question text (question_sha256)")
+        records[qid] = r
+    return [{**i, "rubric": records[i["id"]], "rubric_file": True} if i["id"] in records else i for i in items]
+
+
+def placeholder_ok(item: dict[str, Any]) -> bool:
+    """A placeholder rubric counts for this item: a dev item that took its rubric from a rubric file."""
+    return item.get("rubric_file") is True and item.get("split", "dev") == "dev"
+
+
 def rubric_for(item: dict[str, Any]) -> dict[str, Any] | None:
     """The approved rubric, else a key rubric for a GNU Radio behaviour question, else None. An
-    approved rubric the judge template or the rules cannot read raises ValueError (with the item id)."""
+    approved rubric the judge template or the rules cannot read raises ValueError (with the item id).
+    A placeholder counts only on a dev item that took it from a rubric file (with_rubric_file)."""
     rubric = item.get("rubric")
     if rubric is not None:
         try:
-            jp.check_reviewed(rubric)
+            jp.check_reviewed(rubric, allow_placeholder=placeholder_ok(item))
         except jp.RubricError:
             rubric = None                                   # not approved (yet): not used
         else:
@@ -165,12 +198,13 @@ def route_answer(item: dict[str, Any], text: str, *, truncated: bool = False,
     by_rules = rules.score(text, ref) if ref is not None else None
     reason = (by_rules["details"].get("reason") if by_rules else "open_ended")
     if jp.route(rubric, by_rules) == "rules":
-        explained = jp.explain_score(None, rubric, rules_result=by_rules, answer=text)
+        explained = jp.explain_score(None, rubric, rules_result=by_rules, answer=text,
+                                     allow_placeholder=placeholder_ok(item))
         return {"route": "rules", "method": by_rules["method"], "credit": explained["score"], "reason": reason,
                 "rule_reasons": explained["rule_reasons"], "rules_result": by_rules}
     return {"route": "judge", "method": by_rules["method"] if by_rules else None, "credit": None, "reason": reason,
             "rule_reasons": jp._rule_reasons(by_rules), "rules_result": by_rules,
-            "judge_messages": jp.build_messages(item["question"], rubric, text),
+            "judge_messages": jp.build_messages(item["question"], rubric, text, allow_placeholder=placeholder_ok(item)),
             "redactions": jp.redact_self_names(rules.strip_reasoning(text))[1]}
 
 
@@ -304,11 +338,21 @@ def _answer(item_id: str, sample: int, messages: list[dict[str, str]], *, base_u
     return row
 
 
-def score(out_dir: Path) -> dict[str, Any]:
+def score(out_dir: Path, rubrics: Path | None = None) -> dict[str, Any]:
     """Route and score every answer of a run (module docstring); returns the summary."""
     out_dir = Path(out_dir)
     manifest = read_json(out_dir / "manifest.json")
-    items = {i["id"]: i for i in load_split(manifest["split"])}
+    split_items = load_split(manifest["split"])
+    copy = out_dir / RUBRICS_COPY
+    used = None
+    if rubrics is not None:
+        split_items = with_rubric_file(split_items, Path(rubrics), manifest["split"])
+        data = Path(rubrics).read_bytes()
+        used = {"file": str(rubrics), "sha256": hashlib.sha256(data).hexdigest(),
+                "n_records": sum(1 for i in split_items if i.get("rubric_file")),
+                "n_placeholder": sum(1 for i in split_items if i.get("rubric_file")
+                                     and (i["rubric"].get("review") or {}).get("status") == jp.PLACEHOLDER_REVIEW)}
+    items = {i["id"]: i for i in split_items}
     answers = read_jsonl(out_dir / "answers.jsonl")
     n = manifest.get("n", manifest.get("settings", {}).get("n", 1))
     pairs = [(a["item_id"], a["sample"]) for a in answers]
@@ -341,6 +385,11 @@ def score(out_dir: Path) -> dict[str, Any]:
         text = rules.strip_reasoning(row["text"])
         final_line += (r["reason"] not in ("truncated", "canary_in_answer") and bool(text)
                        and rules.final_answer(text).rule.split("+")[0] in ("marker", "boxed"))
+    if used is not None:
+        if copy.resolve() != Path(rubrics).resolve():
+            copy.write_bytes(data)
+    elif copy.exists():
+        copy.unlink()
     write_jsonl(out_dir / "scores.jsonl", scores)
     write_jsonl(out_dir / "judge_queue.jsonl", queue)
     write_jsonl(out_dir / "no_reference.jsonl", no_ref)
@@ -353,7 +402,7 @@ def score(out_dir: Path) -> dict[str, Any]:
                "rule_only": rules.rule_only_summary(by_rules), "n_tie_break": counts["tie_break"],
                "n_wrong_form": counts["wrong_form"], "n_redacted": redacted, "n_canary": canary,
                "n_judge_failed": None, "judge": "not run", "n_final_answer_line": final_line,
-               "rules_version": rules.RULES_VERSION}
+               "rules_version": rules.RULES_VERSION, "rubrics": used}
     write_json(out_dir / "summary.json", summary)
     return summary
 
@@ -380,6 +429,8 @@ def main(argv: list[str]) -> int:
     r.add_argument("--timeout", type=float, default=TIMEOUT_S, help="seconds per request")
     s = sub.add_parser("score", help="route and score a run's answers")
     s.add_argument("dir", type=Path)
+    s.add_argument("--rubrics", type=Path, default=None,
+                   help="a dev-split rubric file used in place of the repository's rubrics (placeholders allowed)")
     a = ap.parse_args(argv)
     if a.cmd == "run":
         out = a.out or WORK / "tier_k" / f"{a.config_id}-{runlog.utc_now().replace(':', '')}"
@@ -392,5 +443,12 @@ def main(argv: list[str]) -> int:
             return 2
         print(f"answers: {out / 'answers.jsonl'}")
         return 0
-    print(json.dumps(score(a.dir), indent=2))
+    try:
+        summary = score(a.dir, rubrics=a.rubrics)
+    except ValueError as exc:
+        print(f"refused: {exc}")
+        return 2
+    if (summary.get("rubrics") or {}).get("n_placeholder"):
+        print(f"NOTE: {summary['rubrics']['n_placeholder']} placeholder rubrics: a pipeline test, not a score")
+    print(json.dumps(summary, indent=2))
     return 0

@@ -30,6 +30,8 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "blockq": ("grcbench.tier_k.blockgen:main", "GNU Radio behaviour questions: the reference set, fresh sets from any seed"),
     "calc": ("grcbench.tier_k.calc:main", "compute calculation-question answers by script"),
     "rubrics": ("grcbench.tier_k.rubrics:main", "write rubric templates and review sheets"),
+    "placeholder-rubrics": ("grcbench.tier_k.placeholder_rubrics:main",
+                            "dev placeholder rubrics from the release's reference answers (pipeline tests only)"),
     "score-k": ("grcbench.tier_k.rules:main", "rule-cascade scorer for Tier-K answers"),
     "tier-k": ("grcbench.tier_k.run:main", "answer a split's Tier-K questions with one model; score them"),
     "retriever": ("grcbench.tier_k.retriever:main", "B1 documentation-search retriever"),
@@ -40,6 +42,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     # Tier A
     "tier-a": ("grcbench.tier_a.cli:main", "Tier-A runner, gates and smoke test"),
     "agent": ("grcbench.tier_a.adhoc:main", "run GRC-Agent headless on any request; outputs as files"),
+    "colab-package": ("grcbench.common.colab_package:main", "zip of ./gb and the dev split for a pipeline test on a Colab GPU"),
     "agent-package": ("grcbench.tier_a.agent_package:main", "zip of the headless runner for a teammate (no benchmark content)"),
     # Tier E, analysis, run log
     "tier-e": ("grcbench.tier_e.bench:main", "llama-bench speed/memory protocol"),

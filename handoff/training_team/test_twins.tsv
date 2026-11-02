@@ -1,4 +1,4 @@
-# GRC-Bench Tier-K v1 (2026-10-14): training questions near a frozen test question, one row each.
+# GRC-Bench Tier-K v2 (2026-11-02): training questions near a frozen test question, one row each.
 # kind=test_twin_8gram: eval plan §6 near-twin (shares a word 8-gram with a test question); remove its answers from training where possible.
 # kind=test_neighbour: no shared 8-gram; flagged by semantic/lexical/keep_both evidence; the team decides.
 # evidence: test_id=kind[:score or cluster], several joined by '+', test questions separated by ';'.

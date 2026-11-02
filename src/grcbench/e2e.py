@@ -1,10 +1,11 @@
 """`./gb e2e`: benchmark v0.9 end to end on the dev split (gate G2 evidence), with one local model.
 
-    ./gb e2e --out DIR [--n-k N] [--k-a K] [--limit-k M] [--only K,F,A,E]
+    ./gb e2e --out DIR [--n-k N] [--k-a K] [--limit-k M] [--limit-f M] [--limit-a M] [--only K,F,A,E]
+             [--rubrics FILE] [--report PATH] [--e-name NAME --machine-label TEXT]
 
 One llama-server (tier_a.smoke.LocalServer: the pinned CUDA build of llama.cpp b10333, the smoke model
 Qwen3-4B-Q4_K_M, --jinja, every layer on the GPU) serves, in turn:
-  Tier K  the 200 dev questions, n answers each (tier_k.run.run, then tier_k.run.score);
+  Tier K  the dev questions, n answers each (tier_k.run.run, then tier_k.run.score);
   Tier F  the 10 dev tasks, one sample each in the "one lookup + one edit" setting, graded V1-V5;
   Tier A  the 12 dev tasks, k episodes each, each graded by the task's acceptance check;
 then the server stops and Tier E runs the CUDA build's llama-bench on the same file at 4K context
@@ -19,11 +20,17 @@ final-answer line; F: the V1-V5 funnel; A: task success; E: speeds. The dev rubr
 templates (numeric null) and the dev split has no keys, so Tier-K answers are counted, not scored,
 and the rule cascade's deferral rate on dev answers is not measured (round-2 finding F5 stays open).
 It is a plumbing run of a smoke model, not a result about GRC-Bench models.
+
+On another machine (a Colab GPU): --limit-f/--limit-a run only the first M dev tasks, --rubrics FILE
+scores the Tier-K answers with a dev rubric file (placeholders allowed: tier_k/placeholder_rubrics.py),
+--report writes the report elsewhere than reports/e2e_dev.md, and --e-name/--machine-label name the
+Tier-E record and the machine it ran on.
 """
 
 from __future__ import annotations
 
 import argparse
+import functools
 import subprocess
 import sys
 import time
@@ -39,6 +46,9 @@ REASON = "G2 end-to-end run of benchmark v0.9 on the dev split (sign-off plan Ta
 RUNGS = ("V1", "V2", "V3", "V4", "V5")
 E_NAME = "e2e_dev_qwen3_4b_rtx5090"
 E_HARDWARE = "H3"            # the nearest label: a desktop GPU (H3 is Qoherent's RTX 3090; this is an RTX 5090)
+E_MACHINE = "the build workstation (RTX 5090)"
+E_NOTE = ("G2 end-to-end dev run: plumbing of the Tier-E protocol; label H3 is the nearest setup (a desktop GPU), "
+          "not Qoherent's RTX 3090")
 
 
 def _funnel(grades: list[dict[str, Any]]) -> dict[str, int]:
@@ -62,21 +72,22 @@ def _parse_e(rec: dict[str, Any]) -> dict[str, Any]:
             "gpu_used": hw.get("gpu_used"), "mismatches": hw.get("mismatches") or []}
 
 
-def _tier_k(base_url: str, model: str, out: Path, n: int, limit: int | None, sampling: dict[str, Any]) -> dict[str, Any]:
+def _tier_k(base_url: str, model: str, out: Path, n: int, limit: int | None, sampling: dict[str, Any], *,
+            rubrics: Path | None = None) -> dict[str, Any]:
     from grcbench.tier_k import run
     run.run("dev", base_url=base_url, model=model, config_id=CONFIG_ID, reason=REASON, n=n, sampling=sampling,
             out_dir=out, limit=limit)
-    s = run.score(out)
+    s = run.score(out, rubrics=rubrics)
     return {"items": len(run.load_split("dev")[:limit]), "answers": s["n_answers"],
             **{k: s.get(k) for k in ("n_rules", "n_judge", "n_no_reference", "n_request_failed",
-                                     "n_final_answer_line", "by_reason")}, "out": str(out)}
+                                     "n_final_answer_line", "by_reason", "rubrics")}, "out": str(out)}
 
 
-def _tier_f(base_url: str, model: str, out: Path) -> dict[str, Any]:
+def _tier_f(base_url: str, model: str, out: Path, *, limit: int | None = None) -> dict[str, Any]:
     from grcbench.tier_a import models
     from grcbench.tier_a.tier_f_mode import run_tier_f_samples
     from grcbench.tier_f.taskio import task_dirs as f_task_dirs
-    tasks = f_task_dirs("dev")
+    tasks = f_task_dirs("dev")[:limit]
     results = run_tier_f_samples(tasks, models.openai_compatible(base_url, model), config_id=CONFIG_ID,
                                  reason=REASON, samples=1, run_root=out)
     grades = [(r.tier_f or {}).get("grade") or {} for r in results]
@@ -84,11 +95,11 @@ def _tier_f(base_url: str, model: str, out: Path) -> dict[str, Any]:
             "funnel": _funnel(grades), "out": str(out)}
 
 
-def _tier_a(base_url: str, model: str, out: Path, k: int) -> dict[str, Any]:
+def _tier_a(base_url: str, model: str, out: Path, k: int, *, limit: int | None = None) -> dict[str, Any]:
     from grcbench.tier_a import models
     from grcbench.tier_a.runner import run_tasks
     from grcbench.tier_a.task import task_dirs as a_task_dirs
-    tasks = a_task_dirs("dev")
+    tasks = a_task_dirs("dev")[:limit]
     results = run_tasks(tasks, models.openai_compatible(base_url, model), config_id=CONFIG_ID, reason=REASON,
                         samples=k, run_root=out, grade_episodes=True)
     return {"tasks": len(tasks), "episodes": len(results),
@@ -96,18 +107,19 @@ def _tier_a(base_url: str, model: str, out: Path, k: int) -> dict[str, Any]:
             "valid": sum(bool(r.valid) for r in results), "out": str(out)}
 
 
-def _tier_e(model_file: Path, llama_dir: Path, out: Path) -> dict[str, Any]:
+def _tier_e(model_file: Path, llama_dir: Path, out: Path, *, name: str = E_NAME,
+            machine_label: str = E_MACHINE) -> dict[str, Any]:
     """llama-bench at 4K, 5 warm runs, through `./gb tier-e run` (its own process and output files)."""
+    note = (E_NOTE if machine_label == E_MACHINE else
+            f"end-to-end dev run on {machine_label}: plumbing of the Tier-E protocol; H3 is a placeholder label")
     proc = subprocess.run([str(REPO / "gb"), "tier-e", "run", "--model", str(model_file), "--hardware", E_HARDWARE,
                            "--llama-dir", str(llama_dir), "--contexts", "4096", "--purpose", "plumbing",
-                           "--name", E_NAME, "--machine-label", "the build workstation (RTX 5090)",
-                           "--note", "G2 end-to-end dev run: plumbing of the Tier-E protocol; label H3 is the nearest "
-                                     "setup (a desktop GPU), not Qoherent's RTX 3090"],
+                           "--name", name, "--machine-label", machine_label, "--note", note],
                           cwd=REPO, capture_output=True, text=True)
     write_text(out / "tier_e.log", proc.stdout + proc.stderr)
     res: dict[str, Any] = {"contexts": [4096], "runs": 5, "exit_code": proc.returncode, "out": str(out),
-                           "name": E_NAME, "hardware_label": E_HARDWARE}
-    record = REPORTS / "tier_e" / f"{E_NAME}.json"
+                           "name": name, "hardware_label": E_HARDWARE, "machine_label": machine_label}
+    record = REPORTS / "tier_e" / f"{name}.json"
     if proc.returncode != 0 or not record.exists():
         return {**res, "error": f"./gb tier-e run exited {proc.returncode} (log: {out / 'tier_e.log'})"}
     return {**res, **_parse_e(read_json(record)), "record": str(record)}
@@ -164,7 +176,7 @@ def render_report(summary: dict[str, Any]) -> str:
             "desktop GPU); it is not Qoherent's RTX 3090, and the Tier-E record lists the differences"
             + (f": {_cell('; '.join(e['mismatches']))}." if e.get("mismatches") else "."), "",
             "## What this run does not measure", "",
-            "- **Tier-K scores.** The 200 dev rubrics are empty templates (`numeric` null, no points) and the dev "
+            "- **Tier-K scores.** The dev rubrics are empty templates (`numeric` null, no points) and the dev "
             "split has no block-question or calculation keys, so every Tier-K answer that is not truncated or empty "
             "is counted (route `no_reference`), not scored. The rule cascade's deferral rate on dev answers "
             "(round-2 finding F5) is therefore not measured here; F5 stays open until dev rubrics carry `numeric` "
@@ -189,13 +201,20 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--n-k", type=int, default=1, help="answers per Tier-K question")
     ap.add_argument("--k-a", type=int, default=1, help="episodes per Tier-A task")
     ap.add_argument("--limit-k", type=int, default=None, help="only the first M Tier-K questions")
+    ap.add_argument("--limit-f", type=int, default=None, help="only the first M Tier-F dev tasks")
+    ap.add_argument("--limit-a", type=int, default=None, help="only the first M Tier-A dev tasks")
+    ap.add_argument("--rubrics", type=Path, default=None, help="score Tier K with this dev rubric file")
+    ap.add_argument("--report", type=Path, default=REPORT, help=f"where the report goes (default {REPORT})")
+    ap.add_argument("--e-name", default=E_NAME, help="the Tier-E record's name")
+    ap.add_argument("--machine-label", default=E_MACHINE, help="the machine the run is on (Tier-E record)")
     ap.add_argument("--report-only", action="store_true", help="re-render the report from DIR/summary.json")
     ap.add_argument("--only", default="K,F,A,E",
                     help="tiers to run, comma-separated; the others keep their results from DIR/summary.json")
     a = ap.parse_args(argv)
+    report = a.report
     if a.report_only:
-        write_text(REPORT, render_report(read_json(a.out / "summary.json")))
-        print(f"report: {REPORT}")
+        write_text(report, render_report(read_json(a.out / "summary.json")))
+        print(f"report: {report}")
         return 0
     from grcbench.runlog.log import utc_now
     from grcbench.tier_a import smoke
@@ -232,21 +251,25 @@ def main(argv: list[str]) -> int:
             with server as base_url:
                 summary["server"]["load_seconds"] = server.load_seconds
                 if "K" in only:
-                    tier("K", _tier_k, base_url, smoke.SERVER_ALIAS, a.out / "tier_k", a.n_k, a.limit_k, sampling)
+                    tier("K", functools.partial(_tier_k, rubrics=a.rubrics), base_url, smoke.SERVER_ALIAS,
+                         a.out / "tier_k", a.n_k, a.limit_k, sampling)
                 if "F" in only:
-                    tier("F", _tier_f, base_url, smoke.SERVER_ALIAS, a.out / "tier_f")
+                    tier("F", functools.partial(_tier_f, limit=a.limit_f), base_url, smoke.SERVER_ALIAS,
+                         a.out / "tier_f")
                 if "A" in only:
-                    tier("A", _tier_a, base_url, smoke.SERVER_ALIAS, a.out / "tier_a", a.k_a)
+                    tier("A", functools.partial(_tier_a, limit=a.limit_a), base_url, smoke.SERVER_ALIAS,
+                         a.out / "tier_a", a.k_a)
         except Exception as exc:                          # the server did not start (or stop): recorded
             for x in served:
                 summary["tiers"].setdefault(x, {"error": f"server: {type(exc).__name__}: {exc}"})
             save()
     if "E" in only:
-        tier("E", _tier_e, smoke.SMOKE_MODEL, smoke.LLAMA_DIR_CUDA, a.out)
+        tier("E", functools.partial(_tier_e, name=a.e_name, machine_label=a.machine_label), smoke.SMOKE_MODEL,
+             smoke.LLAMA_DIR_CUDA, a.out)
     summary["finished"] = utc_now()
     save()
-    write_text(REPORT, render_report(read_json(a.out / "summary.json")))
-    print(f"report: {REPORT}")
+    write_text(report, render_report(read_json(a.out / "summary.json")))
+    print(f"report: {report}")
     return 0 if all("error" not in v for v in summary["tiers"].values()) else 1
 
 

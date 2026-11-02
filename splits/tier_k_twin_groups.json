@@ -1,6 +1,6 @@
 {
  "cluster_rule": "Tier-K cluster_id: a training question in a group takes the group id; every other question (every dev question among them) is a singleton whose cluster_id is its own id.",
- "date": "2026-10-14",
+ "date": "2026-11-02",
  "edges": [
   [
    "q_0021d0c2112c3448",
@@ -4890,5 +4890,5 @@
  "lexical_threshold": 0.55,
  "name": "GRC-Bench Tier-K twin groups over the 1,668 training questions",
  "semantic_threshold": 0.92,
- "version": 1
+ "version": 2
 }

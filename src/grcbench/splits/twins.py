@@ -1,6 +1,6 @@
 """Twin groups over the Tier-K training questions, and the training twins of test questions.
 
-Eval plan §4.1 (Table 4) holds 200 of the 1,668 training questions back as the dev split. §6 counts
+Eval plan §4.1 holds a dev split back from the 1,668 training questions (splits/dev.py). §6 counts
 "near-twins", meaning test questions that share an 8-word sequence with a training question. A dev
 question must have no sibling left in training: a sibling's teacher answer would teach the dev
 answer, and checkpoint selection would then reward memorization. Twin groups are therefore the

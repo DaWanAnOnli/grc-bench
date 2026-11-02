@@ -2,14 +2,14 @@
  "checks": [
   {
    "check": "schema",
-   "detail": "557 item records",
+   "detail": "464 item records",
    "failures": [],
    "n_failures": 0,
    "passed": true
   },
   {
    "check": "canary",
-   "detail": "1067 records; 39 start files read",
+   "detail": "881 records; 39 start files read",
    "failures": [],
    "n_failures": 0,
    "passed": true
@@ -23,14 +23,21 @@
   },
   {
    "check": "unique ids",
-   "detail": "557 ids",
+   "detail": "464 ids",
    "failures": [],
    "n_failures": 0,
    "passed": true
   },
   {
    "check": "tier-k splits",
-   "detail": "200 dev ids, 285 test items, 100 block questions",
+   "detail": "107 dev ids, 285 test items, 100 block questions",
+   "failures": [],
+   "n_failures": 0,
+   "passed": true
+  },
+  {
+   "check": "training data",
+   "detail": "1402 training questions in qoherent_v3_2026-11-01.zip; 107 dev and 285 test ids and the canary checked",
    "failures": [],
    "n_failures": 0,
    "passed": true

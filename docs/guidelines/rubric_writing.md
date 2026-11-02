@@ -6,7 +6,7 @@ remove underspecified questions, and count them) and proposal §5.1 (tiered rela
 unit or order-of-magnitude error scores zero).
 
 This guide is for the **team members** who write and check rubrics for the Tier-K questions: the
-185 frozen test questions first, then the 200 dev questions. Eval plan Table 7 budgets about
+185 frozen test questions first, then the 107 dev questions. Eval plan Table 7 budgets about
 60 person-hours for checking rubrics ("285 test + dev questions"). It has no line for writing them
 (see "Deviation to record" below).
 
@@ -57,13 +57,13 @@ rubrics, and the team check them. If team members write the rubrics instead, tha
 from §5.2, and it goes into the pre-registration, together with the hours below.
 
 Table 7 budgets ≈ 60 person-hours for checking only, for "285 test + dev questions". That is about
-6.3 minutes per rubric for each of the two checkers. The approved plan has rubrics for 385
-questions (185 test, 200 dev). Our estimate, to be updated once the first 20 rubrics are timed:
+6.3 minutes per rubric for each of the two checkers. Tier K has rubrics for 292
+questions (185 test, 107 dev). Our estimate, to be updated once the first 20 rubrics are timed:
 
 | Work | In Table 7 | Estimate |
 |---|---|---|
-| Writing 385 rubrics, at about 10 minutes each | not budgeted | ≈ 64 h |
-| Checking 385 rubrics, two checkers at Table 7's rate | ≈ 60 h (for 285) | ≈ 81 h |
+| Writing 292 rubrics, at about 10 minutes each | not budgeted | ≈ 49 h |
+| Checking 292 rubrics, two checkers at Table 7's rate | ≈ 60 h (for 285) | ≈ 61 h |
 | Recomputing the 25 calculation answers blind, at about 10 minutes each | not budgeted | ≈ 4 h |
 
 The 185 test rubrics come first: about 31 hours to write and 39 hours to check. Record the hours
@@ -338,7 +338,7 @@ and counted** (eval plan §5.2, §5.3).
 ## Where to write: the rubric sheet
 
 `./gb rubrics` writes one sheet per split, with the question already filled in on every row:
-`handoff/review_sheets/rubric_sheet_test.csv` (185 questions) and `rubric_sheet_dev.csv` (200). It also
+`handoff/review_sheets/rubric_sheet_test.csv` (185 questions) and `rubric_sheet_dev.csv` (107). It also
 writes the matching empty rubric records, `items/tier_k/<split>/rubrics.jsonl`. The columns are those
 of [`rubric_sheet.csv`](../../handoff/review_sheets/templates/rubric_sheet.csv). Work in a copy of the
 sheet. The command refuses to overwrite a sheet or record file that already holds team content.
@@ -368,14 +368,14 @@ every piece of rubric content is a placeholder. They are not rubrics for these q
 
 ### Example 1: a calculation question
 
-Dev question `q_140b8b2dd724019a` (calculation, basic): "Calculate the new sampling rate after
-upsampling a 12 kHz signal by a factor of 4."
+Dev question `q_978a8b499569ac5d` (calculation, basic): "Calculate the bandwidth of an AM signal
+with a carrier frequency of 1 MHz and a maximum modulating frequency of 5 kHz."
 
 The rubric record, once the calculation is confirmed:
 
 ```json
 {
-  "question_id": "q_140b8b2dd724019a",
+  "question_id": "q_978a8b499569ac5d",
   "split": "dev",
   "required_points": [
     {"id": "P1", "text": "<point the answer must make>", "weight": 1}
@@ -412,12 +412,12 @@ What the checkers do here:
 
 ### Example 2: an open-ended GNU Radio question
 
-Dev question `q_8ecdc62911af2d64` (gnuradio_usage, intermediate): "How do you implement a rational
-resampling filter in GNU Radio?"
+Dev question `q_9cb7ec1c4fb1625e` (gnuradio_usage, intermediate): "How can you use the 'Variable'
+block in GRC to control the frequency of a 'Signal Source' dynamically?"
 
 ```json
 {
-  "question_id": "q_8ecdc62911af2d64",
+  "question_id": "q_9cb7ec1c4fb1625e",
   "split": "dev",
   "required_points": [
     {"id": "P1", "text": "<the point that carries the answer>", "weight": 2},

@@ -1,6 +1,6 @@
 """Rubric templates and rubric sheets for Tier K (`./gb rubrics`; build plan WS6; eval plan §5.2, Table 5).
 
-One template per question: the 185 frozen test questions and the 200 dev questions. A template is the
+One template per question: the 185 frozen test questions and the dev questions. A template is the
 rubric record of docs/guidelines/rubric_writing.md with every prose field empty:
 
   question_id, split, task_type, question_sha256 (of the question text the rubric is for)

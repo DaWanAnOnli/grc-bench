@@ -1,22 +1,24 @@
-"""`./gb split-dev` draws the Tier-K dev split and its anchor and CI subsets (eval plan §4.1, Table 4; §6).
+"""`./gb split-dev` builds the Tier-K dev split and draws its anchor and CI subsets (eval plan §4.1, §6).
 
-Eval plan §4.1 holds 200 of the 1,668 training questions back as the Tier-K dev split. The dev split
-drives every choice: checkpoint selection, early stopping and the CI gate. Its questions and
-everything derived from them are excluded from every training use. The anchor subset that compares
-checkpoints during training is drawn from dev (§4.1), and so is the 20-question Tier-K part of the CI
-smoke subset. The 10 Tier-F dev tasks of the CI subset are added after Phase 3.
+The dev split drives every choice: checkpoint selection, early stopping and the CI gate (eval plan
+§4.1). Its questions and everything derived from them stay out of every training use. Dev split v2
+takes its questions from the training team's own validation split, so that GRC-Bench and training
+hold back the same questions: the Q&A questions of the validation split of Qoherent cleaned dataset
+v3 (splits.release), minus every question the exclusion rule removes. (Dev split v1, 14 Oct, drew 200
+of the 1,668 training questions; the training release, built without that list, has 168 of them in
+its training file.) The anchor subset that compares checkpoints during training is drawn from dev
+(§4.1), and so is the 20-question Tier-K part of the CI smoke subset. The 10 Tier-F dev tasks of the
+CI subset are added after Phase 3.
 
-Draw (`frozen.allocate`, algorithm stratified-largest-remainder-sha256-v1):
-  * strata: the exact raw (origin, task_type, difficulty) values, as in the frozen split;
-  * quotas: proportional to the FULL training pool (1,668), so the exclusions below cannot skew the
-    dev mix; a stratum with too few eligible questions is capped and its slots re-apportioned
-    (capacity rule in frozen.py);
-  * eligible: training questions that are NOT (i) in a multi-member twin group (twins.py), (ii) a
-    test twin (shares an 8-gram with a frozen test question), (iii) a test neighbour (semantic,
-    lexical or keep_both evidence with a test question), or (iv) all-REJECT (every teacher answer
-    rejected);
-  * rank: sha256("grc-bench-dev-v1-2026-10-14" + "\\0" + id).
-Anchor (60) and CI (20) apply the same algorithm to the 200 dev questions, with their own seeds.
+Exclusion rule: a training question cannot be a dev question if it is (i) in a multi-member twin group
+(twins.py), (ii) a test twin (shares an 8-gram with a frozen test question), (iii) a test neighbour
+(semantic, lexical or keep_both evidence with a test question), or (iv) all-REJECT (every teacher
+answer rejected). So no dev question has a twin left in training or near the test set.
+
+Dev = every validation question the rule keeps, in training-file order (no draw). Anchor (60) and CI
+(20) are drawn from dev with `frozen.allocate` (stratified-largest-remainder-sha256-v1): strata are
+the exact raw (origin, task_type, difficulty) values, quotas are proportional to dev, and ids are
+ranked by sha256(seed + "\\0" + id), each subset with its own seed.
 
 Outputs are deterministic (sorted keys, stable order, no timestamps); running the command twice gives
 byte-identical files. No item records are written here; `./gb tier-k-items` writes those.
@@ -35,14 +37,13 @@ from typing import Any, Mapping, Sequence
 from grcbench.common.io import iter_jsonl, read_jsonl, sha256_file, sha256_text, write_text
 from grcbench.common.paths import DATA, DATASET, FROZEN, REPO
 
-from . import frozen, twins
+from . import frozen, release, twins
 
-VERSION = 1
-DEV_SEED = "grc-bench-dev-v1-2026-10-14"
-ANCHOR_SEED = "grc-bench-anchor-v1-2026-10-14"
-CI_SEED = "grc-bench-ci-v1-2026-10-14"
-DEV_N, ANCHOR_N, CI_N = 200, 60, 20
-DATE = "2026-10-14"
+VERSION = 2
+ANCHOR_SEED = "grc-bench-anchor-v2-2026-11-02"
+CI_SEED = "grc-bench-ci-v2-2026-11-02"
+ANCHOR_N, CI_N = 60, 20
+DATE = "2026-11-02"
 
 TRAIN = FROZEN / "train_questions.jsonl"
 TEST = FROZEN / "eval_questions.jsonl"
@@ -120,29 +121,19 @@ def exclusions(g: Mapping[str, Any], ev: twins.Evidence, rejects: Sequence[str])
 
 
 def sensitivity(ev: twins.Evidence, train: Sequence[Mapping[str, Any]], rejects: Sequence[str],
-                dev_ids: Sequence[str], chosen_excl: Mapping[str, Any]) -> list[dict[str, Any]]:
+                validation: Sequence[str], dev_ids: Sequence[str]) -> list[dict[str, Any]]:
     """Twin-group and eligibility statistics across thresholds (None = source not used).
 
-    For each setting the dev draw is repeated: `redraw_overlap` is how many of its 200 ids are also
-    in the chosen dev split, `redraw_rejected_by_chosen` how many of them the chosen setting excludes
-    (i.e. would have a twin or test neighbour by the chosen evidence), and `chosen_dev_excluded` how
-    many chosen dev ids this setting would exclude."""
+    For each setting: the training questions it excludes, `dev_eligible` = the validation questions it
+    would keep as dev, and `chosen_dev_excluded` = the chosen dev questions it would exclude."""
     settings: list[tuple[float | None, float | None]] = [(None, None), (twins.SEMANTIC_THRESHOLD, None)]
     settings += [(s, twins.LEXICAL_THRESHOLD) for s in twins.SEMANTIC_SWEEP]
     settings += [(twins.SEMANTIC_THRESHOLD, x) for x in twins.LEXICAL_SWEEP if x != twins.LEXICAL_THRESHOLD]
-    pool = Counter(frozen.stratum_of(r) for r in train)
-    quota = frozen.largest_remainder(pool, DEV_N)
-    dev = set(dev_ids)
+    dev, val = set(dev_ids), set(validation)
     rows = []
     for sem, lex in settings:
         g = twins.graph(ev, sem, lex)
-        excl = exclusions(g, ev, rejects)
-        eligible_ids = [r["id"] for r in train if r["id"] not in excl]
-        eligible = Counter(frozen.stratum_of(r) for r in train if r["id"] not in excl)
-        try:
-            redraw = set(frozen.allocate(train, DEV_N, DEV_SEED, eligible=eligible_ids).ids)
-        except ValueError:
-            redraw = set()
+        excl = set(exclusions(g, ev, rejects))
         sizes = sorted((len(m) for m in g["groups"].values()), reverse=True)
         rows.append({
             "semantic_threshold": sem, "lexical_threshold": lex,
@@ -150,11 +141,9 @@ def sensitivity(ev: twins.Evidence, train: Sequence[Mapping[str, Any]], rejects:
             "edges": twins.edge_kind_counts(g["edges"]), "twin_groups": len(g["groups"]),
             "group_members": len(g["members"]), "largest_groups": sizes[:3],
             "test_neighbours": len(g["test_neighbours"]), "excluded": len(excl),
-            "eligible": len(eligible_ids),
-            "strata_short": sum(1 for s, q in quota.items() if eligible.get(s, 0) < q),
-            "chosen_dev_excluded": len(dev & set(excl)),
-            "redraw_overlap": len(redraw & dev),
-            "redraw_rejected_by_chosen": len(redraw & set(chosen_excl)),
+            "eligible": sum(1 for r in train if r["id"] not in excl),
+            "dev_eligible": len(val - excl),
+            "chosen_dev_excluded": len(dev & excl),
         })
     return rows
 
@@ -196,29 +185,39 @@ def build() -> dict[Path, str]:
     excl = exclusions(g, ev, rejects)
     eligible = [i for i in by_id if i not in excl]
 
-    dev = frozen.allocate(train, DEV_N, DEV_SEED, eligible=eligible)
-    dev_records = [by_id[i] for i in dev.ids]
+    validation = release.validation_question_ids()
+    unknown = [i for i in validation if i not in by_id]
+    if unknown:
+        raise SystemExit(f"split-dev: {len(unknown)} validation questions of the training release are not "
+                         f"training questions of the dataset: {unknown[:5]}")
+    val = set(validation)
+    dev_ids = [r["id"] for r in train if r["id"] in val and r["id"] not in excl]
+    trained = sorted(set(dev_ids) & release.training_question_ids())
+    if trained:
+        raise SystemExit(f"split-dev: {len(trained)} dev questions are in the release's training files: {trained[:5]}")
+    dev_records = [by_id[i] for i in dev_ids]
     anchor = frozen.allocate(dev_records, ANCHOR_N, ANCHOR_SEED)
     ci = frozen.allocate(dev_records, CI_N, CI_SEED)
-    assert set(dev.ids).isdisjoint(excl) and set(anchor.ids) <= set(dev.ids) and set(ci.ids) <= set(dev.ids)
+    assert set(dev_ids).isdisjoint(excl) and set(anchor.ids) <= set(dev_ids) and set(ci.ids) <= set(dev_ids)
+    val_excluded = {i: excl[i] for i in sorted(val) if i in excl}
+    val_reasons = Counter(r for rs in val_excluded.values() for r in rs)
 
-    test_strata = Counter(frozen.stratum_of(r) for r in test)
+    count = lambda recs: Counter(frozen.stratum_of(r) for r in recs)
+    pool_s, test_s, val_s, dev_s = count(train), count(test), count(by_id[i] for i in validation), count(dev_records)
     a_by, c_by = anchor.by_stratum(), ci.by_stratum()
-    strata = []
-    for row in dev.strata:
-        s = tuple(row["stratum"])
-        strata.append({"stratum": row["stratum"], "training_pool": row["quota_population"],
-                       "eligible": row["eligible"], "dev_proportional_quota": row["proportional_quota"],
-                       "dev": row["allocated"], "anchor": a_by.get(s, {}).get("allocated", 0),
-                       "ci": c_by.get(s, {}).get("allocated", 0), "test": test_strata.get(s, 0)})
+    strata = [{"stratum": list(s), "training_pool": pool_s.get(s, 0), "validation": val_s.get(s, 0),
+               "dev": dev_s.get(s, 0), "anchor": a_by.get(s, {}).get("allocated", 0),
+               "ci": c_by.get(s, {}).get("allocated", 0), "test": test_s.get(s, 0)}
+              for s in sorted(set(pool_s) | set(test_s), key=lambda s: tuple(map(str, s)))]
 
     reason_counts = Counter(r for rs in excl.values() for r in rs)
     group_sizes = Counter(len(m) for m in g["groups"].values())
     neighbours = g["test_neighbours"]
     repaired = repaired_rows(set(by_id))
-    comp = composition({"test": test, "dev": dev_records, "training_pool": train,
-                        "anchor": [by_id[i] for i in anchor.ids], "ci": [by_id[i] for i in ci.ids]})
-    sens = sensitivity(ev, train, rejects, dev.ids, excl)
+    comp = composition({"test": test, "dev": dev_records, "validation": [by_id[i] for i in validation],
+                        "training_pool": train, "anchor": [by_id[i] for i in anchor.ids],
+                        "ci": [by_id[i] for i in ci.ids]})
+    sens = sensitivity(ev, train, rejects, validation, dev_ids)
 
     def affected(ids: Sequence[str]) -> dict[str, Any]:
         st = Counter()
@@ -233,29 +232,38 @@ def build() -> dict[Path, str]:
         "version": VERSION,
         "date": DATE,
         "generated_by": "grcbench.splits.dev (./gb split-dev)",
-        "implements": ["eval plan §4.1 Table 4: 200 dev questions held back from the 1,668 training questions",
+        "implements": ["eval plan §4.1: the Tier-K dev split drives every choice; here it is the eligible part "
+                       "of the training team's validation split",
                        "eval plan §4.1: the anchor subset and the CI gate use the dev split",
                        "eval plan §6: near-twins of test questions"],
         "status": "draft: twin thresholds are Claude's reading, pending team review",
         "algorithm": {
             "name": frozen.ALGORITHM,
-            "description": ("Largest-remainder proportional allocation over exact raw (origin, task_type, "
-                            "difficulty) strata (ties: ascending stratum tuple, exact fractions); within a "
-                            "stratum ids ranked by ascending sha256(seed + NUL + id).hexdigest(); ids listed "
-                            "in training-file order."),
-            "dev_quota_population": "the full training pool (1,668 questions), before exclusions",
+            "dev": ("no draw: every Q&A question of the training release's validation split that the exclusion "
+                    "rule keeps, in training-file order"),
+            "description": ("anchor and ci: largest-remainder proportional allocation over exact raw (origin, "
+                            "task_type, difficulty) strata of the dev questions (ties: ascending stratum tuple, "
+                            "exact fractions); within a stratum ids ranked by ascending "
+                            "sha256(seed + NUL + id).hexdigest(); ids listed in training-file order."),
             "capacity_rule": ("A stratum whose quota exceeds its eligible count takes all eligible members and "
                               "is fixed; the remaining slots are re-apportioned by the same largest-remainder "
-                              "rule over the unfixed strata (still weighted by training-pool sizes), repeated "
-                              "until no quota exceeds capacity."),
-            "capacity_rounds": {"dev": dev.capped_rounds, "anchor": anchor.capped_rounds, "ci": ci.capped_rounds},
-            "subsets": "anchor and ci: the same algorithm over the 200 dev questions (quotas from dev)",
+                              "rule over the unfixed strata, repeated until no quota exceeds capacity."),
+            "capacity_rounds": {"anchor": anchor.capped_rounds, "ci": ci.capped_rounds},
         },
-        "seeds": {"dev": DEV_SEED, "anchor": ANCHOR_SEED, "ci": CI_SEED, "frozen_test": check["seed"]},
+        "seeds": {"anchor": ANCHOR_SEED, "ci": CI_SEED, "frozen_test": check["seed"]},
         "sources": source_files(),
         "frozen_split_check": check,
+        "dev_source": {
+            "release": release.describe(),
+            "rule": ("dev = the release's validation Q&A questions that the exclusion rule keeps; the release's "
+                     "training files hold none of them (checked when the split is built and by ./gb audit)"),
+            "validation_questions": len(validation),
+            "excluded_by_reason": {r: val_reasons.get(r, 0) for r in REASONS},
+            "excluded_ids": val_excluded,
+        },
         "counts": {"training_pool": len(train), "test": len(test), "excluded": len(excl),
-                   "eligible": len(eligible), "dev": len(dev.ids), "anchor": len(anchor.ids), "ci_tier_k": len(ci.ids)},
+                   "eligible": len(eligible), "validation": len(validation), "dev": len(dev_ids),
+                   "anchor": len(anchor.ids), "ci_tier_k": len(ci.ids)},
         "exclusions": {
             "rule": "dev candidates exclude every training question with at least one of these reasons",
             "by_reason": {r: reason_counts.get(r, 0) for r in REASONS},
@@ -297,13 +305,13 @@ def build() -> dict[Path, str]:
         },
         "all_reject_ids": rejects,
         "strata": strata,
-        "dev_ids": dev.ids,
+        "dev_ids": dev_ids,
         "anchor_ids": anchor.ids,
         "ci_ids": ci.ids,
         "ci_note": "The CI smoke subset is these 20 Tier-K dev questions plus 10 Tier-F dev tasks added after Phase 3.",
         "composition": comp,
         "training_artifacts_affected": {
-            "dev": affected(dev.ids), "test_twins": affected(sorted(ev.ngram_test)),
+            "dev": affected(dev_ids), "test_twins": affected(sorted(ev.ngram_test)),
             "test_neighbours_not_test_twins": affected(sorted(set(neighbours) - set(ev.ngram_test)))},
     }
 
@@ -329,7 +337,7 @@ def build() -> dict[Path, str]:
     files = {
         OUT_DEV: _json(dev_json),
         OUT_GROUPS: _json(groups_json),
-        OUT_EXCLUDE: exclude_text(dev.ids),
+        OUT_EXCLUDE: exclude_text(dev_ids),
         OUT_TWINS_TSV: twins_tsv(ev.ngram_test, neighbours),
         OUT_SHEET: review_sheet(ev, by_id),
     }
@@ -341,7 +349,8 @@ def build() -> dict[Path, str]:
 # ---------------------------------------------------------------- writers ------------------------
 
 def exclude_text(dev_ids: Sequence[str]) -> str:
-    head = [f"# GRC-Bench Tier-K dev split v{VERSION} ({DATE}): {len(dev_ids)} training-question ids, sorted.",
+    head = [f"# GRC-Bench Tier-K dev split v{VERSION} ({DATE}): {len(dev_ids)} question ids, sorted; all are in the "
+            "validation split of Qoherent cleaned dataset v3.",
             "# Exclude these questions, and everything derived from them, from EVERY training use.",
             "# Details: README.md in this folder. Source: splits/tier_k_dev.json (dev_ids)."]
     return "\n".join(head + sorted(dev_ids)) + "\n"
@@ -407,22 +416,21 @@ def _thr(x: float | None) -> str:
 def sensitivity_table(rows: Sequence[Mapping[str, Any]]) -> str:
     return _table(
         ["semantic", "lexical", "8gram / sem / lex / keep_both edges", "groups", "members", "largest",
-         "test neighbours", "excluded", "eligible", "strata short", "chosen dev excluded", "redraw overlap",
-         "redraw rejected by chosen"],
+         "test neighbours", "excluded", "eligible", "validation kept as dev", "chosen dev excluded"],
         [[_thr(r["semantic_threshold"]) + (" **(chosen)**" if r["chosen"] else ""), _thr(r["lexical_threshold"]),
           " / ".join(str(r["edges"].get(k, 0)) for k in ("8gram", "semantic", "lexical", "keep_both")),
           r["twin_groups"], r["group_members"], ", ".join(map(str, r["largest_groups"])), r["test_neighbours"],
-          r["excluded"], r["eligible"], r["strata_short"], r["chosen_dev_excluded"], r["redraw_overlap"],
-          r["redraw_rejected_by_chosen"]] for r in rows])
+          r["excluded"], r["eligible"], r["dev_eligible"], r["chosen_dev_excluded"]] for r in rows])
 
 
 def composition_tables(comp: Mapping[str, Any]) -> str:
     parts = []
     for f, rows in comp["fields"].items():
         parts.append(f"**{f}** (max |dev - test| = {comp['max_abs_share_difference_pp_dev_vs_test'][f]} pp)\n")
-        parts.append(_table([f, "test n", "test %", "dev n", "dev %", "training pool n", "training pool %"],
-                            [[r["value"], r["test"], r["test_pct"], r["dev"], r["dev_pct"], r["training_pool"],
-                              r["training_pool_pct"]] for r in rows]))
+        parts.append(_table([f, "test n", "test %", "dev n", "dev %", "validation n", "validation %",
+                             "training pool n", "training pool %"],
+                            [[r["value"], r["test"], r["test_pct"], r["dev"], r["dev_pct"], r["validation"],
+                              r["validation_pct"], r["training_pool"], r["training_pool_pct"]] for r in rows]))
         parts.append("")
     return "\n".join(parts)
 
@@ -444,11 +452,15 @@ GRC-Bench v{d['version']}, {d['date']}. Generated by `./gb split-dev`; do not ed
 Status: {d['status']}. If the team changes a threshold, the dev split gets a new version, so always check
 the version line at the top of `exclude_question_ids.txt`.
 
-## 1. The 200 dev questions: exclude from every training use
+## 1. The {d['counts']['dev']} dev questions: exclude from every training use
 
 `exclude_question_ids.txt` lists {d['counts']['dev']} question ids (SHA-256 of the file:
-`{exclude_sha}`). They come from `04_eval_frozen/train_questions.jsonl`, and eval plan §4.1 holds them
-back as the Tier-K dev split. The rule for these questions **and everything derived from them**:
+`{exclude_sha}`). They are the Tier-K dev split (eval plan §4.1), and all of them are in the
+validation split of the training team's release, Qoherent cleaned dataset v3
+(`{d['dev_source']['release']['file']}`, SHA-256 `{d['dev_source']['release']['sha256']}`). Of its
+{d['dev_source']['validation_questions']} validation questions, the {d['dev_source']['validation_questions'] - d['counts']['dev']} others are not dev questions because they
+belong to a twin group or are close to a test question (`splits/tier_k_dev.json`, `dev_source`). Keep the whole validation split out of training as the release already does; the rule
+for the dev questions **and everything derived from them** is:
 
 - **no** teacher answers in SFT (any teacher in `05_answers/`, including duplicate rows such as laguna-s21's);
 - **no** repaired answers (`10_repaired/`, `10_repaired_glm/`) and **no** DPO/DPOP repair pairs built from them;
@@ -459,8 +471,9 @@ back as the Tier-K dev split. The rule for these questions **and everything deri
 What is allowed: scoring checkpoints on them through GRC-Bench, for early stopping, checkpoint
 selection and the CI gate. That is what the dev split is for (eval plan §4.1).
 
-What this removes from the current data: {dev_a['judged_teacher_answers']} judged teacher answers
-({st(dev_a)}) and these repaired-answer rows (each one a DPO repair pair): {rep(dev_a)}.
+In the source dataset these questions have {dev_a['judged_teacher_answers']} judged teacher answers
+({st(dev_a)}) and these repaired-answer rows (each one a DPO repair pair): {rep(dev_a)}. None of them
+may reach training; `./gb audit` checks every release's training files for the dev and test ids.
 
 The dev questions were chosen so that none of them has a twin left in training. Twin groups are
 built from shared 8-word sequences, the dataset's semantic-similarity scores, a lexical TF-IDF check
@@ -504,8 +517,10 @@ def report(d: Mapping[str, Any]) -> str:
     bands = lambda k: _table(["band", "pairs read", "judged twins", "share"],
                              [[f"[{b['band'][0]:.2f}, {min(b['band'][1], 1.0):.2f})", b["pairs_now"], b["twins"],
                                b["twin_share"]] for b in t["band_reading"][k]])
-    strata = [s for s in d["strata"] if s["dev"] or s["test"]]
-    capped = d["algorithm"]["capacity_rounds"]["dev"]
+    strata = [s for s in d["strata"] if s["dev"] or s["validation"] or s["test"]]
+    src, rel = d["dev_source"], d["dev_source"]["release"]
+    vx = src["excluded_by_reason"]
+    lexical_off = t["sensitivity"][1]
     return f"""# Tier-K dev split (eval plan §4.1, §6)
 
 Generated by `./gb split-dev` (GRC-Bench v{d['version']}, {d['date']}). Status: {d['status']}.
@@ -516,16 +531,23 @@ and seed `{fz['seed']}`: source SHA-256 matches = {fz['source_sha256_matches']};
 manifest in order = {fz['ids_match_in_order']} ({fz['reproduced_ids']}/{fz['manifest_ids']}); the train
 file is the complement = {fz['train_file_is_complement']}.
 
-## Draw
-- Pool: {c['training_pool']} training questions. Quotas are proportional to the full pool over the raw
-  (origin, task_type, difficulty) strata; ranking uses sha256(`{d['seeds']['dev']}` + NUL + id).
-- Excluded from dev ({c['excluded']} unique questions, so {c['eligible']} eligible):
+## Dev questions
+- Source: the validation split of the training team's release, Qoherent cleaned dataset v3
+  (`{rel['file']}`, SHA-256 `{rel['sha256']}`, read in place from `{rel['validation']}`):
+  {src['validation_questions']} Q&A questions, all of them among the {c['training_pool']} training questions of the dataset.
+- Exclusion rule over the {c['training_pool']} training questions ({c['excluded']} unique questions excluded, {c['eligible']} eligible):
   twin-group members {x['twin_group_member']}; test twins (8-gram) {x['test_twin_8gram']};
   test neighbours (semantic {x['test_neighbour_semantic']}, lexical {x['test_neighbour_lexical']},
   keep_both {x['test_neighbour_keep_both']}); all-REJECT {x['all_reject']}. The reasons overlap.
-- Capacity rule triggered: {'no, every stratum had enough eligible questions' if not capped else capped}.
-- Dev {c['dev']}; anchor {c['anchor']} (seed `{d['seeds']['anchor']}`); CI {c['ci_tier_k']} Tier-K questions
-  (seed `{d['seeds']['ci']}`), plus 10 Tier-F dev tasks after Phase 3.
+- Among the validation questions it excludes {len(src['excluded_ids'])}: twin-group members {vx['twin_group_member']};
+  test twins (8-gram) {vx['test_twin_8gram']}; test neighbours (semantic {vx['test_neighbour_semantic']},
+  lexical {vx['test_neighbour_lexical']}, keep_both {vx['test_neighbour_keep_both']}); all-REJECT {vx['all_reject']}.
+  Their ids and reasons are in `splits/tier_k_dev.json` (`dev_source.excluded_ids`).
+- Dev {c['dev']}: every validation question the rule keeps, in training-file order. The release's
+  training files hold none of them.
+- Anchor {c['anchor']} (seed `{d['seeds']['anchor']}`) and CI {c['ci_tier_k']} Tier-K questions
+  (seed `{d['seeds']['ci']}`, plus 10 Tier-F dev tasks after Phase 3), drawn from dev in proportion to
+  its strata.
 
 ## Twin groups and thresholds
 Edges: {', '.join(f'{k} {v}' for k, v in t['edges_by_kind'].items())}. Groups: {t['groups']}
@@ -548,25 +570,25 @@ Lexical TF-IDF cosine (training pairs with a blind-lane question, without a shar
 
 {bands('lexical')}
 
-Sensitivity. Columns: "strata short" = strata whose dev quota exceeds their eligible count; "chosen
-dev excluded" = chosen dev questions this setting would exclude; "redraw overlap" = how many of the
-200 questions drawn at this setting are in the chosen dev split; "redraw rejected by chosen" = how
-many of those 200 have a twin or test neighbour under the chosen evidence.
+Sensitivity. Columns: "validation kept as dev" = validation questions this setting would keep as dev;
+"chosen dev excluded" = chosen dev questions this setting would exclude.
 
 {sensitivity_table(t['sensitivity'])}
 
 ## Dev vs test composition (raw labels)
 {composition_tables(d['composition'])}
-## Strata with a dev or test question
-{_table(['origin', 'task_type', 'difficulty', 'training pool', 'eligible', 'quota', 'dev', 'anchor', 'ci', 'test'],
-        [[*s['stratum'], s['training_pool'], s['eligible'], s['dev_proportional_quota'], s['dev'], s['anchor'],
-          s['ci'], s['test']] for s in strata])}
+## Strata with a dev, validation or test question
+{_table(['origin', 'task_type', 'difficulty', 'training pool', 'validation', 'dev', 'anchor', 'ci', 'test'],
+        [[*s['stratum'], s['training_pool'], s['validation'], s['dev'], s['anchor'], s['ci'], s['test']]
+         for s in strata])}
 
 ## Open points for the team
 - Confirm or change the two thresholds using the review sheet. A change gives a new dev version.
-- The lexical check is an addition to the brief. Drawn without it (semantic {_thr(t['sensitivity'][1]['semantic_threshold'])},
-  lexical off), {t['sensitivity'][1]['redraw_rejected_by_chosen']} of the 200 dev questions would have a blind-lane
-  near-twin left in training or a lexical test neighbour.
+- The lexical check is an addition to the brief. Without it (semantic {_thr(lexical_off['semantic_threshold'])},
+  lexical off), {lexical_off['dev_eligible']} validation questions would be dev questions instead of {c['dev']}; the
+  others have a blind-lane near-twin left in training or a lexical test neighbour.
+- The dev split's composition follows the training team's validation split, not the test split; the
+  tables above give the difference.
 - The WS2 embedding audit (EmbeddingGemma) should re-check the dev ids against training; anything new is flagged, never auto-removed.
 """
 

@@ -1,7 +1,8 @@
 """`./gb tier-k judge DIR`: the judge runner for a routed Tier-K run (pre-registration §5.1, §8 decision 7).
 
 It reads a run that `./gb tier-k score DIR` has routed (DIR/manifest.json, answers.jsonl, summary.json,
-judge_queue.jsonl) and sends every queued answer to the judge (judge_prompt):
+judge_queue.jsonl) and sends every queued answer to the judge (judge_prompt). A run scored with
+--rubrics FILE is judged with its copy of that file (DIR/rubrics_used.jsonl, checked by SHA-256):
 
   1. Checks before any request. Every queued request must be what judge_prompt.build_messages builds
      for its item, rubric and answer under the current judge version, and the run's summary must carry
@@ -156,7 +157,15 @@ def judge(out_dir: Path, *, primary: Endpoint, fallback: Endpoint, allow_test: b
     if summary.get("rules_version") != rules.RULES_VERSION:
         raise JudgeRefused(f"the run was routed with {summary.get('rules_version')}, not {rules.RULES_VERSION}: "
                            "score the run again (./gb tier-k score DIR)")
-    items = {i["id"]: i for i in krun.load_split(manifest["split"])}
+    split_items = krun.load_split(manifest["split"])
+    used = summary.get("rubrics")
+    if used:                                     # scored with --rubrics FILE: the run's copy of that file
+        copy = out_dir / krun.RUBRICS_COPY
+        if not copy.exists() or sha256_file(copy) != used.get("sha256"):
+            raise JudgeRefused(f"{copy.name} is missing or changed since the run was scored with {used.get('file')}: "
+                               "score the run again (./gb tier-k score DIR --rubrics FILE)")
+        split_items = krun.with_rubric_file(split_items, copy, manifest["split"])
+    items = {i["id"]: i for i in split_items}
     answers = read_jsonl(out_dir / "answers.jsonl")
     by_key = {(a["item_id"], a["sample"]): a for a in answers}
     missing = sorted({a["item_id"] for a in answers if a["item_id"] not in items})
@@ -196,7 +205,8 @@ def judge(out_dir: Path, *, primary: Endpoint, fallback: Endpoint, allow_test: b
                 try:
                     explained = jp.explain_score(old.get("verdict"), rubric, rules_result=routed["rules_result"],
                                                  judge_failed=bool(old.get("judge_failed")),
-                                                 answer=by_key[key]["text"])
+                                                 answer=by_key[key]["text"],
+                                                 allow_placeholder=krun.placeholder_ok(items[key[0]]))
                 except jp.VerdictError:                  # the stored verdict does not fit the current rubric
                     explained = None
                 if explained is not None:
@@ -220,7 +230,8 @@ def judge(out_dir: Path, *, primary: Endpoint, fallback: Endpoint, allow_test: b
             else:
                 failed_in_a_row = 0
                 explained = jp.explain_score(got.get("verdict"), rubric, rules_result=routed["rules_result"],
-                                             judge_failed=bool(got.get("judge_failed")), answer=by_key[key]["text"])
+                                             judge_failed=bool(got.get("judge_failed")), answer=by_key[key]["text"],
+                                             allow_placeholder=krun.placeholder_ok(items[key[0]]))
                 row = {"item_id": key[0], "sample": key[1], **stamp, "judge": got.get("judge"),
                        "judge_failed": bool(got.get("judge_failed")), "request_failed": False,
                        "verdict": got.get("verdict"), "score": explained["score"], "reason": explained["reason"],
@@ -264,7 +275,8 @@ def _update_summary(out_dir: Path, summary: dict[str, Any], items: dict[str, Any
                                 "redactions": 0})
             else:
                 results.append(jp.explain_score(None, rubric, rules_result=routed["rules_result"],
-                                                truncated=bool(a.get("truncated")), answer=a["text"]))
+                                                truncated=bool(a.get("truncated")), answer=a["text"],
+                                                allow_placeholder=krun.placeholder_ok(item)))
     counts = jp.report_counts(results)
     final = [scores[key] for key, *_ in work if key in scores and not scores[key].get("request_failed")]
     summary.update({

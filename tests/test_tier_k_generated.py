@@ -78,7 +78,7 @@ def test_reference_models_match_known_values():
 
 
 # ---------------------------------------------------------------- rubric templates
-@pytest.mark.parametrize("split,n", [("test", 185), ("dev", 200)])
+@pytest.mark.parametrize("split,n", [("test", 185), ("dev", 107)])
 def test_one_empty_template_per_question(split, n):
     temps = _jsonl(REPO / rubrics.OUT[split])
     qs = _jsonl(rubrics.SOURCES[split])

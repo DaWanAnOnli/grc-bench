@@ -3,7 +3,7 @@
 One schema-valid record (grcbench.common.schemas, tier K) per question, built only from files:
 
   items/tier_k/test/frozen_questions.jsonl   the 185 frozen test questions (04_eval_frozen), manifest order
-  items/tier_k/dev/questions.jsonl           the 200 dev questions (splits/tier_k_dev.json), dev_ids order
+  items/tier_k/dev/questions.jsonl           the dev questions (splits/tier_k_dev.json), dev_ids order
   reports/tier_k_items.md                    counts, cluster rule, near-twin reporting split, writers
   handoff/review_sheets/tier_k_test_clusters.csv   multi-member test clusters for the team to confirm
 

@@ -43,11 +43,11 @@ directories live outside the repository, in `~/grc-bench-cache` and `~/grc-bench
 
 | Package | Plan section | Command |
 |---|---|---|
-| `common/` | paths, pins, sandbox (bubblewrap), canary, item schemas, 4K tool-output cap | `env`, `baseline`, `fetch`, `reference`, `audit` |
+| `common/` | paths, pins, sandbox (bubblewrap), canary, item schemas, 4K tool-output cap; the Colab package | `env`, `baseline`, `fetch`, `reference`, `audit`, `colab-package` |
 | `splits/` | §4.1 dev split, anchor and CI subsets | `split-dev` |
 | `labels/` | §4.2 task-type labels | `labels` |
 | `contamination/` | §6 8-gram, TF-IDF and embedding overlap; audit of Qoherent's agent traces | `contamination`, `traces` |
-| `tier_k/` | §4.2, §5.2 knowledge items, GNU Radio behaviour questions, question prompt, rubrics, rule-cascade scoring, B1 retriever | `tier-k-items`, `blocks`, `blockq`, `calc`, `rubrics`, `score-k`, `retriever` |
+| `tier_k/` | §4.2, §5.2 knowledge items, GNU Radio behaviour questions, question prompt, rubrics, rule-cascade scoring, B1 retriever | `tier-k-items`, `blocks`, `blockq`, `calc`, `rubrics`, `placeholder-rubrics`, `score-k`, `retriever` |
 | `tier_f/` | §4.3, §5.4 validity ladder V1–V5, seeds, tasks, gates | `ladder`, `seeds`, `tier-f` |
 | `tier_a/` | §4.4 headless GRC-Agent runner, tasks, grader; the same runner for any request and its shareable zip (`handoff/agent_runner.md`) | `tier-a`, `agent`, `agent-package` |
 | `tier_e/` | §4.5 speed and memory protocol | `tier-e` |
@@ -88,11 +88,12 @@ reference minus fresh, paired by slot, clustered by block). There is no test/tra
 
 | Part | State (23 Oct) | Where |
 |---|---|---|
-| Tier K | 285 test questions (185 frozen, 100 GNU Radio behaviour questions answered by running GNU Radio) and 200 dev questions; fresh GNU Radio question sets from any seed; closed-book question prompt, rule cascade and judge prompt; 385 empty rubric templates for the team | `items/tier_k/`, `reports/tier_k_block_questions.md`, `reports/tier_k_fresh_sets.md` |
+| Tier K | 285 test questions (185 frozen, 100 GNU Radio behaviour questions answered by running GNU Radio) and 107 dev questions (the eligible part of the training team's validation split); fresh GNU Radio question sets from any seed; closed-book question prompt, rule cascade and judge prompt; 292 empty rubric templates for the team | `items/tier_k/`, `reports/tier_k_block_questions.md`, `reports/tier_k_fresh_sets.md` |
 | Tier F | first set of 30 tasks (20 test, 10 dev), all gates passed, in GRC-Agent's harness as one lookup and one edit | `items/tier_f/`, `reports/tier_f_first_set.md` |
 | Tier A | first set of 22 tasks (10 test, 12 dev), all gates passed; 20 more test tasks drafted as specs | `items/tier_a/`, `reports/tier_a_first_set.md` |
 | GRC-Agent runner | `./gb agent`: GRC-Agent headless on any request, outputs as files, conversations continued across calls, local or hosted OpenAI-compatible models; `./gb agent-package` builds the teammates' zip (setup script, tutorial, self-test; no benchmark content) | `handoff/agent_runner.md`, `handoff/agent_package/TUTORIAL.md` |
 | Tier E | llama-bench protocol, checked on a small model (CPU and the local RTX 5090) | `reports/tier_e/` |
+| Pipeline tests | placeholder rubrics for the dev questions (`./gb placeholder-rubrics`: the training release's reference answer as one point; `./gb tier-k score DIR --rubrics FILE`, dev only), so the Tier-K route runs end to end before the team's rubrics exist; `./gb colab-package`: `./gb`, the code and the dev split (no test item) for a pipeline test on a Colab GPU | `handoff/colab/` |
 | Contamination | 8-gram, TF-IDF and embedding audit of every tier, including Qoherent's 1,853 agent traces; task-level check of the traces (`./gb traces`) | `reports/contamination.md`, `reports/agent_traces.md` |
 | Analysis | `grcbench.stats`, self-check 38/38 | `./gb stats selfcheck` |
 | Pre-registration | draft for sign-off at G2; the run list is `status: draft`, so every test run is refused until then | `docs/preregistration/` |

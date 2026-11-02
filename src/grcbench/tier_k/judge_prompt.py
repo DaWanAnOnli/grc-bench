@@ -204,6 +204,10 @@ FAILURE_POLICY = ("After MAX_ATTEMPTS malformed verdicts from the primary judge 
 # no prose, so no rubric writer is involved (key_rubric)
 KEY_REVIEW = "generated-from-key"
 KEY_TOLERANCE_TEXT = "The scoring code applies the tolerance recorded with the key."
+# A stand-in rubric for a pipeline test on the dev split (tier_k/placeholder_rubrics.py): the training
+# release's reference answer copied as one point. Used only from a rubric file given on the command line
+# (run.with_rubric_file), never from the repository's rubrics, and never on the test split
+PLACEHOLDER_REVIEW = "placeholder"
 # Names a model may give itself or its maker; the judge never sees them (bias control, [52]). Whole
 # words, case-sensitive; kept: "Llama.cpp", "Claude Shannon" / "Claude E. Shannon" / "Claude-Shannon",
 # "Claude Berrou", "GPT partition" and "OpenAI compatible" / "OpenAI-compatible" (any case after the name).
@@ -674,10 +678,11 @@ def numeric_reference(rubric: Mapping[str, Any] | Rubric) -> Any:
     return r.numbers[0].reference if len(r.numbers) == 1 else [n.reference for n in r.numbers]
 
 
-def check_reviewed(rubric: Mapping[str, Any] | Rubric) -> None:
+def check_reviewed(rubric: Mapping[str, Any] | Rubric, *, allow_placeholder: bool = False) -> None:
     """Only rubrics the team has approved go to the judge (eval plan §5.2: two team members check
     every rubric; a Qoherent expert settles disagreements), and the numbers-only rubrics key_rubric
-    builds from an execution-derived key (no prose, so nothing for a reviewer to check)."""
+    builds from an execution-derived key (no prose, so nothing for a reviewer to check). A placeholder
+    passes only with allow_placeholder (a dev-split rubric file given on the command line)."""
     if not isinstance(rubric, Mapping):
         raise RubricError("pass the rubric record, so that its review status can be checked")
     review = rubric.get("review")
@@ -685,6 +690,8 @@ def check_reviewed(rubric: Mapping[str, Any] | Rubric) -> None:
     if status == KEY_REVIEW:
         if rubric.get("required_points") or rubric.get("points") or rubric.get("disqualifying_errors"):
             raise RubricError(f"a {KEY_REVIEW} rubric holds numbers only: no points, no errors")
+        return
+    if status == PLACEHOLDER_REVIEW and allow_placeholder:
         return
     if status not in REVIEWED:
         raise RubricError(f"rubric review status is {status!r}; the judge needs one of {', '.join(REVIEWED)}")
@@ -756,16 +763,16 @@ def redact_self_names(text: str) -> tuple[str, int]:
 
 
 def build_messages(question: str, rubric: Mapping[str, Any] | Rubric, answer: str, *,
-                   allow_unreviewed: bool = False) -> list[dict[str, str]]:
+                   allow_unreviewed: bool = False, allow_placeholder: bool = False) -> list[dict[str, str]]:
     """Chat messages for judging one answer: [system, user]. The system message is the same for every
     item. `allow_unreviewed` exists only for tests and dry runs of the template; real judging passes
-    the approved rubric record."""
+    the approved rubric record (or a placeholder, with allow_placeholder: check_reviewed)."""
     if not isinstance(question, str):
         raise TypeError("pass the question text, not the item record (records carry the canary)")
     if not isinstance(answer, str):
         raise TypeError("one answer (a string) at a time: answers are never judged in pairs [52]")
     if not allow_unreviewed:
-        check_reviewed(rubric)
+        check_reviewed(rubric, allow_placeholder=allow_placeholder)
     r = normalize_rubric(rubric)
     numeric_reference(r)
     q = question.strip()
@@ -1147,14 +1154,15 @@ def _rule_reasons(rules_result: Mapping[str, Any] | None) -> list[str]:
 def explain_score(verdict: Mapping[str, Any] | None, rubric: Mapping[str, Any] | Rubric, *,
                   rules_result: Mapping[str, Any] | None = None, truncated: bool = False,
                   index: EntityIndex | None = None, judge_failed: bool = False, answer: str | None = None,
-                  allow_unreviewed: bool = False) -> dict[str, Any]:
+                  allow_unreviewed: bool = False, allow_placeholder: bool = False) -> dict[str, Any]:
     """The pre-registered aggregation (module docstring), with the parts calibration compares.
     `verdict` may be None when route() says "rules"; on that route a verdict is ignored.
     judge_failed: the primary and the fallback judge returned no valid verdict (FAILURE_POLICY): 0.
     answer: the answer text, to count the self-names the judge request redacted ("redactions").
-    `allow_unreviewed` exists only for tests and dry runs; real scoring passes the approved rubric."""
+    `allow_unreviewed` exists only for tests and dry runs; real scoring passes the approved rubric (or a
+    placeholder, with allow_placeholder: check_reviewed)."""
     if not allow_unreviewed:
-        check_reviewed(rubric)
+        check_reviewed(rubric, allow_placeholder=allow_placeholder)
     r = normalize_rubric(rubric)
     numeric_reference(r)
     how = route(r, rules_result, truncated=truncated)

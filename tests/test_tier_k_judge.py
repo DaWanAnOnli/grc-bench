@@ -160,7 +160,7 @@ def test_template_names_no_model(name):
 
 def test_no_argument_carries_the_model_or_a_second_answer():
     assert list(inspect.signature(jp.build_messages).parameters) == [
-        "question", "rubric", "answer", "allow_unreviewed"]
+        "question", "rubric", "answer", "allow_unreviewed", "allow_placeholder"]
 
 
 def test_messages_are_system_then_user_and_the_system_prompt_is_fixed():

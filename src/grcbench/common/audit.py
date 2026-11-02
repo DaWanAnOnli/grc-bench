@@ -14,6 +14,9 @@ reports/audit.json; the command exits 1 if any check fails.
   unique ids     no id is used twice across tiers and splits
   tier-k splits  dev and test questions are disjoint; the training team's exclusion list holds every
                  dev id; every block question is about an eligible catalog block with a behaviour model
+  training data  the training team's release (splits.release, pinned by SHA-256) has no Tier-K dev or
+                 test question and no canary in its training files, and its validation split holds
+                 every dev question
   tier-f splits  every task's split agrees with its signature rule or seed file (compose.audit_items)
   tier-a splits  every Tier-A start graph comes from a Tier-F graph of the same split
   reserved list  handoff/training_team/flowgraph_reserved_signatures.txt holds the current reserved set
@@ -28,6 +31,7 @@ import sys
 from pathlib import Path
 from typing import Any, Iterator
 
+from ..splits import release
 from .canary import CANARY, CANARY_GUID
 from .io import iter_jsonl, read_json, write_json
 from .paths import HANDOFF, ITEMS, REPO, REPORTS, SPLITS
@@ -143,6 +147,26 @@ def check_tier_k_splits(records: list[tuple[str, dict, str]]) -> dict[str, Any]:
     return _check("tier-k splits", bad, f"{len(dev)} dev ids, {len(test)} test items, {len(blockq)} block questions")
 
 
+def check_training_release(records: list[tuple[str, dict, str]]) -> dict[str, Any]:
+    d = read_json(SPLITS / "tier_k_dev.json")
+    dev = set(d["dev_ids"])
+    test = {r["id"] for _, r, _ in records if r.get("tier") == "K" and r.get("split") == "test"}
+    try:
+        trained = release.training_question_ids()
+        validation = set(release.validation_question_ids())
+        leaks = release.training_files_containing(CANARY_GUID)
+    except release.ReleaseError as exc:
+        return _check("training data", [str(exc)], "the training release could not be read")
+    bad = [f"{i}: Tier-K dev question in the release's training files" for i in sorted(dev & trained)]
+    bad += [f"{i}: Tier-K test question in the release's training files" for i in sorted(test & trained)]
+    bad += [f"{i}: dev question not in the release's validation split" for i in sorted(dev - validation)]
+    bad += [f"{m}: contains the canary GUID" for m in leaks]
+    if d.get("dev_source", {}).get("release", {}).get("sha256") != release.RELEASE_SHA256:
+        bad.append("splits/tier_k_dev.json was built from another release: re-run ./gb split-dev")
+    return _check("training data", bad, f"{len(trained)} training questions in {release.RELEASE.name}; "
+                  f"{len(dev)} dev and {len(test)} test ids and the canary checked")
+
+
 def check_tier_f_splits() -> dict[str, Any]:
     from ..tier_f import compose
     audit = compose.audit_items(REPO)
@@ -182,7 +206,8 @@ def run() -> list[dict[str, Any]]:
     f_splits = check_tier_f_splits()
     reserved = f_splits.pop("reserved")
     return [check_schema(records), check_canary(records), check_licence(records), check_unique_ids(records),
-            check_tier_k_splits(records), f_splits, check_tier_a_splits(records), check_reserved(reserved)]
+            check_tier_k_splits(records), check_training_release(records), f_splits,
+            check_tier_a_splits(records), check_reserved(reserved)]
 
 
 def main(argv: list[str]) -> int:
