@@ -64,7 +64,8 @@ folder (run folders, answer keys), and the package's own source would be hidden 
 4. About 45 minutes with the llama.cpp archive in Drive; 1.5–2 hours without (compiling llama.cpp b10333 on
    Colab's 2 CPUs). A build made here is kept in `My Drive/grc-bench-colab/cache/` and reused next time. With
    `MODEL_STEPS` off in the Settings cell, only the setup and the checks run (steps 1–7b; no llama.cpp build,
-   steps 8–10 skipped): about 10–15 minutes.
+   steps 8–10 skipped): about 10–15 minutes, and a CPU runtime is enough (Colab still offers one when its GPU
+   limit is reached).
 5. Download `My Drive/grc-bench-colab/results/<run>/results_<run>.zip`.
 
 ## What it checks

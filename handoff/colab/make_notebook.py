@@ -67,7 +67,8 @@ view, and no way to inspect the processes outside. Step 7 checks this before any
 **How to run**
 1. Put `grc-bench-colab.zip` in **My Drive/grc-bench-colab/** (no need to unzip it). Optional: put
    `llama-b10333-cuda-sm75-cu12.4.tar.gz` in **My Drive/grc-bench-colab/cache/** to skip compiling llama.cpp on a T4.
-2. *Runtime → Change runtime type → **T4 GPU***.
+2. *Runtime → Change runtime type → **T4 GPU***. For the checks alone (`MODEL_STEPS` off) the CPU runtime is enough;
+   Colab still offers it when its GPU limit is reached.
 3. *Runtime → **Run all***, and allow Google Drive access when asked: choose the Google account this notebook runs
    under and tick every box. Without Drive, upload `grc-bench-colab.zip` (and the llama.cpp archive) to the Files
    pane on the left before *Run all*; the results zip is then offered as a download at the end.
@@ -127,7 +128,7 @@ INNER_ENV = {"PYTHONDONTWRITEBYTECODE": "1", "QT_QPA_PLATFORM": "offscreen", "GR
              "GRC_BENCH_LLAMA_BACKEND": "cuda"}          # "auto" looks for WSL's GPU library, which Colab does not have
 os.environ.update({**INNER_ENV, "MAMBA_ROOT_PREFIX": "/opt/mamba"})
 STAMP = time.strftime("%Y%m%d-%H%M%S", time.gmtime())
-RESULT = {"notebook": "grcbench_colab_test 3", "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+RESULT = {"notebook": "grcbench_colab_test 4", "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
           "settings": {"gr_setup": GR_SETUP, "tiers": TIERS, "limit_k": LIMIT_K, "limit_f": LIMIT_F,
                        "limit_a": LIMIT_A, "judge_in_colab": JUDGE_IN_COLAB}, "steps": {}}
 OUT = Path("/content/grcbench-results") / STAMP       # copied to Drive at each save
@@ -261,12 +262,17 @@ code(r'''
 def machine():
     if "google.colab" not in sys.modules:
         raise StopHere("This notebook is written for Google Colab.")
-    if not shutil.which("nvidia-smi"):
-        raise StopHere("No GPU: Runtime > Change runtime type > T4 GPU > Save, then Runtime > Run all.")
-    q = subprocess.run(["nvidia-smi", "--query-gpu=name,driver_version,memory.total,compute_cap", "--format=csv,noheader"],
-                       capture_output=True, text=True).stdout.strip().split(", ")
-    head = subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout
-    cuda = re.search(r"CUDA (?:UMD )?Version:\s*([\d.]+)", head)     # newer drivers: "CUDA UMD Version"
+    if shutil.which("nvidia-smi"):
+        q = subprocess.run(["nvidia-smi", "--query-gpu=name,driver_version,memory.total,compute_cap", "--format=csv,noheader"],
+                           capture_output=True, text=True).stdout.strip().split(", ")
+        head = subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout
+        cuda = re.search(r"CUDA (?:UMD )?Version:\s*([\d.]+)", head)     # newer drivers: "CUDA UMD Version"
+    elif MODEL_STEPS:
+        raise StopHere("No GPU: Runtime > Change runtime type > T4 GPU > Save, then Runtime > Run all "
+                       "(or untick MODEL_STEPS in Settings: the checks alone run on a CPU runtime).")
+    else:                                                # the checks (steps 1-7b) need no GPU
+        q, cuda = [None] * 4, None
+        log("step 1", "no GPU: a CPU runtime, enough for the checks (MODEL_STEPS is off)")
     osr = dict(l.rstrip().split("=", 1) for l in open("/etc/os-release") if "=" in l)
     caps = re.search(r"CapEff:\s*(\w+)", open("/proc/self/status").read())
     info = {"gpu": q[0], "driver": q[1], "gpu_memory": q[2], "compute_cap": q[3],
@@ -299,7 +305,7 @@ def package():
     if zpath is None:
         raise StopHere(f"{PACKAGE} not found: put it in My Drive/{DRIVE_FOLDER}/, or upload it to the Files pane, "
                        "and Run all again.")
-    gpu = re.sub(r"[^A-Za-z0-9]+", "-", GPU["gpu"]).strip("-")
+    gpu = re.sub(r"[^A-Za-z0-9]+", "-", GPU["gpu"] or "CPU").strip("-")
     if root is not None:
         DRIVE_OUT = root / "results" / f"{STAMP}_{gpu}"
     if HOST_PKG.exists():
@@ -612,7 +618,7 @@ the only point): that tests the routing, not the model. Tier F and A run only wh
 sandbox (step 7) work.
 """)
 code(r'''
-E_NAME = "colab_" + re.sub(r"[^a-z0-9]+", "_", GPU["gpu"].lower()).strip("_")
+E_NAME = "colab_" + re.sub(r"[^a-z0-9]+", "_", (GPU["gpu"] or "cpu").lower()).strip("_")
 E2E = WORK / "colab_e2e"
 
 def e2e():
