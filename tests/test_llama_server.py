@@ -65,6 +65,30 @@ def test_a_server_on_a_unix_socket_is_read_too(tmp_path):
     assert info == {"n_ctx": 40960, "total_slots": 2, "n_ctx_train": 40960}
 
 
+SLOTS = [{"id": 0, "id_task": 3, "is_processing": False,
+          "next_token": [{"has_next_token": False, "n_remain": 0, "n_decoded": 100}]},
+         {"id": 1, "id_task": 9, "is_processing": False,
+          "next_token": [{"has_next_token": False, "n_remain": 0, "n_decoded": 8192}]},
+         {"id": 2, "is_processing": False, "next_token": None}]          # a slot that has served nothing yet
+
+
+def test_the_last_reply_of_a_server_is_read_from_its_slots():
+    """llama-server's GET /slots keeps each slot's last task: how many tokens it generated (n_decoded) and
+    how many it had left under the request's limit (n_remain: 0 = the limit was used up). The most recent
+    task is the last reply; the number of slots that have served a task says whether that is unambiguous."""
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), _handler({"/slots": SLOTS}))
+    api = ThreadingHTTPServer(("127.0.0.1", 0), _handler({}))
+    for s in (srv, api):
+        _serve(s)
+    try:
+        assert llama_server.last_reply(f"http://127.0.0.1:{srv.server_address[1]}/v1") == {
+            "slot": 1, "id_task": 9, "n_decoded": 8192, "n_remain": 0, "processing": False, "slots_used": 2}
+        assert llama_server.last_reply(f"http://127.0.0.1:{api.server_address[1]}/v1") is None
+    finally:
+        srv.shutdown()
+        api.shutdown()
+
+
 def test_what_a_server_does_not_report_is_none():
     api = ThreadingHTTPServer(("127.0.0.1", 0), _handler({}))                     # no /props: an API
     bad = ThreadingHTTPServer(("127.0.0.1", 0), _handler({"/props": {"default_generation_settings": [1, 2],

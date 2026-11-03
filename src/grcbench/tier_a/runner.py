@@ -94,11 +94,12 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 from ..common.io import read_json, sha256_file, write_json, write_text
-from ..common.llama_server import server_info
+from ..common.llama_server import last_reply, server_info
 from ..common.paths import ITEMS
 from ..runlog import log as runlog
 from . import isolation
-from .caps import CAP_CONTEXT, ENGINE_REFUSAL, Caps, CapHit, EpisodeMeter, HarnessCapability, classify_exception
+from .caps import (CAP_CONTEXT, ENGINE_REFUSAL, Caps, CapHit, EpisodeMeter, HarnessCapability, classify_exception,
+                   reply_limit_hit, unparseable_reply)
 from .models import ModelSpec, as_spec, build_model
 from .task import Task, load_task, task_from_dict
 from .user import reply_text
@@ -597,6 +598,8 @@ async def _episode(spec: dict[str, Any]) -> dict[str, Any]:
     model_spec = ModelSpec.from_dict(spec["model"])
     setting = spec["setting"]
     meter = EpisodeMeter(caps)
+    if model_spec.kind == "openai_compatible" and model_spec.relay is None:      # a llama-server, not a hosted API
+        meter.server_last_reply = lambda: last_reply(model_spec.base_url, uds_path=model_spec.uds_path)
     capability = HarnessCapability(meter=meter)
     state = _State(stream=model_spec.streams())
     sample_record: dict[str, Any] | None = None
@@ -642,10 +645,12 @@ async def _episode(spec: dict[str, Any]) -> dict[str, Any]:
                 end_reason = await converse(agent, proxy, task, state, meter, capability,
                                             conversation_id, t0)
         except Exception as exc:             # noqa: BLE001 - classified below
-            hit = classify_exception(exc, caps, meter.usage.requests)
+            hit = classify_exception(exc, caps, meter.usage.requests) or reply_limit_hit(meter)
             if hit is not None:
                 meter.hit(hit)
                 end_reason = f"cap:{hit.cap}"
+            elif unparseable_reply(exc):     # the model's reply, which the server could not parse
+                status, end_reason, error = "agent_error", "unparseable_reply", _error(exc)
             elif isinstance(exc, ModelAPIError):
                 status, end_reason, error = "infrastructure_error", "model server error", _error(exc)
             else:

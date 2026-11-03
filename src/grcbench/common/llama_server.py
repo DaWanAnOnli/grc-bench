@@ -1,6 +1,7 @@
 """What a model server reports about itself: llama-server's GET /props (its context per slot,
-default_generation_settings.n_ctx, and its slots, total_slots) and GET /v1/models (the model's own
-context, meta.n_ctx_train), over TCP or a UNIX socket. Anything a server does not report is None: an API
+default_generation_settings.n_ctx, and its slots, total_slots), GET /v1/models (the model's own
+context, meta.n_ctx_train) and GET /slots (each slot's last task: tokens generated and left), over TCP or
+a UNIX socket. Anything a server does not report is None: an API
 without these endpoints, a reply that is not JSON or not of the expected shape, a listener that is not HTTP."""
 
 from __future__ import annotations
@@ -62,3 +63,21 @@ def server_info(base_url: str | None, *, uds_path: str | None = None, timeout: f
     return {"n_ctx": _positive(gen.get("n_ctx")) if isinstance(gen, dict) else None,
             "total_slots": _positive(props.get("total_slots")),
             "n_ctx_train": _positive(meta.get("n_ctx_train"))}
+
+
+def last_reply(base_url: str | None, *, uds_path: str | None = None, timeout: float = 5.0) -> dict[str, Any] | None:
+    """The server's most recent task as llama-server's GET /slots keeps it: {"slot", "id_task", "n_decoded" (tokens
+    generated), "n_remain" (tokens left under the request's limit; 0 = used up), "processing", "slots_used" (slots
+    that have served a task: 1 = unambiguous)}, or None (no /slots, or no slot has served a task). Read after a
+    failed request, it gives the token count the client never received."""
+    slots = _get_json(base_url, "/slots", uds_path, timeout)
+    used = []
+    for s in slots if isinstance(slots, list) else []:
+        tokens = s.get("next_token") if isinstance(s, dict) else None
+        nt = tokens[0] if isinstance(tokens, list) and tokens and isinstance(tokens[0], dict) else None
+        if nt is not None and isinstance(s.get("id_task"), int):
+            used.append({"slot": s.get("id"), "id_task": s["id_task"], "n_decoded": nt.get("n_decoded"),
+                         "n_remain": nt.get("n_remain"), "processing": bool(s.get("is_processing"))})
+    if not used:
+        return None
+    return {**max(used, key=lambda u: u["id_task"]), "slots_used": len(used)}

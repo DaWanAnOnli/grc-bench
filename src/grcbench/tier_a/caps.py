@@ -25,7 +25,12 @@ Caps and how each is enforced
                   tier_f_mode.TIER_F_REPLY_TOKENS), none in Tier A. Every model request carries it as
                   pydantic-ai's max_tokens setting (sent as max_completion_tokens, which llama-server
                   honours); a reply the server ends at the limit (finish_reason "length") is the cap,
-                  raised in wrap_model_request before pydantic-ai's own token-limit errors.
+                  raised in wrap_model_request before pydantic-ai's own token-limit errors. When the
+                  cut reply cannot be parsed, llama-server sends an error instead of it (UNPARSEABLE);
+                  a failed request then records the server's own count (EpisodeMeter.server_last_reply:
+                  llama_server.last_reply, GET /slots), and a reply that used up the limit is the cap
+                  (reply_limit_hit). Any other unparseable reply is the model's (runner: status
+                  agent_error, end reason "unparseable_reply"), never an infrastructure error.
   flowgraph run   a wall-clock limit for each flowgraph run (HeadlessFlowgraphProxy max_run_seconds,
                   headless_proxy D6): the run's sandbox is killed at the limit, and the episode ends
                   as a cap failure at the next step.
@@ -71,6 +76,7 @@ from typing import Any
 
 from pydantic_ai.capabilities import AbstractCapability
 from pydantic_ai.capabilities.abstract import CapabilityOrdering
+from pydantic_ai.exceptions import UsageLimitExceeded
 from pydantic_ai.usage import RunUsage, UsageLimits
 
 from ..common.tokens import count, truncate_tool_output
@@ -172,6 +178,35 @@ def stop_gracefully_reason(output: Any) -> str | None:
 
 
 ENGINE_REFUSAL = "engine refused the prompt"      # the detail of a context cap the model server reported
+# llama.cpp's message when its chat parser cannot read what the model generated (common/chat parsers)
+UNPARSEABLE = re.compile(r"model produced output that does not match the expected", re.IGNORECASE)
+
+
+def unparseable_reply(exc: BaseException) -> bool:
+    """The model server reported that it could not parse the model's reply (UNPARSEABLE, anywhere in the
+    exception chain): the model's output, not a server failure."""
+    seen: set[int] = set()
+    e: BaseException | None = exc
+    while e is not None and id(e) not in seen:
+        seen.add(id(e))
+        if UNPARSEABLE.search(str(e)):
+            return True
+        e = e.__cause__ if e.__cause__ is not None else (None if e.__suppress_context__ else e.__context__)
+    return False
+
+
+def reply_limit_hit(meter: "EpisodeMeter") -> "CapHit | None":
+    """The answer-limit cap for a request that failed after its reply used up the limit, by the server's count
+    (the last request's `server_reply`, recorded by HarnessCapability.wrap_model_request)."""
+    limit = meter.caps.reply_tokens
+    reply = meter.requests[-1].get("server_reply") if meter.requests else None
+    if not limit or not reply or reply.get("processing") or reply.get("n_remain") != 0:
+        return None
+    n = reply.get("n_decoded")
+    if not isinstance(n, int) or n < limit:
+        return None
+    return CapHit(CAP_REPLY_TOKENS, f"the reply reached the {limit:,}-token answer limit ({n:,} tokens generated, "
+                  "by the server's count; the server could not return the cut reply)", limit, meter.usage.requests)
 
 
 def _context_refusal(exc: BaseException) -> str | None:
@@ -317,6 +352,8 @@ class EpisodeMeter:
     tool_names: set[str] = field(default_factory=set)
     output_tool_names: set[str] = field(default_factory=set)
     flowgraph_cap_probe: Callable[[], dict[str, Any] | None] | None = None
+    # the model server's own record of its last reply (llama_server.last_reply), read after a failed request
+    server_last_reply: Callable[[], dict[str, Any] | None] | None = None
     prefilled_ids: set[str] = field(default_factory=set)     # harness-made calls (Tier-F prefill)
     turn_index: int = 0
     started: float = field(default_factory=time.monotonic)
@@ -392,6 +429,10 @@ class HarnessCapability(AbstractCapability[Any]):
         except BaseException as exc:
             rec.update(seconds=round(time.monotonic() - t0, 3), error=f"{type(exc).__name__}: {exc}"[:500],
                        input_tokens=None, output_tokens=None)
+            # a streamed reply the server could not send shows up here as a cancelled request: its count is
+            # the server's (a limit the harness hit before the request, e.g. the request cap, is not)
+            if self.meter.server_last_reply is not None and not isinstance(exc, (UsageLimitExceeded, CapExceeded)):
+                rec["server_reply"] = self.meter.server_last_reply()
             raise
         usage = response.usage
         rec.update(seconds=round(time.monotonic() - t0, 3), input_tokens=usage.input_tokens,

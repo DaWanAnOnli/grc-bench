@@ -35,6 +35,21 @@ def test_the_package_runs_gb_on_the_dev_split(package):
     assert any(n.startswith(root + "items/tier_a/dev/") for n in names)
 
 
+def test_the_package_can_check_the_sandbox_inside_a_tier_a_episode(package):
+    """The notebook's step 7b runs GRC-Bench's own sandbox tests and the golden replays of the fixture tasks
+    (shell commands and flowgraph runs inside the episode sandbox) on Colab; MODEL_STEPS=False makes a short
+    run of the checks without llama.cpp's build and the model runs."""
+    with zipfile.ZipFile(package) as z:
+        names = set(z.namelist())
+        notebook = z.read(f"{colab_package.NAME}/{colab_package.NOTEBOOK}").decode()
+    root = colab_package.NAME + "/"
+    for rel in colab_package.SANDBOX_TESTS:
+        assert root + rel in names, rel
+    assert root + "tests/fixtures/tier_a/tasks/fx-a-modify-tone/golden_calls.json" in names
+    assert root + "tests/fixtures/tier_f_task/fx_modify_tone/task.json" in names
+    assert "tier-a smoke --no-probe" in notebook and "MODEL_STEPS" in notebook and "7b_episode_sandbox" in notebook
+
+
 def test_the_package_holds_no_test_item_and_no_bytecode(package):
     names = zipfile.ZipFile(package).namelist()
     assert not [n for n in names if "/test" in n.split(colab_package.NAME, 1)[1] and "/items/" in n]

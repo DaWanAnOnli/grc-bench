@@ -240,7 +240,10 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   match the tool's schema; calls to tools that do not exist; correct refusals; first-attempt success
   against recovery after an error; steps, tokens and time per task.
 - **Invalid episodes.** An episode that ends with an infrastructure error (the model server or the
-  harness failed, not the model) is not scored and is re-run (§8, item 10).
+  harness failed, not the model) is not scored and is re-run (§8, item 10). A reply the model server
+  cannot parse (llama.cpp reports that the output does not match the model's tool-call format) is the
+  model's failure, not an infrastructure error; the tokens it generated are recorded from the server's
+  own count, and in Tier F a reply that used up the 8K limit counts as reaching the answer limit.
 
 ### 5.4 Tier E
 

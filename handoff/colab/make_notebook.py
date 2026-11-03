@@ -58,6 +58,7 @@ view, and no way to inspect the processes outside. Step 7 checks this before any
 | 5 | **GRC-Agent** at the pinned commit `6c98128`, its knowledge databases and the tokenizer |
 | 6 | **llama.cpp b10333** (the pinned build): no prebuilt Linux CUDA download exists, so it is compiled once and kept in your Drive, unless a build is already there |
 | 7 | `./gb env` (the version pins), the GNU Radio block catalog hash, and GRC-Bench's sandbox |
+| 7b | the sandbox inside a Tier-A episode: golden replays of the fixture tasks (shell commands, flowgraph runs) and GRC-Bench's sandbox tests |
 | 8 | `./gb e2e`: Tier K (answers scored with placeholder rubrics), Tier F, Tier A, Tier E on a few dev items |
 | 9 | speeds: Tier E twice, the GPU's clocks and temperature, Tier-K tokens per second |
 | 10 | the judge runner: the same local model grades the Tier-K answers (plumbing only) |
@@ -71,6 +72,8 @@ view, and no way to inspect the processes outside. Step 7 checks this before any
    under and tick every box. Without Drive, upload `grc-bench-colab.zip` (and the llama.cpp archive) to the Files
    pane on the left before *Run all*; the results zip is then offered as a download at the end.
 4. Keep the tab open. **First run: about 45 minutes with the llama.cpp archive in Drive, 1.5–2 hours without.**
+   With `MODEL_STEPS` off (Settings), only the setup and the checks run (steps 1–7b; no llama.cpp build, steps
+   8–10 skipped): about 10–15 minutes.
 
 **What comes back:** `My Drive/grc-bench-colab/results/<run>/results_<run>.zip`, which holds `feasibility.json` (one
 entry per step: ok or failed, with times and details), the logs, the e2e report and the run folders. A step that
@@ -91,8 +94,10 @@ LIMIT_F = 2  #@param {type:"integer"}
 LIMIT_A = 1  #@param {type:"integer"}
 JUDGE_IN_COLAB = True  #@param {type:"boolean"}
 REUSE_LLAMA_BUILD = True  #@param {type:"boolean"}
+MODEL_STEPS = True  #@param {type:"boolean"}
 print(f"GNU Radio setup {GR_SETUP}; tiers {TIERS}: {LIMIT_K} Tier-K questions, {LIMIT_F} Tier-F tasks, "
-      f"{LIMIT_A} Tier-A tasks; judge in Colab: {JUDGE_IN_COLAB}; package My Drive/{DRIVE_FOLDER}/{PACKAGE}")
+      f"{LIMIT_A} Tier-A tasks; judge in Colab: {JUDGE_IN_COLAB}; package My Drive/{DRIVE_FOLDER}/{PACKAGE}; "
+      + ("all steps" if MODEL_STEPS else "checks only: no llama.cpp build, no model runs (steps 8-10 skipped)"))
 ''')
 
 md("""
@@ -224,17 +229,21 @@ def gb(args, step_key, *, name, show=60, timeout=None, env=None):
 
 
 def step(key, title, fn):
-    """Run one step; record ok / failed (with the error) and its time. Later steps still run. A step that returns
-    {"failed": reason, ...} is recorded as failed with its details."""
+    """Run one step; record ok / failed (with the error) / skipped and its time. Later steps still run. A step that
+    returns {"failed": reason, ...} is recorded as failed with its details, {"skipped": reason} as skipped."""
     print("=" * 100 + f"\n{key}: {title}\n" + "=" * 100, flush=True)
     t0 = time.time()
     try:
         detail = fn() or {}
-        failed = detail.pop("failed", None)
+        failed, skipped = detail.pop("failed", None), detail.pop("skipped", None)
         detail = {("result_" + k if k in ("title", "status", "seconds", "error") else k): v for k, v in detail.items()}
         if failed:
             record(key, title=title, status="failed", seconds=round(time.time() - t0, 1), error=failed, **detail)
             log(key, f"FAILED: {failed}  (recorded; the notebook goes on)")
+            return
+        if skipped:
+            record(key, title=title, status="skipped", seconds=round(time.time() - t0, 1), error=skipped, **detail)
+            log(key, f"skipped: {skipped}")
             return
         record(key, title=title, status="ok", seconds=round(time.time() - t0, 1), **detail)
     except StopHere:
@@ -470,6 +479,8 @@ def llama():
     c, _, fetch_s = gb("fetch", "step 6", name="06_fetch")
     if c:
         raise RuntimeError("./gb fetch failed (log 06_fetch.log)")
+    if not MODEL_STEPS:                                  # the checks of steps 7 and 7b need no CUDA build
+        return {"fetch_seconds": fetch_s, "cuda": "not built: MODEL_STEPS is off"}
     cc = GPU["compute_cap"].replace(".", "")
     drv = tuple(int(x) for x in (GPU["driver_cuda"] or "12.4").split("."))
     cuda = "12.9" if drv >= (12, 9) else f"{drv[0]}.{drv[1]}"
@@ -558,6 +569,42 @@ step("7_pins", "./gb env, pins, catalog and sandbox", pins)
 ''')
 
 md("""
+## Step 7b: GRC-Bench's sandbox inside a Tier-A episode
+A Tier-A episode runs in a sandbox and starts a sandbox of its own for every shell command and flowgraph run the
+agent makes. No model is needed to check that here: `./gb tier-a smoke --no-probe` replays the fixture tasks'
+known-good tool calls (shell commands and flowgraph runs among them) through the real runner, and GRC-Bench's own
+sandbox tests check that every sandbox hides the user's files, the answer keys and the other runs, that the
+agent's shell cannot write outside its project or reach the network, and that a flowgraph run is stopped at its
+time limit.
+""")
+code(r'''
+SANDBOX_TESTS = ("tests/test_sandbox_masks.py::test_the_outer_sandbox_hides_the_users_files",
+                 "tests/test_sandbox_masks.py::test_agent_shell_commands_see_only_the_project_folder",
+                 "tests/test_sandbox_masks.py::test_flowgraph_runs_see_only_their_own_paths",
+                 "tests/test_common.py::test_sandbox_blocks_network_and_writes_outside",
+                 "tests/test_common.py::test_sandbox_timeout",
+                 "tests/test_common.py::test_a_sandbox_inside_the_sandbox_gets_the_same_namespace_settings",
+                 "tests/test_tier_a_runner.py::test_agent_shell_cannot_write_outside_the_project_or_reach_the_network",
+                 "tests/test_tier_a_runner.py::test_flowgraph_run_time_cap")
+
+def episode_sandbox():
+    if SANDBOX_MODE is None:
+        return {"failed": "not run: no sandbox setting passed step 7"}
+    if RESULT["steps"].get("5_grc_agent", {}).get("knowledge_dbs") is not True:
+        return {"failed": "not run: GRC-Agent did not install (step 5)"}
+    c1, replays, s1 = gb("tier-a smoke --no-probe --no-report", "step 7b", name="07b_golden_replays", show=40)
+    c2, tests, s2 = gb("test " + " ".join(SANDBOX_TESTS), "step 7b", name="07b_sandbox_tests", show=40)
+    summary = next((l.strip() for l in reversed(tests) if re.search(r"\d+ (passed|failed|error)", l)), "")
+    log("step 7b", f"golden replays: exit {c1}; sandbox tests: {summary or 'no summary'}")
+    bad = [name for name, code in (("golden replays", c1), ("sandbox tests", c2)) if code]
+    return {"sandbox_mode": SANDBOX_MODE, "replays_exit": c1, "replays_seconds": s1, "replays_tail": replays[-12:],
+            "tests": list(SANDBOX_TESTS), "tests_exit": c2, "tests_seconds": s2, "tests_summary": summary,
+            **({"failed": " and ".join(bad) + " did not pass (logs 07b_*)"} if bad else {})}
+
+step("7b_episode_sandbox", "the sandbox inside a Tier-A episode", episode_sandbox)
+''')
+
+md("""
 ## Step 8: `./gb e2e` on a few dev items
 One llama-server (the smoke model, every layer on the GPU) serves Tier K, F and A in turn; then Tier E runs
 llama-bench. Tier-K answers are scored with the **placeholder rubrics** (the training release's reference answer as
@@ -569,6 +616,8 @@ E_NAME = "colab_" + re.sub(r"[^a-z0-9]+", "_", GPU["gpu"].lower()).strip("_")
 E2E = WORK / "colab_e2e"
 
 def e2e():
+    if not MODEL_STEPS:
+        return {"skipped": "MODEL_STEPS is off"}
     tiers = [t.strip().upper() for t in TIERS.split(",") if t.strip()]
     agent_ok = RESULT["steps"].get("5_grc_agent", {}).get("knowledge_dbs") is True
     sandbox_ok = RESULT["steps"].get("7_pins", {}).get("sandbox_ok") is True
@@ -607,6 +656,8 @@ def smi():
     return subprocess.run(["nvidia-smi", f"--query-gpu={q}", "--format=csv,noheader"], capture_output=True, text=True).stdout.strip()
 
 def speeds():
+    if not MODEL_STEPS:
+        return {"skipped": "MODEL_STEPS is off"}
     model, llama_dir = CACHE / "models/Qwen3-4B-Q4_K_M.gguf", CACHE / "llama.cpp/b10333-cuda"
     before = smi()
     c, _, secs = gb(f"tier-e run --model {model} --hardware H3 --llama-dir {llama_dir} --contexts 4096 --purpose plumbing "
@@ -663,8 +714,8 @@ print(json.dumps({k: s.get(k) for k in ("judge", "n_judged", "n_judge_failed", "
 """
 
 def judge():
-    if not JUDGE_IN_COLAB:
-        return {"skipped": "JUDGE_IN_COLAB is off"}
+    if not MODEL_STEPS or not JUDGE_IN_COLAB:
+        return {"skipped": "MODEL_STEPS is off" if not MODEL_STEPS else "JUDGE_IN_COLAB is off"}
     (OUT / "judge_plumbing.py").write_text(JUDGE)           # /content is visible inside the container too
     c, out, secs = run_in(f"cd {PKG} && PYTHONPATH={PKG}/src {AGENT}/.venv/bin/python {OUT}/judge_plumbing.py {E2E}/tier_k",
                           "step 10", name="10_judge")

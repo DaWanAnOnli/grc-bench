@@ -41,6 +41,9 @@ Checked on Colab (3 Nov 2026, a T4 runtime) with a probe: loopback works, the in
 reading a hidden file or writing a read-only folder through `/proc/1/root`, and reading another process's
 environment, are all refused. The run's machine label names the sandbox setting.
 
+The package must not lie inside the work folder (`/root/grc-bench-work`): the sandbox of a flowgraph run hides that
+folder (run folders, answer keys), and the package's own source would be hidden with it.
+
 ## What you need
 
 - `grc-bench-colab.zip`, made by `./gb colab-package` (it goes to `~/grc-bench-work/colab/`). It holds `./gb`,
@@ -59,7 +62,9 @@ environment, are all refused. The run's machine label names the sandbox setting.
    account the notebook runs under and tick every box). Without Drive: upload the zip (and the llama.cpp
    archive) to the Files pane before *Run all*; the results zip is then offered as a download.
 4. About 45 minutes with the llama.cpp archive in Drive; 1.5–2 hours without (compiling llama.cpp b10333 on
-   Colab's 2 CPUs). A build made here is kept in `My Drive/grc-bench-colab/cache/` and reused next time.
+   Colab's 2 CPUs). A build made here is kept in `My Drive/grc-bench-colab/cache/` and reused next time. With
+   `MODEL_STEPS` off in the Settings cell, only the setup and the checks run (steps 1–7b; no llama.cpp build,
+   steps 8–10 skipped): about 10–15 minutes.
 5. Download `My Drive/grc-bench-colab/results/<run>/results_<run>.zip`.
 
 ## What it checks
@@ -73,6 +78,7 @@ environment, are all refused. The run's machine label names the sandbox setting.
 | 5 | GRC-Agent at `6c98128`, its knowledge databases, the tokenizer |
 | 6 | llama.cpp b10333 with CUDA, compiled for this GPU or taken from Drive |
 | 7 | `./gb env` (version pins), the GNU Radio block catalog hash, GRC-Bench's sandbox (the setting it uses here) |
+| 7b | the sandbox inside a Tier-A episode: `./gb tier-a smoke --no-probe` (golden replays of the fixture tasks, flowgraph runs among them) and 8 of GRC-Bench's sandbox tests (hidden files, the agent's shell, flowgraph runs and their time limit, a sandbox inside a sandbox) |
 | 8 | `./gb e2e`: Tier K (scored with placeholder rubrics), Tier F, Tier A, Tier E on a few dev items |
 | 9 | speeds: Tier E twice, the GPU's clocks and temperature, Tier-K tokens per second |
 | 10 | the judge runner, with the same local model as a stand-in judge (plumbing only) |

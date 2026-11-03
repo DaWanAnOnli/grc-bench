@@ -688,6 +688,81 @@ def test_a_context_refusal_by_the_model_server_is_a_context_cap_failure(root, gu
     assert res.harness["model_server"] == {"n_ctx": n_ctx, "n_ctx_train": None if n_ctx is None else 40960}
 
 
+UNPARSEABLE = "The model produced output that does not match the expected peg-native format"
+
+
+def _unparsing_server(n_decoded, n_remain):
+    """A stand-in llama-server whose streamed reply ends with llama.cpp's parse-failure event (as on Colab,
+    2 Nov, when the 8K limit cut a Tier-F reply where the tool-call parser could not read it); its /slots
+    reports the task's tokens generated and left."""
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    replies = {"/props": {"default_generation_settings": {"n_ctx": 40960}},
+               "/v1/models": {"data": [{"id": "stub", "meta": {"n_ctx_train": 40960}}]},
+               "/slots": [{"id": 0, "id_task": 41, "is_processing": False,
+                           "next_token": [{"has_next_token": False, "n_remain": n_remain, "n_decoded": n_decoded}]}]}
+
+    class Server(BaseHTTPRequestHandler):
+        def log_message(self, *args) -> None:
+            pass
+
+        def do_GET(self) -> None:                                    # noqa: N802 - http.server API
+            data = json.dumps(replies[self.path]).encode() if self.path in replies else None
+            if data is None:
+                self.send_error(404)
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+
+        def do_POST(self) -> None:                                   # noqa: N802 - http.server API
+            self.rfile.read(int(self.headers.get("Content-Length") or 0))
+            base = {"id": "chatcmpl-stub", "object": "chat.completion.chunk", "created": 0, "model": "stub"}
+            events = [{**base, "choices": [{"index": 0, "delta": {"role": "assistant"}, "finish_reason": None}]},
+                      {**base, "choices": [{"index": 0, "delta": {"reasoning_content": "The mixer needs "},
+                                            "finish_reason": None}]},
+                      {"error": {"code": 500, "message": UNPARSEABLE, "type": "server_error"}}]
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.end_headers()
+            for event in events:
+                self.wfile.write(f"data: {json.dumps(event)}\n\n".encode())
+                self.wfile.flush()
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Server)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server
+
+
+@pytest.mark.slow
+@pytest.mark.gnuradio
+@pytest.mark.parametrize("n_decoded, n_remain, sample", [(8192, 0, 11), (900, 7292, 12)])
+def test_a_reply_the_server_cannot_parse_keeps_its_token_count(root, guard, n_decoded, n_remain, sample):
+    """When llama-server cannot parse a streamed reply it sends an error instead of the reply, so the client
+    never sees the usage. The harness then reads the server's /slots: the tokens generated are recorded, a
+    reply that used up the Tier-F answer limit is that cap, and any other is the model's unparseable reply
+    (a failed sample, not an infrastructure error)."""
+    server = _unparsing_server(n_decoded, n_remain)
+    try:
+        spec = models.openai_compatible(f"http://127.0.0.1:{server.server_address[1]}/v1", "stub")
+        res = tier_f_mode.run_tier_f_sample(F_MODIFY, spec, root, config_id="pytest-f", sample=sample, **guard)
+    finally:
+        server.shutdown()
+    reply = res.model_requests[0]["server_reply"]
+    assert reply["n_decoded"] == n_decoded and reply["n_remain"] == n_remain and reply["slots_used"] == 1
+    if n_remain == 0:
+        assert res.status == "cap_failure" and res.caps_hit[0]["cap"] == capsmod.CAP_REPLY_TOKENS
+        assert "8,192 tokens generated" in res.caps_hit[0]["detail"]
+        assert res.tier_f["grade"]["failure"] == f"cap:{capsmod.CAP_REPLY_TOKENS}"
+    else:
+        assert res.status == "agent_error" and res.end_reason == "unparseable_reply" and res.valid
+        assert UNPARSEABLE in res.error["message"] and not res.caps_hit
+        assert res.tier_f["grade"]["passed"] is False and res.tier_f["grade"]["first_failed"] == "V1"
+
+
 @pytest.mark.slow
 @pytest.mark.gnuradio
 def test_grc_agent_stop_gracefully_counts_as_a_cap_failure(root, guard):

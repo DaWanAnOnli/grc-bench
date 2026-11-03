@@ -11,6 +11,8 @@ run there as they do here:
   colab/dev_placeholder.jsonl     placeholder rubrics for the dev questions (tier_k/placeholder_rubrics.py)
   colab/grcbench_colab_test.ipynb, colab/README.md, colab/u2604.py         from handoff/colab/ (u2604.py runs
                                   ./gb inside an Ubuntu 26.04 root filesystem: the pinned GNU Radio)
+  tests/fixtures/ and SANDBOX_TESTS  GRC-Bench's synthetic fixture tasks and the sandbox tests the notebook's
+                                  step 7b runs (the sandbox inside a Tier-A episode)
   VERSION.txt                     the GRC-Bench commit, the pins, the build time, the SHA-256 of every file
 
 No test item is packaged: no path under items/*/test*, and the build fails (PackageRefused) if any
@@ -36,8 +38,9 @@ OUT_DIR = WORK / "colab"
 RUBRICS = "colab/dev_placeholder.jsonl"
 NOTEBOOK = "colab/grcbench_colab_test.ipynb"
 COLAB_HANDOFF = HANDOFF / "colab"
-FILES = ("gb", "pyproject.toml", "reports/block_catalog.json", "docs/preregistration/run_list.yaml")
-TREES = ("src/grcbench", "items/tier_k/dev", "items/tier_f/dev", "items/tier_a/dev")
+SANDBOX_TESTS = ("tests/test_sandbox_masks.py", "tests/test_common.py", "tests/test_tier_a_runner.py")
+FILES = ("gb", "pyproject.toml", "reports/block_catalog.json", "docs/preregistration/run_list.yaml", *SANDBOX_TESTS)
+TREES = ("src/grcbench", "items/tier_k/dev", "items/tier_f/dev", "items/tier_a/dev", "tests/fixtures")
 MIN_TEXT = 40            # shorter test texts are not searched for (they would match ordinary words)
 
 
