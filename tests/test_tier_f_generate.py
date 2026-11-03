@@ -86,6 +86,16 @@ def test_tasks_of_a_cell_stay_within_the_level_cap():
     assert "L2" not in G.CELL_CAP
 
 
+def test_the_disjointness_text_holds_for_tasks_that_share_a_cell():
+    """Tasks of a shared cell must not claim that no other item uses their signature."""
+    import json
+    for p in sorted(G.TF.glob("*/*/task.json")):
+        t = json.loads(p.read_text(encoding="utf-8"))
+        if t["source"]["kind"] == "generated_chain":
+            assert "used by no other" not in t["disjointness"], t["id"]
+            assert "share its cluster_id" in t["disjointness"], t["id"]
+
+
 def test_the_same_id_and_attempt_give_the_same_random_draws():
     a, b = G.rng_for("gbf-test-21", 3), G.rng_for("gbf-test-21", 3)
     assert [a.random() for _ in range(5)] == [b.random() for _ in range(5)]

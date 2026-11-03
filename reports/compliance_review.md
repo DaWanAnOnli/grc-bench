@@ -16,7 +16,7 @@ No row is failing.
 
 | Check | Result |
 |---|---|
-| `./gb test` | 1,498 tests in 45 files: 1,497 pass, 1 skipped (`test_withheld_for_the_scorer_still_needed`: the rules read the radar proposal's LaTeX label, so its withhold can be lifted at the rubric review); `./gb stats selfcheck` 39/39; `./gb score-k --selftest` 86/86 (`tier-k-rules 0.6`) |
+| `./gb test` | 1,499 tests in 45 files: 1,498 pass, 1 skipped (`test_withheld_for_the_scorer_still_needed`: the rules read the radar proposal's LaTeX label, so its withhold can be lifted at the rubric review); `./gb stats selfcheck` 39/39; `./gb score-k --selftest` 86/86 (`tier-k-rules 0.6`) |
 | `./gb audit` | 9/9 checks pass on 629 item records: schema, canary, licence, unique ids, Tier-K/F/A splits, training data (no Tier-K dev or test question and no canary in the training release's training files), reserved list (`reports/audit.json`) |
 | `./gb baseline check` | all 8 read-only roots unchanged (`new_data/` included); the evaluation-document root is retaken after each planned edit of those documents |
 | `./gb build-all` | every generated output is deterministic and identical to the repository, including `./gb traces` and the execution-derived `./gb blockq` (23 Oct); `./gb build-all --tier-f`: all 195 Tier-F tasks rebuild identically in a mirror (4 Nov) |

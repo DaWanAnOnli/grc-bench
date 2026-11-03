@@ -5,8 +5,8 @@ tool calls, scripted user, end-state grading), §6 (task-level overlap with trai
 §5.3 (pruning). The approved plan, Phase 4, describes the runner and the gates.
 
 Two team members review every Tier-A task, test and dev, before it is used. Eval plan Table 7
-budgets about 70 person-hours for writing and reviewing all Tier-A tasks (30 test, 12 dev). The
-first set is 10 test and 12 dev tasks. A review takes longer than for Tier F, because you also read
+budgets about 70 person-hours for writing and reviewing all Tier-A tasks. There are 42: 30 test
+(three in each category) and 12 dev. A review takes longer than for Tier F, because you also read
 the golden tool-call sequence: plan on about 20 minutes per task per reviewer.
 
 ## Before you start
@@ -133,10 +133,24 @@ The same settings apply to every model (eval plan §4.4, §7.1):
       validates, generates code and runs. Behaviour is checked by an oracle where the task asks for
       a behaviour.
 - [ ] **Knowledge and refusal tasks** have a checkable end state:
-  - knowledge: the answer, checked against facts read from the graph or the block files;
+  - knowledge: the answer, checked against facts the grader works out itself (see the next item);
   - refusal: for example, the agent declines or abstains and makes no change it was not asked for.
 
   A correct refusal must not be confused with giving up on a solvable task.
+- [ ] **Facts in the answer** (`acceptance.answer.facts`). The grader works out each expected value
+      when it grades, never from a number written by hand. Check that each fact's `source` picks the
+      value the instruction asks about:
+  - a parameter of a block in the start or final graph. With a `regex`, the value is one number
+    taken out of a longer parameter, for example the frequency inside a Message Strobe's
+    `pmt.to_pmt({...})`: check that the pattern takes the right number;
+  - an option list from a block's YAML file;
+  - a number measured from a file the agent's run wrote (`file`, with an oracle feature such as
+    `rms` or `peak_freq`). The expected value follows whatever the run wrote, so another check must
+    make sure that the file comes from the graph the instruction asks for.
+- [ ] **File checks** (`acceptance.files`). Besides existence, patterns and JSON or YAML keys, a
+      file can be checked as a CSV manifest (`csv_sizes`): a header row, then one `name,size` row
+      per file of a folder, each size equal to that file's real size. The instruction states the
+      header and what each row holds.
 
 ### E. The wrong-end-state fixture
 
@@ -201,19 +215,18 @@ The same settings apply to every model (eval plan §4.4, §7.1):
 
 ## Record your decision
 
-Use `handoff/review_sheets/tier_a_first_set.csv`, written by `./gb tier-a sheet`. It lists the 22
-built tasks of the first set and the 20 test tasks drafted as specs only. Without it, make a copy of
-the template
+Use `handoff/review_sheets/tier_a_first_set.csv`, written by `./gb tier-a sheet`. It lists all 42
+tasks. Without it, make a copy of the template
 [`tier_a_task_review.csv`](../../handoff/review_sheets/templates/tier_a_task_review.csv). Both use the
 same decision columns as the Tier-F sheet:
 
 | Column | Content |
 |---|---|
 | `task_id`, `split`, `category` | the task |
-| `status` | `built and gated`, or `spec only` for a task that is not built yet |
-| `instruction`, `start_state`, `scripted_user`, `acceptance`, `golden_calls`, `gates`, `disjointness` | a short summary of the task (filled in when the sheet is made). For a spec, `acceptance` is what the grader will check, and `golden_calls` the expected number of calls and an outline |
+| `status` | `built and gated`: the task is built and passes every gate |
+| `instruction`, `start_state`, `scripted_user`, `acceptance`, `golden_calls`, `gates`, `disjointness` | a short summary of the task (filled in when the sheet is made) |
 | `wrong_end_state_rejected_by` | the grader's reasons for rejecting the wrong end state, from the gates |
-| `build_notes` | for a spec: what building it needs, and any decision it asks of the team |
+| `build_notes` | for gba-test-11 to gba-test-30, which were built from written specs: the spec's notes on building the task and any decision it asks of the team, and where the built task differs from its spec, what differs and why. Check each difference: you approve the built task, not the spec |
 | `reviewer_1_decision`, `reviewer_2_decision` | `approve`, `approve with edits` or `reject` |
 | `reviewer_1_edits`, `reviewer_2_edits` | the edits, one per line, or the reason for rejecting |
 | `final_decision` | the task owner when both decisions are the same; otherwise the Qoherent expert |
@@ -254,8 +267,7 @@ both reviews"):
 5. Rejected tasks are removed and counted (eval plan §5.3).
 
 The Qoherent expert then reviews every Tier-A task for correctness and relevance (see
-[expert_review.md](expert_review.md)). Tier A scales from the first set to 30 test tasks only after
-the team's decisions.
+[expert_review.md](expert_review.md)).
 
 ## One-page summary
 

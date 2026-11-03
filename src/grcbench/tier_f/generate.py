@@ -1434,9 +1434,10 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
                                                      "File Sink")],
         "perturbation": {"perturbed": False, "changes": []},
         "disjointness": (f"A generated chain ({', '.join(s.stage.kind for s in chain.steps)}) whose functional "
-                         f"signature {'|'.join(sig)} hashes to the {split} side and is used by no other GRC-Bench "
-                         "item; training-side generators emit only train-side signatures, and `./gb traces` checks "
-                         "the agent traces at task level."),
+                         f"signature {'|'.join(sig)} hashes to the {split} side and is reserved, so no training-side "
+                         "generator emits it (they emit only train-side signatures and skip the reserved list); "
+                         "Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent "
+                         "traces at task level."),
         "authoring_notes": {"generator": f"{GENERATOR[0]} {GENERATOR[1]}, seed {SEED}, attempt {attempt}",
                             "chain": [s.stage.kind for s in chain.steps], "notes": notes,
                             "level": f"{level}: {len(ref_c['blocks']) - 1} blocks besides samp_rate"},

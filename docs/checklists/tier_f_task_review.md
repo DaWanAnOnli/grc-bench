@@ -17,9 +17,12 @@ budgets about 60 person-hours for all Tier-F tasks. Once you know the format, pl
 - **Work alone, on your own copy of the sheet.** Do not discuss a task with the other reviewer until
   you have both recorded a decision.
 - **Do not edit the task files.** Write the edits you want in the sheet. The task owner applies them
-  and re-runs the gates.
-- **Claude (Anthropic) drafted the instructions, references and oracles** (`provenance.drafted_by`).
-  Nothing is accepted until you approve it. Judge each task as strictly as a human-written one.
+  and re-runs the gates. A generated task's files are written by its `build.py`, so the owner applies
+  its edits through the generator.
+- **Claude (Anthropic) drafted the instructions, references and oracles** (`provenance.drafted_by`):
+  30 tasks by hand, and 165 through the seeded generator `grcbench.tier_f.generate`, which Claude
+  wrote (`provenance.generator`). Nothing is accepted until you approve it. Judge each task as
+  strictly as a human-written one.
 - **Do not run `./gb tier-f sheet` once people have started filling in the sheet.** It rewrites
   `handoff/review_sheets/tier_f_first_set.csv` with empty decision columns. Always fill in a copy.
 
@@ -36,11 +39,13 @@ Each task is a folder `items/tier_f/<split>/<task_id>/`.
 | `task.json` → `mutations` | broken versions of the reference the oracle must reject | D |
 | `task.json` → `fault` | repair tasks: the fault and the rung it should fail at | F |
 | `task.json` → `source`, `license`, `perturbation`, `disjointness`, `cluster_id` | where the task comes from and how it is kept apart from training data | G, H |
+| `task.json` → `authoring_notes` | generated tasks: the chain of stages, the generator's seed and attempt, the block count behind the level, and how the start graph differs from the reference | F, J |
 | `start.grc` | the starting flowgraph (modify, repair and parameter-tune tasks only) | F, I |
 | `reference.grc` | the golden solution | E |
 | `variants/*.grc` | other valid solutions the oracle must accept | E |
 | `gates.json` | the latest automatic gate results | all |
-| `golden_calls.json` | (coming with the edit format) one lookup plus the one `change_graph` call that turns the start graph into the reference | I |
+| `golden_calls.json` | one lookup plus the one `change_graph` call that turns the start graph into the reference (`./gb tier-a tier-f-golden`) | I |
+| `build.py` | the script that writes the task's files; a generated task's `build.py` calls the generator with its recorded attempt | – |
 
 The automatic gates already check these things, so you do not need to repeat them:
 
@@ -204,19 +209,23 @@ or "continuous run" is not checked.
       the list for this task's split in `splits/flowgraph_seed_split.json` (readable summary:
       [flowgraph_seed_split.md](../../handoff/training_team/flowgraph_seed_split.md)). It is never a
       train seed.
-- [ ] **Composed chains (`source.kind` = `composed_chain`):** the task's signature falls in the
-      task's split. Use the **functional signature v2**, described in
+- [ ] **Composed chains (`source.kind` = `composed_chain`) and generated chains
+      (`source.kind` = `generated_chain`):** the task's signature falls in the task's split. Use the **functional signature v2**, described in
       [`reports/tier_f_signature_v2.md`](../../reports/tier_f_signature_v2.md). On 18 Oct it is still
       pending team review; the team reviews that report once, not task by task.
   - **v2:** the signature is the set of functional classes of the reference's blocks (tone, filter,
     mix, resample, ...). Plumbing such as a Throttle, a sink or a type conversion does not count.
     Neither do constant gains and offsets, and block order does not matter.
-  - **Split:** a composed task's split must equal the v2 split of its reference's signature, and
-    its `cluster_id` is `chain:` followed by that signature. Look the task up in the re-split table
-    (section 6 of the report). A task listed as a conflict must be re-themed or replaced before you
-    can approve it.
+  - **Split:** a composed or generated task's split must equal the v2 split of its reference's
+    signature, and its `cluster_id` is `chain:` followed by that signature. Section 3 of
+    `reports/tier_f_first_set.md` lists every task's signature and the split it hashes to. A task
+    whose split disagrees must be re-themed or replaced before you can approve it.
   - **Variants:** every accepted variant should have the same v2 signature as the reference. The
     report lists the few exceptions and why they are kept.
+  - **Shared signatures:** a single-rate chain of at most 5 blocks has few function combinations,
+    so up to 8 generated L1 tasks of one split share a signature (and 2 L3 tasks); L2 tasks never
+    do. Tasks with one signature share its `cluster_id`, and the clustered statistics count them as
+    one unit (`reports/tier_f_first_set.md`, section 2).
   - **Old rule:** signature v1 (the ordered block ids along one path) let a Throttle or a swapped
     block order move a task into another split. Do not use it for decisions; it is kept only for
     provenance.
@@ -233,11 +242,12 @@ or "continuous run" is not checked.
 - [ ] `license` is right:
   - tasks derived from GNU Radio examples are GPL-3.0-or-later, and the examples' licence notices
     are kept;
-  - original composed tasks are CC-BY-4.0, pending the team's confirmation.
+  - original composed and generated tasks are CC-BY-4.0, pending the team's confirmation.
 - [ ] `source.ref` names the real example file or chain.
 - [ ] `perturbation` records which numbers were changed in a public example (eval plan §4.3). Scores
       on original and perturbed tasks are reported separately.
-- [ ] `provenance.drafted_by` says who drafted the text (`Claude (Anthropic)` for this first set).
+- [ ] `provenance.drafted_by` says who drafted the text (`Claude (Anthropic)` for every task). A
+      generated task also names the generator and its version (`provenance.generator`).
 - [ ] The `disjointness` text is true: no training-side task specification has the same goal or the
       same starting flowgraph.
 - [ ] Nothing the model sees (the instruction, `start.grc`) contains the canary string.
@@ -246,9 +256,9 @@ or "continuous run" is not checked.
 
 This is the 16 Oct "one lookup + one edit" protocol.
 
-- [ ] **What the model sees of the start graph.** Once the edit-format files exist, the task owner
-      attaches to the sheet the prefilled `inspect_graph` result exactly as the model gets it. It
-      comes from a kept golden-replay run (`./gb tier-a trace <run_dir>` prints it), together with
+- [ ] **What the model sees of the start graph.** The task owner attaches to the sheet the
+      prefilled `inspect_graph` result exactly as the model gets it. It comes from a kept
+      golden-replay run (`./gb tier-a trace <run_dir>` prints it), together with
       the start-graph rule (`tier_f.start` in the run's record). Check:
   - the result was not cut by the 4K cap (`tier_f.prefill.truncated` is false);
   - every instance name, parameter value and connection the model needs appears in it.
@@ -290,8 +300,8 @@ This is the 16 Oct "one lookup + one edit" protocol.
       with one `query_knowledge` search (domain `catalog` or `docs`). If the task needs several
       unfamiliar blocks that no single search would surface, note it. That can be acceptable, but
       it makes the task harder for a reason that has nothing to do with GNU Radio skill.
-- [ ] When the edit-format files exist: `golden_calls.json` holds a natural lookup (it does not
-      paste the answer into the query) and a `change_graph` call. Its replay gate passes 10 of 10.
+- [ ] `golden_calls.json` holds a natural lookup (it does not paste the answer into the query) and a
+      `change_graph` call. Its replay gate passes 10 of 10.
 
 ### J. Labels
 
@@ -316,7 +326,7 @@ The sheet is `handoff/review_sheets/tier_f_first_set.csv`, written by `./gb tier
 |---|---|---|
 | `task_id`, `split`, `family`, `level`, `source` | generated | do not change |
 | `instruction`, `observation`, `oracle_checks`, `gates` | generated | do not change. `oracle_checks` lists each check as `group:feature@point`, and graph checks as `group:graph:kind` |
-| `known_limits` | generated | the author's notes (`review.notes`): the oracle's known limits and the questions left to the team. Read them before section C |
+| `known_limits` | generated | the author's notes (`review.notes`): the oracle's known limits and the questions left to the team. Read them before section C. Generated tasks have none: read their `spec_properties` and `authoring_notes` instead |
 | `reviewer_1_decision` | reviewer 1 | `approve`, `approve with edits` or `reject` |
 | `reviewer_1_edits` | reviewer 1 | the edits or the reason for rejecting, and your `note:` lines (format below) |
 | `reviewer_2_decision` | reviewer 2 | as above |
@@ -393,8 +403,6 @@ columns are proposed to the Tier-F owner; until they exist, notes go in the edit
    many items were removed and why (eval plan §5.3).
 7. **The expert reviews next.** After the team review, the Qoherent expert reviews the task (see
    [expert_review.md](expert_review.md)).
-
-Scaling Tier F from the first set to 150 tasks waits for the team's decisions on the first set.
 
 ## One-page summary
 
