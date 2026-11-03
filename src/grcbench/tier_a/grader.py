@@ -34,9 +34,12 @@ task.json "acceptance" (all keys optional, at least one assertion required; chec
                    connections between enabled blocks, matched by block ids, port keys and
                    parameter constraints (never by instance names)
   files            [{"path": "<in the project folder>", "regex": [...], "json_keys": ["a", "a.b"],
-                     "yaml_keys": [...], "absent": false}]
+                     "yaml_keys": [...], "absent": false,
+                     "csv_sizes": {"dir": "<folder>", "header": ["file", "bytes"], "names": [...]}}]
                    the file exists (or, with absent, does not); every regex matches (re.search,
-                   MULTILINE); the file parses as JSON / YAML holding every dotted key path
+                   MULTILINE); the file parses as JSON / YAML holding every dotted key path; with
+                   csv_sizes it is a CSV manifest: the header row, then one "name,size" row per file of
+                   <folder> it lists, each size equal to that file's size, every name in names listed
   hier_block       {"block_id": str, "label": str?, "inputs": int?, "outputs": int?,
                     "params": [param ids]?}
                    <block_id>.block.yml and <block_id>.py are in the run's block library
@@ -49,8 +52,13 @@ task.json "acceptance" (all keys optional, at least one assertion required; chec
                    rule-checked facts in the final answer; each expected value is DERIVED at
                    grading time from the graph or block YAML, never written by hand:
                      SOURCE {"graph": "start" | "final", "block": {"name": n} | {"id": block id},
-                             "param": p, "use": "evaluated" (default) | "raw"}
+                             "param": p, "use": "evaluated" (default) | "raw", "regex"?: r}
+                            (regex: the value is the first group of re.search(r, value), e.g. one
+                            number out of a message strobe's pmt.to_pmt({...}) expression)
                             {"block_yaml": block id, "path": "parameters[id=type].options"}
+                            {"file": "<in the project folder>", "dtype": "float32" | "complex64" | ...,
+                             "skip"?: n, "n"?: n, "feature": a numeric oracle feature, its options}
+                            (a value measured from a file the run wrote, e.g. the rms of recorded audio)
                      MATCH  "number" (a number in the answer equals the value within tol/rel_tol;
                             SI prefixes k M G m u count), "text" (the value as a whole word,
                             case-insensitive), "all_of" / "any_of" (every / some item of a list)
@@ -80,6 +88,9 @@ from . import isolation
 from .task import Task, load_task
 
 GRADER_VERSION = "grcbench.tier_a.grader/1"
+# oracle features that measure a number (a "file" fact source; grcbench.tier_f.oracles)
+NUMERIC_FEATURES = ("peak_freq", "band_fraction", "rms", "mean", "max_abs", "min", "max", "max_int_dev",
+                    "int_fraction")
 ACCEPTANCE_KEYS = ("graph", "ladder", "blocks_present", "blocks_absent", "connections", "files",
                    "hier_block", "graph_unchanged", "answer")
 ASSERTIONS = ACCEPTANCE_KEYS[1:]
@@ -174,6 +185,13 @@ def acceptance_errors(acceptance: dict[str, Any]) -> list[str]:
                 re.compile(rx)
             except re.error as exc:
                 errs.append(f"files[{i}] regex {rx!r}: {exc}")
+        cs = spec.get("csv_sizes")
+        if cs is not None:
+            d = cs.get("dir")
+            if not d or Path(d).is_absolute() or ".." in Path(d).parts:
+                errs.append(f"files[{i}].csv_sizes.dir must be a relative folder inside the project folder")
+            if not isinstance(cs.get("names"), list):
+                errs.append(f"files[{i}].csv_sizes.names must be a list")
     hb = acceptance.get("hier_block")
     if hb is not None and not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", str(hb.get("block_id", ""))):
         errs.append("hier_block.block_id must be a Python identifier")
@@ -195,8 +213,21 @@ def acceptance_errors(acceptance: dict[str, Any]) -> list[str]:
             elif "block_yaml" in src:
                 if not src.get("path"):
                     errs.append(f"answer.facts[{i}].source.block_yaml needs a path")
+            elif "file" in src:
+                f = src.get("file")
+                if not f or Path(f).is_absolute() or ".." in Path(f).parts:
+                    errs.append(f"answer.facts[{i}].source.file must be a relative path inside the project folder")
+                if src.get("feature") not in NUMERIC_FEATURES:
+                    errs.append(f"answer.facts[{i}].source.feature must be one of {list(NUMERIC_FEATURES)}")
             else:
                 errs.append(f"answer.facts[{i}].source must be a graph or block_yaml source")
+            if "regex" in src:
+                try:
+                    groups = re.compile(src["regex"]).groups
+                except re.error as exc:
+                    groups = f"invalid ({exc})"
+                if groups != 1:
+                    errs.append(f"answer.facts[{i}].source.regex needs exactly one group: {groups}")
     return errs
 
 
@@ -450,7 +481,33 @@ def _files(project: Path, spec: dict[str, Any], i: int) -> dict[str, Any]:
                 yaml_path(data, key)
             except (KeyError, IndexError, ValueError, TypeError):
                 problems.append(f"missing key {key!r}")
+    if spec.get("csv_sizes") is not None:
+        problems += _csv_sizes(project, text, spec["csv_sizes"])
     return _check(name, not problems, f"{rel}: " + ("; ".join(problems) if problems else "ok"), path=rel)
+
+
+def _csv_sizes(project: Path, text: str, cs: dict[str, Any]) -> list[str]:
+    """Problems of a CSV manifest of file sizes (files[].csv_sizes): header, sizes, the names listed."""
+    import csv
+    import io
+    rows = [r for r in csv.reader(io.StringIO(text)) if any(cell.strip() for cell in r)]
+    header = [h.strip() for h in cs.get("header") or ["file", "bytes"]]
+    if not rows or [h.strip() for h in rows[0]] != header:
+        return [f"the header line is not {','.join(header)}"]
+    folder, problems, listed = project / cs["dir"], [], set()
+    for row in rows[1:]:
+        if len(row) != 2:
+            problems.append(f"row {row!r} does not have two fields")
+            continue
+        name, size = row[0].strip(), row[1].strip()
+        listed.add(name)
+        path = folder / name
+        if not isolation.is_inside(path, project) or not path.is_file():
+            problems.append(f"{cs['dir']}/{name} does not exist")
+        elif not size.isdigit() or int(size) != path.stat().st_size:
+            problems.append(f"{name}: size {size} in the manifest, {path.stat().st_size} bytes on disk")
+    problems += [f"{n} is not listed" for n in cs.get("names") or [] if n not in listed]
+    return problems
 
 
 def _hier_block(library: Path | None, spec: dict[str, Any], catalog: dict[str, Any]) -> dict[str, Any]:
@@ -504,10 +561,12 @@ def graph_diff(a: dict[str, Any], b: dict[str, Any]) -> list[str]:
     return out
 
 
-def _fact_value(fact: dict[str, Any], graphs: dict[str, dict[str, Any] | None]) -> Any:
+def _fact_value(fact: dict[str, Any], graphs: dict[str, dict[str, Any] | None], project: Path | None = None) -> Any:
     src = fact["source"]
     if "block_yaml" in src:
         return yaml_path(block_yaml(src["block_yaml"]), src["path"])
+    if "file" in src:
+        return _measured(src, project)
     view = graphs.get(src["graph"])
     if view is None or not view.get("ok"):
         raise KeyError(f"the {src['graph']} graph is not available")
@@ -520,19 +579,43 @@ def _fact_value(fact: dict[str, Any], graphs: dict[str, dict[str, Any] | None]) 
     if src["param"] not in block["params"]:
         raise KeyError(f"no parameter {src['param']!r}")
     if src.get("use", "evaluated") == "raw":
-        return block["params"][src["param"]]
-    value = block["evaluated"].get(src["param"])
-    return value if value is not None else block["params"][src["param"]]
+        value = block["params"][src["param"]]
+    else:
+        value = block["evaluated"].get(src["param"])
+        value = value if value is not None else block["params"][src["param"]]
+    if "regex" in src:                     # one value out of an expression, e.g. a message strobe's message
+        m = re.search(src["regex"], str(value))
+        if not m:
+            raise KeyError(f"regex {src['regex']!r} does not match {value!r}")
+        value = m.group(1)
+    return value
 
 
-def _answer(answer_text: str, spec: dict[str, Any], graphs: dict[str, dict[str, Any] | None]) -> list[dict[str, Any]]:
+def _measured(src: dict[str, Any], project: Path | None) -> float:
+    """An oracle feature of a file the run wrote ("file" fact source)."""
+    import numpy as np
+    from ..tier_f import oracles
+    path = (project or Path(".")) / src["file"]
+    if project is None or not isolation.is_inside(path, project) or not path.is_file():
+        raise KeyError(f"{src['file']} does not exist in the project folder")
+    x = np.fromfile(path, dtype=np.dtype(src.get("dtype", "float32")))
+    skip = int(src.get("skip", 0))
+    x = x[skip:skip + int(src["n"])] if "n" in src else x[skip:]
+    if not len(x):
+        raise ValueError(f"{src['file']} holds no samples after skipping {skip}")
+    chk = {k: v for k, v in src.items() if k not in ("file", "dtype", "skip", "n")}
+    return float(oracles.feature_value(chk["feature"], x, chk))
+
+
+def _answer(answer_text: str, spec: dict[str, Any], graphs: dict[str, dict[str, Any] | None],
+            project: Path | None = None) -> list[dict[str, Any]]:
     out = []
     empty = not (answer_text or "").strip()
     for i, fact in enumerate(spec.get("facts") or []):
         name = f"answer[{i}]"
         label = fact.get("name") or name
         try:
-            value = _fact_value(fact, graphs)
+            value = _fact_value(fact, graphs, project)
         except (KeyError, IndexError, ValueError) as exc:
             out.append(_check(name, False, f"{label}: expected value not derivable: {exc}", fact=label))
             continue
@@ -626,7 +709,7 @@ def grade(task: Task | Path | str, episode: Any, *, ladder_check: Callable[..., 
             checks.append(_check("graph_unchanged", not diff, "unchanged" if not diff else "; ".join(diff[:20]),
                                  differences=len(diff)))
     if "answer" in acc:
-        checks += _answer(end.final_text, acc["answer"], graphs)
+        checks += _answer(end.final_text, acc["answer"], graphs, end.project)
 
     out["checks"] = checks
     out["reasons"] += [f"{c['name']}: {c['detail']}" for c in checks if not c["passed"]]

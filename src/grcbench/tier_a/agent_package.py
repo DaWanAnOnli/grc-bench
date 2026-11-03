@@ -46,7 +46,8 @@ EXECUTABLE = {"agent", "setup.sh"}
 OUT_DIR = PROJECT / "share"
 ENTRIES = ("grcbench.__main__", "grcbench.tier_a.adhoc", "grcbench.tier_a.runner", "grcbench.tier_a._launch",
            "grcbench.tier_a._grc_view", "grcbench.common.environment")
-CONTENT_MODULES = ("grcbench/tier_a/first_set.py", "grcbench/tier_a/spec_drafts.py", "grcbench/tier_a/agent_package.py",
+CONTENT_MODULES = ("grcbench/tier_a/first_set.py", "grcbench/tier_a/second_set.py", "grcbench/tier_a/spec_drafts.py",
+                   "grcbench/tier_a/agent_package.py",
                    "grcbench/tier_k/", "grcbench/tier_f/compose.py", "grcbench/tier_f/seeds.py",
                    "grcbench/splits/", "grcbench/labels/", "grcbench/contamination/", "grcbench/stats/")
 _TOKEN = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.:-]*[A-Za-z0-9_]")

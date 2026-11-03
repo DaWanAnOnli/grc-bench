@@ -1,0 +1,43 @@
+options:
+  parameters: {id: gbf_dev_38, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_3000
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '3000', amp: '0.5', showports: 'True'}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-9000'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 4800})', period: '250'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: float, limit: auto}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, decim: '3'}
+- name: out_b
+  id: blocks_file_sink
+  parameters: {type: complex, file: second_resampled.dat}
+connections:
+- [hilbert, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [retune, strobe, tone_3000, cmd]
+- [tone_3000, '0', throttle, '0']
+- [throttle, '0', hilbert, '0']
+- [mixer, '0', out, '0']
+- [mixer, '0', resampler, '0']
+- [resampler, '0', out_b, '0']
+metadata: {file_format: 1}

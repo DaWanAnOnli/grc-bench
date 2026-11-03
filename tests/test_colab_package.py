@@ -68,6 +68,23 @@ def test_a_file_quoting_a_test_question_is_refused():
         colab_package.check_content({"notes.md": f"see: {test_text}".encode()}, [test_text])
 
 
+def test_a_test_instruction_split_across_source_literals_is_refused():
+    """Builder code writes an instruction as several adjacent string literals, so the whole text never appears
+    in one piece in the file; the parser joins them, and the joined string is searched too."""
+    text = next(t for t in colab_package.test_texts() if len(t) > 120)
+    source = f'INSTRUCTION = ("{text[:70]}"\n               "{text[70:]}")\n'
+    with pytest.raises(colab_package.PackageRefused, match="test item"):
+        colab_package.check_content({"src/grcbench/x.py": source.encode()}, [text])
+
+
+def test_the_modules_that_build_test_tasks_are_not_packaged(package):
+    names = set(zipfile.ZipFile(package).namelist())
+    for module in colab_package.TEST_CONTENT_MODULES:
+        assert f"{colab_package.NAME}/{module}" not in names, module
+    assert {"src/grcbench/tier_a/first_set.py", "src/grcbench/tier_a/spec_drafts.py",
+            "src/grcbench/tier_a/second_set.py"} <= set(colab_package.TEST_CONTENT_MODULES)
+
+
 def _u2604():
     spec = importlib.util.spec_from_file_location("u2604", U2604)
     module = importlib.util.module_from_spec(spec)

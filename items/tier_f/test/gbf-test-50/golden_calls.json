@@ -1,0 +1,33 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x hilbert_fc blocks_multiply_xx blocks_file_sink channels_channel_model",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "-1250/samp_rate",
+     "taps": "[1.0]"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out_b",
+    "params": {
+     "type": "complex",
+     "file": "second_received.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "hilbert:0->channel:0",
+   "channel:0->out_b:0"
+  ]
+ }
+}

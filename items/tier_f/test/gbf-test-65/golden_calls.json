@@ -1,0 +1,31 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x rational_resampler_xxx analog_frequency_modulator_fc analog_quadrature_demod_cf blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "fm_demod:0->resampler_2:0",
+   "resampler_2:0->out:0"
+  ],
+  "remove_blocks": [
+   "resampler_2"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler_2",
+    "params": {
+     "type": "fff",
+     "decim": "2"
+    }
+   }
+  ],
+  "add_connections": [
+   "fm_demod:0->resampler_2:0",
+   "resampler_2:0->out:0"
+  ]
+ }
+}

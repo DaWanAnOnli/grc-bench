@@ -7,6 +7,7 @@
     report                       write the first-set report reports/tier_f_first_set.md
     reserved                     write handoff/training_team/flowgraph_reserved_signatures.txt
     seed <example> [--out f]     export a usable GNU Radio example as a headless compact task flowgraph
+    generate --ids a,b | --split S | --plan   generated tasks (grcbench.tier_f.generate)
 """
 
 from __future__ import annotations
@@ -30,6 +31,9 @@ def main(argv: list[str]) -> int:
     if argv and argv[0] == "seed":
         from .seedtools import main as seed_main
         return seed_main(argv[1:])
+    if argv and argv[0] == "generate":
+        from .generate import main as generate_main
+        return generate_main(argv[1:])
     ap = argparse.ArgumentParser(prog="gb tier-f")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list")

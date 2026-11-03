@@ -1,0 +1,54 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 1
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {},
+   "tool": "list_directory"
+  },
+  {
+   "args": {
+    "path": "outputs"
+   },
+   "tool": "create_directory"
+  },
+  {
+   "args": {
+    "command": "cp *.dat outputs/"
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "command": "cd outputs && { echo file,bytes; for f in *.dat; do echo \"$f,$(stat -c %s \"$f\")\"; done; } > manifest.csv"
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "path": "outputs/manifest.csv"
+   },
+   "tool": "read_file"
+  },
+  {
+   "args": {
+    "path": "outputs"
+   },
+   "tool": "list_directory"
+  }
+ ],
+ "final_text": "I ran the flowgraph for one second; it wrote peaks.dat and average.dat. I created the outputs folder, copied both files into it and wrote outputs/manifest.csv with the header file,bytes and each copy's size in bytes. The flowgraph is unchanged."
+}

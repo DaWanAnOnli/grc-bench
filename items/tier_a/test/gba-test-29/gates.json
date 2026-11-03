@@ -1,0 +1,45 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "answer[0]: beacon carrier frequency: expects 21000"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "graph_unchanged: block 'printer' only in the second graph",
+      "answer[0]: beacon carrier frequency: expects 21000"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "4bd2b1908f4dda338cc5eb4646d7870995d4de56bcbd17fcd6b8b801af7807d0",
+ "passed": true,
+ "task": "gba-test-29"
+}

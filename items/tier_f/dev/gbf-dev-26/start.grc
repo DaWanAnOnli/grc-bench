@@ -1,0 +1,35 @@
+options:
+  parameters: {id: gbf_dev_26, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_1300
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '1700', amp: '0.8'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, decim: '3'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate*1/3, freq: '2000'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: resampler_2
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '2'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: resampled.dat}
+connections:
+- [tone_1300, '0', resampler, '0']
+- [resampler, '0', conj, '0']
+- [conj, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', resampler_2, '0']
+- [resampler_2, '0', out, '0']
+metadata: {file_format: 1}

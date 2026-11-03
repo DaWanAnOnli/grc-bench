@@ -1,0 +1,46 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V5: observation 'unwrapped': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'unwrapped.dat', 'type': 'float'}}; unwrapped min = observation missing; unwrapped max = observation missing; graph check path: no such path",
+    "blocks_present[0]: 0 matching block(s) []",
+    "blocks_present[1]: 0 matching block(s) []; candidates: [\"blocks_file_sink_0 (enabled): file='phase.dat'\"]"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 9
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V5: unwrapped min = -34.553619; unwrapped max = 3.14159"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "b21a4f1be2ce6e20332c1f7c01086df46084951246c12fb69a6fea488878c2d8",
+ "passed": true,
+ "task": "gba-test-18"
+}

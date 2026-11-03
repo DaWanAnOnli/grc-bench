@@ -1,0 +1,40 @@
+options:
+  parameters: {id: gbf_test_143, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_8300
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '8300', amp: '0.5',
+    offset: '0', showports: 'True'}
+- name: fm_mod
+  id: analog_frequency_modulator_fc
+  parameters: {sensitivity: 2*math.pi*2500/samp_rate}
+- name: fm_demod
+  id: analog_quadrature_demod_cf
+  parameters: {gain: samp_rate/(2*math.pi*2500)}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {num_taps: '65', win: window.WIN_HAMMING, beta: '6.76'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 5800})', period: '250'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: float, samples_per_second: samp_rate, ignoretag: 'True', maximum: '0.1', limit: auto,
+    vlen: '1'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat, append: 'False', unbuffered: 'False', vlen: '1'}
+connections:
+- [fm_mod, '0', fm_demod, '0']
+- [fm_demod, '0', hilbert, '0']
+- [hilbert, '0', conj, '0']
+- [retune, strobe, tone_8300, cmd]
+- [throttle, '0', fm_mod, '0']
+- [conj, '0', out, '0']
+metadata: {file_format: 1}

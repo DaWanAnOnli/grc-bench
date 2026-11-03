@@ -10,15 +10,16 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
 
    | Sheet (`handoff/review_sheets/`) | Rows | Guide |
    |---|---|---|
-   | `tier_f_first_set.csv` | 30 tasks | `docs/checklists/tier_f_task_review.md` (about 10 minutes per task per reviewer) |
-   | `tier_a_first_set.csv` | 22 tasks + 20 specs | `docs/checklists/tier_a_task_review.md` (about 20 minutes per task per reviewer) |
+   | `tier_f_first_set.csv` | 195 tasks (30 drafted by hand, 165 generated) | `docs/checklists/tier_f_task_review.md` (about 10 minutes per task per reviewer, so about 33 hours each for all 195) |
+   | `tier_a_first_set.csv` | 42 tasks | `docs/checklists/tier_a_task_review.md` (about 20 minutes per task per reviewer) |
    | `tier_k_block_questions.csv` | 100 questions | wording review of the GNU Radio behaviour questions: is everything the answer depends on stated? (`docs/guidelines/rubric_writing.md`) |
-   | `rubric_sheet_test.csv`, `rubric_sheet_dev.csv` | 185 + 200 | `docs/guidelines/rubric_writing.md` (rubric prose and its two checks; Claude does not draft rubric prose) |
+   | `rubric_sheet_test.csv`, `rubric_sheet_dev.csv` | 185 + 107 | `docs/guidelines/rubric_writing.md` (rubric prose and its two checks; Claude does not draft rubric prose) |
    | `task_type_ambiguous_test.csv` | 11 questions | `task_type_instructions.md` (two labels each; κ is reported) |
    | `task_type_spotcheck_train.csv` | 170 rows | `task_type_instructions.md` (10 % spot check) |
    | `tier_k_calc_blind_recompute.csv` | 25 answers | `tier_k_calc_instructions.md` (recompute without looking at the key) |
    | `tier_k_twin_threshold_review.csv` | 235 pairs | the dev-split twin thresholds |
-   | `contamination_tier_k_test.csv`, `contamination_tier_k_dev.csv`, `contamination_tier_f_*.csv` | 142 + 45 + 10 | `reports/contamination.md` |
+   | `tier_k_test_clusters.csv` | 10 clusters | confirm each Tier-K test cluster or split it out (`reports/tier_k_items.md`) |
+   | `contamination_tier_k_test.csv`, `contamination_tier_k_dev.csv`, `contamination_tier_f_test.csv`, `contamination_tier_f_dev.csv` | 188 + 30 + 17 + 6 flagged pairs (the Tier-A sheets have none) | `reports/contamination.md` |
 
 2. **Make the team decisions** listed in `reports/tier_f_first_set.md` §6 (set level: 8 points; task
    level: 8 tasks) and in `reports/scoring_reviews/round2_status.md` (the open findings, before the

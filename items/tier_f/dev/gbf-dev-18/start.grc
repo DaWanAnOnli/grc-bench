@@ -1,0 +1,35 @@
+options:
+  parameters: {id: gbf_dev_18, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_3300
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '3300', amp: '0.6', showports: 'True'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-4500'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '3', decim: '2'}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 5300})', period: '100'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: resampled.dat}
+connections:
+- [lo, '0', mixer, '1']
+- [mixer, '0', resampler, '0']
+- [retune, strobe, tone_3300, cmd]
+- [tone_3300, '0', throttle, '0']
+- [throttle, '0', mixer, '0']
+- [resampler, '0', out, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,35 @@
+options:
+  parameters: {id: gbf_test_93, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_6800
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '6800', amp: '0.25'}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-5500'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+- name: magnitude
+  id: blocks_complex_to_mag
+  parameters: {}
+- name: out_b
+  id: blocks_file_sink
+  parameters: {type: float, file: second_level.dat}
+connections:
+- [tone_6800, '0', hilbert, '0']
+- [hilbert, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', out, '0']
+- [hilbert, '0', magnitude, '0']
+- [magnitude, '0', out_b, '0']
+metadata: {file_format: 1}

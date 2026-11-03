@@ -1,0 +1,73 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x channels_channel_model rational_resampler_xxx analog_agc_xx blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_2500",
+    "params": {
+     "type": "complex",
+     "freq": "2500",
+     "amp": "0.6"
+    }
+   },
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "1000/samp_rate",
+     "taps": "[1.0]"
+    }
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "ccc",
+     "interp": "3",
+     "decim": "2"
+    }
+   },
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel_2",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "-1500/(samp_rate*3/2)",
+     "taps": "[1.0]"
+    }
+   },
+   {
+    "block_id": "analog_agc_xx",
+    "instance_name": "agc",
+    "params": {
+     "type": "complex",
+     "rate": "1e-2",
+     "reference": "0.5",
+     "gain": "1"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "levelled.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_2500:0->channel:0",
+   "channel:0->resampler:0",
+   "resampler:0->channel_2:0",
+   "channel_2:0->agc:0",
+   "agc:0->out:0"
+  ]
+ }
+}

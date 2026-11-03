@@ -1,0 +1,27 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx blocks_conjugate_cc blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "sum_of_tones:0->conj:0",
+   "conj:0->out:0"
+  ],
+  "remove_blocks": [
+   "conj"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   }
+  ],
+  "add_connections": [
+   "sum_of_tones:0->conj:0",
+   "conj:0->out:0"
+  ]
+ }
+}

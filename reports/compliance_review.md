@@ -12,16 +12,16 @@ it, how it is checked, and its status:
 
 No row is failing.
 
-## Automated checks (2 Nov)
+## Automated checks (4 Nov)
 
 | Check | Result |
 |---|---|
-| `./gb test` | 1,460 tests in 43 files: 1,459 pass, 1 skipped (`test_withheld_for_the_scorer_still_needed`: the rules read the radar proposal's LaTeX label, so its withhold can be lifted at the rubric review); `./gb stats selfcheck` 39/39; `./gb score-k --selftest` 86/86 (`tier-k-rules 0.6`) |
-| `./gb audit` | 9/9 checks pass on 464 item records: schema, canary, licence, unique ids, Tier-K/F/A splits, training data (no Tier-K dev or test question and no canary in the training release's training files), reserved list (`reports/audit.json`) |
+| `./gb test` | 1,498 tests in 45 files: 1,497 pass, 1 skipped (`test_withheld_for_the_scorer_still_needed`: the rules read the radar proposal's LaTeX label, so its withhold can be lifted at the rubric review); `./gb stats selfcheck` 39/39; `./gb score-k --selftest` 86/86 (`tier-k-rules 0.6`) |
+| `./gb audit` | 9/9 checks pass on 629 item records: schema, canary, licence, unique ids, Tier-K/F/A splits, training data (no Tier-K dev or test question and no canary in the training release's training files), reserved list (`reports/audit.json`) |
 | `./gb baseline check` | all 8 read-only roots unchanged (`new_data/` included); the evaluation-document root is retaken after each planned edit of those documents |
-| `./gb build-all` | every generated output is deterministic and identical to the repository, including `./gb traces` and the execution-derived `./gb blockq` (23 Oct) |
-| `./gb tier-f gates all` | 30/30 tasks pass every gate |
-| `./gb tier-a gates all` | 22/22 tasks pass every gate |
+| `./gb build-all` | every generated output is deterministic and identical to the repository, including `./gb traces` and the execution-derived `./gb blockq` (23 Oct); `./gb build-all --tier-f`: all 195 Tier-F tasks rebuild identically in a mirror (4 Nov) |
+| `./gb tier-f gates` | 195/195 tasks pass every gate |
+| `./gb tier-a gates` | 42/42 tasks pass every gate |
 | `./gb prereg --check` | the pre-registration's generated appendices match the code |
 
 ## Incidents

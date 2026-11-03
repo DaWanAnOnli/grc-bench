@@ -1,0 +1,47 @@
+options:
+  parameters: {id: gbf_test_21, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_3600
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '3600', showports: 'True'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-1000'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: agc
+  id: analog_agc_xx
+  parameters: {type: complex, rate: 1e-2, reference: '2', gain: '1'}
+- name: lo_2
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-3500'}
+- name: mixer_2
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 5800})', period: '100'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters: {type: complex, const: '0.6'}
+connections:
+- [lo, '0', mixer, '1']
+- [mixer, '0', agc, '0']
+- [agc, '0', mixer_2, '0']
+- [lo_2, '0', mixer_2, '1']
+- [retune, strobe, tone_3600, cmd]
+- [throttle, '0', mixer, '0']
+- [mixer_2, '0', out, '0']
+- [tone_3600, '0', gain, '0']
+- [gain, '0', throttle, '0']
+metadata: {file_format: 1}

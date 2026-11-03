@@ -1,0 +1,46 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x channels_channel_model blocks_conjugate_cc blocks_message_strobe blocks_throttle2 blocks_file_sink blocks_complex_to_mag_squared blocks_moving_average_xx blocks_nlog10_ff",
+  "domain": "catalog",
+  "k": 18
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "blocks_complex_to_mag_squared",
+    "instance_name": "power"
+   },
+   {
+    "block_id": "blocks_moving_average_xx",
+    "instance_name": "average",
+    "params": {
+     "type": "float",
+     "length": "2000",
+     "scale": "1/2000"
+    }
+   },
+   {
+    "block_id": "blocks_nlog10_ff",
+    "instance_name": "to_db",
+    "params": {
+     "n": "10"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out_b",
+    "params": {
+     "type": "float",
+     "file": "second_power_db.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "conj:0->power:0",
+   "power:0->average:0",
+   "average:0->to_db:0",
+   "to_db:0->out_b:0"
+  ]
+ }
+}

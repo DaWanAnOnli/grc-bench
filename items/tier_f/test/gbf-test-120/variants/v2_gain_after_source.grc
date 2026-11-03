@@ -1,0 +1,39 @@
+options:
+  parameters: {id: gbf_test_120, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_6600
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '6600'}
+- name: tone_1000
+  id: analog_sig_source_x
+  parameters: {type: float, amp: '0.4'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: float}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_fff, cutoff_freq: '3800', width: '300'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: filtered.dat}
+- name: rectifier
+  id: blocks_abs_xx
+  parameters: {type: float}
+- name: out_b
+  id: blocks_file_sink
+  parameters: {type: float, file: second_rectified.dat}
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '0.8'}
+connections:
+- [tone_1000, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', lpf, '0']
+- [lpf, '0', out, '0']
+- [lpf, '0', rectifier, '0']
+- [rectifier, '0', out_b, '0']
+- [tone_6600, '0', gain, '0']
+- [gain, '0', sum_of_tones, '0']
+metadata: {file_format: 1}

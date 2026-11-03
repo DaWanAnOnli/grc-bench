@@ -1,0 +1,45 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V5: observation 'decisions': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'decisions.dat', 'type': 'float'}}; decisions equal_prefix = observation missing; decisions max_abs = observation missing; decisions max_int_dev = observation missing",
+    "blocks_present[0]: 0 matching block(s) []; candidates: [\"bits_sink (enabled): file='bits.dat'\"]"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 9
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V5: decisions equal_prefix = False"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "19882d10f620303835746fb0efe80d2cfb9a57d8c43558a8cbd6d01bf396d99a",
+ "passed": true,
+ "task": "gba-test-19"
+}

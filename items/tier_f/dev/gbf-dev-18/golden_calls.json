@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_multiply_xx rational_resampler_xxx blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "lo",
+    "params": {
+     "freq": "4500"
+    }
+   }
+  ]
+ }
+}

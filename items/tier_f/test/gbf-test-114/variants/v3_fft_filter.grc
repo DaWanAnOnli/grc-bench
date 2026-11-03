@@ -1,0 +1,43 @@
+options:
+  parameters: {id: gbf_test_114, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_6400
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '6400', amp: '0.25'}
+- name: tone_900
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '900', amp: '0.5'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: float}
+- name: hpf
+  id: fft_filter_xxx
+  parameters: {type: fff, taps: 'firdes.high_pass(1, samp_rate, 3650, 200)'}
+- name: fm_mod
+  id: analog_frequency_modulator_fc
+  parameters: {sensitivity: 2*math.pi*1500/samp_rate}
+- name: fm_demod
+  id: analog_quadrature_demod_cf
+  parameters: {gain: samp_rate/(2*math.pi*750)}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat}
+connections:
+- [tone_6400, '0', sum_of_tones, '0']
+- [tone_900, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', hpf, '0']
+- [hpf, '0', fm_mod, '0']
+- [fm_mod, '0', fm_demod, '0']
+- [fm_demod, '0', hilbert, '0']
+- [hilbert, '0', conj, '0']
+- [conj, '0', out, '0']
+metadata: {file_format: 1}

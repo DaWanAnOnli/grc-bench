@@ -1,0 +1,126 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "low pass filter decimation"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "reason": "Set the sample rate to 48000 samples per second.",
+    "update_params": [
+     {
+      "instance_name": "samp_rate",
+      "params": {
+       "value": "48000"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "analog_sig_source_x",
+      "instance_name": "tone_2k",
+      "params": {
+       "amp": "0.5",
+       "freq": "2000",
+       "samp_rate": "samp_rate",
+       "type": "complex",
+       "waveform": "analog.GR_COS_WAVE"
+      }
+     },
+     {
+      "block_id": "analog_sig_source_x",
+      "instance_name": "tone_9k",
+      "params": {
+       "amp": "0.5",
+       "freq": "9000",
+       "samp_rate": "samp_rate",
+       "type": "complex",
+       "waveform": "analog.GR_COS_WAVE"
+      }
+     },
+     {
+      "block_id": "blocks_add_xx",
+      "instance_name": "adder",
+      "params": {
+       "type": "complex"
+      }
+     },
+     {
+      "block_id": "blocks_throttle2",
+      "instance_name": "throttle",
+      "params": {
+       "samples_per_second": "samp_rate",
+       "type": "complex"
+      }
+     },
+     {
+      "block_id": "low_pass_filter",
+      "instance_name": "select",
+      "params": {
+       "cutoff_freq": "4000",
+       "decim": "4",
+       "gain": "1",
+       "samp_rate": "samp_rate",
+       "type": "fir_filter_ccf",
+       "width": "1000"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "out",
+      "params": {
+       "file": "narrow.dat",
+       "type": "complex"
+      }
+     }
+    ],
+    "add_connections": [
+     "tone_2k:0->adder:0",
+     "tone_9k:0->adder:1",
+     "adder:0->throttle:0",
+     "throttle:0->select:0",
+     "select:0->out:0"
+    ],
+    "reason": "Add two tones, keep the 2 kHz one and decimate to 12 kHz into narrow.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I built and saved the flowgraph at 48 kHz: two complex tones (2 kHz and 9 kHz, amplitude 0.5) are added and throttled, and a Low Pass Filter (cutoff 4 kHz, transition 1 kHz, decimation 4) keeps the 2 kHz tone and writes it at 12 kHz to narrow.dat."
+}

@@ -1,0 +1,45 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "answer[0]: current transition width: expects 200"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "graph_unchanged: hpf.width: '200' != '1'",
+      "answer[0]: current transition width: expects 200"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "216c8960258ed8662c4adb4fc6b95a4d9a0709b8f79616b74a006b23571988e4",
+ "passed": true,
+ "task": "gba-test-30"
+}

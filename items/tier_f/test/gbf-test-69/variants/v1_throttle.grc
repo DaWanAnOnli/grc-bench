@@ -1,0 +1,43 @@
+options:
+  parameters: {id: gbf_test_69, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_2600
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '2600', amp: '0.25'}
+- name: tone_8000
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '8000'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '4500'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, cutoff_freq: '9800', width: '400'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat}
+- name: rate_limit
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+connections:
+- [tone_2600, '0', sum_of_tones, '0']
+- [tone_8000, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', lpf, '0']
+- [lpf, '0', conj, '0']
+- [conj, '0', rate_limit, '0']
+- [rate_limit, '0', out, '0']
+metadata: {file_format: 1}

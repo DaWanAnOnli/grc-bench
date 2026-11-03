@@ -1,0 +1,31 @@
+options:
+  parameters: {id: gbf_test_85, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_5300
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-5300', amp: '0.25'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-7750'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '2'}
+- name: channel
+  id: channels_channel_model
+  parameters: {noise_voltage: '0', freq_offset: 2000/(samp_rate*2/1), taps: '[1.0]'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: received.dat}
+connections:
+- [tone_5300, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', resampler, '0']
+- [resampler, '0', channel, '0']
+- [channel, '0', out, '0']
+metadata: {file_format: 1}

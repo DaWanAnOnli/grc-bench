@@ -1,0 +1,35 @@
+options:
+  parameters: {id: gbf_dev_45, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_10500
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '10500'}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-7500'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat}
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '0.4'}
+connections:
+- [hilbert, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', conj, '0']
+- [conj, '0', out, '0']
+- [tone_10500, '0', gain, '0']
+- [gain, '0', hilbert, '0']
+metadata: {file_format: 1}

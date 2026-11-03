@@ -1295,11 +1295,11 @@ def _write_json(path: Path, obj: Any) -> None:
                     newline="\n")
 
 
-def record(spec: dict, split: str) -> dict:
+def record(spec: dict, split: str, generator: tuple[str, str] = (GENERATOR, GENERATOR_VERSION)) -> dict:
     rec = {"id": spec["id"], "tier": "A", "split": split, "version": 1, "canary": CANARY, "license": spec["license"],
            "source": spec["source"], "cluster_id": spec["cluster_id"],
-           "provenance": {"drafted_by": "Claude (Anthropic)", "generator": GENERATOR,
-                          "generator_version": GENERATOR_VERSION},
+           "provenance": {"drafted_by": "Claude (Anthropic)", "generator": generator[0],
+                          "generator_version": generator[1]},
            "review": {"status": "pending-team-review", "reviewers": [], "notes": ""},
            "category": spec["category"], "instruction": spec["instruction"],
            "start_state": {"active_graph": spec["start"][0] if spec["start"] else None},
@@ -1308,7 +1308,8 @@ def record(spec: dict, split: str) -> dict:
     return rec
 
 
-def write(split: str, makers: list, only: set[str] | None = None) -> list[Path]:
+def write(split: str, makers: list, only: set[str] | None = None,
+          generator: tuple[str, str] = (GENERATOR, GENERATOR_VERSION)) -> list[Path]:
     jobs: dict[Path, dict] = {}
     written = []
     for make in makers:
@@ -1318,7 +1319,7 @@ def write(split: str, makers: list, only: set[str] | None = None) -> list[Path]:
         d = OUT / split / spec["id"]
         shutil.rmtree(d, ignore_errors=True)
         d.mkdir(parents=True)
-        _write_json(d / "task.json", record(spec, split))
+        _write_json(d / "task.json", record(spec, split, generator))
         _write_json(d / "golden_calls.json", spec["golden"])
         if spec["start"]:
             jobs[d / "start" / spec["start"][0]] = spec["start"][1]

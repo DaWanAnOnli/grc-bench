@@ -1,0 +1,31 @@
+options:
+  parameters: {id: gbf_test_107, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_2600
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '2600'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: fff, decim: '2'}
+- name: resampler_2
+  id: rational_resampler_xxx
+  parameters: {type: fff, interp: '2'}
+- name: to_short
+  id: blocks_float_to_short
+  parameters: {scale: '1000'}
+- name: to_float
+  id: blocks_short_to_float
+  parameters: {scale: '1000'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: quantized.dat}
+connections:
+- [tone_2600, '0', resampler, '0']
+- [resampler, '0', resampler_2, '0']
+- [resampler_2, '0', to_short, '0']
+- [to_short, '0', to_float, '0']
+- [to_float, '0', out, '0']
+metadata: {file_format: 1}

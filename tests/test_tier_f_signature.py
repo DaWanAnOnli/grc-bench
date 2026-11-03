@@ -362,3 +362,10 @@ def test_audit_reports_every_task():
         if r["source_kind"] == "composed_chain":
             assert r["rule_split"] == r["v2_split"]
             assert r["v2_cluster_id"] == C.cluster_id(tuple(r["v2_signature"]))
+
+
+def test_a_generated_task_takes_the_split_of_its_cell():
+    """The generator keeps a candidate only if its cell hashes to the task's split, so that is its rule."""
+    rows = [r for r in C.audit_items(REPO)["rows"] if r["source_kind"] == "generated_chain"]
+    assert rows
+    assert all(r["rule_split"] == r["v2_split"] == r["split"] and not r["conflict"] for r in rows)

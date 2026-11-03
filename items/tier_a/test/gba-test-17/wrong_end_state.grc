@@ -1,0 +1,156 @@
+options:
+  parameters:
+    alias: ''
+    author: null
+    catch_exceptions: 'True'
+    comment: ''
+    copyright: null
+    description: null
+    gen_linking: dynamic
+    generate_options: no_gui
+    generator_class_name: PythonNoGuiGenerator
+    generator_module: gnuradio.grc.workflows.python_nogui
+    hier_block_src_path: '.:'
+    id: dac_test_signal
+    max_nouts: '0'
+    output_language: python
+    realtime_scheduling: ''
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    thread_safe_setters: ''
+    title: null
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: codes
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"8-bit DAC codes: round(255 * x), limited to 0..255, output\
+      \ as float.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass\
+      \ blk(gr.sync_block):\n    \"\"\"Converts samples in 0..1 to 8-bit DAC codes.\"\
+      \"\"\n\n    def __init__(self):\n        gr.sync_block.__init__(self, name=\"\
+      DAC Codes\", in_sig=[np.float32], out_sig=[np.float32])\n\n    def work(self,\
+      \ input_items, output_items):\n        output_items[0][:] = np.clip(np.floor(input_items[0]\
+      \ * 255.0), 0, 255)\n        return len(output_items[0])\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('DAC Codes', 'blk', [], [('0', 'float', 1)], [('0', 'float', 1)],
+      'Converts samples in 0..1 to 8-bit DAC codes.', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: codes_sink
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: codes.dat
+    type: float
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '0.4'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: offset
+  id: blocks_add_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '0.55'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: out
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: dac_test.dat
+    type: float
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: src
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: '1250'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: float
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+
+connections:
+- [codes, '0', codes_sink, '0']
+- [gain, '0', offset, '0']
+- [offset, '0', codes, '0']
+- [offset, '0', out, '0']
+- [src, '0', gain, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0

@@ -1,0 +1,86 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx low_pass_filter analog_frequency_modulator_fc analog_quadrature_demod_cf rational_resampler_xxx blocks_file_sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_6700",
+    "params": {
+     "type": "float",
+     "freq": "6700",
+     "amp": "0.4"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_10000",
+    "params": {
+     "type": "float",
+     "freq": "10000",
+     "amp": "0.5"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "float"
+    }
+   },
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "lpf",
+    "params": {
+     "type": "fir_filter_fff",
+     "cutoff_freq": "8350",
+     "width": "300"
+    }
+   },
+   {
+    "block_id": "analog_frequency_modulator_fc",
+    "instance_name": "fm_mod",
+    "params": {
+     "sensitivity": "2*math.pi*1500/samp_rate"
+    }
+   },
+   {
+    "block_id": "analog_quadrature_demod_cf",
+    "instance_name": "fm_demod",
+    "params": {
+     "gain": "samp_rate/(2*math.pi*750)"
+    }
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "fff",
+     "interp": "3",
+     "decim": "2"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "float",
+     "file": "resampled.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_6700:0->sum_of_tones:0",
+   "tone_10000:0->sum_of_tones:1",
+   "sum_of_tones:0->lpf:0",
+   "lpf:0->fm_mod:0",
+   "fm_mod:0->fm_demod:0",
+   "fm_demod:0->resampler:0",
+   "resampler:0->out:0"
+  ]
+ }
+}

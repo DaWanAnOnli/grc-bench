@@ -1,0 +1,43 @@
+options:
+  parameters: {id: gbf_test_60, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_4600
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '4600'}
+- name: fm_mod
+  id: analog_frequency_modulator_fc
+  parameters: {sensitivity: 2*math.pi*1500/samp_rate}
+- name: fm_demod
+  id: analog_quadrature_demod_cf
+  parameters: {gain: samp_rate/(2*math.pi*1500)}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: fff, interp: '2'}
+- name: fm_mod_2
+  id: analog_frequency_modulator_fc
+  parameters: {sensitivity: 2*math.pi*1500/(samp_rate*2/1)}
+- name: fm_demod_2
+  id: analog_quadrature_demod_cf
+  parameters: {gain: samp_rate*2/1/(2*math.pi*750)}
+- name: rectifier
+  id: blocks_abs_xx
+  parameters: {type: float}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: rectified.dat}
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '0.25'}
+connections:
+- [fm_mod, '0', fm_demod, '0']
+- [fm_demod, '0', resampler, '0']
+- [resampler, '0', fm_mod_2, '0']
+- [fm_mod_2, '0', fm_demod_2, '0']
+- [fm_demod_2, '0', rectifier, '0']
+- [rectifier, '0', out, '0']
+- [tone_4600, '0', gain, '0']
+- [gain, '0', fm_mod, '0']
+metadata: {file_format: 1}

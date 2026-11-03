@@ -1,0 +1,60 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_multiply_xx analog_agc_xx blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_4700",
+    "params": {
+     "type": "complex",
+     "freq": "4700",
+     "amp": "0.5"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "lo",
+    "params": {
+     "type": "complex",
+     "freq": "-6000"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "analog_agc_xx",
+    "instance_name": "agc",
+    "params": {
+     "type": "complex",
+     "rate": "1e-2",
+     "reference": "0.5",
+     "gain": "1"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "levelled.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_4700:0->mixer:0",
+   "lo:0->mixer:1",
+   "mixer:0->agc:0",
+   "agc:0->out:0"
+  ]
+ }
+}

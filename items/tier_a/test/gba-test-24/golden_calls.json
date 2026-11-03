@@ -1,0 +1,79 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "embedded python block"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "epy_block",
+      "instance_name": "db_level",
+      "params": {
+       "_source_code": "\"\"\"Level in dB: 20 * log10(|x|), with a floor of -120 dB (for x = 0).\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    \"\"\"Converts a signal into its level in dB.\"\"\"\n\n    def __init__(self):\n        gr.sync_block.__init__(self, name=\"dB Level\", in_sig=[np.float32], out_sig=[np.float32])\n\n    def work(self, input_items, output_items):\n        output_items[0][:] = 20.0 * np.log10(np.maximum(np.abs(input_items[0]), 1e-6))\n        return len(output_items[0])\n"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "level_sink",
+      "params": {
+       "file": "level_db.dat",
+       "type": "float"
+      }
+     }
+    ],
+    "add_connections": [
+     "offset:0->db_level:0",
+     "db_level:0->level_sink:0"
+    ],
+    "reason": "Add a dB-level Embedded Python block writing to level_db.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "db_level"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "block_id": "db_level",
+    "instance_name": "db_level",
+    "label": "dB Level"
+   },
+   "tool": "save_block"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I added an Embedded Python block after the offset that outputs 20 * log10(|x|) with a -120 dB floor, and a File Sink writing it to level_db.dat; the level runs from about -16.5 dB to -0.45 dB. I saved the block to the library as db_level (label dB Level) and saved the flowgraph. dac_test.dat is unchanged."
+}

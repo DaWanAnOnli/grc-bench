@@ -1,0 +1,44 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 5
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 218
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "expected": "V2",
+   "first_failed": "V2",
+   "passed": true,
+   "v5_groups": null
+  },
+  "variants": {
+   "n": 2,
+   "passed": true,
+   "results": {
+    "v1_throttle.grc": [
+     "V5",
+     null
+    ],
+    "v2_gain_after_source.grc": [
+     "V5",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-dev-35"
+}

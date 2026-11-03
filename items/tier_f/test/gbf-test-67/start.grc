@@ -1,0 +1,47 @@
+options:
+  parameters: {id: gbf_test_67, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_900
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '900', amp: '0.8'}
+- name: tone_4300
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '5600', amp: '0.6'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: float}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-1750'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: lo_2
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '4000'}
+- name: mixer_2
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+connections:
+- [tone_900, '0', sum_of_tones, '0']
+- [tone_4300, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', hilbert, '0']
+- [hilbert, '0', conj, '0']
+- [conj, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', mixer_2, '0']
+- [lo_2, '0', mixer_2, '1']
+- [mixer_2, '0', out, '0']
+metadata: {file_format: 1}

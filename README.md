@@ -86,11 +86,11 @@ reference minus fresh, paired by slot, clustered by block). There is no test/tra
 
 ## Status
 
-| Part | State (23 Oct) | Where |
+| Part | State (4 Nov) | Where |
 |---|---|---|
 | Tier K | 285 test questions (185 frozen, 100 GNU Radio behaviour questions answered by running GNU Radio) and 107 dev questions (the eligible part of the training team's validation split); fresh GNU Radio question sets from any seed; closed-book question prompt, rule cascade and judge prompt; 292 empty rubric templates for the team | `items/tier_k/`, `reports/tier_k_block_questions.md`, `reports/tier_k_fresh_sets.md` |
-| Tier F | first set of 30 tasks (20 test, 10 dev), all gates passed, in GRC-Agent's harness as one lookup and one edit | `items/tier_f/`, `reports/tier_f_first_set.md` |
-| Tier A | first set of 22 tasks (10 test, 12 dev), all gates passed; 20 more test tasks drafted as specs | `items/tier_a/`, `reports/tier_a_first_set.md` |
+| Tier F | 195 tasks: 150 test (60 L1, 60 L2, 30 L3) and 45 dev; 30 drafted by hand, 165 from the seeded generator (`./gb tier-f generate`); all gates passed, in GRC-Agent's harness as one lookup and one edit | `items/tier_f/`, `reports/tier_f_first_set.md` |
+| Tier A | 42 tasks (30 test, three in each category; 12 dev), all gates passed | `items/tier_a/`, `reports/tier_a_first_set.md` |
 | GRC-Agent runner | `./gb agent`: GRC-Agent headless on any request, outputs as files, conversations continued across calls, local or hosted OpenAI-compatible models; `./gb agent-package` builds the teammates' zip (setup script, tutorial, self-test; no benchmark content) | `handoff/agent_runner.md`, `handoff/agent_package/TUTORIAL.md` |
 | Tier E | llama-bench protocol, checked on a small model (CPU and the local RTX 5090) | `reports/tier_e/` |
 | Pipeline tests | placeholder rubrics for the dev questions (`./gb placeholder-rubrics`: the training release's reference answer as one point; `./gb tier-k score DIR --rubrics FILE`, dev only), so the Tier-K route runs end to end before the team's rubrics exist; `./gb colab-package`: `./gb`, the code and the dev split (no test item) for a pipeline test on a Colab GPU | `handoff/colab/` |

@@ -1,0 +1,42 @@
+{
+ "gates": {
+  "mutation": {
+   "invalid_mutants": [],
+   "kill_rate": 1.0,
+   "passed": true,
+   "survivors": [],
+   "valid_mutants": 6
+  },
+  "size": {
+   "max": 3000,
+   "passed": true,
+   "tokens": 269
+  },
+  "solvability": {
+   "failures": [],
+   "passed": true,
+   "passes": 10,
+   "runs": 10
+  },
+  "start_fails": {
+   "note": "build task: no starting flowgraph",
+   "passed": true
+  },
+  "variants": {
+   "n": 2,
+   "passed": true,
+   "results": {
+    "v1_throttle.grc": [
+     "V5",
+     null
+    ],
+    "v2_gain_after_source.grc": [
+     "V5",
+     null
+    ]
+   }
+  }
+ },
+ "passed": true,
+ "task": "gbf-dev-45"
+}

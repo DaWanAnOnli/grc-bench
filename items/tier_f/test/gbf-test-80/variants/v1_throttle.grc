@@ -1,0 +1,35 @@
+options:
+  parameters: {id: gbf_test_80, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_1100
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '1100'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: agc
+  id: analog_agc_xx
+  parameters: {type: complex, rate: 1e-2, reference: '2', gain: '1'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: levelled.dat}
+- name: conj_2
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: out_b
+  id: blocks_file_sink
+  parameters: {type: complex, file: second_mirrored.dat}
+- name: rate_limit
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+connections:
+- [tone_1100, '0', conj, '0']
+- [conj, '0', agc, '0']
+- [agc, '0', out, '0']
+- [agc, '0', conj_2, '0']
+- [conj_2, '0', rate_limit, '0']
+- [rate_limit, '0', out_b, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,75 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx low_pass_filter blocks_conjugate_cc blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_7300",
+    "params": {
+     "type": "complex",
+     "freq": "-7300"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_6100",
+    "params": {
+     "type": "complex",
+     "freq": "6100",
+     "amp": "0.4"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_800",
+    "params": {
+     "type": "complex",
+     "freq": "800",
+     "amp": "0.25"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "complex",
+     "num_inputs": "3"
+    }
+   },
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "lpf",
+    "params": {
+     "type": "fir_filter_ccf",
+     "cutoff_freq": "6700",
+     "width": "400"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "mirrored.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_7300:0->sum_of_tones:0",
+   "tone_6100:0->sum_of_tones:1",
+   "tone_800:0->sum_of_tones:2",
+   "sum_of_tones:0->lpf:0",
+   "lpf:0->conj:0",
+   "conj:0->out:0"
+  ]
+ }
+}

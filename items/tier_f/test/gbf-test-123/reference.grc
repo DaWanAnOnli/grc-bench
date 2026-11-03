@@ -1,0 +1,31 @@
+options:
+  parameters: {id: gbf_test_123, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_9100
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '9100', amp: '0.5', showports: 'True'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '3', decim: '2'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 12700})', period: '250'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat}
+connections:
+- [resampler, '0', conj, '0']
+- [retune, strobe, tone_9100, cmd]
+- [tone_9100, '0', throttle, '0']
+- [throttle, '0', resampler, '0']
+- [conj, '0', out, '0']
+metadata: {file_format: 1}

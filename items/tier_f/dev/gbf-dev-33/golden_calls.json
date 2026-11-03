@@ -1,0 +1,81 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx low_pass_filter hilbert_fc blocks_conjugate_cc blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_7000",
+    "params": {
+     "type": "float",
+     "freq": "7000",
+     "amp": "0.4"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_1600",
+    "params": {
+     "type": "float",
+     "freq": "1600",
+     "amp": "0.25"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_3600",
+    "params": {
+     "type": "float",
+     "freq": "3600",
+     "amp": "0.5"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "float",
+     "num_inputs": "3"
+    }
+   },
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "lpf",
+    "params": {
+     "type": "fir_filter_fff",
+     "cutoff_freq": "5300",
+     "width": "300"
+    }
+   },
+   {
+    "block_id": "hilbert_fc",
+    "instance_name": "hilbert"
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "mirrored.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_7000:0->sum_of_tones:0",
+   "tone_1600:0->sum_of_tones:1",
+   "tone_3600:0->sum_of_tones:2",
+   "sum_of_tones:0->lpf:0",
+   "lpf:0->hilbert:0",
+   "hilbert:0->conj:0",
+   "conj:0->out:0"
+  ]
+ }
+}

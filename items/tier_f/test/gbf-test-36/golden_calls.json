@@ -1,0 +1,31 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx low_pass_filter blocks_file_sink blocks_abs_xx",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "blocks_abs_xx",
+    "instance_name": "rectifier",
+    "params": {
+     "type": "float"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out_b",
+    "params": {
+     "type": "float",
+     "file": "second_rectified.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "lpf:0->rectifier:0",
+   "rectifier:0->out_b:0"
+  ]
+ }
+}

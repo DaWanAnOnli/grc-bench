@@ -1,0 +1,43 @@
+options:
+  parameters: {id: gbf_dev_15, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_6000
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '6000'}
+- name: tone_1600
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '2100', amp: '0.8'}
+- name: tone_7000
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '7000', amp: '0.25'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: float, num_inputs: '3'}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: channel
+  id: channels_channel_model
+  parameters: {noise_voltage: '0', freq_offset: -2750/samp_rate, taps: '[1.0]'}
+- name: channel_2
+  id: channels_channel_model
+  parameters: {noise_voltage: '0', freq_offset: 1500/samp_rate, taps: '[1.0]'}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, cutoff_freq: '2550', width: '400'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: filtered.dat}
+connections:
+- [tone_6000, '0', sum_of_tones, '0']
+- [tone_1600, '0', sum_of_tones, '1']
+- [tone_7000, '0', sum_of_tones, '2']
+- [sum_of_tones, '0', hilbert, '0']
+- [hilbert, '0', channel, '0']
+- [channel, '0', channel_2, '0']
+- [channel_2, '0', lpf, '0']
+- [lpf, '0', out, '0']
+metadata: {file_format: 1}

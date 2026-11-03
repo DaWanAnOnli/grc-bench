@@ -1,0 +1,180 @@
+options:
+  parameters:
+    alias: ''
+    author: null
+    catch_exceptions: 'True'
+    comment: ''
+    copyright: null
+    description: null
+    gen_linking: dynamic
+    generate_options: no_gui
+    generator_class_name: PythonNoGuiGenerator
+    generator_module: gnuradio.grc.workflows.python_nogui
+    hier_block_src_path: '.:'
+    id: phase_comparator
+    max_nouts: '0'
+    output_language: python
+    realtime_scheduling: ''
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    thread_safe_setters: ''
+    title: null
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: '1000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: analog_sig_source_x_1
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: '1005'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: blocks_complex_to_arg_0
+  id: blocks_complex_to_arg
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: blocks_file_sink_0
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: phase.dat
+    type: float
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: blocks_multiply_conjugate_cc_0
+  id: blocks_multiply_conjugate_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: unwrap
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Unwraps a phase in -pi..pi into a continuous phase, keeping\
+      \ its state between work() calls.\"\"\"\n\nimport numpy as np\nfrom gnuradio\
+      \ import gr\n\n\nclass blk(gr.sync_block):\n    \"\"\"Phase unwrapper: removes\
+      \ the 2*pi jumps of a wrapped phase.\"\"\"\n\n    def __init__(self):\n    \
+      \    gr.sync_block.__init__(self, name=\"Phase Unwrap\", in_sig=[np.float32],\
+      \ out_sig=[np.float32])\n        self.last = None\n        self.offset = 0.0\n\
+      \n    def work(self, input_items, output_items):\n        x = input_items[0].astype(np.float64)\n\
+      \        prev = x[0] if self.last is None else self.last\n        d = np.diff(np.concatenate(([prev],\
+      \ x)))\n        steps = np.cumsum(np.where(d < -np.pi, -2 * np.pi, np.where(d\
+      \ > np.pi, 2 * np.pi, 0.0)))\n        output_items[0][:] = x + self.offset +\
+      \ steps\n        self.offset += steps[-1]\n        self.last = x[-1]\n     \
+      \   return len(output_items[0])\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: '(''Phase Unwrap'', ''blk'', [], [(''0'', ''float'', 1)], [(''0'',
+      ''float'', 1)], ''Phase unwrapper: removes the 2*pi jumps of a wrapped phase.'',
+      [])'
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+- name: unwrapped_sink
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: unwrapped.dat
+    type: float
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+
+connections:
+- [analog_sig_source_x_0, '0', blocks_multiply_conjugate_cc_0, '1']
+- [analog_sig_source_x_1, '0', blocks_multiply_conjugate_cc_0, '0']
+- [blocks_complex_to_arg_0, '0', blocks_file_sink_0, '0']
+- [blocks_complex_to_arg_0, '0', unwrap, '0']
+- [blocks_multiply_conjugate_cc_0, '0', blocks_complex_to_arg_0, '0']
+- [unwrap, '0', unwrapped_sink, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0

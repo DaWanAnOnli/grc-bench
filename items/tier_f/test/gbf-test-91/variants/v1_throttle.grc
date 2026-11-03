@@ -1,0 +1,27 @@
+options:
+  parameters: {id: gbf_test_91, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_3700
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-3700', amp: '0.8'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: conj_2
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat}
+- name: rate_limit
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+connections:
+- [tone_3700, '0', conj, '0']
+- [conj, '0', conj_2, '0']
+- [conj_2, '0', rate_limit, '0']
+- [rate_limit, '0', out, '0']
+metadata: {file_format: 1}

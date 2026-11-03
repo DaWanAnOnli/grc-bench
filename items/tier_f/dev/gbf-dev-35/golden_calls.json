@@ -1,0 +1,32 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x channels_channel_model blocks_conjugate_cc blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "tone_4000:0->channel:0",
+   "channel:0->conj:0"
+  ],
+  "remove_blocks": [
+   "channel"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "1250/samp_rate",
+     "taps": "[1.0]"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_4000:0->channel:0",
+   "channel:0->conj:0"
+  ]
+ }
+}

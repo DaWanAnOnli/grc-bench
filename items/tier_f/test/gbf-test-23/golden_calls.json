@@ -1,0 +1,41 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_multiply_xx blocks_conjugate_cc rational_resampler_xxx blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "lo_2",
+    "params": {
+     "type": "complex",
+     "samp_rate": "samp_rate*2/1",
+     "freq": "1500"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer_2",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out_b",
+    "params": {
+     "type": "complex",
+     "file": "second_shifted.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "resampler:0->mixer_2:0",
+   "lo_2:0->mixer_2:1",
+   "mixer_2:0->out_b:0"
+  ]
+ }
+}

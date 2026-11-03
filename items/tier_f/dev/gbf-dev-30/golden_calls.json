@@ -1,0 +1,87 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx blocks_multiply_xx channels_channel_model blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_7300",
+    "params": {
+     "type": "complex",
+     "freq": "7300",
+     "amp": "0.4"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_9500",
+    "params": {
+     "type": "complex",
+     "freq": "9500",
+     "amp": "0.5"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "lo",
+    "params": {
+     "type": "complex",
+     "freq": "3000"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "2000/samp_rate",
+     "taps": "[1.0]"
+    }
+   },
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel_2",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "1000/samp_rate",
+     "taps": "[1.0]"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "received.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_7300:0->sum_of_tones:0",
+   "tone_9500:0->sum_of_tones:1",
+   "sum_of_tones:0->mixer:0",
+   "lo:0->mixer:1",
+   "mixer:0->channel:0",
+   "channel:0->channel_2:0",
+   "channel_2:0->out:0"
+  ]
+ }
+}

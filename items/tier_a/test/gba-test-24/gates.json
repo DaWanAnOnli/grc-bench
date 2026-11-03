@@ -1,0 +1,48 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V5: observation 'level': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'level_db.dat', 'type': 'float'}}; level max = observation missing; level min = observation missing; graph check path: no such path",
+    "blocks_present[0]: 0 matching block(s) []",
+    "blocks_present[1]: 0 matching block(s) []; candidates: [\"out (enabled): file='dac_test.dat'\"]",
+    "hier_block: db_level.block.yml is not in the run's block library; db_level.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 9
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V5: level max = -0.222764; level min = -8.239086",
+      "hier_block: db_level.block.yml is not in the run's block library; db_level.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "79eacd0132a7e8c2c7404aa98bdadf1253631fe9e5a3145d17db7fa1168b55c1",
+ "passed": true,
+ "task": "gba-test-24"
+}

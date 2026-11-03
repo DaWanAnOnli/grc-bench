@@ -2,28 +2,28 @@
  "checks": [
   {
    "check": "schema",
-   "detail": "464 item records",
+   "detail": "629 item records",
    "failures": [],
    "n_failures": 0,
    "passed": true
   },
   {
    "check": "canary",
-   "detail": "881 records; 39 start files read",
+   "detail": "1046 records; 184 start files read",
    "failures": [],
    "n_failures": 0,
    "passed": true
   },
   {
    "check": "licence",
-   "detail": "30 Tier-F tasks and their Tier-A reuse",
+   "detail": "195 Tier-F tasks and their Tier-A reuse",
    "failures": [],
    "n_failures": 0,
    "passed": true
   },
   {
    "check": "unique ids",
-   "detail": "464 ids",
+   "detail": "629 ids",
    "failures": [],
    "n_failures": 0,
    "passed": true
@@ -44,7 +44,7 @@
   },
   {
    "check": "tier-f splits",
-   "detail": "30 tasks; 0 reference cells shared across splits (reported in reports/tier_f_first_set.md)",
+   "detail": "195 tasks; 0 reference cells shared across splits (reported in reports/tier_f_first_set.md)",
    "failures": [],
    "n_failures": 0,
    "passed": true
@@ -58,7 +58,7 @@
   },
   {
    "check": "reserved list",
-   "detail": "61 reserved signatures",
+   "detail": "189 reserved signatures",
    "failures": [],
    "n_failures": 0,
    "passed": true

@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x analog_noise_source_x blocks_add_xx channels_channel_model blocks_conjugate_cc blocks_multiply_xx blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 18
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "channel",
+    "params": {
+     "freq_offset": "-1250/samp_rate"
+    }
+   }
+  ]
+ }
+}

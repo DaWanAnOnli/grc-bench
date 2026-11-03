@@ -1,0 +1,56 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_conjugate_cc rational_resampler_xxx blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_1100",
+    "params": {
+     "type": "complex",
+     "freq": "1100",
+     "amp": "0.5"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "ccc",
+     "decim": "2"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj_2"
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj_3"
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "mirrored.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_1100:0->conj:0",
+   "conj:0->resampler:0",
+   "resampler:0->conj_2:0",
+   "conj_2:0->conj_3:0",
+   "conj_3:0->out:0"
+  ]
+ }
+}

@@ -38,7 +38,7 @@ Reference: Qoherent's SFT release (`grc-agent-sft-v0.1.0/grc-agent-sft-v0.1.0/sf
 
 ## 5. Task-level check (eval plan §6)
 
-Each trace's start graph (the empty canvas or a one-block scaffold) and final functional blocks against the start, reference and golden graphs of every Tier-F and Tier-A task (91 graphs).
+Each trace's start graph (the empty canvas or a one-block scaffold) and final functional blocks against the start, reference and golden graphs of every Tier-F and Tier-A task (421 graphs).
 
 - Same start graph: **0** traces.
 - Same final functional blocks: **0** traces.
@@ -49,6 +49,6 @@ Each trace's start graph (the empty canvas or a one-block scaffold) and final fu
 
 Cell sizes of the traces' final graphs: 0 classes: 493, 1 classes: 1163, 2 classes: 124, 3 classes: 66, 4 classes: 7.
 - Cell `data_source` (reserved by gbf-test-04): 31 traces, each a lone block wired to null sources and sinks.
-- Cell `tone` (reserved by gbf-test-04): 7 traces, each a lone block wired to null sources and sinks.
+- Cell `tone` (reserved by gba-test-17, gba-test-24, gbf-test-04, gbf-test-117, gbf-test-127, gbf-test-139, gbf-test-63, gbf-test-79, gbf-test-91): 7 traces, each a lone block wired to null sources and sinks.
 
 These traces share a one-class cell but not a task: none has a task's goal or start graph (section 5). For agent sessions the eval plan's rule is the task-level check; the reserved cells remain the rule for synthetic training flowgraphs (`handoff/training_team/flowgraph_composed_chains.md`).

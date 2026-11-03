@@ -1,0 +1,40 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_complex_to_mag blocks_nlog10_ff blocks_file_sink blocks_multiply_xx",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "lo",
+    "params": {
+     "type": "complex",
+     "freq": "5500"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out_b",
+    "params": {
+     "type": "complex",
+     "file": "second_shifted.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_6200:0->mixer:0",
+   "lo:0->mixer:1",
+   "mixer:0->out_b:0"
+  ]
+ }
+}

@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx hilbert_fc blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "tone_2300",
+    "params": {
+     "freq": "2300"
+    }
+   }
+  ]
+ }
+}

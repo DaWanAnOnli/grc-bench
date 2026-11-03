@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx hilbert_fc channels_channel_model low_pass_filter blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "tone_1600",
+    "params": {
+     "freq": "1600"
+    }
+   }
+  ]
+ }
+}

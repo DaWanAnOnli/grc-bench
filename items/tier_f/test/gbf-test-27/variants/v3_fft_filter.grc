@@ -1,0 +1,55 @@
+options:
+  parameters: {id: gbf_test_27, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_2400
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '2400', amp: '0.4'}
+- name: tone_5400
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '5400', amp: '0.4'}
+- name: tone_7600
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-7600', amp: '0.8'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex, num_inputs: '3'}
+- name: channel
+  id: channels_channel_model
+  parameters: {noise_voltage: '0', freq_offset: 2500/samp_rate, taps: '[1.0]'}
+- name: lpf
+  id: fft_filter_xxx
+  parameters: {type: ccf, taps: 'firdes.low_pass(1, samp_rate, 6500, 200)'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-4250'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+- name: lo_2
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '2000'}
+- name: mixer_2
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: out_b
+  id: blocks_file_sink
+  parameters: {type: complex, file: second_shifted.dat}
+connections:
+- [tone_2400, '0', sum_of_tones, '0']
+- [tone_5400, '0', sum_of_tones, '1']
+- [tone_7600, '0', sum_of_tones, '2']
+- [sum_of_tones, '0', channel, '0']
+- [channel, '0', lpf, '0']
+- [lpf, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', out, '0']
+- [lpf, '0', mixer_2, '0']
+- [lo_2, '0', mixer_2, '1']
+- [mixer_2, '0', out_b, '0']
+metadata: {file_format: 1}

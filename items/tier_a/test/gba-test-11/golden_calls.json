@@ -1,0 +1,106 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "signal source complex exponential"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "noise source gaussian"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "analog_sig_source_x",
+      "instance_name": "tone",
+      "params": {
+       "amp": "0.1",
+       "freq": "5000",
+       "samp_rate": "samp_rate",
+       "type": "complex",
+       "waveform": "analog.GR_COS_WAVE"
+      }
+     },
+     {
+      "block_id": "analog_noise_source_x",
+      "instance_name": "noise",
+      "params": {
+       "amp": "0.1",
+       "noise_type": "analog.GR_GAUSSIAN",
+       "seed": "0",
+       "type": "complex"
+      }
+     },
+     {
+      "block_id": "blocks_add_xx",
+      "instance_name": "adder",
+      "params": {
+       "type": "complex"
+      }
+     },
+     {
+      "block_id": "blocks_throttle2",
+      "instance_name": "throttle",
+      "params": {
+       "samples_per_second": "samp_rate",
+       "type": "complex"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "out",
+      "params": {
+       "file": "tone_in_noise.dat",
+       "type": "complex"
+      }
+     }
+    ],
+    "add_connections": [
+     "tone:0->adder:0",
+     "noise:0->adder:1",
+     "adder:0->throttle:0",
+     "throttle:0->out:0"
+    ],
+    "reason": "Build a 5 kHz tone in equal-power noise writing to tone_in_noise.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I built and saved the flowgraph at 32 kHz: a complex 5 kHz tone (amplitude 0.1) and complex Gaussian noise (amplitude 0.1) are added, throttled and written as complex samples to tone_in_noise.dat, so tone and noise have equal power (0 dB SNR)."
+}

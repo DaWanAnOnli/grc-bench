@@ -1,0 +1,77 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "saw_freq",
+     "lookahead",
+     "alpha",
+     "blocks_peak_detector2_fb_0"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "peak detector2 look ahead alpha"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "reason": "Retune for a 400 Hz sawtooth and a five times faster running average.",
+    "update_params": [
+     {
+      "instance_name": "saw_freq",
+      "params": {
+       "value": "400"
+      }
+     },
+     {
+      "instance_name": "alpha",
+      "params": {
+       "value": "0.01"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "saw_freq",
+     "lookahead",
+     "alpha"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I set saw_freq to 400 Hz; the look-ahead follows it (int(samp_rate/saw_freq/1.1), now 109 samples), so the detector still flags one peak per period. I set alpha to 0.01, five times faster than before. Only these values changed, and the flowgraph is saved."
+}

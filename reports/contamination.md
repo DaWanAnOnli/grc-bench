@@ -10,8 +10,8 @@ Every benchmark tier is compared with every training-side corpus:
 |---|---:|---|
 | tier_k_test | 285 | audited; embeddings done |
 | tier_k_dev | 107 | audited; embeddings done |
-| tier_f_test | 20 | audited; embeddings done |
-| tier_f_dev | 10 | audited; embeddings done |
+| tier_f_test | 150 | audited; embeddings done |
+| tier_f_dev | 45 | audited; embeddings done |
 | tier_a_test | 30 | audited; embeddings done |
 | tier_a_dev | 12 | audited; embeddings done |
 
@@ -118,30 +118,30 @@ Agreement between signals (items flagged by both):
 
 Per-item scores: `reports/contamination/tier_k_dev_items.jsonl`; top pairs per corpus: `reports/contamination/tier_k_dev.json`; flagged pairs for review: `handoff/review_sheets/contamination_tier_k_dev.csv`.
 
-## tier_f_test: contamination rate (20 items)
+## tier_f_test: contamination rate (150 items)
 
 | Training corpus | 8-gram twin | 8-gram ≥ 50% | TF-IDF ≥ thr (lexical) | Embedding ≥ thr | Any signal |
 |---|---:|---:|---:|---:|---:|
 | train_questions | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
-| teacher_answers | 2 (10.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 2 (10.0%) |
-| repaired | 2 (10.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 2 (10.0%) |
-| repaired_glm | 3 (15.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 3 (15.0%) |
-| sft_sessions | 1 (5.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (5.0%) |
+| teacher_answers | 11 (7.3%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 11 (7.3%) |
+| repaired | 2 (1.3%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 2 (1.3%) |
+| repaired_glm | 3 (2.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 3 (2.0%) |
+| sft_sessions | 1 (0.7%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (0.7%) |
 | task_specs | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | agent_traces | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
-| **all corpora** | 3 (15.0%) | | 0 (0.0%) | 0 (0.0%) | **3 (15.0%)** |
+| **all corpora** | 12 (8.0%) | | 0 (0.0%) | 0 (0.0%) | **12 (8.0%)** |
 
 Distribution of each item's maximum cosine (quantiles over items):
 
 | Training corpus | TF-IDF p50 | p90 | p99 | max | Embedding p50 | p90 | p99 | max | Embedding scope |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| train_questions | 0.236 | 0.263 | 0.286 | 0.287 | 0.797 | 0.818 | 0.827 | 0.828 | all passages |
-| teacher_answers | 0.264 | 0.296 | 0.318 | 0.318 | 0.811 | 0.840 | 0.854 | 0.858 | TF-IDF candidates |
-| repaired | 0.248 | 0.284 | 0.311 | 0.315 | 0.816 | 0.837 | 0.843 | 0.844 | TF-IDF candidates |
-| repaired_glm | 0.253 | 0.275 | 0.299 | 0.303 | 0.814 | 0.836 | 0.842 | 0.842 | TF-IDF candidates |
-| sft_sessions | 0.258 | 0.311 | 0.340 | 0.343 | 0.784 | 0.798 | 0.810 | 0.811 | TF-IDF candidates |
-| task_specs | 0.192 | 0.222 | 0.230 | 0.230 | 0.771 | 0.790 | 0.808 | 0.808 | all passages |
-| agent_traces | 0.214 | 0.243 | 0.308 | 0.319 | 0.800 | 0.820 | 0.829 | 0.830 | TF-IDF candidates |
+| train_questions | 0.246 | 0.279 | 0.306 | 0.314 | 0.808 | 0.820 | 0.831 | 0.833 | all passages |
+| teacher_answers | 0.263 | 0.295 | 0.322 | 0.342 | 0.839 | 0.853 | 0.862 | 0.864 | TF-IDF candidates |
+| repaired | 0.244 | 0.278 | 0.302 | 0.315 | 0.824 | 0.835 | 0.847 | 0.850 | TF-IDF candidates |
+| repaired_glm | 0.251 | 0.285 | 0.305 | 0.308 | 0.836 | 0.847 | 0.856 | 0.858 | TF-IDF candidates |
+| sft_sessions | 0.264 | 0.296 | 0.323 | 0.343 | 0.806 | 0.819 | 0.831 | 0.832 | TF-IDF candidates |
+| task_specs | 0.226 | 0.250 | 0.268 | 0.277 | 0.783 | 0.792 | 0.808 | 0.811 | all passages |
+| agent_traces | 0.232 | 0.276 | 0.313 | 0.326 | 0.808 | 0.825 | 0.839 | 0.840 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 
@@ -157,30 +157,30 @@ Agreement between signals (items flagged by both):
 
 Per-item scores: `reports/contamination/tier_f_test_items.jsonl`; top pairs per corpus: `reports/contamination/tier_f_test.json`; flagged pairs for review: `handoff/review_sheets/contamination_tier_f_test.csv`.
 
-## tier_f_dev: contamination rate (10 items)
+## tier_f_dev: contamination rate (45 items)
 
 | Training corpus | 8-gram twin | 8-gram ≥ 50% | TF-IDF ≥ thr (lexical) | Embedding ≥ thr | Any signal |
 |---|---:|---:|---:|---:|---:|
 | train_questions | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
-| teacher_answers | 1 (10.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (10.0%) |
-| repaired | 1 (10.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (10.0%) |
-| repaired_glm | 1 (10.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (10.0%) |
+| teacher_answers | 3 (6.7%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 3 (6.7%) |
+| repaired | 1 (2.2%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (2.2%) |
+| repaired_glm | 1 (2.2%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (2.2%) |
 | sft_sessions | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | task_specs | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
-| agent_traces | 1 (10.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (10.0%) |
-| **all corpora** | 2 (20.0%) | | 0 (0.0%) | 0 (0.0%) | **2 (20.0%)** |
+| agent_traces | 1 (2.2%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 1 (2.2%) |
+| **all corpora** | 4 (8.9%) | | 0 (0.0%) | 0 (0.0%) | **4 (8.9%)** |
 
 Distribution of each item's maximum cosine (quantiles over items):
 
 | Training corpus | TF-IDF p50 | p90 | p99 | max | Embedding p50 | p90 | p99 | max | Embedding scope |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| train_questions | 0.224 | 0.254 | 0.276 | 0.278 | 0.791 | 0.810 | 0.823 | 0.825 | all passages |
-| teacher_answers | 0.271 | 0.305 | 0.376 | 0.384 | 0.805 | 0.811 | 0.821 | 0.822 | TF-IDF candidates |
-| repaired | 0.262 | 0.287 | 0.397 | 0.409 | 0.793 | 0.824 | 0.836 | 0.837 | TF-IDF candidates |
-| repaired_glm | 0.236 | 0.301 | 0.393 | 0.403 | 0.802 | 0.815 | 0.820 | 0.821 | TF-IDF candidates |
-| sft_sessions | 0.243 | 0.272 | 0.275 | 0.275 | 0.791 | 0.807 | 0.817 | 0.818 | TF-IDF candidates |
-| task_specs | 0.188 | 0.202 | 0.241 | 0.245 | 0.774 | 0.789 | 0.791 | 0.791 | all passages |
-| agent_traces | 0.220 | 0.261 | 0.278 | 0.279 | 0.763 | 0.780 | 0.790 | 0.791 | TF-IDF candidates |
+| train_questions | 0.247 | 0.310 | 0.324 | 0.324 | 0.808 | 0.823 | 0.831 | 0.836 | all passages |
+| teacher_answers | 0.265 | 0.293 | 0.351 | 0.384 | 0.836 | 0.850 | 0.860 | 0.861 | TF-IDF candidates |
+| repaired | 0.241 | 0.274 | 0.359 | 0.409 | 0.809 | 0.828 | 0.838 | 0.839 | TF-IDF candidates |
+| repaired_glm | 0.247 | 0.290 | 0.355 | 0.403 | 0.825 | 0.841 | 0.849 | 0.851 | TF-IDF candidates |
+| sft_sessions | 0.269 | 0.293 | 0.325 | 0.332 | 0.802 | 0.815 | 0.818 | 0.818 | TF-IDF candidates |
+| task_specs | 0.219 | 0.245 | 0.264 | 0.264 | 0.782 | 0.791 | 0.798 | 0.801 | all passages |
+| agent_traces | 0.239 | 0.278 | 0.309 | 0.317 | 0.782 | 0.807 | 0.817 | 0.817 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):
 

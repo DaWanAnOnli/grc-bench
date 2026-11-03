@@ -1,0 +1,29 @@
+options:
+  parameters: {id: gbf_test_71, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_7000
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '7000', amp: '0.6',
+    offset: '0'}
+- name: tone_2600
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '2600', amp: '0.8',
+    offset: '0'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: float, num_inputs: '2'}
+- name: hilbert
+  id: hilbert_fc_x
+  parameters: {num_taps: '65', win: window.WIN_HAMMING, beta: '6.76'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: analytic.dat, append: 'False', unbuffered: 'False', vlen: '1'}
+connections:
+- [tone_7000, '0', sum_of_tones, '0']
+- [tone_2600, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', hilbert, '0']
+- [hilbert, '0', out, '0']
+metadata: {file_format: 1}

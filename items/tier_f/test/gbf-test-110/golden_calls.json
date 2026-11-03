@@ -1,0 +1,84 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x rational_resampler_xxx blocks_conjugate_cc blocks_multiply_xx blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_1200",
+    "params": {
+     "type": "complex",
+     "freq": "1200",
+     "amp": "0.25",
+     "showports": "True"
+    }
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "ccc",
+     "interp": "3",
+     "decim": "2"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "lo",
+    "params": {
+     "type": "complex",
+     "samp_rate": "samp_rate*3/2",
+     "freq": "-5750"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_message_strobe",
+    "instance_name": "retune",
+    "params": {
+     "msg": "pmt.to_pmt({'freq': 800})",
+     "period": "100"
+    }
+   },
+   {
+    "block_id": "blocks_throttle2",
+    "instance_name": "throttle",
+    "params": {
+     "type": "complex",
+     "limit": "auto"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "shifted.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "resampler:0->conj:0",
+   "conj:0->mixer:0",
+   "lo:0->mixer:1",
+   "retune:strobe->tone_1200:cmd",
+   "tone_1200:0->throttle:0",
+   "throttle:0->resampler:0",
+   "mixer:0->out:0"
+  ]
+ }
+}

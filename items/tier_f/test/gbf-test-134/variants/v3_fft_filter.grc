@@ -1,0 +1,43 @@
+options:
+  parameters: {id: gbf_test_134, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_3200
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-3200', amp: '0.8'}
+- name: tone_6800
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '6800', amp: '0.4'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex}
+- name: lpf
+  id: fft_filter_xxx
+  parameters: {type: ccf, taps: 'firdes.low_pass(1, samp_rate, 5000, 400)'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '1500'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: agc
+  id: analog_agc_xx
+  parameters: {type: complex, rate: 1e-2, reference: '2', gain: '1'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '2'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: resampled.dat}
+connections:
+- [tone_3200, '0', sum_of_tones, '0']
+- [tone_6800, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', lpf, '0']
+- [lpf, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', agc, '0']
+- [agc, '0', resampler, '0']
+- [resampler, '0', out, '0']
+metadata: {file_format: 1}

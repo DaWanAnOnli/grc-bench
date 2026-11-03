@@ -1,0 +1,39 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x hilbert_fc analog_agc_xx blocks_message_strobe blocks_throttle2 blocks_file_sink analog_frequency_modulator_fc analog_quadrature_demod_cf",
+  "domain": "catalog",
+  "k": 16
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_frequency_modulator_fc",
+    "instance_name": "fm_mod",
+    "params": {
+     "sensitivity": "2*math.pi*2000/samp_rate"
+    }
+   },
+   {
+    "block_id": "analog_quadrature_demod_cf",
+    "instance_name": "fm_demod",
+    "params": {
+     "gain": "samp_rate/(2*math.pi*2000)"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out_b",
+    "params": {
+     "type": "float",
+     "file": "second_recovered.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_8900:0->fm_mod:0",
+   "fm_mod:0->fm_demod:0",
+   "fm_demod:0->out_b:0"
+  ]
+ }
+}

@@ -1,0 +1,43 @@
+options:
+  parameters: {id: gbf_test_110, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_1200
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '1200', amp: '0.25', showports: 'True'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '3', decim: '2'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate*3/2, freq: '-5750'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 800})', period: '100'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+- name: rate_limit
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+connections:
+- [resampler, '0', conj, '0']
+- [conj, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [retune, strobe, tone_1200, cmd]
+- [tone_1200, '0', throttle, '0']
+- [throttle, '0', resampler, '0']
+- [mixer, '0', rate_limit, '0']
+- [rate_limit, '0', out, '0']
+metadata: {file_format: 1}

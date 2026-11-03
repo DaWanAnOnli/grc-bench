@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx high_pass_filter hilbert_fc blocks_multiply_xx channels_channel_model blocks_file_sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "channel",
+    "params": {
+     "freq_offset": "2750/samp_rate"
+    }
+   }
+  ]
+ }
+}

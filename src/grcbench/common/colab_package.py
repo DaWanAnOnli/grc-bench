@@ -17,9 +17,11 @@ run there as they do here:
                                   step 7b runs (the sandbox inside a Tier-A episode)
   VERSION.txt                     the GRC-Bench commit, the pins, the build time, the SHA-256 of every file
 
-No test item is packaged: no path under items/*/test*, and the build fails (PackageRefused) if any
+No test item is packaged: no path under items/*/test*, none of TEST_CONTENT_MODULES (the code that
+builds the Tier-A test tasks, whose instructions it holds), and the build fails (PackageRefused) if any
 packaged file contains the text of a test item (a Tier-K test question, a Tier-F or Tier-A test
-instruction or Tier-A spec draft). The dev records carry the canary, as in the repository. The zip
+instruction or Tier-A spec draft), also inside a Python file's string constants as the parser joins
+them (code writes a long text as several adjacent string literals). The dev records carry the canary, as in the repository. The zip
 goes outside the repository (default $GRC_BENCH_WORK/colab/).
 """
 
@@ -45,6 +47,8 @@ SANDBOX_TESTS = ("tests/test_sandbox_masks.py", "tests/test_common.py", "tests/t
 FILES = ("gb", "pyproject.toml", "reports/block_catalog.json", "docs/preregistration/run_list.yaml", *SANDBOX_TESTS)
 TREES = ("src/grcbench", "items/tier_k/dev", "items/tier_f/dev", "items/tier_a/dev", "tests/fixtures")
 MIN_TEXT = 40            # shorter test texts are not searched for (they would match ordinary words)
+TEST_CONTENT_MODULES = ("src/grcbench/tier_a/first_set.py", "src/grcbench/tier_a/spec_drafts.py",
+                        "src/grcbench/tier_a/second_set.py")
 
 
 class PackageRefused(RuntimeError):
@@ -59,17 +63,31 @@ def test_texts() -> list[str]:
         texts += [json.loads(line)["question"] for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     for tier in ("tier_f", "tier_a"):
         texts += [json.loads(p.read_text(encoding="utf-8"))["instruction"] for p in sorted((ITEMS / tier / "test").rglob("task.json"))]
-    drafts = ITEMS / "tier_a" / "test_spec_drafts.jsonl"
-    texts += [json.loads(line)["instruction"] for line in drafts.read_text(encoding="utf-8").splitlines() if line.strip()]
+    drafts = ITEMS / "tier_a" / "test_spec_drafts.jsonl"          # the specs not built yet, if any
+    if drafts.is_file():
+        texts += [json.loads(line)["instruction"] for line in drafts.read_text(encoding="utf-8").splitlines()
+                  if line.strip()]
     return [t.strip() for t in texts if len(t.strip()) >= MIN_TEXT]
+
+
+def _python_strings(source: str) -> list[str]:
+    """The string constants of a Python file, adjacent literals joined as the parser joins them."""
+    import ast
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return []
+    return [n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and isinstance(n.value, str)]
 
 
 def check_content(files: dict[str, bytes], texts: list[str]) -> None:
     """Refuse a package with a test-split path or a file containing a test item's text."""
     bad = [rel for rel in files if rel.startswith("items/") and "/test" in rel]
+    bad += [rel for rel in files if rel in TEST_CONTENT_MODULES]
     for rel, data in files.items():
         content = data.decode("utf-8", errors="replace")
-        bad += [rel for t in texts if t in content][:1]
+        hay = [content, *(_python_strings(content) if rel.endswith(".py") else [])]
+        bad += [rel for t in texts if any(t in h for h in hay)][:1]
     if bad:
         raise PackageRefused(f"files with test item content: {sorted(set(bad))[:10]}")
 
@@ -81,8 +99,9 @@ def _collect() -> dict[str, bytes]:
     files = {rel: (REPO / rel).read_bytes() for rel in FILES}
     for tree in TREES:
         for p in sorted((REPO / tree).rglob("*")):
-            if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc":
-                files[p.relative_to(REPO).as_posix()] = p.read_bytes()
+            rel = p.relative_to(REPO).as_posix()
+            if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc" and rel not in TEST_CONTENT_MODULES:
+                files[rel] = p.read_bytes()
     rows, _ = placeholder_rubrics.records(krun.load_split("dev"), release.validation_reference_answers())
     files[RUBRICS] = "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows).encode("utf-8")
     for name in ("grcbench_colab_test.ipynb", "grcbench_colab_steps.py", "README.md", "u2604.py"):

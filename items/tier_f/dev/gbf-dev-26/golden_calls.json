@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x rational_resampler_xxx blocks_conjugate_cc blocks_multiply_xx blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "tone_1300",
+    "params": {
+     "freq": "1300"
+    }
+   }
+  ]
+ }
+}

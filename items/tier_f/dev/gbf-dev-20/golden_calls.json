@@ -1,0 +1,13 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx channels_channel_model rational_resampler_xxx blocks_multiply_xx blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_connections": [
+   "resampler:0->channel_2:0"
+  ]
+ }
+}

@@ -1,0 +1,59 @@
+options:
+  parameters: {id: gbf_test_141, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_4700
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '4700'}
+- name: tone_2600
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '2600'}
+- name: tone_6700
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '6700'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: float, num_inputs: '3'}
+- name: hpf
+  id: high_pass_filter
+  parameters: {type: fir_filter_fff, cutoff_freq: '3650', width: '200'}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, cutoff_freq: '5700', width: '300'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: filtered.dat}
+- name: to_short
+  id: blocks_float_to_short
+  parameters: {scale: '100'}
+- name: to_float
+  id: blocks_short_to_float
+  parameters: {scale: '100'}
+- name: out_b
+  id: blocks_file_sink
+  parameters: {type: float, file: second_quantized.dat}
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '0.6'}
+connections:
+- [tone_2600, '0', sum_of_tones, '1']
+- [tone_6700, '0', sum_of_tones, '2']
+- [sum_of_tones, '0', hpf, '0']
+- [hpf, '0', hilbert, '0']
+- [hilbert, '0', conj, '0']
+- [conj, '0', lpf, '0']
+- [lpf, '0', out, '0']
+- [hpf, '0', to_short, '0']
+- [to_short, '0', to_float, '0']
+- [to_float, '0', out_b, '0']
+- [tone_4700, '0', gain, '0']
+- [gain, '0', sum_of_tones, '0']
+metadata: {file_format: 1}

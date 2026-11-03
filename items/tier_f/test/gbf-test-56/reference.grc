@@ -1,0 +1,31 @@
+options:
+  parameters: {id: gbf_test_56, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_4400
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '4400', amp: '0.4'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: fff, decim: '2'}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate*1/2, freq: '2000'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+connections:
+- [tone_4400, '0', resampler, '0']
+- [resampler, '0', hilbert, '0']
+- [hilbert, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', out, '0']
+metadata: {file_format: 1}

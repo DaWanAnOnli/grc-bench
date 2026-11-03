@@ -1,0 +1,31 @@
+options:
+  parameters: {id: gbf_dev_17, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_11800
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-11800', amp: '0.4'}
+- name: agc
+  id: analog_agc_xx
+  parameters: {type: complex, rate: 1e-2, reference: '2', gain: '1'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '8500'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+- name: rate_limit
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+connections:
+- [tone_11800, '0', agc, '0']
+- [agc, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', rate_limit, '0']
+- [rate_limit, '0', out, '0']
+metadata: {file_format: 1}

@@ -1,0 +1,39 @@
+options:
+  parameters: {id: gbf_test_77, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_9400
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '12200', amp: '0.5'}
+- name: tone_11300
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '11300', amp: '0.4'}
+- name: tone_4900
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-4900'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex, num_inputs: '3'}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, cutoff_freq: '10350', width: '300'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '2'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat}
+connections:
+- [tone_9400, '0', sum_of_tones, '0']
+- [tone_11300, '0', sum_of_tones, '1']
+- [tone_4900, '0', sum_of_tones, '2']
+- [sum_of_tones, '0', lpf, '0']
+- [lpf, '0', resampler, '0']
+- [resampler, '0', conj, '0']
+- [conj, '0', out, '0']
+metadata: {file_format: 1}

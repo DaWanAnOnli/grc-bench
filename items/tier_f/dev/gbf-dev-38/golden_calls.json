@@ -1,0 +1,32 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x hilbert_fc blocks_multiply_xx blocks_message_strobe blocks_throttle2 blocks_file_sink rational_resampler_xxx",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "ccc",
+     "decim": "3"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out_b",
+    "params": {
+     "type": "complex",
+     "file": "second_resampled.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "mixer:0->resampler:0",
+   "resampler:0->out_b:0"
+  ]
+ }
+}

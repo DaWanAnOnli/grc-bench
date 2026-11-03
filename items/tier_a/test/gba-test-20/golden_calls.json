@@ -1,0 +1,107 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "blocks_multiply_xx_0",
+     "low_pass_filter_0",
+     "blocks_add_xx_0"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "frequency xlating fir filter"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "analog_sig_source_x",
+      "instance_name": "lo_25k",
+      "params": {
+       "amp": "1",
+       "freq": "-25000",
+       "samp_rate": "samp_rate",
+       "type": "complex",
+       "waveform": "analog.GR_COS_WAVE"
+      }
+     },
+     {
+      "block_id": "blocks_multiply_xx",
+      "instance_name": "mix_25k",
+      "params": {
+       "type": "complex"
+      }
+     },
+     {
+      "block_id": "low_pass_filter",
+      "instance_name": "lpf_25k",
+      "params": {
+       "cutoff_freq": "3000",
+       "decim": "decim",
+       "gain": "1",
+       "samp_rate": "samp_rate",
+       "type": "fir_filter_ccf",
+       "width": "1000"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "neighbour_sink",
+      "params": {
+       "file": "neighbour.dat",
+       "type": "complex"
+      }
+     }
+    ],
+    "add_connections": [
+     "blocks_add_xx_0:0->mix_25k:0",
+     "lo_25k:0->mix_25k:1",
+     "mix_25k:0->lpf_25k:0",
+     "lpf_25k:0->neighbour_sink:0"
+    ],
+    "reason": "Add a second channel for the +25 kHz carrier, written to neighbour.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "lo_25k",
+     "lpf_25k"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I added a second channel from the Add block: a complex -25 kHz tone shifts the neighbouring carrier to 0 Hz, and a Low Pass Filter (cutoff 3 kHz, transition 1 kHz, decimation 8, as for the beacon) writes it at 12 kHz to neighbour.dat. The existing outputs are unchanged, and the flowgraph is saved."
+}

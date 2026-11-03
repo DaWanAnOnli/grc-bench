@@ -1237,7 +1237,7 @@
    ]
   }
  },
- "description": "instructions of items/tier_a/test/**/task.json and of the specs in items/tier_a/test_spec_drafts.jsonl",
+ "description": "instructions of items/tier_a/test/**/task.json",
  "embedding_status": "done",
  "flagged_items": {},
  "implements": [
@@ -1287,8 +1287,84 @@
    "sha256": "d3aca3a78394399cc53a8e61b8b2fc9a891e3a3f9d28d023435d6296bdd84843"
   },
   {
-   "path": "grc-bench/items/tier_a/test_spec_drafts.jsonl",
-   "sha256": "93aab4deecb3ccd0edeb6f16fe1a2855de3fa90bb0aa6b2a6b08cc940eead964"
+   "path": "grc-bench/items/tier_a/test/gba-test-11/task.json",
+   "sha256": "6137d919369751533b8484ff035d8ebb671552398c628a93ec3a80568cdf7f37"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-12/task.json",
+   "sha256": "772965527722c60447e37ea3ea62be25bf72609429343073306e058678646228"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-13/task.json",
+   "sha256": "a864284c8c17ca670890f99cfbadd70fa469c944195bb79d446c63572ec44e5c"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-14/task.json",
+   "sha256": "4cb8bc882819e4cb2b194c21da914d8010953f063164df6596c1a657ffaea8e6"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-15/task.json",
+   "sha256": "f5ec0ad378761b240e123b990c8604436e8e1951e7e4870002e599b7ab83d175"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-16/task.json",
+   "sha256": "d7ff1437e4ec3db7e18d5e890f2443ba0e74859b1d4e44bfb16bba68d7b66969"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-17/task.json",
+   "sha256": "8118b54ba80699f5cb9f0bc18a799c232d8884681267cfcd4fe39a7fe1098df5"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-18/task.json",
+   "sha256": "55b254812324391068328dc8b1ba6419b7db91bb7c5547c364f59ba357760ed7"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-19/task.json",
+   "sha256": "41417b818d6216760460aef697c15a7c2aeab7480f2e71a0a775b12ccdf85828"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-20/task.json",
+   "sha256": "dcc174445c4099d5092724aa9092f645835786d0b80c9d06051690ef99e7cbb0"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-21/task.json",
+   "sha256": "e0de75c7c811f20035ed9b8fe6698a0547d504263fdaaec1f551be21a503db29"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-22/task.json",
+   "sha256": "73a071f663972d0721cea507902acd38f92b1e355684fd17506c5158fd66501d"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-23/task.json",
+   "sha256": "0bb2e4b5f6bed90667276baa29db86955353cacec568797a1163674b3f1c7e95"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-24/task.json",
+   "sha256": "53b9bef9e20b2b4e0af2ef2164751062572622c564c55e3368217775ca336c55"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-25/task.json",
+   "sha256": "352ff46d69ad57d91ea7e5770ca9763996384cbc7e4767eed991d4032c998452"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-26/task.json",
+   "sha256": "1f7793d0843c2a2b5f8d4d5693f17aa3f05994b11c70249d5e0df54c0a719c46"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-27/task.json",
+   "sha256": "91e475700d6108afb70f6b68684ab8d4b716de8a869bb1c5042ee93bd434d836"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-28/task.json",
+   "sha256": "9b58ad9dae594518a4a19757b89bdf8bb54e874d2054d977665ba86d5d94b5b9"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-29/task.json",
+   "sha256": "ef1038b8fc4b1a9f7147669ce3c473ebd112402908ff635732d92c35c83f8615"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-30/task.json",
+   "sha256": "854f8451bc87170e59e8f74356bd1494de7fefd1a391f2780ccf84552f074c0e"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",

@@ -1,0 +1,58 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "blocks_present[0]: 0 matching block(s) []; candidates: [\"rx_symbols_sink (enabled): file='rx_symbols.dat'\", \"timing_error_sink (enabled): file='timing_error.dat'\", \"timing_phase_sink (enabled): file='timing_phase.dat'\", \"timing_rate_sink (enabled): file='timing_rate.dat'\", \"tx_signal_sink (enabled): file='tx_signal.dat'\"]",
+    "blocks_present[1]: 0 matching block(s) []; candidates: [\"rx_symbols_sink (enabled): file='rx_symbols.dat'\", \"timing_error_sink (enabled): file='timing_error.dat'\", \"timing_phase_sink (enabled): file='timing_phase.dat'\", \"timing_rate_sink (enabled): file='timing_rate.dat'\", \"tx_signal_sink (enabled): file='tx_signal.dat'\"]",
+    "blocks_present[2]: 0 matching block(s) []; candidates: [\"rx_symbols_sink (enabled): file='rx_symbols.dat'\", \"timing_error_sink (enabled): file='timing_error.dat'\", \"timing_phase_sink (enabled): file='timing_phase.dat'\", \"timing_rate_sink (enabled): file='timing_rate.dat'\", \"tx_signal_sink (enabled): file='tx_signal.dat'\"]",
+    "blocks_present[3]: 0 matching block(s) []; candidates: [\"rx_symbols_sink (enabled): file='rx_symbols.dat'\", \"timing_error_sink (enabled): file='timing_error.dat'\", \"timing_phase_sink (enabled): file='timing_phase.dat'\", \"timing_rate_sink (enabled): file='timing_rate.dat'\", \"tx_signal_sink (enabled): file='tx_signal.dat'\"]",
+    "blocks_present[4]: 0 matching block(s) []; candidates: [\"rx_symbols_sink (enabled): file='rx_symbols.dat'\", \"timing_error_sink (enabled): file='timing_error.dat'\", \"timing_phase_sink (enabled): file='timing_phase.dat'\", \"timing_rate_sink (enabled): file='timing_rate.dat'\", \"tx_signal_sink (enabled): file='tx_signal.dat'\"]",
+    "files[0]: data/tx_signal.dat does not exist",
+    "files[1]: data/rx_symbols.dat does not exist",
+    "files[2]: data/timing_error.dat does not exist",
+    "files[3]: data/timing_rate.dat does not exist",
+    "files[4]: data/timing_phase.dat does not exist"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 9
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "blocks_present[4]: 0 matching block(s) []; candidates: [\"rx_symbols_sink (enabled): file='data/rx_symbols.dat'\", \"timing_error_sink (enabled): file='data/timing_error.dat'\", \"timing_phase_sink (enabled): file='timing_phase.dat'\", \"timing_rate_sink (enabled): file='data/timing_rate.dat'\", \"tx_signal_sink (enabled): file='data/tx_signal.dat'\"]",
+      "files[0]: data/tx_signal.dat does not exist",
+      "files[1]: data/rx_symbols.dat does not exist",
+      "files[2]: data/timing_error.dat does not exist",
+      "files[3]: data/timing_rate.dat does not exist",
+      "files[4]: data/timing_phase.dat does not exist"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "5763585e158419dd0bdd14265d4e0f21e4f5cfaa58d8fa592ff92a556e124859",
+ "passed": true,
+ "task": "gba-test-25"
+}

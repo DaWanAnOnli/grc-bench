@@ -1,0 +1,90 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "list_directory"
+  },
+  {
+   "args": {
+    "path": "data"
+   },
+   "tool": "create_directory"
+  },
+  {
+   "args": {
+    "reason": "Write the five output files into the data folder.",
+    "update_params": [
+     {
+      "instance_name": "tx_signal_sink",
+      "params": {
+       "file": "data/tx_signal.dat"
+      }
+     },
+     {
+      "instance_name": "rx_symbols_sink",
+      "params": {
+       "file": "data/rx_symbols.dat"
+      }
+     },
+     {
+      "instance_name": "timing_error_sink",
+      "params": {
+       "file": "data/timing_error.dat"
+      }
+     },
+     {
+      "instance_name": "timing_rate_sink",
+      "params": {
+       "file": "data/timing_rate.dat"
+      }
+     },
+     {
+      "instance_name": "timing_phase_sink",
+      "params": {
+       "file": "data/timing_phase.dat"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "tx_signal_sink",
+     "rx_symbols_sink",
+     "timing_error_sink",
+     "timing_rate_sink",
+     "timing_phase_sink"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 1
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {
+    "path": "data"
+   },
+   "tool": "list_directory"
+  }
+ ],
+ "final_text": "I created the data folder and pointed all five File Sinks there, keeping their names (data/tx_signal.dat, data/rx_symbols.dat, data/timing_error.dat, data/timing_rate.dat and data/timing_phase.dat). I saved the flowgraph and ran it for one second; the five files are now in data/."
+}

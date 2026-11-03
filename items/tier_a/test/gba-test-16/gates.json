@@ -1,0 +1,45 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V5: peaks mean = 0.0125; saw band_fraction = 0.0",
+    "blocks_present[0]: 0 matching block(s) []; candidates: [\"blocks_peak_detector2_fb_0 (enabled): alpha='alpha' (0.002) vs 0.01\"]"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 9
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "blocks_present[0]: 0 matching block(s) []; candidates: [\"blocks_peak_detector2_fb_0 (enabled): alpha='alpha' (0.002) vs 0.01\"]"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "e900a556c7ac011aef7f3ef0bdf0f87a16249bda68c4455e1690811670d12d93",
+ "passed": true,
+ "task": "gba-test-16"
+}

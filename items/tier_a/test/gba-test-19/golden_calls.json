@@ -1,0 +1,101 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "slicer",
+     "pack"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "char to float"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "blocks_char_to_float",
+      "instance_name": "to_float",
+      "params": {
+       "scale": "1",
+       "vlen": "1"
+      }
+     },
+     {
+      "block_id": "blocks_multiply_const_vxx",
+      "instance_name": "times_two",
+      "params": {
+       "const": "2",
+       "type": "float"
+      }
+     },
+     {
+      "block_id": "blocks_add_const_vxx",
+      "instance_name": "minus_one",
+      "params": {
+       "const": "-1",
+       "type": "float"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "decisions_sink",
+      "params": {
+       "file": "decisions.dat",
+       "type": "float"
+      }
+     }
+    ],
+    "add_connections": [
+     "slicer:0->to_float:0",
+     "to_float:0->times_two:0",
+     "times_two:0->minus_one:0",
+     "minus_one:0->decisions_sink:0"
+    ],
+    "reason": "Record the hard decisions as +1/-1 float samples in decisions.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "to_float",
+     "times_two",
+     "minus_one"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "I tapped the slicer's output: Char To Float, multiply by 2 and add -1 map each bit to +1.0 or -1.0, and a File Sink writes the decisions as float samples to decisions.dat. bits.dat is unchanged, and the flowgraph is saved."
+}

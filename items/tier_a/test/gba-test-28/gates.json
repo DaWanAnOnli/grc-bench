@@ -1,0 +1,46 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "files[0]: carrier.dat does not exist",
+    "answer[0]: settled PLL frequency: expects 2400"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "files[0]: carrier.dat does not exist",
+      "answer[0]: settled PLL frequency: expects 2400"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "5d48250f715bfca656bad3d48e3ff3d9c641f00ecedea485f44195f6307b3db9",
+ "passed": true,
+ "task": "gba-test-28"
+}

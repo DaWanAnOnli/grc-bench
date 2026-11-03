@@ -1,0 +1,51 @@
+options:
+  parameters: {id: gbf_test_112, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_6400
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '6400', amp: '0.4'}
+- name: fm_mod
+  id: analog_frequency_modulator_fc
+  parameters: {sensitivity: 2*math.pi*1000/samp_rate}
+- name: fm_demod
+  id: analog_quadrature_demod_cf
+  parameters: {gain: samp_rate/(2*math.pi*2000)}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: power
+  id: blocks_complex_to_mag_squared
+  parameters: {}
+- name: average
+  id: blocks_moving_average_xx
+  parameters: {type: float, scale: 1/1000}
+- name: to_db
+  id: blocks_nlog10_ff
+  parameters: {n: '10'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: power_db.dat}
+- name: to_short
+  id: blocks_float_to_short
+  parameters: {scale: '1000'}
+- name: to_float
+  id: blocks_short_to_float
+  parameters: {scale: '1000'}
+- name: out_b
+  id: blocks_file_sink
+  parameters: {type: float, file: second_quantized.dat}
+connections:
+- [tone_6400, '0', fm_mod, '0']
+- [fm_mod, '0', fm_demod, '0']
+- [fm_demod, '0', hilbert, '0']
+- [hilbert, '0', power, '0']
+- [power, '0', average, '0']
+- [average, '0', to_db, '0']
+- [to_db, '0', out, '0']
+- [fm_demod, '0', to_short, '0']
+- [to_short, '0', to_float, '0']
+- [to_float, '0', out_b, '0']
+metadata: {file_format: 1}

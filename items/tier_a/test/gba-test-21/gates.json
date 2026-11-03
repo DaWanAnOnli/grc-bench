@@ -1,0 +1,48 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "answer[0]: peak frequency deviation: expects 2500",
+    "answer[1]: audio sample rate: expects 8000",
+    "answer[2]: audio filter decimation: expects 5"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "graph_unchanged: deviation.value: '2500' != '5000'",
+      "answer[1]: audio sample rate: expects 8000",
+      "answer[2]: audio filter decimation: expects 5"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "7f578e8f540017608a47cb76aca2ddbda034e6f4a3d8931169e2e77260c25535",
+ "passed": true,
+ "task": "gba-test-21"
+}

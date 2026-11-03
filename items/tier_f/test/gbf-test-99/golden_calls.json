@@ -1,0 +1,59 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x low_pass_filter blocks_float_to_short blocks_short_to_float blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "square_850",
+    "params": {
+     "type": "float",
+     "waveform": "analog.GR_SQR_WAVE",
+     "freq": "850",
+     "amp": "2"
+    }
+   },
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "lpf",
+    "params": {
+     "type": "fir_filter_fff",
+     "cutoff_freq": "1700",
+     "width": "200"
+    }
+   },
+   {
+    "block_id": "blocks_float_to_short",
+    "instance_name": "to_short",
+    "params": {
+     "scale": "100"
+    }
+   },
+   {
+    "block_id": "blocks_short_to_float",
+    "instance_name": "to_float",
+    "params": {
+     "scale": "100"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "float",
+     "file": "quantized.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "square_850:0->lpf:0",
+   "lpf:0->to_short:0",
+   "to_short:0->to_float:0",
+   "to_float:0->out:0"
+  ]
+ }
+}

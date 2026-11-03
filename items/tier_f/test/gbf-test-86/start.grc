@@ -1,0 +1,35 @@
+options:
+  parameters: {id: gbf_test_86, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_7000
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '7000', amp: '0.6', showports: 'True'}
+- name: agc
+  id: analog_agc_xx
+  parameters: {type: complex, rate: 1e-2, reference: '1', gain: '1'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-6250'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 4900})', period: '200'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+connections:
+- [agc, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [retune, strobe, tone_7000, cmd]
+- [tone_7000, '0', throttle, '0']
+- [throttle, '0', agc, '0']
+- [mixer, '0', out, '0']
+metadata: {file_format: 1}

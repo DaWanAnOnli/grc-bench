@@ -1,0 +1,63 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x hilbert_fc rational_resampler_xxx analog_agc_xx blocks_conjugate_cc blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_6000",
+    "params": {
+     "type": "float",
+     "freq": "6000",
+     "amp": "0.5"
+    }
+   },
+   {
+    "block_id": "hilbert_fc",
+    "instance_name": "hilbert"
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "ccc",
+     "interp": "3",
+     "decim": "2"
+    }
+   },
+   {
+    "block_id": "analog_agc_xx",
+    "instance_name": "agc",
+    "params": {
+     "type": "complex",
+     "rate": "1e-2",
+     "reference": "2",
+     "gain": "1"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "mirrored.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_6000:0->hilbert:0",
+   "hilbert:0->resampler:0",
+   "resampler:0->agc:0",
+   "agc:0->conj:0",
+   "conj:0->out:0"
+  ]
+ }
+}

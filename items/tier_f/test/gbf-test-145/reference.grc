@@ -1,0 +1,39 @@
+options:
+  parameters: {id: gbf_test_145, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_1600
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-1600', amp: '0.25', showports: 'True'}
+- name: noise
+  id: analog_noise_source_x
+  parameters: {type: complex, amp: '0.2'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '2', decim: '3'}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': -1100})', period: '250'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: resampled.dat}
+connections:
+- [noise, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', conj, '0']
+- [conj, '0', resampler, '0']
+- [retune, strobe, tone_1600, cmd]
+- [tone_1600, '0', throttle, '0']
+- [throttle, '0', sum_of_tones, '0']
+- [resampler, '0', out, '0']
+metadata: {file_format: 1}

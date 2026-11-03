@@ -1,0 +1,51 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "answer[0]: command port: expects 'cmd'",
+    "answer[1]: commanded frequency: expects 4200",
+    "answer[2]: commanded amplitude: expects 1.2",
+    "answer[3]: average command interval: expects 100"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "graph_unchanged: blocks_message_strobe_random_0.mean: '100' != '1000'",
+      "answer[0]: command port: expects 'cmd'",
+      "answer[1]: commanded frequency: expects 4200",
+      "answer[2]: commanded amplitude: expects 1.2",
+      "answer[3]: average command interval: expects 100"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "43b901434faec7d8c474dba6214e0751a914fd3a74167c4bed73f2fede56efb7",
+ "passed": true,
+ "task": "gba-test-22"
+}

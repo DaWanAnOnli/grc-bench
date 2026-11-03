@@ -1,0 +1,45 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V5: observation 'neighbour': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'neighbour.dat', 'type': 'complex'}}; neighbour band_fraction = observation missing; neighbour rms = observation missing",
+    "blocks_present[0]: 0 matching block(s) []; candidates: [\"blocks_file_sink_0 (enabled): file='channel.dat'\", \"blocks_file_sink_1 (enabled): file='audio.dat'; type='float'\"]"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 9
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V5: neighbour band_fraction = 0.017525; neighbour rms = 0.000882"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "488a4b2edcb4ace16c12169403611c652ee03f22021f4498c44d6632dcec5963",
+ "passed": true,
+ "task": "gba-test-20"
+}

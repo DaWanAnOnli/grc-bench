@@ -1,0 +1,39 @@
+options:
+  parameters: {id: gbf_test_24, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_7800
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '7800'}
+- name: tone_5800
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '5800', amp: '0.6'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: float}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_fff, cutoff_freq: '6800', width: '200'}
+- name: to_short
+  id: blocks_float_to_short
+  parameters: {scale: '10'}
+- name: to_float
+  id: blocks_short_to_float
+  parameters: {scale: '10'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: quantized.dat}
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '0.5'}
+connections:
+- [tone_5800, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', lpf, '0']
+- [lpf, '0', to_short, '0']
+- [to_short, '0', to_float, '0']
+- [to_float, '0', out, '0']
+- [tone_7800, '0', gain, '0']
+- [gain, '0', sum_of_tones, '0']
+metadata: {file_format: 1}

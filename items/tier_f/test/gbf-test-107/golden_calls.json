@@ -1,0 +1,30 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x rational_resampler_xxx blocks_float_to_short blocks_short_to_float blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "remove_connections": [
+   "to_short:0->to_float:0",
+   "to_float:0->out:0"
+  ],
+  "remove_blocks": [
+   "to_float"
+  ],
+  "add_blocks": [
+   {
+    "block_id": "blocks_short_to_float",
+    "instance_name": "to_float",
+    "params": {
+     "scale": "1000"
+    }
+   }
+  ],
+  "add_connections": [
+   "to_short:0->to_float:0",
+   "to_float:0->out:0"
+  ]
+ }
+}

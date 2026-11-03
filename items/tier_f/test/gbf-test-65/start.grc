@@ -1,0 +1,41 @@
+options:
+  parameters: {id: gbf_test_65, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_1600
+  id: analog_sig_source_x
+  parameters: {type: float, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '1600', amp: '0.8',
+    offset: '0', showports: 'True'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: fff, interp: '3', decim: '2', taps: '[]', fbw: '0'}
+- name: fm_mod
+  id: analog_frequency_modulator_fc
+  parameters: {sensitivity: 2*math.pi*1000/(samp_rate*3/2)}
+- name: fm_demod
+  id: analog_quadrature_demod_cf
+  parameters: {gain: samp_rate*3/2/(2*math.pi*500)}
+- name: resampler_2
+  id: rational_resampler_xx
+  parameters: {type: fff, interp: '1', decim: '2', taps: '[]', fbw: '0'}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 2600})', period: '200'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: float, samples_per_second: samp_rate, ignoretag: 'True', maximum: '0.1', limit: auto,
+    vlen: '1'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: float, file: resampled.dat, append: 'False', unbuffered: 'False', vlen: '1'}
+connections:
+- [resampler, '0', fm_mod, '0']
+- [fm_mod, '0', fm_demod, '0']
+- [fm_demod, '0', resampler_2, '0']
+- [retune, strobe, tone_1600, cmd]
+- [tone_1600, '0', throttle, '0']
+- [throttle, '0', resampler, '0']
+- [resampler_2, '0', out, '0']
+metadata: {file_format: 1}

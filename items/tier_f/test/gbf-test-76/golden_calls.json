@@ -1,0 +1,77 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x rational_resampler_xxx blocks_float_to_short blocks_short_to_float blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_1600",
+    "params": {
+     "type": "float",
+     "freq": "1600",
+     "amp": "0.4",
+     "showports": "True"
+    }
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "fff",
+     "interp": "3",
+     "decim": "2"
+    }
+   },
+   {
+    "block_id": "blocks_float_to_short",
+    "instance_name": "to_short",
+    "params": {
+     "scale": "10"
+    }
+   },
+   {
+    "block_id": "blocks_short_to_float",
+    "instance_name": "to_float",
+    "params": {
+     "scale": "10"
+    }
+   },
+   {
+    "block_id": "blocks_message_strobe",
+    "instance_name": "retune",
+    "params": {
+     "msg": "pmt.to_pmt({'freq': 2200})",
+     "period": "100"
+    }
+   },
+   {
+    "block_id": "blocks_throttle2",
+    "instance_name": "throttle",
+    "params": {
+     "type": "float",
+     "limit": "auto"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "float",
+     "file": "quantized.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "resampler:0->to_short:0",
+   "to_short:0->to_float:0",
+   "retune:strobe->tone_1600:cmd",
+   "tone_1600:0->throttle:0",
+   "throttle:0->resampler:0",
+   "to_float:0->out:0"
+  ]
+ }
+}

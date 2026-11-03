@@ -1,0 +1,39 @@
+options:
+  parameters: {id: gbf_test_45, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_4100
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '4.100000e+03', amp: '0.4'}
+- name: tone_6200
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '6200'}
+- name: tone_8300
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '8300', amp: '0.5'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex, num_inputs: '3'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-2000'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, cutoff_freq: '5250', width: '400'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: filtered.dat}
+connections:
+- [tone_4100, '0', sum_of_tones, '0']
+- [tone_6200, '0', sum_of_tones, '1']
+- [tone_8300, '0', sum_of_tones, '2']
+- [sum_of_tones, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', lpf, '0']
+- [lpf, '0', out, '0']
+metadata: {file_format: 1}

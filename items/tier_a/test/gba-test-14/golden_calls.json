@@ -1,0 +1,76 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "pll"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "pll refout max_freq min_freq"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('carrier.dat',dtype=np.complex64)[16000:32000]; f=np.fft.fftfreq(len(x),1/32000); print(len(x), f[np.argmax(np.abs(np.fft.fft(x)))])\""
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "reason": "The PLL's frequency limits are swapped; restore max +4 kHz and min -4 kHz.",
+    "update_params": [
+     {
+      "instance_name": "pll",
+      "params": {
+       "max_freq": "6.283185307179586*4000/samp_rate",
+       "min_freq": "-6.283185307179586*4000/samp_rate"
+      }
+     }
+    ]
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  }
+ ],
+ "final_text": "The PLL's maximum and minimum frequencies were swapped (max -4 kHz, min +4 kHz), so its frequency stayed pinned at a limit and it never locked to the 2.4 kHz carrier. I restored max_freq to +4 kHz and min_freq to -4 kHz; the loop bandwidth, carrier, noise and file names are unchanged, and the flowgraph is saved."
+}

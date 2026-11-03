@@ -1,0 +1,59 @@
+options:
+  parameters: {id: gbf_test_149, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_400
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '400'}
+- name: tone_11900
+  id: analog_sig_source_x
+  parameters: {type: float, freq: '11900'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: float}
+- name: hpf
+  id: high_pass_filter
+  parameters: {type: fir_filter_fff, cutoff_freq: '6150', width: '300'}
+- name: hilbert
+  id: hilbert_fc
+  parameters: {}
+- name: agc
+  id: analog_agc_xx
+  parameters: {type: complex, rate: 1e-2, reference: '0.5', gain: '1'}
+- name: channel
+  id: channels_channel_model
+  parameters: {noise_voltage: '0', freq_offset: -2500/samp_rate, taps: '[1.0]'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: received.dat}
+- name: power
+  id: blocks_complex_to_mag_squared
+  parameters: {}
+- name: average
+  id: blocks_moving_average_xx
+  parameters: {type: float, length: '500', scale: 1/500}
+- name: to_db
+  id: blocks_nlog10_ff
+  parameters: {n: '10'}
+- name: out_b
+  id: blocks_file_sink
+  parameters: {type: float, file: second_power_db.dat}
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters: {type: float, const: '0.4'}
+connections:
+- [tone_11900, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', hpf, '0']
+- [hpf, '0', hilbert, '0']
+- [hilbert, '0', agc, '0']
+- [agc, '0', channel, '0']
+- [channel, '0', out, '0']
+- [channel, '0', power, '0']
+- [power, '0', average, '0']
+- [average, '0', to_db, '0']
+- [to_db, '0', out_b, '0']
+- [tone_400, '0', gain, '0']
+- [gain, '0', sum_of_tones, '0']
+metadata: {file_format: 1}

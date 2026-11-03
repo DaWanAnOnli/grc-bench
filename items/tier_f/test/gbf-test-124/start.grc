@@ -1,0 +1,40 @@
+options:
+  parameters: {id: gbf_test_124, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_6600
+  id: analog_sig_source_x
+  parameters: {type: complex, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '6600', amp: '0.6',
+    offset: '0', showports: 'True'}
+- name: noise
+  id: analog_noise_source_x
+  parameters: {type: complex, noise_type: analog.GR_GAUSSIAN, amp: '0.05', seed: '0'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex, num_inputs: '2'}
+- name: resampler
+  id: rational_resampler_xxx
+  parameters: {type: ccc, interp: '2', decim: '1', taps: '[]', fbw: '0'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 9200})', period: '200'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, samples_per_second: samp_rate, ignoretag: 'True', maximum: '0.1', limit: auto,
+    vlen: '1'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat, append: 'False', unbuffered: 'False', vlen: '1'}
+connections:
+- [noise, '0', sum_of_tones, '1']
+- [resampler, '0', conj, '0']
+- [retune, strobe, tone_6600, cmd]
+- [tone_6600, '0', throttle, '0']
+- [throttle, '0', sum_of_tones, '0']
+- [conj, '0', out, '0']
+metadata: {file_format: 1}

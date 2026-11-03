@@ -1,0 +1,27 @@
+options:
+  parameters: {id: gbf_test_51, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_6700
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '6.700000e+03'}
+- name: tone_5000
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '5000', amp: '0.8'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat}
+connections:
+- [tone_6700, '0', sum_of_tones, '0']
+- [tone_5000, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', conj, '0']
+- [conj, '0', out, '0']
+metadata: {file_format: 1}

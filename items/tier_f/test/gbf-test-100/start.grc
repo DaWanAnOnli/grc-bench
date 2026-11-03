@@ -1,0 +1,27 @@
+options:
+  parameters: {id: gbf_test_100, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_900
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '900', amp: '0.25'}
+- name: tone_6500
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '6500', amp: '0.4'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, cutoff_freq: '3700', width: '200'}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: filtered.dat}
+connections:
+- [tone_900, '0', sum_of_tones, '0']
+- [tone_6500, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', lpf, '0']
+- [lpf, '0', out, '0']
+metadata: {file_format: 1}

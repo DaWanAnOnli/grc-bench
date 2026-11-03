@@ -1,0 +1,68 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x analog_frequency_modulator_fc analog_quadrature_demod_cf hilbert_fc blocks_file_sink",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_9800",
+    "params": {
+     "type": "float",
+     "freq": "9800"
+    }
+   },
+   {
+    "block_id": "analog_frequency_modulator_fc",
+    "instance_name": "fm_mod",
+    "params": {
+     "sensitivity": "2*math.pi*1500/samp_rate"
+    }
+   },
+   {
+    "block_id": "analog_quadrature_demod_cf",
+    "instance_name": "fm_demod",
+    "params": {
+     "gain": "samp_rate/(2*math.pi*3000)"
+    }
+   },
+   {
+    "block_id": "analog_frequency_modulator_fc",
+    "instance_name": "fm_mod_2",
+    "params": {
+     "sensitivity": "2*math.pi*2500/samp_rate"
+    }
+   },
+   {
+    "block_id": "analog_quadrature_demod_cf",
+    "instance_name": "fm_demod_2",
+    "params": {
+     "gain": "samp_rate/(2*math.pi*5000)"
+    }
+   },
+   {
+    "block_id": "hilbert_fc",
+    "instance_name": "hilbert"
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "analytic.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_9800:0->fm_mod:0",
+   "fm_mod:0->fm_demod:0",
+   "fm_demod:0->fm_mod_2:0",
+   "fm_mod_2:0->fm_demod_2:0",
+   "fm_demod_2:0->hilbert:0",
+   "hilbert:0->out:0"
+  ]
+ }
+}

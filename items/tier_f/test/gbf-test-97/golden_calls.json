@@ -1,0 +1,39 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x hilbert_fc blocks_conjugate_cc blocks_message_strobe blocks_throttle2 blocks_file_sink blocks_float_to_short blocks_short_to_float",
+  "domain": "catalog",
+  "k": 16
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "blocks_float_to_short",
+    "instance_name": "to_short",
+    "params": {
+     "scale": "10"
+    }
+   },
+   {
+    "block_id": "blocks_short_to_float",
+    "instance_name": "to_float",
+    "params": {
+     "scale": "10"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out_b",
+    "params": {
+     "type": "float",
+     "file": "second_quantized.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_2300:0->to_short:0",
+   "to_short:0->to_float:0",
+   "to_float:0->out_b:0"
+  ]
+ }
+}

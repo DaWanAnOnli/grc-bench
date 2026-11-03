@@ -126,6 +126,62 @@ def test_block_yaml_paths():
         grader.block_yaml("no_such_block")
 
 
+def test_a_fact_can_take_a_number_out_of_a_parameter_expression():
+    """A message strobe's message is one expression, pmt.to_pmt({"freq": 4200, "ampl": 1.2}): a regex on the
+    raw text takes one value out of it, still derived from the graph at grading time."""
+    view = {"ok": True, "blocks": {"strobe": {"key": "blocks_message_strobe", "evaluated": {},
+                                              "params": {"msg": 'pmt.to_pmt({"freq": 4200, "ampl": 1.2})'}}}}
+    src = {"graph": "start", "block": {"name": "strobe"}, "param": "msg", "use": "raw"}
+    freq = {"source": {**src, "regex": r'"freq"\s*:\s*([-+0-9.eE]+)'}, "match": "number"}
+    ampl = {"source": {**src, "regex": r'"ampl"\s*:\s*([-+0-9.eE]+)'}, "match": "number"}
+    assert grader._fact_value(freq, {"start": view}) == "4200"
+    assert grader._fact_value(ampl, {"start": view}) == "1.2"
+    with pytest.raises(KeyError):
+        grader._fact_value({"source": {**src, "regex": r'"phase"\s*:\s*([0-9.]+)'}, "match": "number"},
+                           {"start": view})
+    facts = {"answer": {"facts": [{"name": "f", **freq}]}}
+    assert grader.acceptance_errors(facts) == []
+    bad = {"answer": {"facts": [{"name": "f", "source": {**src, "regex": "no group"}, "match": "number"}]}}
+    assert any("regex" in e for e in grader.acceptance_errors(bad))
+
+
+def test_a_csv_manifest_is_checked_against_the_sizes_of_the_files_it_lists(tmp_path):
+    """outputs/manifest.csv: a header, then one row per copied file whose size it states; the sizes depend on
+    how long the agent ran, so they are compared with the files themselves."""
+    out = tmp_path / "outputs"
+    out.mkdir()
+    (out / "peaks.dat").write_bytes(b"x" * 40)
+    (out / "average.dat").write_bytes(b"y" * 24)
+    spec = {"path": "outputs/manifest.csv", "csv_sizes": {"dir": "outputs", "header": ["file", "bytes"],
+                                                          "names": ["peaks.dat", "average.dat"]}}
+    (out / "manifest.csv").write_text("file,bytes\npeaks.dat,40\naverage.dat,24\n")
+    assert grader._files(tmp_path, spec, 0)["passed"]
+    (out / "manifest.csv").write_text("file,bytes\npeaks.dat,40\naverage.dat,25\n")
+    assert "size" in grader._files(tmp_path, spec, 0)["detail"]
+    (out / "manifest.csv").write_text("file,bytes\npeaks.dat,40\n")
+    assert "average.dat" in grader._files(tmp_path, spec, 0)["detail"]
+    (out / "manifest.csv").write_text("name,size\npeaks.dat,40\naverage.dat,24\n")
+    assert "header" in grader._files(tmp_path, spec, 0)["detail"]
+    assert grader.acceptance_errors({"files": [spec]}) == []
+    assert grader.acceptance_errors({"files": [{**spec, "csv_sizes": {"dir": "../x", "names": []}}]})
+
+
+def test_a_fact_can_be_measured_from_a_file_the_run_wrote(tmp_path):
+    """A run-and-verify answer (the RMS of recovered.dat) is computed at grading time from the run's own file
+    with an oracle feature, never written by hand."""
+    import numpy as np
+    x = np.concatenate([np.zeros(800), 2.0 * np.sin(np.linspace(0, 200 * np.pi, 8000))]).astype(np.float32)
+    x.tofile(tmp_path / "recovered.dat")
+    fact = {"source": {"file": "recovered.dat", "dtype": "float32", "skip": 800, "feature": "rms"},
+            "match": "number", "rel_tol": 0.03}
+    assert abs(float(grader._fact_value(fact, {}, tmp_path)) - 2 ** 0.5) < 1e-3
+    with pytest.raises(KeyError):
+        grader._fact_value({**fact, "source": {**fact["source"], "file": "missing.dat"}}, {}, tmp_path)
+    assert grader.acceptance_errors({"answer": {"facts": [{"name": "rms", **fact}]}}) == []
+    bad = {"answer": {"facts": [{"name": "rms", **fact, "source": {**fact["source"], "feature": "equal_prefix"}}]}}
+    assert grader.acceptance_errors(bad)
+
+
 def test_acceptance_errors():
     assert grader.acceptance_errors({"blocks_absent": [{"id": "x"}]}) == []
     cases = {

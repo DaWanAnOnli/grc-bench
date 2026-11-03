@@ -1,0 +1,46 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V5: observation 'codes': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'codes.dat', 'type': 'float'}}; codes max_int_dev = observation missing; codes min = observation missing; codes max = observation missing; codes mean = observation missing; codes peak_freq = observation missing; graph check path: no such path",
+    "blocks_present[0]: 0 matching block(s) []",
+    "blocks_present[1]: 0 matching block(s) []; candidates: [\"out (enabled): file='dac_test.dat'\"]"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 9
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V5: codes mean = 139.723419"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "fc9dab84d27e8fa56805c173167c75d4cfb0a9cbb3bb9e2d9bfdd4b68190064c",
+ "passed": true,
+ "task": "gba-test-17"
+}

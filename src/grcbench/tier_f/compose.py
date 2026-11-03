@@ -778,7 +778,7 @@ def audit_items(repo: Path) -> dict:
                "v1_signature": list(signature_v1(ref)), "v1_split": signature_split_v1(signature_v1(ref)),
                "v2_signature": list(sig), "v2_split": signature_split(sig), "v2_cluster_id": cluster_id(sig),
                "fine_profile": dict(sorted(functional_profile(ref).items())), "variants": []}
-        if kind == "composed_chain":
+        if kind in ("composed_chain", "generated_chain"):         # the split the reference cell hashes to
             row["rule_split"] = row["v2_split"]
         else:
             row["rule_split"] = (seed_split.get(task["source"].get("ref")) or {}).get("split")

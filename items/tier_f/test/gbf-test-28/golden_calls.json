@@ -1,0 +1,53 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx blocks_conjugate_cc blocks_file_sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_7600",
+    "params": {
+     "type": "complex",
+     "freq": "-7600"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_6000",
+    "params": {
+     "type": "complex",
+     "freq": "-6000"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "mirrored.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_7600:0->sum_of_tones:0",
+   "tone_6000:0->sum_of_tones:1",
+   "sum_of_tones:0->conj:0",
+   "conj:0->out:0"
+  ]
+ }
+}

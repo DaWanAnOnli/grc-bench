@@ -1,0 +1,90 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx hilbert_fc channels_channel_model blocks_conjugate_cc blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_5700",
+    "params": {
+     "type": "float",
+     "freq": "5700",
+     "amp": "0.5"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_11400",
+    "params": {
+     "type": "float",
+     "freq": "11400"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_9600",
+    "params": {
+     "type": "float",
+     "freq": "9600",
+     "amp": "0.6"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "float",
+     "num_inputs": "3"
+    }
+   },
+   {
+    "block_id": "hilbert_fc",
+    "instance_name": "hilbert"
+   },
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "750/samp_rate",
+     "taps": "[1.0]"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel_2",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "-1250/samp_rate",
+     "taps": "[1.0]"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "received.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_5700:0->sum_of_tones:0",
+   "tone_11400:0->sum_of_tones:1",
+   "tone_9600:0->sum_of_tones:2",
+   "sum_of_tones:0->hilbert:0",
+   "hilbert:0->channel:0",
+   "channel:0->conj:0",
+   "conj:0->channel_2:0",
+   "channel_2:0->out:0"
+  ]
+ }
+}

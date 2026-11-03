@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx rational_resampler_xxx hilbert_fc blocks_conjugate_cc channels_channel_model blocks_file_sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "channel",
+    "params": {
+     "freq_offset": "2250/(samp_rate*3/2)"
+    }
+   }
+  ]
+ }
+}

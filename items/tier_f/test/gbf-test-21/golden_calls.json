@@ -1,0 +1,13 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_multiply_xx analog_agc_xx blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "domain": "catalog",
+  "k": 12
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_connections": [
+   "tone_3600:0->throttle:0"
+  ]
+ }
+}

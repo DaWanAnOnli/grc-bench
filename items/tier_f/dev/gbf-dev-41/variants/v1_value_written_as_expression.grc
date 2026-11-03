@@ -1,0 +1,43 @@
+options:
+  parameters: {id: gbf_dev_41, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '32000'}
+- name: tone_1700
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: (850)*2, amp: '0.5'}
+- name: tone_7500
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '7500'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex}
+- name: channel
+  id: channels_channel_model
+  parameters: {noise_voltage: '0', freq_offset: -2750/samp_rate, taps: '[1.0]'}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '4000'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: lpf
+  id: low_pass_filter
+  parameters: {type: fir_filter_ccf, cutoff_freq: '5850', width: '400'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: mirrored.dat}
+connections:
+- [tone_1700, '0', sum_of_tones, '0']
+- [tone_7500, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', channel, '0']
+- [channel, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', lpf, '0']
+- [lpf, '0', conj, '0']
+- [conj, '0', out, '0']
+metadata: {file_format: 1}

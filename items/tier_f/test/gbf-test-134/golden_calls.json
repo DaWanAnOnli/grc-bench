@@ -1,0 +1,97 @@
+{
+ "query_knowledge": {
+  "query": "analog_sig_source_x blocks_add_xx low_pass_filter blocks_multiply_xx analog_agc_xx rational_resampler_xxx blocks_file_sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_3200",
+    "params": {
+     "type": "complex",
+     "freq": "-3200",
+     "amp": "0.8"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_6800",
+    "params": {
+     "type": "complex",
+     "freq": "6800",
+     "amp": "0.4"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "lpf",
+    "params": {
+     "type": "fir_filter_ccf",
+     "cutoff_freq": "5000",
+     "width": "400"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "lo",
+    "params": {
+     "type": "complex",
+     "freq": "1500"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "analog_agc_xx",
+    "instance_name": "agc",
+    "params": {
+     "type": "complex",
+     "rate": "1e-2",
+     "reference": "2",
+     "gain": "1"
+    }
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "ccc",
+     "interp": "2"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "resampled.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_3200:0->sum_of_tones:0",
+   "tone_6800:0->sum_of_tones:1",
+   "sum_of_tones:0->lpf:0",
+   "lpf:0->mixer:0",
+   "lo:0->mixer:1",
+   "mixer:0->agc:0",
+   "agc:0->resampler:0",
+   "resampler:0->out:0"
+  ]
+ }
+}

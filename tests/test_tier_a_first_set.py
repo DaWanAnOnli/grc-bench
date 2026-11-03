@@ -23,24 +23,24 @@ def _built() -> list[dict]:
 
 
 def test_first_set_is_10_test_and_12_dev_tasks_covering_every_category():
-    built = _built()
-    by_split = Counter(t["split"] for t in built)
+    first = [t for t in _built() if t["provenance"]["generator"] == "grcbench.tier_a.first_set"]
+    by_split = Counter(t["split"] for t in first)
     assert by_split == {"test": 10, "dev": 12}
     for split in ("test", "dev"):
-        assert {t["category"] for t in built if t["split"] == split} == set(spec_drafts.CATEGORIES)
+        assert {t["category"] for t in first if t["split"] == split} == set(spec_drafts.CATEGORIES)
 
 
-def test_with_the_specs_the_test_split_has_three_tasks_per_category():
+def test_the_test_split_has_three_tasks_per_category():
     cats = Counter(t["category"] for t in _built() if t["split"] == "test")
-    cats.update(s["category"] for s in spec_drafts.SPECS)
     assert sum(cats.values()) == 30
     assert set(cats.values()) == {3} and set(cats) == set(spec_drafts.CATEGORIES)
 
 
 def test_ids_are_unique_and_follow_the_split():
-    ids = [t["id"] for t in _built()] + [s["id"] for s in spec_drafts.SPECS]
+    ids = [t["id"] for t in _built()]
     assert len(ids) == len(set(ids))
     assert [s["id"] for s in spec_drafts.SPECS] == [f"gba-test-{i}" for i in range(11, 31)]
+    assert {s["id"] for s in spec_drafts.SPECS} <= set(ids)              # every spec is built
     for t in _built():
         assert t["id"].startswith(f"gba-{t['split']}-")
 

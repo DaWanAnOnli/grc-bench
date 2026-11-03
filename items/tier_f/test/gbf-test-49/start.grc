@@ -1,0 +1,35 @@
+options:
+  parameters: {id: gbf_test_49, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_10200
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '10200', amp: '0.5', showports: 'True'}
+- name: channel
+  id: channels_channel_model
+  parameters: {noise_voltage: '0', freq_offset: -500/samp_rate, taps: '[1.0]'}
+- name: conj
+  id: blocks_conjugate_cc
+  parameters: {}
+- name: channel_2
+  id: channels_channel_model
+  parameters: {noise_voltage: '0', freq_offset: 1500/samp_rate, taps: '[1.0]'}
+- name: retune
+  id: blocks_message_strobe
+  parameters: {msg: 'pmt.to_pmt({''freq'': 16300})', period: '200'}
+- name: throttle
+  id: blocks_throttle2
+  parameters: {type: complex, limit: auto}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: received.dat}
+connections:
+- [channel, '0', conj, '0']
+- [conj, '0', channel_2, '0']
+- [retune, strobe, tone_10200, cmd]
+- [tone_10200, '0', throttle, '0']
+- [throttle, '0', channel, '0']
+- [channel_2, '0', out, '0']
+metadata: {file_format: 1}
