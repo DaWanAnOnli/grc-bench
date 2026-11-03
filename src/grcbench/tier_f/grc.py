@@ -8,6 +8,7 @@ into ~/grc-bench-cache/grc-home, is copied into each sandboxed run so loading ta
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import os
 import shutil
@@ -62,22 +63,35 @@ def catalog_hash(blocks_dir: Path = BLOCKS_DIR) -> str:
 
 
 def warm_cache_file() -> Path:
-    """Build (once) a GRC library cache in WARM_HOME; returns the cache file path."""
+    """Build (once) a GRC library cache in WARM_HOME; returns the cache file path. Callers that start together
+    (parallel episodes on a machine without the cache yet) take turns on a lock file beside WARM_HOME: one
+    builds it, the others wait and then use it. The stamp is written last, so a cache is used only complete."""
     target = WARM_HOME / CACHE_REL
     stamp = WARM_HOME / "catalog_hash.txt"
     current = catalog_hash()
-    if target.exists() and stamp.exists() and stamp.read_text().strip() == current:
+
+    def ready() -> bool:
+        return target.exists() and stamp.exists() and stamp.read_text().strip() == current
+
+    if ready():
         return target
-    shutil.rmtree(WARM_HOME, ignore_errors=True)
-    WARM_HOME.mkdir(parents=True)
-    env = {**os.environ, "HOME": str(WARM_HOME), "XDG_CACHE_HOME": str(WARM_HOME / ".cache"),
-           "PYTHONDONTWRITEBYTECODE": "1"}
-    subprocess.run([sys.executable, "-c",
-                    "from grcbench.tier_f.grc import platform; platform(docs=False, save_cache=True)"],
-                   env=env, cwd=str(WARM_HOME), check=True, capture_output=True)
-    if not target.exists():
-        raise RuntimeError("GRC did not write a library cache")
-    stamp.write_text(current + "\n")
+    WARM_HOME.parent.mkdir(parents=True, exist_ok=True)
+    with open(WARM_HOME.parent / f"{WARM_HOME.name}.lock", "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)                   # released when the file closes
+        if ready():
+            return target
+        shutil.rmtree(WARM_HOME, ignore_errors=True)
+        WARM_HOME.mkdir(parents=True)
+        env = {**os.environ, "HOME": str(WARM_HOME), "XDG_CACHE_HOME": str(WARM_HOME / ".cache"),
+               "PYTHONDONTWRITEBYTECODE": "1"}
+        res = subprocess.run([sys.executable, "-c",
+                              "from grcbench.tier_f.grc import platform; platform(docs=False, save_cache=True)"],
+                             env=env, cwd=str(WARM_HOME), capture_output=True, text=True)
+        if res.returncode != 0:
+            raise RuntimeError(f"GRC could not build its library cache (exit {res.returncode}): {res.stderr[-2000:]}")
+        if not target.exists():
+            raise RuntimeError("GRC did not write a library cache")
+        stamp.write_text(current + "\n")
     return target
 
 

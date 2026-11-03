@@ -22,6 +22,23 @@ BASE = yaml.safe_load((FIX / "good_tone.grc").read_text())
 TASK = json.loads((FIX / "good_tone.task.json").read_text())
 
 
+@pytest.mark.gnuradio
+@pytest.mark.slow
+def test_episodes_starting_together_on_a_fresh_machine_share_one_warm_cache(tmp_path, monkeypatch):
+    """The first sandboxed runs on a machine build GRC's warm library cache. Episodes that start together
+    (`./gb tier-a smoke` replays five at a time; on a fresh Colab runtime, 3 Nov 2026, the replays failed)
+    must not delete each other's half-built cache: one builds it, the others wait and use it."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from grcbench.tier_f import grc
+    monkeypatch.setattr(grc, "WARM_HOME", tmp_path / "grc-home")
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        homes = [tmp_path / f"run{i}" / "home" for i in range(5)]
+        list(pool.map(grc.install_warm_cache, homes))
+    built = (tmp_path / "grc-home" / grc.CACHE_REL).read_bytes()
+    assert all((h / grc.CACHE_REL).read_bytes() == built for h in homes)
+
+
 def _variant(mutate) -> str:
     data = copy.deepcopy(BASE)
     mutate(data)
