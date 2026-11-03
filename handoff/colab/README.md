@@ -50,22 +50,17 @@ folder (run folders, answer keys), and the package's own source would be hidden 
   the code, the dev split, placeholder rubrics for the dev questions, `u2604.py` and this notebook. It never holds
   a test item: the build refuses any file that contains one.
 - A Google account with Colab (the free T4 is enough) and about 10 GB free in Google Drive.
-- Optional, for a T4: `llama-b10333-cuda-sm75-cu12.4.tar.gz` (made on the build machine with
-  `CUDA_ARCH=75 CUDA_VERSION=12.4 GCC_VERSION=12 SYSROOT=2.28 ./gb fetch --cuda`), which saves compiling llama.cpp.
 
 ## How to run it
 
-1. Put `grc-bench-colab.zip` in **My Drive/grc-bench-colab/** and, if you have it, the llama.cpp archive in
-   **My Drive/grc-bench-colab/cache/**.
+1. Put `grc-bench-colab.zip` in **My Drive/grc-bench-colab/**.
 2. Open the notebook in Colab (*File → Upload notebook*; it is also inside the zip, under `colab/`).
 3. *Runtime → Change runtime type → T4 GPU*, then *Runtime → Run all*, and allow Drive access (choose the Google
    account the notebook runs under and tick every box). Without Drive: upload the zip (and the llama.cpp
    archive) to the Files pane before *Run all*; the results zip is then offered as a download.
-4. About 45 minutes with the llama.cpp archive in Drive; 1.5–2 hours without (compiling llama.cpp b10333 on
-   Colab's 2 CPUs). A build made here is kept in `My Drive/grc-bench-colab/cache/` and reused next time. With
-   `MODEL_STEPS` off in the Settings cell, only the setup and the checks run (steps 1–7b; no llama.cpp build,
-   steps 8–10 skipped): about 10–15 minutes, and a CPU runtime is enough (Colab still offers one when its GPU
-   limit is reached).
+4. About 45 minutes. With `MODEL_STEPS` off in the Settings cell, only the setup and the checks run (steps 1–7b; no
+   CUDA build of llama.cpp, steps 8–10 skipped): about 10–15 minutes, and a CPU runtime is enough (Colab still offers
+   one when its GPU limit is reached).
 5. Download `My Drive/grc-bench-colab/results/<run>/results_<run>.zip`.
 
 ## What it checks
@@ -77,7 +72,7 @@ folder (run folders, answer keys), and the package's own source would be hidden 
 | 3 | Linux namespaces, a bind of Colab's `/proc`, and bubblewrap with its own user namespace |
 | 4 | GNU Radio: the Ubuntu 26.04 container with gnuradio 3.10.12.0-6 (or conda-forge's, as the fallback) |
 | 5 | GRC-Agent at `6c98128`, its knowledge databases, the tokenizer |
-| 6 | llama.cpp b10333 with CUDA, compiled for this GPU or taken from Drive |
+| 6 | llama.cpp b12020 with CUDA: llama.cpp's own CUDA 12.8 download (the driver must support CUDA 12.8; Colab's T4 driver supports 13.0) |
 | 7 | `./gb env` (version pins), the GNU Radio block catalog hash, GRC-Bench's sandbox (the setting it uses here) |
 | 7b | the sandbox inside a Tier-A episode: `./gb tier-a smoke --no-probe` (golden replays of the fixture tasks, flowgraph runs among them) and 8 of GRC-Bench's sandbox tests (hidden files, the agent's shell, flowgraph runs and their time limit, a sandbox inside a sandbox) |
 | 8 | `./gb e2e`: Tier K (scored with placeholder rubrics), Tier F, Tier A, Tier E on a few dev items |
@@ -88,10 +83,27 @@ folder (run folders, answer keys), and the package's own source would be hidden 
 Each step is recorded in `feasibility.json` as ok or failed, with its time and details; a step whose command
 fails is recorded as failed. A failed step does not stop the later ones; a missing package stops the run.
 
+## In the team's evaluation notebook (grc-model-eval)
+
+The team's notebook (`colab/eval.ipynb` of `grc-model-eval`) runs the same steps with its own model server when its
+setting `EVAL` is `grc-bench`. Its steps 1–5 install llama.cpp b12020, make the model file and start the server; then
+it takes `colab/grcbench_colab_steps.py` from this package in Drive and runs it with `runpy`, passing:
+
+| Setting | Value in the team's notebook |
+|---|---|
+| `SERVER_URL`, `SERVER_MODEL` | its llama-server (`http://127.0.0.1:<port>/v1`) and model name: Tier K, F and A ask this server (`./gb e2e --base-url ... --model ...`), which must report llama.cpp b12020 |
+| `MODEL_FILE` | its GGUF file: Tier E measures it (`--gguf`) |
+| `STOP_SERVER` | stops its server before Tier E: Tier E measures with no other llama.cpp process running (it would wait up to an hour for one to stop), and a 16 GB T4 holds one model at a time. Without it, Tier E and step 9 are left out |
+| `RESULTS_DIR` | `<its run folder>/grc-bench` in Drive |
+
+Without these settings (this notebook), nothing changes: the smoke model's own server serves the tiers. The judge
+plumbing (step 10) needs the smoke model's own server and is skipped with another notebook's server. Tier-K requests
+send the server's own default sampling (from its `/props`), the sampling Tier F and A get from that server too.
+
 ## Changing the notebook
 
-`make_notebook.py` writes the notebook (`python make_notebook.py`); edit it there, then rebuild the package with
-`./gb colab-package`.
+`make_notebook.py` writes the notebook and `grcbench_colab_steps.py` (the same code cells, all but the Settings form,
+as one script) with `python make_notebook.py`; edit it there, then rebuild the package with `./gb colab-package`.
 
 ## Placeholder rubrics
 

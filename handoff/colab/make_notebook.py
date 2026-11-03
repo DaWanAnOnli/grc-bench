@@ -1,4 +1,7 @@
-"""Writes grcbench_colab_test.ipynb next to this file: the Colab pipeline test of GRC-Bench.
+"""Writes grcbench_colab_test.ipynb next to this file: the Colab pipeline test of GRC-Bench, and
+grcbench_colab_steps.py: the same code cells (all but the Settings form) as one script, which another notebook
+runs with runpy and its own settings (the team's evaluation notebook, grc-model-eval's colab/eval.ipynb, with the
+model server it already runs: SERVER_URL, SERVER_MODEL, MODEL_FILE, RESULTS_DIR).
 
     python make_notebook.py [OUT.ipynb]
 
@@ -17,6 +20,7 @@ import sys
 from pathlib import Path
 
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).with_name("grcbench_colab_test.ipynb")
+STEPS = OUT.with_name("grcbench_colab_steps.py")
 cells = []
 
 
@@ -56,7 +60,7 @@ view, and no way to inspect the processes outside. Step 7 checks this before any
 | 3 | Linux namespaces and bubblewrap on Colab itself |
 | 4 | **GNU Radio**: the Ubuntu 26.04 container with gnuradio 3.10.12.0-6 (or conda-forge's 3.10.12.0) |
 | 5 | **GRC-Agent** at the pinned commit `6c98128`, its knowledge databases and the tokenizer |
-| 6 | **llama.cpp b10333** (the pinned build): no prebuilt Linux CUDA download exists, so it is compiled once and kept in your Drive, unless a build is already there |
+| 6 | **llama.cpp b12020** (the pinned build): llama.cpp's own CUDA 12.8 download, checked by SHA-256 |
 | 7 | `./gb env` (the version pins), the GNU Radio block catalog hash, and GRC-Bench's sandbox |
 | 7b | the sandbox inside a Tier-A episode: golden replays of the fixture tasks (shell commands, flowgraph runs) and GRC-Bench's sandbox tests |
 | 8 | `./gb e2e`: Tier K (answers scored with placeholder rubrics), Tier F, Tier A, Tier E on a few dev items |
@@ -65,16 +69,14 @@ view, and no way to inspect the processes outside. Step 7 checks this before any
 | 11 | results: one folder and one zip in your Drive |
 
 **How to run**
-1. Put `grc-bench-colab.zip` in **My Drive/grc-bench-colab/** (no need to unzip it). Optional: put
-   `llama-b10333-cuda-sm75-cu12.4.tar.gz` in **My Drive/grc-bench-colab/cache/** to skip compiling llama.cpp on a T4.
+1. Put `grc-bench-colab.zip` in **My Drive/grc-bench-colab/** (no need to unzip it).
 2. *Runtime → Change runtime type → **T4 GPU***. For the checks alone (`MODEL_STEPS` off) the CPU runtime is enough;
    Colab still offers it when its GPU limit is reached.
 3. *Runtime → **Run all***, and allow Google Drive access when asked: choose the Google account this notebook runs
-   under and tick every box. Without Drive, upload `grc-bench-colab.zip` (and the llama.cpp archive) to the Files
-   pane on the left before *Run all*; the results zip is then offered as a download at the end.
-4. Keep the tab open. **First run: about 45 minutes with the llama.cpp archive in Drive, 1.5–2 hours without.**
-   With `MODEL_STEPS` off (Settings), only the setup and the checks run (steps 1–7b; no llama.cpp build, steps
-   8–10 skipped): about 10–15 minutes.
+   under and tick every box. Without Drive, upload `grc-bench-colab.zip` to the Files pane on the left before
+   *Run all*; the results zip is then offered as a download at the end.
+4. Keep the tab open. **About 45 minutes.** With `MODEL_STEPS` off (Settings), only the setup and the checks run
+   (steps 1–7b; no CUDA build of llama.cpp, steps 8–10 skipped): about 10–15 minutes.
 
 **What comes back:** `My Drive/grc-bench-colab/results/<run>/results_<run>.zip`, which holds `feasibility.json` (one
 entry per step: ok or failed, with times and details), the logs, the e2e report and the run folders. A step that
@@ -94,11 +96,10 @@ LIMIT_K = 5  #@param {type:"integer"}
 LIMIT_F = 2  #@param {type:"integer"}
 LIMIT_A = 1  #@param {type:"integer"}
 JUDGE_IN_COLAB = True  #@param {type:"boolean"}
-REUSE_LLAMA_BUILD = True  #@param {type:"boolean"}
 MODEL_STEPS = True  #@param {type:"boolean"}
 print(f"GNU Radio setup {GR_SETUP}; tiers {TIERS}: {LIMIT_K} Tier-K questions, {LIMIT_F} Tier-F tasks, "
       f"{LIMIT_A} Tier-A tasks; judge in Colab: {JUDGE_IN_COLAB}; package My Drive/{DRIVE_FOLDER}/{PACKAGE}; "
-      + ("all steps" if MODEL_STEPS else "checks only: no llama.cpp build, no model runs (steps 8-10 skipped)"))
+      + ("all steps" if MODEL_STEPS else "checks only: no CUDA build of llama.cpp, no model runs (steps 8-10 skipped)"))
 ''')
 
 md("""
@@ -109,7 +110,7 @@ Every command's full output goes to a log file in the results folder; the cell s
 """)
 
 code(r'''
-import json, os, re, shlex, shutil, subprocess, sys, tarfile, time, zipfile
+import json, os, re, shlex, shutil, subprocess, sys, time, zipfile
 from pathlib import Path
 
 # paths as ./gb sees them, in both setups (/root is hidden inside GRC-Bench's sandbox)
@@ -127,10 +128,20 @@ INNER_ENV = {"PYTHONDONTWRITEBYTECODE": "1", "QT_QPA_PLATFORM": "offscreen", "GR
              "GRC_BENCH_WORK": str(WORK), "GRC_AGENT_REPO": str(AGENT),
              "GRC_BENCH_LLAMA_BACKEND": "cuda"}          # "auto" looks for WSL's GPU library, which Colab does not have
 os.environ.update({**INNER_ENV, "MAMBA_ROOT_PREFIX": "/opt/mamba"})
+LLAMA_BUILD = "b12020"                               # the pinned llama.cpp tag (src/grcbench/common/paths.py)
+# Set by a notebook that runs these steps as a script (grcbench_colab_steps.py) with a model server of its own:
+# that server answers Tiers K, F and A, Tier E measures its model file, and the results go to its run folder.
+SERVER_URL = globals().get("SERVER_URL")              # e.g. "http://127.0.0.1:8181/v1"; None: the smoke model's own
+SERVER_MODEL = globals().get("SERVER_MODEL")          # the model name that server answers to
+MODEL_FILE = Path(globals().get("MODEL_FILE") or CACHE / "models/Qwen3-4B-Q4_K_M.gguf")
+RESULTS_DIR = globals().get("RESULTS_DIR")            # a Drive folder; None: My Drive/<DRIVE_FOLDER>/results
+STOP_SERVER = globals().get("STOP_SERVER")            # stops that server before Tier E, which measures alone
 STAMP = time.strftime("%Y%m%d-%H%M%S", time.gmtime())
-RESULT = {"notebook": "grcbench_colab_test 4", "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+RESULT = {"notebook": "grcbench_colab_test 5", "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
           "settings": {"gr_setup": GR_SETUP, "tiers": TIERS, "limit_k": LIMIT_K, "limit_f": LIMIT_F,
-                       "limit_a": LIMIT_A, "judge_in_colab": JUDGE_IN_COLAB}, "steps": {}}
+                       "limit_a": LIMIT_A, "judge_in_colab": JUDGE_IN_COLAB,
+                       **({"server_url": SERVER_URL, "server_model": SERVER_MODEL, "model_file": str(MODEL_FILE)}
+                          if SERVER_URL else {})}, "steps": {}}
 OUT = Path("/content/grcbench-results") / STAMP       # copied to Drive at each save
 OUT.mkdir(parents=True, exist_ok=True)
 DRIVE_OUT = None
@@ -306,7 +317,9 @@ def package():
         raise StopHere(f"{PACKAGE} not found: put it in My Drive/{DRIVE_FOLDER}/, or upload it to the Files pane, "
                        "and Run all again.")
     gpu = re.sub(r"[^A-Za-z0-9]+", "-", GPU["gpu"] or "CPU").strip("-")
-    if root is not None:
+    if RESULTS_DIR:
+        DRIVE_OUT = Path(RESULTS_DIR) / f"{STAMP}_{gpu}"
+    elif root is not None:
         DRIVE_OUT = root / "results" / f"{STAMP}_{gpu}"
     if HOST_PKG.exists():
         shutil.rmtree(HOST_PKG)
@@ -473,57 +486,29 @@ step("5_grc_agent", "GRC-Agent 6c98128", grc_agent)
 ''')
 
 md("""
-## Step 6: llama.cpp b10333 with CUDA
-`./gb fetch` downloads the pinned CPU build, the smoke model and the embedding model (each checked by SHA-256).
-llama.cpp publishes no Linux CUDA build of b10333, so `./gb fetch --cuda` compiles it for this GPU (the first
-time: up to an hour or more on Colab's 2 CPUs) and the result is kept in your Drive for the next run. A build
-placed in `My Drive/grc-bench-colab/cache/` beforehand (`llama-b10333-cuda-sm75-cu12.4.tar.gz` for a T4) is used
-instead.
+## Step 6: llama.cpp b12020 with CUDA
+`./gb fetch` downloads the pinned CPU build, the smoke model and the embedding model; `./gb fetch --cuda` downloads
+llama.cpp's own CUDA 12.8 build of b12020 and its CUDA runtime (about 780 MB, 1–2 minutes). Every file is checked by
+SHA-256. The NVIDIA driver must support CUDA 12.8 or newer (`nvidia-smi`'s "CUDA Version"). With a model server
+of another notebook (`SERVER_URL`), only the CUDA build is needed: Tier E runs its `llama-bench`.
 """)
 code(r'''
 def llama():
-    c, _, fetch_s = gb("fetch", "step 6", name="06_fetch")
-    if c:
-        raise RuntimeError("./gb fetch failed (log 06_fetch.log)")
-    if not MODEL_STEPS:                                  # the checks of steps 7 and 7b need no CUDA build
-        return {"fetch_seconds": fetch_s, "cuda": "not built: MODEL_STEPS is off"}
-    cc = GPU["compute_cap"].replace(".", "")
-    drv = tuple(int(x) for x in (GPU["driver_cuda"] or "12.4").split("."))
-    cuda = "12.9" if drv >= (12, 9) else f"{drv[0]}.{drv[1]}"
-    out_dir = host(CACHE / "llama.cpp" / "b10333-cuda")
-    cache = Path("/content/drive/MyDrive") / DRIVE_FOLDER / "cache"          # kept between sessions (Drive)
-    saved = cache / f"llama-b10333-cuda-sm{cc}-cu{cuda}.tar.gz"
-    # a build kept earlier (or put there by hand: Drive or the Files pane) for this GPU, made with a CUDA version this
-    # driver supports
-    cu_of = lambda p: tuple(int(x) for x in re.search(r"-cu(\d+)\.(\d+)\.tar\.gz$", p.name).groups())
-    usable = [p for d in (cache, Path("/content")) for p in d.glob(f"llama-b10333-cuda-sm{cc}-cu*.tar.gz")
-              if cu_of(p) <= drv[:2]]
-    if usable:
-        saved = max(usable, key=cu_of)
-    how, build_s = "built", None
-    if REUSE_LLAMA_BUILD and saved.exists():
-        out_dir.parent.mkdir(parents=True, exist_ok=True)
-        with tarfile.open(saved) as t:
-            t.extractall(out_dir.parent)
-        how = f"reused from {saved}"
-    else:
-        gcc = "13" if drv >= (12, 6) else "12"           # conda-forge's nvcc below 12.6 accepts GCC 12 at most
-        c, _, build_s = gb("fetch --cuda", "step 6", name="06_build_cuda", show=40,
-                           env={"CUDA_ARCH": cc, "CUDA_VERSION": cuda, "GCC_VERSION": gcc, "SYSROOT": "2.28",
-                                "JOBS": str(os.cpu_count() or 2)})
+    fetch_s = None
+    if not SERVER_URL:                                   # the smoke model's own server needs the smoke model
+        c, _, fetch_s = gb("fetch", "step 6", name="06_fetch")
         if c:
-            raise RuntimeError("the CUDA build failed (log 06_build_cuda.log)")
-        if DRIVE_OUT is not None:                        # kept in Drive for the next session
-            saved.parent.mkdir(parents=True, exist_ok=True)
-            with tarfile.open(saved, "w:gz") as t:
-                t.add(out_dir, arcname=out_dir.name)
-    d = CACHE / "llama.cpp" / "b10333-cuda"
-    _, version, _ = run_in(f"LD_LIBRARY_PATH={d}:$LD_LIBRARY_PATH {d}/llama-server --version", "step 6", name="06_version")
-    log("step 6", f"llama.cpp {how}: {version[-2:]}")
-    return {"fetch_seconds": fetch_s, "cuda_arch": cc, "cuda_version": cuda, "how": how, "build_seconds": build_s,
-            "version": version[-2:], "build_cache": str(saved)}
+            raise RuntimeError("./gb fetch failed (log 06_fetch.log)")
+    if not MODEL_STEPS:                                  # the checks of steps 7 and 7b need no CUDA build
+        return {"fetch_seconds": fetch_s, "cuda": "not downloaded: MODEL_STEPS is off"}
+    c, out, cuda_s = gb("fetch --cuda", "step 6", name="06_fetch_cuda")
+    if c:
+        raise RuntimeError("./gb fetch --cuda failed (log 06_fetch_cuda.log)")
+    version = [l for l in out if l.startswith(("version:", "built with"))]
+    log("step 6", f"llama.cpp {LLAMA_BUILD} with CUDA: {version}")
+    return {"fetch_seconds": fetch_s, "cuda_fetch_seconds": cuda_s, "version": version}
 
-step("6_llama_cpp", "llama.cpp b10333 (CUDA)", llama)
+step("6_llama_cpp", f"llama.cpp {LLAMA_BUILD} (CUDA)", llama)
 ''')
 
 md("## Step 7: `./gb env`, the pins, the block catalog and GRC-Bench's sandbox")
@@ -612,10 +597,12 @@ step("7b_episode_sandbox", "the sandbox inside a Tier-A episode", episode_sandbo
 
 md("""
 ## Step 8: `./gb e2e` on a few dev items
-One llama-server (the smoke model, every layer on the GPU) serves Tier K, F and A in turn; then Tier E runs
-llama-bench. Tier-K answers are scored with the **placeholder rubrics** (the training release's reference answer as
-the only point): that tests the routing, not the model. Tier F and A run only where GRC-Agent (step 5) and the
-sandbox (step 7) work.
+One llama-server (the smoke model, every layer on the GPU; or the server of the notebook that runs these steps,
+`SERVER_URL`) serves Tier K, F and A in turn; then Tier E runs llama-bench. Tier-K answers are scored with the
+**placeholder rubrics** (the training release's reference answer as the only point): that tests the routing, not the
+model. Tier F and A run only where GRC-Agent (step 5) and the sandbox (step 7) work. Tier E measures with no other
+llama.cpp process running: with another notebook's server, Tier E runs after `STOP_SERVER` has stopped it, and is
+left out without `STOP_SERVER`.
 """)
 code(r'''
 E_NAME = "colab_" + re.sub(r"[^a-z0-9]+", "_", (GPU["gpu"] or "cpu").lower()).strip("_")
@@ -634,10 +621,26 @@ def e2e():
     setup = "Ubuntu 26.04 container" if UBUNTU else "conda-forge GNU Radio"
     label = ("Google Colab (" + GPU["gpu"] + ", driver " + GPU["driver"] + "; " + setup + "; sandbox: "
              + str(SANDBOX_MODE) + ")")
-    args = (f"e2e --out {E2E} --only {','.join(tiers)} --limit-k {LIMIT_K} --limit-f {LIMIT_F} --limit-a {LIMIT_A} "
+    args = (f"e2e --out {E2E} --limit-k {LIMIT_K} --limit-f {LIMIT_F} --limit-a {LIMIT_A} "
             f"--rubrics colab/dev_placeholder.jsonl --report {OUT}/e2e_colab.md --e-name {E_NAME} "
             f"--machine-label {shlex.quote(label)}")
-    c, _, secs = gb(args, "step 8", name="08_e2e", show=80)
+    if SERVER_URL:                                       # the other notebook's server; Tier E on its model file
+        args += f" --base-url {shlex.quote(SERVER_URL)} --model {shlex.quote(SERVER_MODEL)} --gguf {shlex.quote(str(MODEL_FILE))}"
+    served = [t for t in tiers if t != "E"]
+    # Tier E measures with no other llama.cpp process running: the other notebook's server stops first
+    if SERVER_URL and "E" in tiers and not STOP_SERVER:
+        log("step 8", "Tier E not run: the model server stays up (no STOP_SERVER), and Tier E measures alone")
+        tiers, skipped = served, skipped + ["E"]
+    if SERVER_URL and "E" in tiers:
+        c1, s1 = 0, 0.0
+        if served:
+            c1, _, s1 = gb(f"{args} --only {','.join(served)}", "step 8", name="08_e2e", show=80)
+        STOP_SERVER()
+        log("step 8", "the model server is stopped: Tier E runs alone on the GPU")
+        c2, _, s2 = gb(f"{args} --only E", "step 8", name="08_e2e_tier_e", show=40)
+        c, secs = c1 or c2, round(s1 + s2, 1)
+    else:
+        c, _, secs = gb(f"{args} --only {','.join(tiers)}", "step 8", name="08_e2e", show=80)
     s = json.loads(host(E2E / "summary.json").read_text())
     for k, v in s.get("tiers", {}).items():
         log("step 8", f"Tier {k}: " + json.dumps({x: v.get(x) for x in ("items", "answers", "n_rules", "n_judge", "tasks",
@@ -664,7 +667,9 @@ def smi():
 def speeds():
     if not MODEL_STEPS:
         return {"skipped": "MODEL_STEPS is off"}
-    model, llama_dir = CACHE / "models/Qwen3-4B-Q4_K_M.gguf", CACHE / "llama.cpp/b10333-cuda"
+    if "E" not in RESULT["steps"].get("8_e2e", {}).get("tiers_run", []):
+        return {"skipped": "Tier E did not run in step 8"}
+    model, llama_dir = MODEL_FILE, CACHE / f"llama.cpp/{LLAMA_BUILD}-cuda"
     before = smi()
     c, _, secs = gb(f"tier-e run --model {model} --hardware H3 --llama-dir {llama_dir} --contexts 4096 --purpose plumbing "
                     f"--name {E_NAME}_repeat --machine-label {shlex.quote('Google Colab (' + GPU['gpu'] + ')')} "
@@ -720,8 +725,9 @@ print(json.dumps({k: s.get(k) for k in ("judge", "n_judged", "n_judge_failed", "
 """
 
 def judge():
-    if not MODEL_STEPS or not JUDGE_IN_COLAB:
-        return {"skipped": "MODEL_STEPS is off" if not MODEL_STEPS else "JUDGE_IN_COLAB is off"}
+    if not MODEL_STEPS or not JUDGE_IN_COLAB or SERVER_URL:
+        return {"skipped": "MODEL_STEPS is off" if not MODEL_STEPS else "JUDGE_IN_COLAB is off" if not JUDGE_IN_COLAB
+                else "the judge plumbing starts the smoke model's own server; not with another notebook's server"}
     (OUT / "judge_plumbing.py").write_text(JUDGE)           # /content is visible inside the container too
     c, out, secs = run_in(f"cd {PKG} && PYTHONPATH={PKG}/src {AGENT}/.venv/bin/python {OUT}/judge_plumbing.py {E2E}/tier_k",
                           "step 10", name="10_judge")
@@ -766,3 +772,23 @@ nb = {"cells": cells, "metadata": {"accelerator": "GPU", "colab": {"provenance":
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text(json.dumps(nb, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
 print(f"wrote {OUT} ({len(cells)} cells)")
+
+code_cells = ["".join(c["source"]) for c in cells if c["cell_type"] == "code"]
+assert code_cells[0].startswith("#@title Settings")
+SCRIPT_HEAD = '''"""GRC-Bench's Colab steps 1-11 as one script: the code cells of grcbench_colab_test.ipynb (all but its Settings
+form), written by make_notebook.py; change them there. Another notebook runs it with its own settings, e.g. the
+team's evaluation notebook (grc-model-eval, colab/eval.ipynb) with the model server it already runs:
+
+    import runpy
+    runpy.run_path("grcbench_colab_steps.py", init_globals={
+        "DRIVE_FOLDER": "grc-bench-colab", "PACKAGE": "grc-bench-colab.zip", "GR_SETUP": "ubuntu-26.04",
+        "TIERS": "K,F,A,E", "LIMIT_K": 5, "LIMIT_F": 2, "LIMIT_A": 1, "JUDGE_IN_COLAB": False, "MODEL_STEPS": True,
+        "SERVER_URL": "http://127.0.0.1:8181/v1", "SERVER_MODEL": "nanbeige42",
+        "MODEL_FILE": "/content/models/nanbeige42/Nanbeige4.2-3B-Q8_0.gguf",
+        "RESULTS_DIR": "/content/drive/MyDrive/grc-eval/runs/<run>/grc-bench",
+        "STOP_SERVER": lambda: h.stop_server(SERVER)})
+"""
+'''
+STEPS.write_text(SCRIPT_HEAD + "\n\n".join(code_cells[1:]) + "\n", encoding="utf-8", newline="\n")
+compile(STEPS.read_text(encoding="utf-8"), str(STEPS), "exec")
+print(f"wrote {STEPS} ({len(code_cells) - 1} code cells)")

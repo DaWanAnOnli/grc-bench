@@ -39,7 +39,8 @@ GNURADIO_EXAMPLES = Path("/usr/share/gnuradio/examples")
 # Pinned versions (checked by `gb` before anything runs).
 GRC_AGENT_COMMIT = "6c98128"
 GNURADIO_VERSION = "3.10.12.0"
-LLAMA_CPP_BUILD = "b10333"   # the build GRC-Agent's embed_runtime.py pins
+LLAMA_CPP_BUILD = "b12020"         # serves every model: llama.cpp's own CPU and CUDA 12.8 release downloads
+EMBED_LLAMA_CPP_BUILD = "b10333"   # the contamination audit's embedding server: GRC-Agent's embed_runtime.py pin
 # SHA-256 over the sorted (file name, content SHA-256) of the 580 *.block.yml files of GNU Radio
 # 3.10.12 (grcbench.tier_f.grc.catalog_hash); V2 fails if the installed catalog differs.
 GNURADIO_CATALOG_SHA256 = "ee88541933fc92b0061a3a6b900d7964b7cd17f61f01831b560e94d4bb08a277"

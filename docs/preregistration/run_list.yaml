@@ -12,7 +12,7 @@ status: draft
 version: "0.9"
 plan: Benchmark_Evaluation_Plan_to_7Dec.docx (CAD 504 budget case), Table 6 and section 7.3
 defaults:
-  engine: llama.cpp b10333 (GGUF files, BF16 references included); API models through their provider
+  engine: llama.cpp b12020 (GGUF files, BF16 references included); API models through their provider
   sampling: each model's recommended settings
   tool_calls: "llama.cpp-served models: the server default, --jinja with its tool grammar, on Tiers A and F (B0 and every later stage); API models: the provider's tool calling, strict mode where offered; the run log records the settings used"
   max_answer_tokens: {K: 16384, F: 8192}

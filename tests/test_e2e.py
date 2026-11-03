@@ -110,3 +110,104 @@ def test_limits_rubrics_machine_and_report_reach_the_tiers(tmp_path, monkeypatch
     assert seen["F"][1]["limit"] == 2 and seen["A"][1]["limit"] == 1
     assert seen["E"][1] == {"name": "colab_t4", "machine_label": "Colab T4"}
     assert report.exists() and not (tmp_path / "must_not_be_written.md").exists()
+
+
+PROPS = {"build_info": "b12020-0ec4027a2", "model_path": "/content/models/nanbeige42/Nanbeige4.2-3B-Q8_0.gguf",
+         "total_slots": 1,
+         "default_generation_settings": {"n_ctx": 65536, "params": {"temperature": 0.6, "top_k": 20, "top_p": 0.95,
+                                                                    "min_p": 0.05, "n_predict": -1}}}
+
+
+def test_a_running_servers_build_context_and_sampling_are_read_from_its_props():
+    s = e2e.props_summary(PROPS)
+    assert s == {"llama_cpp_build": "b12020", "build_info": "b12020-0ec4027a2", "context": 65536, "slots": 1,
+                 "model_path": PROPS["model_path"],
+                 "sampling": {"temperature": 0.6, "top_k": 20, "top_p": 0.95, "min_p": 0.05}}
+    assert e2e.props_summary({})["llama_cpp_build"] is None
+    f32 = {"default_generation_settings": {"params": {"temperature": 0.6000000238418579, "top_p": 0.949999988079071}}}
+    assert e2e.props_summary(f32)["sampling"] == {"temperature": 0.6, "top_p": 0.95}     # the server's float32 values
+
+
+def _external(tmp_path, monkeypatch, props, only="K,F,A"):
+    import pytest
+    from grcbench.tier_a import smoke
+    seen = {}
+    monkeypatch.setattr(smoke, "LocalServer", lambda *a, **kw: pytest.fail("--base-url: no server of its own"))
+    monkeypatch.setattr(e2e, "server_props", lambda url: seen.setdefault("props_url", url) and props)
+    monkeypatch.setattr(e2e, "_tier_k", lambda *a, **kw: seen.setdefault("K", (a, kw)) and {"items": 1})
+    monkeypatch.setattr(e2e, "_tier_f", lambda *a, **kw: seen.setdefault("F", (a, kw)) and {"tasks": 1})
+    monkeypatch.setattr(e2e, "_tier_a", lambda *a, **kw: seen.setdefault("A", (a, kw)) and {"tasks": 1})
+    monkeypatch.setattr(e2e, "_tier_e", lambda *a, **kw: seen.setdefault("E", (a, kw)) and {"runs": 5})
+    gguf = tmp_path / "model.gguf"
+    gguf.write_bytes(b"GGUF")
+    code = e2e.main(["--out", str(tmp_path / "run"), "--only", only, "--base-url", "http://127.0.0.1:8181/v1",
+                     "--model", "nanbeige42", "--gguf", str(gguf), "--report", str(tmp_path / "report.md"),
+                     "--machine-label", "Colab T4"])
+    return code, seen, gguf
+
+
+def test_a_running_model_server_serves_tiers_k_f_and_a(tmp_path, monkeypatch):
+    """Another notebook's llama-server (Joy's evaluation notebook) answers Tiers K, F and A; the run records
+    the server's build, context and sampling."""
+    import json
+    code, seen, gguf = _external(tmp_path, monkeypatch, PROPS)
+    assert code == 0 and seen["props_url"] == "http://127.0.0.1:8181/v1"
+    for tier in "KFA":
+        assert seen[tier][0][:2] == ("http://127.0.0.1:8181/v1", "nanbeige42")
+    assert seen["K"][0][5] == {"temperature": 0.6, "top_k": 20, "top_p": 0.95, "min_p": 0.05}   # the server's own
+    assert "E" not in seen
+    s = json.loads((tmp_path / "run" / "summary.json").read_text(encoding="utf-8"))
+    assert s["model"] == "nanbeige42" and s["server"]["base_url"] == "http://127.0.0.1:8181/v1"
+    assert s["server"]["llama_cpp_build"] == "b12020" and s["server"]["context"] == 65536
+    assert s["server"]["model_file"] == str(gguf) and s["machine_label"] == "Colab T4"
+    text = (tmp_path / "report.md").read_text(encoding="utf-8")
+    assert "nanbeige42" in text and "Colab T4" in text and "smoke model" not in text and "RTX 5090" not in text
+
+
+def test_a_running_model_server_of_another_llama_cpp_build_is_refused(tmp_path, monkeypatch):
+    props = {**PROPS, "build_info": "b10333-08659901c"}
+    code, seen, _ = _external(tmp_path, monkeypatch, props)
+    assert code == 2 and not any(t in seen for t in "KFAE")
+
+
+def test_tier_e_does_not_run_beside_a_running_model_server(tmp_path, monkeypatch):
+    """Tier E measures with no other llama.cpp process running (it would wait up to an hour for the server to
+    stop), so with --base-url it runs alone, after the server has stopped; asked together, nothing runs."""
+    import pytest
+    with pytest.raises(SystemExit):
+        _external(tmp_path, monkeypatch, PROPS, only="K,F,A,E")
+    assert not (tmp_path / "run").exists()
+
+
+def test_a_running_model_server_needs_its_model_name():
+    import pytest
+    with pytest.raises(SystemExit):
+        e2e.main(["--out", "/nonexistent", "--base-url", "http://127.0.0.1:8181/v1"])
+
+
+def test_tier_e_alone_after_the_running_server_stopped_keeps_the_servers_record(tmp_path, monkeypatch):
+    """On a 16 GB T4 the notebook stops its model server before Tier E: `--only E` with --base-url asks the
+    stopped server nothing and keeps the server's record from the earlier run of Tiers K, F and A."""
+    import json
+    import pytest
+    from grcbench.tier_a import smoke
+    code, seen, gguf = _external(tmp_path, monkeypatch, PROPS)
+    assert code == 0
+    monkeypatch.setattr(e2e, "server_props", lambda url: pytest.fail("the server is stopped: no /props"))
+    monkeypatch.setattr(smoke, "native_context", lambda model: pytest.fail("no smoke model with --base-url"))
+    seen.clear()
+    assert e2e.main(["--out", str(tmp_path / "run"), "--only", "E", "--base-url", "http://127.0.0.1:8181/v1",
+                     "--model", "nanbeige42", "--gguf", str(gguf), "--report", str(tmp_path / "report.md"),
+                     "--machine-label", "Colab T4"]) == 0
+    assert list(seen) == ["E"] and seen["E"][0][0] == gguf
+    s = json.loads((tmp_path / "run" / "summary.json").read_text(encoding="utf-8"))
+    assert set(s["tiers"]) == {"K", "F", "A", "E"} and s["server"]["llama_cpp_build"] == "b12020"
+    assert s["server"]["context"] == 65536
+
+
+def test_a_run_with_a_rubric_file_says_its_tier_k_answers_are_scored_with_it():
+    k = {**FIXTURE_SUMMARY["tiers"]["K"], "n_judge": 2, "n_no_reference": 0,
+         "rubrics": {"file": "colab/dev_placeholder.jsonl", "n_placeholder": 107, "n_records": 107}}
+    text = e2e.render_report({**FIXTURE_SUMMARY, "tiers": {**FIXTURE_SUMMARY["tiers"], "K": k}})
+    assert "colab/dev_placeholder.jsonl" in text and "107 of 107 placeholder" in text
+    assert "not scored" not in text

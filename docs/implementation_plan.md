@@ -26,7 +26,7 @@ Today is Wed 14 Oct (W2). The gates are G1 Fri 16 Oct, G2 Fri 30 Oct (v0.9 end-t
    - Never modified: `data/`, the proposals, the documents and `~/grc-agent` (per Qoherent: "no expected changes to the grc-agent repository").
    - Run directories live on the WSL filesystem (`~/grc-bench-work`), not `/mnt/c`.
 4. **Smoke model.** Run inside WSL:
-   - llama.cpp **b10333** (the build GRC-Agent already pins) plus `Qwen3-4B-Q4_K_M.gguf` (2.50 GB, SHA-256 `7485fe6f…34fdf5`).
+   - llama.cpp **b12020** (llama.cpp's own CPU and CUDA 12.8 downloads; the team's evaluation notebook runs the same build) plus `Qwen3-4B-Q4_K_M.gguf` (2.50 GB, SHA-256 `7485fe6f…34fdf5`).
    - Settings: CPU, 16K context, `q8_0` KV cache with `-fa on`, `--jinja`, a pinned `--reasoning-format`, `-np 1`.
    - It tests plumbing only and is never a result.
    - The Windows Ollama can't be reached from WSL, and its `gemma3:12b` has no tool support.
@@ -110,7 +110,7 @@ project/grc-bench/
 - **Every item record carries** `canary`, `license` (GNU Radio examples are GPL-3.0), `source`, `cluster_id`, `provenance` and `review`.
 - **The canary string** stays out of prompts.
 - **Frozen items** are never rewritten in place: a change makes a new version and keeps the original.
-- **Large downloads** go to `~/grc-bench-cache`: llama.cpp b10333, Qwen3-4B, and EmbeddingGemma at the SHA pinned in `embed_runtime.py`.
+- **Large downloads** go to `~/grc-bench-cache`: llama.cpp b12020, Qwen3-4B, and EmbeddingGemma at the SHA pinned in `embed_runtime.py` with llama.cpp b10333, the build `embed_runtime.py` pins.
 
 ### Isolation (applies to every harness and agent run)
 - **One OS process per run**, inside `bwrap`:

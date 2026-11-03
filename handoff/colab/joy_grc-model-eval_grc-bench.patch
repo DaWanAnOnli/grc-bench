@@ -1,0 +1,420 @@
+diff --git a/README.md b/README.md
+index 3224d21..d8ba2a0 100644
+--- a/README.md
++++ b/README.md
+@@ -22,6 +22,7 @@ user would run it.
+ |---|---|
+ | **Evaluate a model** (most teammates): one notebook in your own Colab, free T4 GPU, nothing to set up but a Google account | [`colab/README.md`](colab/README.md) |
+ | **Provide question data** (Patricio) | [Data](#data-lives-in-google-drive-not-github) below |
++| **Run GRC-Bench's tiers** (K, F, A, E) with a model: `EVAL = grc-bench` in the notebook | [`colab/README.md` → GRC-Bench](colab/README.md#grc-bench-eval--grc-bench) |
+ | **Change how answers are scored**, or add agent tasks (Joel) | [Contributing](#contributing-code) below |
+ | Run the model on your Mac with llama.cpp, e.g. for GRC-Agent offline | [`docs/local-llamacpp.md`](docs/local-llamacpp.md) |
+ | See the plan and its progress | [`colab/COLAB_PLAN.md`](colab/COLAB_PLAN.md) |
+diff --git a/colab/README.md b/colab/README.md
+index b7d230d..55d2917 100644
+--- a/colab/README.md
++++ b/colab/README.md
+@@ -94,6 +94,8 @@ The top-right corner then shows **Connect** (or *T4* with RAM/Disk bars once con
+ | `THINKING` | `off` | `on` lets the model reason before answering: slower, and needs `MAX_TOKENS` of 4096 or more |
+ | `MAX_TOKENS` | 1536 | The longest answer allowed. Answers that hit it are marked `length` (cut off) |
+ | `HF_REPO`, `REVISION` | blank | Blank = the pinned base model. For a fine-tuned version: its **merged** HF repo and a revision |
++| `EVAL` | `trial` | `trial`: the questions above, scored by similarity (steps 6–7). `grc-bench`: GRC-Bench's tiers with the same model (see [GRC-Bench](#grc-bench-eval--grc-bench)) |
++| `GRCBENCH_PACKAGE`, `GRCBENCH_TIERS`, `GRCBENCH_LIMIT_K`/`_F`/`_A` | see [GRC-Bench](#grc-bench-eval--grc-bench) | Only with `EVAL = grc-bench` |
+ | `DRIVE_FOLDER` | `grc-eval` | Folder in your Drive for the model file and results |
+ | `REPO_URL`, `BRANCH` | this repo, `main` | Where the code comes from |
+ 
+@@ -114,6 +116,7 @@ lines and **What to do**.
+ | 5. Start the model | Starts llama-server on `127.0.0.1` at a free port (8181 unless taken; Colab uses 8080) and runs the smoke test | 1–2 min | 1–2 min | `all checks passed` |
+ | 6. Answer | Asks each question and saves each answer to Drive at once | ~30 s per question | same | `ESTIMATE`, one line per answer, `DONE` |
+ | 7. Score and report | Stops the model, scores, writes `run_info.json`, shows and downloads the report | 2–4 min | 2–4 min | the score summary and the report |
++| 6, GRC-Bench | Only with `EVAL = grc-bench`, instead of steps 6–7: GRC-Bench's setup, then its tiers with the server of step 5 | see [GRC-Bench](#grc-bench-eval--grc-bench) | same | `GRC-Bench steps all ok` |
+ 
+ Times are estimates until the first real runs; step 6's ESTIMATE line adjusts once answers have been timed.
+ 
+@@ -148,6 +151,46 @@ Runs with different settings (thinking, quantization, max tokens, another model,
+ folder automatically; a question file adds its name to the end, e.g. `...-b12020-questions_v2`.
+ To share a run, copy its folder into the team's shared Drive folder.
+ 
++## GRC-Bench (`EVAL = grc-bench`)
++
++GRC-Bench is the team's benchmark (Joel). With `EVAL = grc-bench`, steps 1–5 run as usual (the same llama.cpp build,
++model file and server), and then **step 6/7, GRC-Bench** runs GRC-Bench's own steps with that server, instead of
++steps 6–7:
++
++1. GRC-Bench's package (`grc-bench-colab.zip`, from Joel) from your Drive: GRC-Bench's code, its **dev-split** items
++   and placeholder rubrics. It never holds a test item.
++2. Ubuntu 26.04's GNU Radio 3.10.12.0-6, the version GRC-Bench pins, in a container on the Colab machine (Linux
++   namespaces, no Docker), and GRC-Agent at its pinned commit.
++3. GRC-Bench's sandbox, checked before any model-written flowgraph or command runs.
++4. The tiers on a few dev items: **K** (questions), **F** (one flowgraph edit) and **A** (agent tasks), answered by
++   the server of step 5; then **E** (speed: `llama-bench` on this model file), after the server stops: Tier E
++   measures with no other model running, and a T4 holds one model at a time.
++
++**Once:** put `grc-bench-colab.zip` in your Drive, by default as `My Drive/grc-bench-colab/grc-bench-colab.zip`. For
++a folder Joel shares with you, add a shortcut to it in My Drive and set `GRCBENCH_PACKAGE` to the zip's path.
++
++| Setting | Default | What it does |
++|---|---|---|
++| `EVAL` | `trial` | `grc-bench` runs GRC-Bench instead of steps 6–7 |
++| `GRCBENCH_PACKAGE` | `grc-bench-colab/grc-bench-colab.zip` | The package, as a path inside My Drive |
++| `GRCBENCH_TIERS` | `K,F,A,E` | Which tiers |
++| `GRCBENCH_LIMIT_K`, `GRCBENCH_LIMIT_F`, `GRCBENCH_LIMIT_A` | 5, 2, 1 | How many dev items: Tier-K questions, Tier-F tasks, Tier-A tasks |
++
++`THINKING` and `MAX_TOKENS` don't apply: GRC-Bench sends its own answer settings (thinking on, answers of up to 16,384
++tokens) and keeps the model's sampling from `serve/models.json`. `QUANT`, `HF_REPO` and `REVISION` choose the model
++file as usual.
++
++**Time:** GRC-Bench's setup (container, GNU Radio, GRC-Agent, its checks) takes about 15 minutes. The tiers take
++longer than the trial questions, because the model may think for up to 16,384 tokens per answer: plan on 1–2 hours
++with the defaults on a T4, or lower the limits for a quicker check.
++
++**Results:** the run folder is `runs/<model>-<revision>-<quant>-grc-bench-b12020/`. It holds `run_info.json` and
++`llama-server.log`, and GRC-Bench's results in `grc-bench/<time>_<GPU>/`: `feasibility.json` (every GRC-Bench step,
++ok or failed, with its time), `e2e_colab.md` (the tiers' report), the logs and a results zip. Send the zip to Joel.
++
++These runs show that the whole pipeline works with the team's model. A few dev items scored with placeholder rubrics
++say nothing about how good the model is.
++
+ ## Data: question files in Google Drive
+ 
+ **Data is never put on GitHub.** It's too big for git, and evaluation questions that get published can end up in
+diff --git a/colab/eval.ipynb b/colab/eval.ipynb
+index c76e492..99b6d87 100644
+--- a/colab/eval.ipynb
++++ b/colab/eval.ipynb
+@@ -33,6 +33,11 @@
+     "6. asks the questions you choose (by default the 100 trial questions) and saves every answer to Drive;\n",
+     "7. scores the answers and shows the HTML report.\n",
+     "\n",
++    "**Two evaluations** (`EVAL` in the Settings): `trial` (the default) runs steps 6–7 as above. `grc-bench` runs\n",
++    "GRC-Bench's tiers (K, F, A, E) on its dev split with the same model server instead (step 6, GRC-Bench): GRC-Bench's\n",
++    "package from your Drive, the pinned GNU Radio in an Ubuntu 26.04 container, GRC-Agent and GRC-Bench's sandbox, then\n",
++    "the tiers. See [`colab/README.md` → GRC-Bench](https://github.com/No1Joycia/grc-model-eval/blob/main/colab/README.md#grc-bench-eval--grc-bench).\n",
++    "\n",
+     "Instructions: [`colab/README.md`](https://github.com/No1Joycia/grc-model-eval/blob/main/colab/README.md).\n",
+     "\n",
+     "**How to run**\n",
+@@ -57,11 +62,13 @@
+    "outputs": [],
+    "source": [
+     "#@title Settings: change these, then Runtime > Run all\n",
+-    "#@markdown **Which questions.** `QUESTIONS` blank = the 100 trial questions in the repo (#1-33 basic, #34-67 intermediate, #68-100 advanced). Or a `.jsonl` question file in your Google Drive, as a path inside My Drive, e.g. `grc-eval-data/questions_v2.jsonl` (for a folder shared with you, first add a shortcut to My Drive; see colab/README.md, *Data*).\n",
++    "#@markdown **What to evaluate.** `trial`: the questions below, scored by similarity (steps 6-7). `grc-bench`: GRC-Bench's tiers on its dev split with the same model (needs GRC-Bench's package in your Drive; see colab/README.md, *GRC-Bench*).\n",
++    "EVAL = \"trial\"  #@param [\"trial\", \"grc-bench\"]\n",
++    "#@markdown **Which questions** (`EVAL = trial`). `QUESTIONS` blank = the 100 trial questions in the repo (#1-33 basic, #34-67 intermediate, #68-100 advanced). Or a `.jsonl` question file in your Google Drive, as a path inside My Drive, e.g. `grc-eval-data/questions_v2.jsonl` (for a folder shared with you, first add a shortcut to My Drive; see colab/README.md, *Data*).\n",
+     "QUESTIONS = \"\"  #@param {type:\"string\"}\n",
+     "START = 1  #@param {type:\"integer\"}\n",
+     "END = 100  #@param {type:\"integer\"}\n",
+-    "#@markdown **Model and answer settings**\n",
++    "#@markdown **Model and answer settings** (`THINKING` and `MAX_TOKENS`: `EVAL = trial` only; GRC-Bench uses its own)\n",
+     "MODEL = \"nanbeige42\"  #@param [\"nanbeige42\"]\n",
+     "QUANT = \"q8_0\"  #@param [\"q8_0\", \"q4_k_m\"]\n",
+     "THINKING = \"off\"  #@param [\"off\", \"on\"]\n",
+@@ -69,6 +76,12 @@
+     "#@markdown **Model source.** Leave both blank for the pinned base model. For a fine-tuned version, give its *merged* Hugging Face repo and revision (and add an `HF_TOKEN` secret if that repo is private).\n",
+     "HF_REPO = \"\"  #@param {type:\"string\"}\n",
+     "REVISION = \"\"  #@param {type:\"string\"}\n",
++    "#@markdown **GRC-Bench** (`EVAL = grc-bench`): its package (a path inside My Drive), the tiers, and how many dev items: Tier-K questions, Tier-F tasks, Tier-A tasks.\n",
++    "GRCBENCH_PACKAGE = \"grc-bench-colab/grc-bench-colab.zip\"  #@param {type:\"string\"}\n",
++    "GRCBENCH_TIERS = \"K,F,A,E\"  #@param {type:\"string\"}\n",
++    "GRCBENCH_LIMIT_K = 5  #@param {type:\"integer\"}\n",
++    "GRCBENCH_LIMIT_F = 2  #@param {type:\"integer\"}\n",
++    "GRCBENCH_LIMIT_A = 1  #@param {type:\"integer\"}\n",
+     "#@markdown **Where things go**\n",
+     "DRIVE_FOLDER = \"grc-eval\"  #@param {type:\"string\"}\n",
+     "REPO_URL = \"https://github.com/No1Joycia/grc-model-eval.git\"  #@param {type:\"string\"}\n",
+@@ -78,11 +91,15 @@
+     "    raise ValueError(\"START and END must satisfy 1 <= START <= END\")\n",
+     "if HF_REPO and not REVISION:\n",
+     "    raise ValueError(\"With HF_REPO, also give REVISION (a commit hash or branch name), so the run is reproducible\")\n",
+-    "print(f\"Settings: questions #{START}-#{END} of {QUESTIONS or 'the trial set in the repo'} | model {MODEL} ({QUANT}) | \"\n",
+-    "      f\"thinking {THINKING} | max_tokens {MAX_TOKENS}\")\n",
++    "if EVAL == \"grc-bench\":\n",
++    "    print(f\"Settings: EVAL grc-bench | tiers {GRCBENCH_TIERS} ({GRCBENCH_LIMIT_K} K questions, {GRCBENCH_LIMIT_F} F tasks, \"\n",
++    "          f\"{GRCBENCH_LIMIT_A} A tasks) | package MyDrive/{GRCBENCH_PACKAGE} | model {MODEL} ({QUANT})\")\n",
++    "else:\n",
++    "    print(f\"Settings: questions #{START}-#{END} of {QUESTIONS or 'the trial set in the repo'} | model {MODEL} ({QUANT}) | \"\n",
++    "          f\"thinking {THINKING} | max_tokens {MAX_TOKENS}\")\n",
+     "print(f\"          source: {HF_REPO + ' @ ' + REVISION if HF_REPO else 'pinned base model (serve/models.json)'}\")\n",
+     "print(f\"          results: Google Drive > MyDrive/{DRIVE_FOLDER}/runs/\")\n",
+-    "if THINKING == \"on\" and MAX_TOKENS < 4096:\n",
++    "if EVAL == \"trial\" and THINKING == \"on\" and MAX_TOKENS < 4096:\n",
+     "    print(\"NOTE: with thinking on, the model's reasoning also counts against MAX_TOKENS. Use 4096 or more, \"\n",
+     "          \"or many answers will be cut off (finish_reason=length).\")"
+    ]
+@@ -241,11 +258,20 @@
+     "QUESTIONS_SHA = subprocess.run([\"sha256sum\", QUESTIONS_FILE], capture_output=True, text=True).stdout.split()[0]\n",
+     "say(f\"questions: {QUESTIONS_FILE} ({len(rows)} questions, sha256 {QUESTIONS_SHA[:12]}...)\")\n",
+     "label = MODEL if not HF_REPO else HF_REPO.split(\"/\")[-1]\n",
+-    "RUN_NAME = f\"{label}-{SRC_REV[:7]}-{QUANT}-think_{THINKING}-{LLAMA_BUILD}\"\n",
+-    "if MAX_TOKENS != 1536:\n",
+-    "    RUN_NAME += f\"-mt{MAX_TOKENS}\"\n",
+-    "if QUESTIONS:                                       # another question set gets its own run folder\n",
+-    "    RUN_NAME += \"-\" + os.path.splitext(os.path.basename(QUESTIONS))[0]\n",
++    "if EVAL == \"grc-bench\":                             # GRC-Bench's own items and answer settings\n",
++    "    RUN_NAME = f\"{label}-{SRC_REV[:7]}-{QUANT}-grc-bench-{LLAMA_BUILD}\"\n",
++    "    GRCBENCH_ZIP = f\"/content/drive/MyDrive/{GRCBENCH_PACKAGE.strip('/')}\"\n",
++    "    if not os.path.exists(GRCBENCH_ZIP):\n",
++    "        raise StopHere(f\"\\n\\nSTEP 2/7 FAILED: GRC-Bench's package not found: {GRCBENCH_ZIP}\\n\"\n",
++    "                       \"What to do: put grc-bench-colab.zip (from Joel) in your Drive and set GRCBENCH_PACKAGE to its \"\n",
++    "                       \"path inside My Drive; for a folder shared with you, add a shortcut to My Drive first \"\n",
++    "                       \"(colab/README.md, GRC-Bench).\")\n",
++    "else:\n",
++    "    RUN_NAME = f\"{label}-{SRC_REV[:7]}-{QUANT}-think_{THINKING}-{LLAMA_BUILD}\"\n",
++    "    if MAX_TOKENS != 1536:\n",
++    "        RUN_NAME += f\"-mt{MAX_TOKENS}\"\n",
++    "    if QUESTIONS:                                   # another question set gets its own run folder\n",
++    "        RUN_NAME += \"-\" + os.path.splitext(os.path.basename(QUESTIONS))[0]\n",
+     "RUN_DIR = f\"{DRIVE}/runs/{RUN_NAME}\"\n",
+     "MODEL_KEY = f\"{SRC_REPO.replace('/', '__')}-{SRC_REV[:7]}-{LLAMA_BUILD}\"\n",
+     "DRIVE_MODEL_DIR = f\"{DRIVE}/models/{MODEL_KEY}\"      # kept between sessions\n",
+@@ -438,7 +464,85 @@
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+-    "## Step 6/7: Answer the questions\n",
++    "## Step 6/7, GRC-Bench (`EVAL = grc-bench`): GRC-Bench's tiers with this model\n",
++    "\n",
++    "Runs **GRC-Bench's own steps** (`colab/grcbench_colab_steps.py` from its package in your Drive) with the model server\n",
++    "of step 5: Ubuntu 26.04's pinned GNU Radio in a container, GRC-Agent at its pinned commit, GRC-Bench's sandbox and\n",
++    "its checks, then the tiers on a few **dev-split** items (never the test split):\n",
++    "\n",
++    "- **Tier K** (questions), **Tier F** (one flowgraph edit) and **Tier A** (agent tasks) are answered by the server of\n",
++    "  step 5, with GRC-Bench's answer settings (thinking on, 16,384-token answers, the model's own sampling).\n",
++    "  Tier-K answers are scored with placeholder rubrics, which test the scoring route, not the model.\n",
++    "- **Tier E** (speed) measures this model file with `llama-bench`, with no other model running: the server of\n",
++    "  step 5 is stopped first (a T4 also holds one model at a time).\n",
++    "\n",
++    "Results: `<run folder>/grc-bench/<time>_<GPU>/` (`feasibility.json`, `e2e_colab.md`, a results zip), plus\n",
++    "`run_info.json` in the run folder. About 20–30 minutes plus the tiers. GRC-Bench's own lines start with\n",
++    "`[time | step N]`; its step numbers are its own."
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": null,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "#@title Step 6/7, GRC-Bench (EVAL = grc-bench): GRC-Bench's tiers with this model\n",
++    "if \"SERVER\" not in globals():\n",
++    "    raise RuntimeError(\"Step 5 hasn't run in this session. Colab forgets everything when the runtime restarts \"\n",
++    "                       \"(for example after changing the runtime type). Use Runtime > Run all.\")\n",
++    "if EVAL != \"grc-bench\":\n",
++    "    print(\"Step 6/7 (GRC-Bench) skipped: EVAL is trial\")\n",
++    "else:\n",
++    "    import runpy, zipfile\n",
++    "    h.step(6, \"GRC-Bench's tiers with this model\", f\"\"\"\n",
++    "Runs GRC-Bench's steps from {GRCBENCH_PACKAGE}: Ubuntu 26.04's GNU Radio, GRC-Agent, the sandbox,\n",
++    "then tiers {GRCBENCH_TIERS} on its dev split, answered by the model server of step 5 ({BASE_URL}).\n",
++    "Tier E measures {os.path.basename(GGUF)} after the server stops. Results: {RUN_DIR}/grc-bench/\"\"\")\n",
++    "    steps_file = \"/content/grcbench_colab_steps.py\"\n",
++    "    with zipfile.ZipFile(GRCBENCH_ZIP) as z, open(steps_file, \"wb\") as out:\n",
++    "        out.write(z.read(\"grc-bench-colab/colab/grcbench_colab_steps.py\"))\n",
++    "    folder, name = os.path.split(GRCBENCH_PACKAGE.strip(\"/\"))\n",
++    "    GRCBENCH = runpy.run_path(steps_file, init_globals={\n",
++    "        \"DRIVE_FOLDER\": folder, \"PACKAGE\": name, \"GR_SETUP\": \"ubuntu-26.04\", \"TIERS\": GRCBENCH_TIERS,\n",
++    "        \"LIMIT_K\": GRCBENCH_LIMIT_K, \"LIMIT_F\": GRCBENCH_LIMIT_F, \"LIMIT_A\": GRCBENCH_LIMIT_A,\n",
++    "        \"JUDGE_IN_COLAB\": False, \"MODEL_STEPS\": True,\n",
++    "        \"SERVER_URL\": BASE_URL, \"SERVER_MODEL\": MODEL, \"MODEL_FILE\": GGUF, \"RESULTS_DIR\": f\"{RUN_DIR}/grc-bench\",\n",
++    "        \"STOP_SERVER\": lambda: h.stop_server(SERVER)})\n",
++    "    h.stop_server(SERVER)                              # already stopped before Tier E, unless E was not run\n",
++    "    shutil.copy(SERVER_LOG, f\"{RUN_DIR}/llama-server.log\")\n",
++    "    result = GRCBENCH[\"RESULT\"]\n",
++    "    took = time.time() - h._step[\"started\"]\n",
++    "    h.TIMINGS[f\"6. {h._step['title']}\"] = round(took)\n",
++    "    h.write_json(f\"{RUN_DIR}/run_info.json\", {\n",
++    "        \"run\": RUN_NAME, \"eval\": \"grc-bench\",\n",
++    "        \"finished\": time.strftime(\"%Y-%m-%d %H:%M:%S UTC\", time.gmtime()),\n",
++    "        \"grc_bench\": {\"package\": GRCBENCH_PACKAGE, \"version\": result[\"steps\"].get(\"2_package\", {}).get(\"version\"),\n",
++    "                      \"tiers\": GRCBENCH_TIERS, \"limits\": {\"K\": GRCBENCH_LIMIT_K, \"F\": GRCBENCH_LIMIT_F,\n",
++    "                                                          \"A\": GRCBENCH_LIMIT_A},\n",
++    "                      \"results\": str(GRCBENCH[\"DRIVE_OUT\"] or GRCBENCH[\"OUT\"]),\n",
++    "                      \"steps\": {k: v.get(\"status\") for k, v in result[\"steps\"].items()}},\n",
++    "        \"model\": {\"name\": MODEL, \"hf_repo\": SRC_REPO, \"revision\": SRC_REV, \"quant\": QUANT,\n",
++    "                  \"gguf\": os.path.basename(GGUF), \"sha256\": GGUF_SHA, \"sha256_check\": GGUF_CHECK},\n",
++    "        \"llama_cpp\": LLAMA_VERSION,\n",
++    "        \"gpu\": {\"device\": DEVICES[0], **GPU},\n",
++    "        \"system\": h.system_info(),\n",
++    "        \"code_version\": CODE_VERSION,\n",
++    "        \"step_seconds\": h.TIMINGS,\n",
++    "    })\n",
++    "    failed = [k for k, v in result[\"steps\"].items() if v.get(\"status\") == \"failed\"]\n",
++    "    h.log(f\"DONE in {h.fmt(took)}: GRC-Bench steps \"\n",
++    "          + (\"all ok\" if not failed else \"failed: \" + \", \".join(failed) + \" (see feasibility.json)\"))\n",
++    "    print(f\"\\nEverything for this run is in Google Drive: {RUN_DIR}\")\n",
++    "    print(f\"GRC-Bench's results: {GRCBENCH['DRIVE_OUT'] or GRCBENCH['OUT']}\")\n",
++    "    print(f\"\\nTotal time: {h.fmt(time.time() - NOTEBOOK_STARTED)}.\")"
++   ]
++  },
++  {
++   "cell_type": "markdown",
++   "metadata": {},
++   "source": [
++    "## Step 6/7: Answer the questions (`EVAL = trial`)\n",
+     "\n",
+     "`trial_eval/run_trial.py` sends each question in your range to the local model, with the team's fixed system prompt,\n",
+     "temperature 0 and your thinking setting, and **saves each answer to Drive as soon as it arrives**.\n",
+@@ -458,26 +562,29 @@
+    "outputs": [],
+    "source": [
+     "#@title Step 6/7: Answer the questions (saved to Drive one by one)\n",
+-    "if \"SERVER\" not in globals():\n",
+-    "    raise RuntimeError(\"Step 5 hasn't run in this session. Colab forgets everything when the runtime restarts \"\n",
+-    "                       \"(for example after changing the runtime type). Use Runtime > Run all.\")\n",
+-    "ANSWERS = f\"{RUN_DIR}/answers.jsonl\"\n",
+-    "h.step(6, f\"Answer questions #{START}-#{END}\", f\"\"\"\n",
+-    "Asks the local model each question (trial_eval/run_trial.py) and saves every answer at once to\n",
+-    "{ANSWERS}\"\"\")\n",
+-    "h.run([sys.executable, \"trial_eval/run_trial.py\", \"--base-url\", BASE_URL,\n",
+-    "       \"--model\", MODEL, \"--thinking\", THINKING, \"--max-tokens\", str(MAX_TOKENS),\n",
+-    "       \"--start\", str(START), \"--end\", str(END), \"--questions\", QUESTIONS_FILE, \"--out\", ANSWERS],\n",
+-    "      on_fail=\"answers so far are saved. If the server stopped, rerun step 5, then this step\")\n",
+-    "n_answers = sum(1 for line in open(ANSWERS) if line.strip())\n",
+-    "h.done(f\"{n_answers} answers in {ANSWERS}\")"
++    "if EVAL != \"trial\":\n",
++    "    print(f\"Step 6/7 skipped: EVAL is {EVAL} (GRC-Bench ran in the step above)\")\n",
++    "else:\n",
++    "    if \"SERVER\" not in globals():\n",
++    "        raise RuntimeError(\"Step 5 hasn't run in this session. Colab forgets everything when the runtime restarts \"\n",
++    "                           \"(for example after changing the runtime type). Use Runtime > Run all.\")\n",
++    "    ANSWERS = f\"{RUN_DIR}/answers.jsonl\"\n",
++    "    h.step(6, f\"Answer questions #{START}-#{END}\", f\"\"\"\n",
++    "    Asks the local model each question (trial_eval/run_trial.py) and saves every answer at once to\n",
++    "    {ANSWERS}\"\"\")\n",
++    "    h.run([sys.executable, \"trial_eval/run_trial.py\", \"--base-url\", BASE_URL,\n",
++    "           \"--model\", MODEL, \"--thinking\", THINKING, \"--max-tokens\", str(MAX_TOKENS),\n",
++    "           \"--start\", str(START), \"--end\", str(END), \"--questions\", QUESTIONS_FILE, \"--out\", ANSWERS],\n",
++    "          on_fail=\"answers so far are saved. If the server stopped, rerun step 5, then this step\")\n",
++    "    n_answers = sum(1 for line in open(ANSWERS) if line.strip())\n",
++    "    h.done(f\"{n_answers} answers in {ANSWERS}\")"
+    ]
+   },
+   {
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+-    "## Step 7/7: Score the answers and show the report\n",
++    "## Step 7/7: Score the answers and show the report (`EVAL = trial`)\n",
+     "\n",
+     "Stops the model (frees the GPU), then `trial_eval/score_trial.py` compares each answer in your range with the graded\n",
+     "reference answers. The first time in a session it downloads the bge-m3 embedding model (2.2 GB, about 1 min).\n",
+@@ -496,55 +603,58 @@
+    "outputs": [],
+    "source": [
+     "#@title Step 7/7: Score the answers and make the report\n",
+-    "if \"ANSWERS\" not in globals():\n",
+-    "    raise RuntimeError(\"Step 6 hasn't run in this session. Colab forgets everything when the runtime restarts \"\n",
+-    "                       \"(for example after changing the runtime type). Use Runtime > Run all.\")\n",
+-    "h.step(7, \"Score the answers and make the report\", \"\"\"\n",
+-    "Stops the model server, scores the answers (trial_eval/score_trial.py), writes run_info.json,\n",
+-    "then shows and downloads the HTML report.\"\"\")\n",
+-    "h.stop_server(SERVER)\n",
+-    "shutil.copy(SERVER_LOG, f\"{RUN_DIR}/llama-server.log\")\n",
+-    "for module, package in ((\"rouge_score\", \"rouge-score\"), (\"sentence_transformers\", \"sentence-transformers\")):\n",
+-    "    try:\n",
+-    "        importlib.import_module(module)\n",
+-    "    except ImportError:\n",
+-    "        h.log(f\"installing {package}...\")\n",
+-    "        h.run([sys.executable, \"-m\", \"pip\", \"install\", \"--quiet\", package])\n",
+-    "h.log(\"scoring (the first time in a session this downloads bge-m3, 2.2 GB)...\")\n",
+-    "_, lines = h.run([sys.executable, \"trial_eval/score_trial.py\", \"--answers\", ANSWERS, \"--questions\", QUESTIONS_FILE,\n",
+-    "                  \"--start\", str(START), \"--end\", str(END)],\n",
+-    "                 quiet=r\"^(Batches|Loading weights|Warning: You are sending unauthenticated)\")\n",
+-    "outputs = {l.split(\" -> \")[0].strip(): l.split(\" -> \", 1)[1].strip() for l in lines if \" -> \" in l}\n",
+-    "REPORT, SUMMARY = outputs[\"HTML report\"], outputs[\"summary\"]\n",
+-    "summary = json.load(open(SUMMARY))\n",
+-    "h.TIMINGS[f\"7. {h._step['title']}\"] = round(time.time() - h._step[\"started\"])\n",
+-    "run_info = {\n",
+-    "    \"run\": RUN_NAME,\n",
+-    "    \"finished\": time.strftime(\"%Y-%m-%d %H:%M:%S UTC\", time.gmtime()),\n",
+-    "    \"questions\": {\"file\": QUESTIONS or \"trial_eval/trial_eval_100.jsonl (repo)\", \"sha256\": QUESTIONS_SHA,\n",
+-    "                  \"start\": START, \"end\": END, \"answers_in_file\": sum(1 for l in open(ANSWERS) if l.strip())},\n",
+-    "    \"model\": {\"name\": MODEL, \"hf_repo\": SRC_REPO, \"revision\": SRC_REV, \"quant\": QUANT,\n",
+-    "              \"gguf\": os.path.basename(GGUF), \"sha256\": GGUF_SHA, \"sha256_check\": GGUF_CHECK},\n",
+-    "    \"settings\": {\"thinking\": THINKING, \"max_tokens\": MAX_TOKENS, \"temperature\": 0},\n",
+-    "    \"llama_cpp\": LLAMA_VERSION,\n",
+-    "    \"gpu\": {\"device\": DEVICES[0], **GPU},\n",
+-    "    \"system\": h.system_info(),\n",
+-    "    \"code_version\": CODE_VERSION,\n",
+-    "    \"step_seconds\": h.TIMINGS,\n",
+-    "    \"scores_overall\": summary[\"overall\"],\n",
+-    "}\n",
+-    "h.write_json(f\"{RUN_DIR}/run_info.json\", run_info)\n",
+-    "o = summary[\"overall\"]\n",
+-    "h.done(f\"{o['n']} answers scored: sem_norm {o['sem_norm']}, sem_best {o['sem_best']}, \"\n",
+-    "       f\"rougeL {o['rougeL']}, cut off {o['truncated']}\")\n",
+-    "print(f\"\\nEverything for this run is in Google Drive: {RUN_DIR}\")\n",
+-    "for name in sorted(os.listdir(RUN_DIR)):\n",
+-    "    print(f\"    {name}\")\n",
+-    "print(f\"\\nTotal time: {h.fmt(time.time() - NOTEBOOK_STARTED)}. Report below (also downloaded).\")\n",
+-    "from IPython.display import HTML, display\n",
+-    "from google.colab import files\n",
+-    "display(HTML(open(REPORT).read()))\n",
+-    "files.download(REPORT)"
++    "if EVAL != \"trial\":\n",
++    "    print(f\"Step 7/7 skipped: EVAL is {EVAL} (GRC-Bench ran in the step above)\")\n",
++    "else:\n",
++    "    if \"ANSWERS\" not in globals():\n",
++    "        raise RuntimeError(\"Step 6 hasn't run in this session. Colab forgets everything when the runtime restarts \"\n",
++    "                           \"(for example after changing the runtime type). Use Runtime > Run all.\")\n",
++    "    h.step(7, \"Score the answers and make the report\", \"\"\"\n",
++    "    Stops the model server, scores the answers (trial_eval/score_trial.py), writes run_info.json,\n",
++    "    then shows and downloads the HTML report.\"\"\")\n",
++    "    h.stop_server(SERVER)\n",
++    "    shutil.copy(SERVER_LOG, f\"{RUN_DIR}/llama-server.log\")\n",
++    "    for module, package in ((\"rouge_score\", \"rouge-score\"), (\"sentence_transformers\", \"sentence-transformers\")):\n",
++    "        try:\n",
++    "            importlib.import_module(module)\n",
++    "        except ImportError:\n",
++    "            h.log(f\"installing {package}...\")\n",
++    "            h.run([sys.executable, \"-m\", \"pip\", \"install\", \"--quiet\", package])\n",
++    "    h.log(\"scoring (the first time in a session this downloads bge-m3, 2.2 GB)...\")\n",
++    "    _, lines = h.run([sys.executable, \"trial_eval/score_trial.py\", \"--answers\", ANSWERS, \"--questions\", QUESTIONS_FILE,\n",
++    "                      \"--start\", str(START), \"--end\", str(END)],\n",
++    "                     quiet=r\"^(Batches|Loading weights|Warning: You are sending unauthenticated)\")\n",
++    "    outputs = {l.split(\" -> \")[0].strip(): l.split(\" -> \", 1)[1].strip() for l in lines if \" -> \" in l}\n",
++    "    REPORT, SUMMARY = outputs[\"HTML report\"], outputs[\"summary\"]\n",
++    "    summary = json.load(open(SUMMARY))\n",
++    "    h.TIMINGS[f\"7. {h._step['title']}\"] = round(time.time() - h._step[\"started\"])\n",
++    "    run_info = {\n",
++    "        \"run\": RUN_NAME,\n",
++    "        \"finished\": time.strftime(\"%Y-%m-%d %H:%M:%S UTC\", time.gmtime()),\n",
++    "        \"questions\": {\"file\": QUESTIONS or \"trial_eval/trial_eval_100.jsonl (repo)\", \"sha256\": QUESTIONS_SHA,\n",
++    "                      \"start\": START, \"end\": END, \"answers_in_file\": sum(1 for l in open(ANSWERS) if l.strip())},\n",
++    "        \"model\": {\"name\": MODEL, \"hf_repo\": SRC_REPO, \"revision\": SRC_REV, \"quant\": QUANT,\n",
++    "                  \"gguf\": os.path.basename(GGUF), \"sha256\": GGUF_SHA, \"sha256_check\": GGUF_CHECK},\n",
++    "        \"settings\": {\"thinking\": THINKING, \"max_tokens\": MAX_TOKENS, \"temperature\": 0},\n",
++    "        \"llama_cpp\": LLAMA_VERSION,\n",
++    "        \"gpu\": {\"device\": DEVICES[0], **GPU},\n",
++    "        \"system\": h.system_info(),\n",
++    "        \"code_version\": CODE_VERSION,\n",
++    "        \"step_seconds\": h.TIMINGS,\n",
++    "        \"scores_overall\": summary[\"overall\"],\n",
++    "    }\n",
++    "    h.write_json(f\"{RUN_DIR}/run_info.json\", run_info)\n",
++    "    o = summary[\"overall\"]\n",
++    "    h.done(f\"{o['n']} answers scored: sem_norm {o['sem_norm']}, sem_best {o['sem_best']}, \"\n",
++    "           f\"rougeL {o['rougeL']}, cut off {o['truncated']}\")\n",
++    "    print(f\"\\nEverything for this run is in Google Drive: {RUN_DIR}\")\n",
++    "    for name in sorted(os.listdir(RUN_DIR)):\n",
++    "        print(f\"    {name}\")\n",
++    "    print(f\"\\nTotal time: {h.fmt(time.time() - NOTEBOOK_STARTED)}. Report below (also downloaded).\")\n",
++    "    from IPython.display import HTML, display\n",
++    "    from google.colab import files\n",
++    "    display(HTML(open(REPORT).read()))\n",
++    "    files.download(REPORT)"
+    ]
+   },
+   {
+@@ -558,7 +668,9 @@
+     "  Its `run_info.json` says exactly what was evaluated.\n",
+     "- **Another range** (e.g. #34–67): change `START` / `END` and *Run all*. Answers go into the same run folder; the report\n",
+     "  covers the range you set.\n",
+-    "- **Different settings** (thinking, quantization, max tokens, another model): they get their own run folder automatically."
++    "- **Different settings** (thinking, quantization, max tokens, another model): they get their own run folder automatically.\n",
++    "- **GRC-Bench** (`EVAL = grc-bench`): its results are in the run folder's `grc-bench/` folder; send Joel the results\n",
++    "  zip in it."
+    ]
+   }
+  ]

@@ -49,6 +49,6 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
 10. **Retake the baseline** of the read-only inputs
     (`./gb baseline take --root grc_agent_repo,gnuradio_user_cache`) if you accept the two changes
     `./gb baseline check` reports since 18 Oct (`~/grc-agent/.git/index`, `fftw_wisdom`).
-11. **The RTX 5090 in this machine.** llama.cpp b10333 now runs on it with CUDA (`./gb fetch --cuda`).
+11. **The RTX 5090 in this machine.** llama.cpp b12020 runs on it with CUDA (`./gb fetch --cuda`: llama.cpp's own CUDA 12.8 download).
     Some of the GPU-hours in the compute request (about 61 rented RTX 5090 hours in the normal plan) could run here
     instead. Your decision; it changes no benchmark setting.

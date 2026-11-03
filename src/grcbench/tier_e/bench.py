@@ -14,7 +14,7 @@ on one hardware setup (HARDWARE):
 
 The protocol (`./gb tier-e protocol`; the same for every model and setup, recorded in every result):
 
-  * llama-bench of the pinned llama.cpp build (~/grc-bench-cache/llama.cpp/b10333, run with
+  * llama-bench of the pinned llama.cpp build (~/grc-bench-cache/llama.cpp/<LLAMA_CPP_BUILD>, run with
     LD_LIBRARY_PATH set to that directory). `--llama-dir` selects another build (H1 needs the
     Nanbeige fork build); the build number, commit and backends llama-bench reports are recorded.
   * Per context C, two llama-bench processes, so that each process's peak RAM belongs to one context:

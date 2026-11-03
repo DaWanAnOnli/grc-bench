@@ -338,7 +338,7 @@ def _smoke(argv: list[str]) -> int:
     p.add_argument("--model", default=smoke.SERVER_ALIAS, help="model name sent to the server")
     p.add_argument("--threads", type=int, default=None, help="llama-server threads (default: min(16, CPUs - 4))")
     p.add_argument("--backend", choices=smoke.BACKENDS, default=None,
-                   help="llama.cpp build: cpu, cuda (b10333 built for the GPU) or auto (cuda when available)")
+                   help="llama.cpp build: cpu, cuda (the CUDA release, ./gb fetch --cuda) or auto (cuda when available)")
     p.add_argument("--reps", type=int, default=1, help="golden replays per fixture task")
     p.add_argument("--only", default=None, help="comma-separated fixture directory names")
     p.add_argument("--no-golden", action="store_true", help="skip the golden replays (step 1)")

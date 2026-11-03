@@ -1,6 +1,7 @@
 """Embedding similarity with EmbeddingGemma on llama.cpp b10333 (eval plan §6 audit, plan WS2).
 
-`LlamaEmbedServer` starts llama-server from ~/grc-bench-cache/llama.cpp/b10333 in embedding mode
+`LlamaEmbedServer` starts llama-server from ~/grc-bench-cache/llama.cpp/b10333 (EMBED_LLAMA_CPP_BUILD, the
+build GRC-Agent's embed_runtime.py pins; models are served by LLAMA_CPP_BUILD) in embedding mode
 (--embeddings, mean pooling: EmbeddingGemma is a mean-pooling model) on a free 127.0.0.1 port, with
 LD_LIBRARY_PATH set to the build directory, waits for /health, and always stops the server when the
 `with` block ends (and, on Linux, when the parent process dies). Context and both batch sizes are
@@ -39,14 +40,14 @@ import numpy as np
 
 from grcbench.common.fetch import FILES
 from grcbench.common.io import sha256_file, sha256_text
-from grcbench.common.paths import CACHE, LLAMA_CPP_BUILD, WORK
+from grcbench.common.paths import CACHE, EMBED_LLAMA_CPP_BUILD, WORK
 
 from .corpora import clean
 
 MODEL_PATH = CACHE / FILES["embeddinggemma"]["dest"]
 MODEL_SHA256 = FILES["embeddinggemma"]["sha256"]
 MODEL_TAG = Path(FILES["embeddinggemma"]["dest"]).stem          # embeddinggemma-300m-qat-Q8_0
-LLAMA_DIR = CACHE / "llama.cpp" / LLAMA_CPP_BUILD
+LLAMA_DIR = CACHE / "llama.cpp" / EMBED_LLAMA_CPP_BUILD
 CACHE_DIR = WORK / "embed_cache"
 LOG_PATH = WORK / "logs" / "embed_server.log"
 

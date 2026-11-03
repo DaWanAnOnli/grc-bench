@@ -2,12 +2,11 @@
  "cache_dir": "/home/lenovo/grc-bench-cache",
  "gnuradio_version": "3.10.12.0",
  "gpu": {
-  "llama_cpp_cuda_dir": "/home/lenovo/grc-bench-cache/llama.cpp/b10333-cuda",
+  "llama_cpp_cuda_dir": "/home/lenovo/grc-bench-cache/llama.cpp/b12020-cuda",
   "llama_cpp_cuda_version": [
-   "version: 10333 (08659901c)",
-   "built with GNU 13.4.0 for Linux x86_64"
+   "version: 0.8.0-dev (build 12020, commit 0ec4027a2)",
+   "built with GNU 13.3.0 for Linux x86_64"
   ],
-  "nvcc": "Build cuda_12.9.r12.9/compiler.36037853_0",
   "nvidia_smi": "NVIDIA GeForce RTX 5090, 32607 MiB, 610.88, 12.0"
  },
  "grc_agent_commit": "6c9812884bebaa51991b91984cd5f1746003cc3d",
@@ -23,17 +22,42 @@
  "pins": {
   "gnuradio": "3.10.12.0",
   "grc_agent_commit": "6c98128",
-  "llama_cpp_build": "b10333"
+  "llama_cpp_build": "b12020"
  },
  "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
  "python": "3.14.4",
  "third_party": {
+  "cuda_runtime": {
+   "path": "/home/lenovo/grc-bench-cache/llama.cpp/cudart-llama-b12020-bin-ubuntu-cuda-12.8-x64.tar.gz",
+   "sha256": "a17d59ed20873a82cbf2ff6c651d5bb432689d8569b4af0b6b1c7e35aeb001ba",
+   "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12020/cudart-llama-b12020-bin-ubuntu-cuda-12.8-x64.tar.gz"
+  },
   "embeddinggemma": {
    "path": "/home/lenovo/grc-bench-cache/models/embeddinggemma-300m-qat-Q8_0.gguf",
    "sha256": "6fa0c02a9c302be6f977521d399b4de3a46310a4f2621ee0063747881b673f67",
    "url": "https://huggingface.co/ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/resolve/main/embeddinggemma-300m-qat-Q8_0.gguf"
   },
   "llama_cpp": {
+   "path": "/home/lenovo/grc-bench-cache/llama.cpp/llama-b12020-bin-ubuntu-x64.tar.gz",
+   "sha256": "1b69032f9ab60dc6aa909689fda941fa1b9162f6ab46b863582d5649d96ac6be",
+   "unpacked": "/home/lenovo/grc-bench-cache/llama.cpp/b12020",
+   "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12020/llama-b12020-bin-ubuntu-x64.tar.gz",
+   "version_output": [
+    "version: 0.8.0-dev (build 12020, commit 0ec4027a2)",
+    "built with GNU 11.4.0 for Linux x86_64"
+   ]
+  },
+  "llama_cpp_cuda": {
+   "path": "/home/lenovo/grc-bench-cache/llama.cpp/llama-b12020-bin-ubuntu-cuda-12.8-x64.tar.gz",
+   "sha256": "0170c61c0ddf6208215a68b36f78f45b1641631317736c093f3faa40f05f8e85",
+   "unpacked": "/home/lenovo/grc-bench-cache/llama.cpp/b12020-cuda",
+   "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12020/llama-b12020-bin-ubuntu-cuda-12.8-x64.tar.gz",
+   "version_output": [
+    "version: 0.8.0-dev (build 12020, commit 0ec4027a2)",
+    "built with GNU 13.3.0 for Linux x86_64"
+   ]
+  },
+  "llama_cpp_embed": {
    "path": "/home/lenovo/grc-bench-cache/llama.cpp/llama-b10333-bin-ubuntu-x64.tar.gz",
    "sha256": "936ce04d98abe2a977e9dd2ff92659bb96947e136acee8f2bc3e21d8eaebbf23",
    "unpacked": "/home/lenovo/grc-bench-cache/llama.cpp/b10333",

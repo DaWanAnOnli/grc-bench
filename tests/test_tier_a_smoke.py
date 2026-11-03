@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from grcbench.common.paths import FIXTURES, WORK
+from grcbench.common.paths import FIXTURES, LLAMA_CPP_BUILD, WORK
 from grcbench.tier_a import models, runner, smoke, trace
 
 TASKS = FIXTURES / "tier_a" / "tasks"
@@ -66,7 +66,7 @@ def test_server_command_has_the_smoke_engine_settings(monkeypatch):
     monkeypatch.setenv("GRC_BENCH_LLAMA_BACKEND", "cpu")
     cmd = smoke.server_command(8123, ctx=40960, threads=6)
     joined = " ".join(cmd)
-    assert cmd[0].endswith("b10333/llama-server")
+    assert cmd[0].endswith(f"{LLAMA_CPP_BUILD}/llama-server")
     for flags in (["--host", "127.0.0.1"], ["--port", "8123"], ["-np", "1"], ["-c", "40960"], ["-ctk", "q8_0"],
                   ["-ctv", "q8_0"], ["-fa", "on"], ["--reasoning-format", "deepseek"], ["--sse-ping-interval", "30"],
                   ["-t", "6"], ["-tb", "6"], ["--temp", "0.6"], ["--top-k", "20"], ["--top-p", "0.95"], ["--min-p", "0"]):

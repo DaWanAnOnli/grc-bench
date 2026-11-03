@@ -97,3 +97,38 @@ def test_u2604_runs_a_sandbox_with_a_user_namespace_of_its_own_inside(tmp_path):
     res = subprocess.run([sys.executable, str(U2604), str(root), "--bind", "/usr", "--", cmd],
                          capture_output=True, text=True, timeout=60)
     assert res.returncode == 0 and res.stdout.split() == ["proc", "nested"], res.stdout + res.stderr
+
+
+def test_another_notebook_runs_the_same_steps_with_its_own_model_server(package):
+    """The team's evaluation notebook (grc-model-eval's colab/eval.ipynb) runs GRC-Bench's steps as one script,
+    made from this notebook's own code cells, with the model server it already runs: the tiers are served by
+    that server, Tier E measures its model file, and the results go to its run folder."""
+    with zipfile.ZipFile(package) as z:
+        script = z.read(f"{colab_package.NAME}/{colab_package.STEPS}").decode()
+        notebook = json.loads(z.read(f"{colab_package.NAME}/{colab_package.NOTEBOOK}"))
+    cells = ["".join(c["source"]) for c in notebook["cells"] if c["cell_type"] == "code"]
+    assert cells[0].startswith("#@title Settings")
+    for cell in cells[1:]:                           # every code cell but the Settings form, word for word
+        assert cell in script
+    compile(script, "grcbench_colab_steps.py", "exec")
+    for name in ("SERVER_URL", "SERVER_MODEL", "MODEL_FILE", "RESULTS_DIR", "--base-url", "--gguf", "fetch --cuda"):
+        assert name in script, name
+
+
+def test_the_notebook_downloads_the_pinned_cuda_build():
+    from grcbench.common.paths import LLAMA_CPP_BUILD
+    nb = json.loads((colab_package.COLAB_HANDOFF / "grcbench_colab_test.ipynb").read_text(encoding="utf-8"))
+    text = "\n".join("".join(c["source"]) for c in nb["cells"])
+    assert "fetch --cuda" in text and f'LLAMA_BUILD = "{LLAMA_CPP_BUILD}"' in text and "{LLAMA_BUILD}-cuda" in text
+    assert "b10333" not in text and "CUDA_ARCH" not in text and "REUSE_LLAMA_BUILD" not in text
+
+
+def test_with_another_notebooks_server_tier_e_runs_only_after_that_server_stops():
+    """Tier E measures with no other llama.cpp process running: with SERVER_URL, step 8 runs Tiers K, F and A,
+    calls STOP_SERVER, then Tier E alone; without STOP_SERVER it leaves Tier E out (and step 9 with it)."""
+    text = (colab_package.COLAB_HANDOFF / "grcbench_colab_steps.py").read_text(encoding="utf-8")
+    e2e_step = text[text.index("def e2e():"):text.index('step("8_e2e"')]
+    speeds_step = text[text.index("def speeds():"):text.index('step("9_speeds"')]
+    assert e2e_step.index("--only {','.join(served)}") < e2e_step.index("STOP_SERVER()") < e2e_step.index("--only E")
+    assert "if SERVER_URL and \"E\" in tiers and not STOP_SERVER:" in e2e_step
+    assert '"E" not in RESULT["steps"].get("8_e2e", {}).get("tiers_run", [])' in speeds_step

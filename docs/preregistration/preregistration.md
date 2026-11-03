@@ -278,7 +278,7 @@ Every configuration uses n = 5 samples per Tier-K and Tier-F item and, where it 
 runs per task, except the extra seeds (n = 3, k = 2), the comparison arms (n = 3), North-Mini-Code's
 BF16 B0 (k = 2) and the closed frontier model (n = 1, k = 2).
 
-**Engines and settings** (eval plan §7.1). All open models run in llama.cpp b10333 from GGUF files,
+**Engines and settings** (eval plan §7.1). All open models run in llama.cpp b12020 from GGUF files,
 BF16 references included. Each model uses its recommended sampling settings; greedy decoding is
 checked on the dev split only. Both target models keep an 8-bit KV cache in every Tier-A run; a check
 on 10 tasks compares it with a 16-bit cache. The 4K tool-output cap is checked against GRC-Agent's
@@ -411,7 +411,7 @@ rate on dev answers (round-2 finding F5) can be measured.
   reached 4,096 tokens on 48 of 200 answers while still reasoning; asked again with the larger limit, 9 finished between 4K and 16K
   tokens, 23 within 4K and 16 not at all.
 - **The grammar-constrained baseline.** The methodology proposals and the evaluation plan as approved at
-  gate G1 (Table 1) list a baseline with grammar-constrained tool calls on Tier A. In llama.cpp b10333 the server's default already constrains tool calls, so
+  gate G1 (Table 1) list a baseline with grammar-constrained tool calls on Tier A. In llama.cpp b12020 the server's default already constrains tool calls, so
   B0 is that setting and no separate baseline runs; GRC-Bench does not measure the grammar's
   contribution, or whether fine-tuning alone makes tool calls well formed. The cloud teacher upper
   bound, numbered 3 in the methodology proposals and in the evaluation plan as approved at gate G1,

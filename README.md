@@ -38,7 +38,7 @@ unless GRC-Agent is at commit `6c98128` and GNU Radio is 3.10.12. From Windows:
 | `tests/` | unit tests and their fixtures |
 | `docker/` | the intended Docker image (not built yet: Docker is not installed on this machine) |
 
-Large downloads (llama.cpp b10333, the smoke-test model, the embedding model) and per-run working
+Large downloads (llama.cpp b12020, the smoke-test model, the embedding model and its llama.cpp b10333) and per-run working
 directories live outside the repository, in `~/grc-bench-cache` and `~/grc-bench-work` inside WSL.
 
 | Package | Plan section | Command |

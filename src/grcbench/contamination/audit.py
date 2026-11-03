@@ -52,7 +52,7 @@ import numpy as np
 from scipy import sparse
 
 from grcbench.common.io import iter_jsonl, read_json, write_json, write_jsonl, write_text
-from grcbench.common.paths import DATASET, HANDOFF, LLAMA_CPP_BUILD, REPORTS
+from grcbench.common.paths import DATASET, EMBED_LLAMA_CPP_BUILD, HANDOFF, REPORTS
 
 from . import corpora, embed, ngram, tfidf
 from .corpora import Corpus, snippet
@@ -562,7 +562,7 @@ def summary_md() -> str:
           "(the weighting of `grcbench.splits.twins`). The threshold is that module's lexical threshold: in its "
           "reading of training pairs, the lowest band in which at least half of the pairs were twins.",
           f"- Embeddings: EmbeddingGemma 300M (QAT Q8_0 GGUF, SHA-256 `{embed.MODEL_SHA256[:16]}…`, the file "
-          f"GRC-Agent pins) on llama.cpp {LLAMA_CPP_BUILD} `llama-server --embeddings --pooling mean`, context "
+          f"GRC-Agent pins) on llama.cpp {EMBED_LLAMA_CPP_BUILD} `llama-server --embeddings --pooling mean`, context "
           f"{embed.CONTEXT}, prompt `{embed.PROMPT}` on both sides, vectors L2-normalised. Training questions and "
           f"task specs are embedded completely. For the long corpora only the best passage of each item's "
           f"{EMBED_TOPK} (default) nearest TF-IDF documents is embedded (≈15M words do not fit a CPU session), so there the "

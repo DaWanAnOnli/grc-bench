@@ -85,7 +85,7 @@ LOCAL_HOSTS = ("127.0.0.1", "localhost", "::1")
 PROPS_KEYS = ("model_path", "build_info", "chat_template_caps", "total_slots", "modalities")
 SMOKE_MODEL = CACHE / "models" / "Qwen3-4B-Q4_K_M.gguf"
 LLAMA_DIR = CACHE / "llama.cpp" / LLAMA_CPP_BUILD               # the official CPU build (./gb fetch)
-LLAMA_DIR_CUDA = CACHE / "llama.cpp" / f"{LLAMA_CPP_BUILD}-cuda"   # the same tag built with CUDA (sm_120)
+LLAMA_DIR_CUDA = CACHE / "llama.cpp" / f"{LLAMA_CPP_BUILD}-cuda"   # the same tag's CUDA 12.8 release (./gb fetch --cuda)
 WSL_GPU_LIBS = Path("/usr/lib/wsl/lib")                           # libcuda in WSL (the Windows driver)
 BACKENDS = ("auto", "cpu", "cuda")
 GPU_LAYERS = "999"                                                # every layer on the GPU
@@ -1141,7 +1141,7 @@ def _settings_section(s: dict[str, Any]) -> list[str]:
                      + " | no: GRC-Agent sends tool_choice \"auto\" |")
     lines.append("")
     if s.get("request_level_unconstrained_with_parsed_calls"):
-        lines += ["**Reading.** With `--jinja` (the default), llama.cpp b10333 compiles the request's tool "
+        lines += [f"**Reading.** With `--jinja` (the default), llama.cpp {LLAMA_CPP_BUILD} compiles the request's tool "
                   "schemas into a grammar and applies it once the model opens a tool call, so the server's "
                   "default IS the B0 setting (grammar-constrained tool calls)." if s.get("default_is_grammar_constrained")
                   else "**Reading.** See the table for the default server.",
@@ -1151,7 +1151,7 @@ def _settings_section(s: dict[str, Any]) -> list[str]:
                   "these two request fields: B0 is the server default (pre-registration §8, decision 1).", ""]
         return lines
     if s.get("default_is_grammar_constrained") and not s.get("flag_only_unconstrained_setting_with_parsed_calls"):
-        lines += ["**Reading.** With `--jinja` (the default), llama.cpp b10333 compiles the request's tool "
+        lines += [f"**Reading.** With `--jinja` (the default), llama.cpp {LLAMA_CPP_BUILD} compiles the request's tool "
                   "schemas into a grammar and applies it once the model opens a tool call, so the server's "
                   "default IS the B0 setting (grammar-constrained tool calls). No flag of this build gives "
                   "parsed but unconstrained calls: the one setting without the tool grammar "

@@ -11,6 +11,8 @@ run there as they do here:
   colab/dev_placeholder.jsonl     placeholder rubrics for the dev questions (tier_k/placeholder_rubrics.py)
   colab/grcbench_colab_test.ipynb, colab/README.md, colab/u2604.py         from handoff/colab/ (u2604.py runs
                                   ./gb inside an Ubuntu 26.04 root filesystem: the pinned GNU Radio)
+  colab/grcbench_colab_steps.py   the notebook's steps as one script, for a notebook with its own model server
+                                  (the team's evaluation notebook, grc-model-eval)
   tests/fixtures/ and SANDBOX_TESTS  GRC-Bench's synthetic fixture tasks and the sandbox tests the notebook's
                                   step 7b runs (the sandbox inside a Tier-A episode)
   VERSION.txt                     the GRC-Bench commit, the pins, the build time, the SHA-256 of every file
@@ -37,6 +39,7 @@ NAME = "grc-bench-colab"
 OUT_DIR = WORK / "colab"
 RUBRICS = "colab/dev_placeholder.jsonl"
 NOTEBOOK = "colab/grcbench_colab_test.ipynb"
+STEPS = "colab/grcbench_colab_steps.py"          # the notebook's steps as one script (make_notebook.py)
 COLAB_HANDOFF = HANDOFF / "colab"
 SANDBOX_TESTS = ("tests/test_sandbox_masks.py", "tests/test_common.py", "tests/test_tier_a_runner.py")
 FILES = ("gb", "pyproject.toml", "reports/block_catalog.json", "docs/preregistration/run_list.yaml", *SANDBOX_TESTS)
@@ -82,7 +85,7 @@ def _collect() -> dict[str, bytes]:
                 files[p.relative_to(REPO).as_posix()] = p.read_bytes()
     rows, _ = placeholder_rubrics.records(krun.load_split("dev"), release.validation_reference_answers())
     files[RUBRICS] = "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows).encode("utf-8")
-    for name in ("grcbench_colab_test.ipynb", "README.md", "u2604.py"):
+    for name in ("grcbench_colab_test.ipynb", "grcbench_colab_steps.py", "README.md", "u2604.py"):
         files[f"colab/{name}"] = (COLAB_HANDOFF / name).read_bytes()
     return files
 

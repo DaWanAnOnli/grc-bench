@@ -206,7 +206,8 @@ def test_build_info_and_model_fields_from_recorded_output():
     entries = _entries(PROMPT)
     log = "load_backend: loaded CPU backend from /x/b10333/libggml-cpu-alderlake.so\n"
     info = bench.build_info(entries, log)
-    assert info["build_number"] == 10333 and info["matches_pin"] is True
+    assert info["build_number"] == 10333 and info["matches_pin"] is False       # recorded from b10333; pin b12020
+    assert bench.build_info([{**entries[0], "build_number": 12020}], log)["matches_pin"] is True
     assert info["cpu_backend_variant"] == "alderlake" and info["backends"] == "CPU"
     assert bench.model_fields(entries)["n_params"] == entries[0]["model_n_params"]
     assert bench.build_info([], log) == {}
@@ -349,7 +350,7 @@ def opt(flag, default):
     return a[a.index(flag) + 1] if flag in a else default
 p, n, d, r = int(opt("-p", 512)), int(opt("-n", 128)), int(opt("-d", 0)), int(opt("-r", 5))
 sys.stderr.write("load_backend: loaded CPU backend from /fake/libggml-cpu-haswell.so\n")
-base = {{"build_commit": "08659901c", "build_number": 10333, "cpu_info": "Fake CPU", "gpu_info": "",
+base = {{"build_commit": "0ec4027a2", "build_number": 12020, "cpu_info": "Fake CPU", "gpu_info": "",
         "backends": "CPU", "model_filename": opt("-m", ""), "model_type": "fake 1B Q4_K - Medium",
         "model_size": 1000, "model_n_params": 1000000, "n_batch": int(opt("-b", 2048)),
         "n_ubatch": int(opt("-ub", 512)), "n_threads": int(opt("-t", 1)), "type_k": opt("-ctk", "f16"),

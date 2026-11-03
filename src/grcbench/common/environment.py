@@ -63,10 +63,8 @@ def _gpu() -> dict:
     if server.exists():
         version = _run([str(server), "--version"],
                        env={**os.environ, "LD_LIBRARY_PATH": f"{cuda_dir}:/usr/lib/wsl/lib"})
-    nvcc = _run([str(CACHE / "buildenv-cuda" / "bin" / "nvcc"), "--version"])
     return {"nvidia_smi": smi, "llama_cpp_cuda_dir": str(cuda_dir) if server.exists() else None,
-            "llama_cpp_cuda_version": version.splitlines()[-2:] if version else None,
-            "nvcc": nvcc.splitlines()[-1] if nvcc else None}
+            "llama_cpp_cuda_version": version.splitlines()[-2:] if version else None}
 
 
 def main(argv: list[str]) -> int:
