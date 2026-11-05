@@ -24,6 +24,26 @@ cd "/mnt/c/Users/POPA/Documents/!MScAC/2701/ml_ops_project/project/grc-bench"
 unless GRC-Agent is at commit `6c98128` and GNU Radio is 3.10.12. From Windows:
 `wsl -e bash -lc "cd '/mnt/c/Users/POPA/Documents/!MScAC/2701/ml_ops_project/project/grc-bench' && ./gb help"`.
 
+### Set up a new machine
+
+GRC-Bench runs on Linux or WSL with Ubuntu 26.04, whose `gnuradio` package is the pinned 3.10.12.
+Clone GRC-Agent at the pinned commit, create its virtual environment, then run the setup check from
+this folder:
+
+```bash
+git clone https://github.com/qoherent/grc-agent.git ~/grc-agent && git -C ~/grc-agent checkout 6c98128
+cd ~/grc-agent && uv venv --system-site-packages --python /usr/bin/python3 \
+  && uv sync --extra dev --locked --python .venv/bin/python
+cd <this folder> && ./setup.sh
+```
+
+`./setup.sh` checks every prerequisite and prints the fix for each one missing; it is safe to run
+again. It builds two things once: GRC-Agent's two lexical knowledge databases, in GRC-Agent's
+git-ignored `src/grc_agent/vectors/` folder (GRC-Agent does not ship them and builds them there on
+first use), and the tokenizer file. It ends with `./gb`'s pin check. Every command that starts
+GRC-Agent needs the databases: Tier-A runs, the Tier-F golden replay gate, the Tier-K retrieval
+baseline and `./gb agent`. Model runs also need llama.cpp and the smoke-test model (`./gb fetch`).
+
 ## Layout
 
 | Folder | What is in it |
@@ -56,7 +76,8 @@ directories live outside the repository, in `~/grc-bench-cache` and `~/grc-bench
 
 ## Rules this code enforces
 
-- `data/`, the proposals, the documents and `~/grc-agent` are never written to. `./gb baseline check`
+- `./gb` never writes to `data/`, the proposals, the documents or `~/grc-agent` (`setup.sh` builds
+  GRC-Agent's knowledge databases there once, only when they are missing). `./gb baseline check`
   compares full file-tree manifests (including git-ignored files) taken before the first run.
 - Untrusted flowgraphs and agent tool calls run in a bubblewrap sandbox: read-only filesystem,
   writable run directory only, no network, time and memory limits. The user's files are hidden (the

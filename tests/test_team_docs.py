@@ -40,7 +40,7 @@ DOC_FILES = [
     GUIDELINES / "judge_calibration.md",
     GUIDELINES / "error_analysis.md",
 ]
-ALL_MD = DOC_FILES + [TEMPLATES / "README.md"]
+ALL_MD = DOC_FILES + [TEMPLATES / "README.md", HANDOFF / "review_sheets" / "similarity_sheets_instructions.md"]
 
 TEMPLATE_COLUMNS = {
     "judge_calibration.csv": [

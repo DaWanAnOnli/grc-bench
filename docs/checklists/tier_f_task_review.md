@@ -190,6 +190,12 @@ or "continuous run" is not checked.
   - for an edit, changing an existing block instead of replacing it.
 - [ ] The `variants/` folder covers at least two different approaches, not two copies of the
       reference.
+- [ ] **Parameter-tune tasks and repair tasks whose fault is a wrong value** must keep the start
+      graph's blocks and connections, so their variants may write the corrected value another way
+      (for example `(x/2)*2` or `4.7e3`). That shows the oracle reads the value, not the text, and
+      counts as the two variants. For these tasks, also try one other valid fix with `./gb ladder`,
+      for example another parameter that reaches the same target, and record it as a
+      `note: ladder -- ...` line.
 - [ ] If you doubt that one of your alternatives would pass, build it and run
       `./gb ladder <your.grc> --task <task>/task.json`. Write the result as a `note: ladder -- ...`
       line in your edits cell (see "Notes" below). If it fails and it should pass, add an edit.
@@ -236,6 +242,12 @@ or "continuous run" is not checked.
 - [ ] **No near-duplicates.** No other test task has the same theme with only new numbers (for
       example several "square wave, low-pass filtered" tasks). No test task is a template twin of a
       dev task. Tasks that are not independent share a `cluster_id`.
+  - **Tasks that share a cell** (the same `cluster_id`; section 3 of `reports/tier_f_first_set.md`
+    lists every task's cell) are not duplicates for that reason alone. Flag a pair only when the two
+    tasks have the same cell, the same family and the same edit: the same block and parameter to
+    set, or the same fault, so that only the numbers differ. Reject the task with the higher number,
+    with the reason `duplicate` and the other task's id; its owner regenerates it in the same cell
+    where possible.
 
 ### H. Licence and provenance
 
@@ -411,9 +423,11 @@ columns are proposed to the Tier-F owner; until they exist, notes go in the edit
 3. Every stated requirement is checked, and structural wording has a graph check. "Only change
    parameter values" has both `same_blocks_as_start` and `same_connections_as_start`.
 4. Tolerances follow the specification: not looser, not stricter.
-5. Other valid solutions pass, and shortcuts are blocked only if the method matters.
+5. Other valid solutions pass, and shortcuts are blocked only if the method matters. Tune and
+   wrong-value repair tasks may have value-form variants, plus one other fix you try with the ladder.
 6. The start graph fails for the right reason, and `p2p` holds on it.
-7. The split matches the seed file or the functional signature v2. No near-duplicates.
+7. The split matches the seed file or the functional signature v2. No near-duplicates: tasks
+   that share a cell are duplicates only with the same family and the same edit.
 8. Licence, source, perturbation and provenance are right. No canary in model-visible files.
 9. The fix is one `change_graph` batch on the open graph (written down as a `note: batch` line),
    and one lookup is enough. The model's `inspect_graph` result shows what it needs (not cut at

@@ -154,7 +154,8 @@ def _ensure_vectors_cache() -> Path:
     for name in LEXICAL_DBS:
         src, dst = VECTORS_SRC / name, VECTORS_CACHE / name
         if not src.is_file():
-            raise IsolationError(f"GRC-Agent knowledge database missing: {src}")
+            raise IsolationError(f"GRC-Agent knowledge database missing: {src} (GRC-Agent does not ship it "
+                                 "and builds it on first use; run ./setup.sh in the grc-bench folder to build it)")
         want = sha256_file(src)
         if not (dst.is_file() and sha256_file(dst) == want):
             tmp = dst.with_name(dst.name + ".tmp")
