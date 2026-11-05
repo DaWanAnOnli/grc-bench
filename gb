@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # GRC-Bench entry point. Run inside WSL from this folder:   ./gb <command> [args]
-# From Windows:  wsl -e bash -lc "cd '/mnt/c/Users/POPA/Documents/!MScAC/2701/ml_ops_project/project/grc-bench' && ./gb help"
+# From Windows:  wsl -e bash -lc "cd '/mnt/c/<path to>/grc-bench' && ./gb help"
 #
 # Uses GRC-Agent's own virtual environment read-only (it already has GNU Radio via system
 # site-packages, numpy, scipy, pyyaml, pytest, jsonschema, tiktoken and pydantic-ai), so the

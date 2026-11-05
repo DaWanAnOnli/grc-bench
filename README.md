@@ -11,18 +11,18 @@ evaluation plan in `../benchmark and evaluation/Benchmark_Evaluation_Plan_to_7De
 
 ## How to run
 
-Everything runs inside WSL (Ubuntu) through one entry script, which pins the versions:
+Everything runs on Linux or inside WSL (Ubuntu) through one entry script, which pins the versions:
 
 ```bash
-cd "/mnt/c/Users/POPA/Documents/!MScAC/2701/ml_ops_project/project/grc-bench"
+cd grc-bench         # this repository's folder
 ./gb help            # list commands
 ./gb env             # record versions in reports/environment.json; check the pins
 ./gb test            # run the unit tests
 ```
 
 `./gb` uses GRC-Agent's own virtual environment (`~/grc-agent/.venv`, read-only) and refuses to run
-unless GRC-Agent is at commit `6c98128` and GNU Radio is 3.10.12. From Windows:
-`wsl -e bash -lc "cd '/mnt/c/Users/POPA/Documents/!MScAC/2701/ml_ops_project/project/grc-bench' && ./gb help"`.
+unless GRC-Agent is at commit `6c98128` and GNU Radio is 3.10.12. From a Windows prompt, with the
+repository on the C: drive: `wsl -e bash -lc "cd '/mnt/c/<path to>/grc-bench' && ./gb help"`.
 
 ### Set up a new machine
 
@@ -56,7 +56,7 @@ baseline and `./gb agent`. Model runs also need llama.cpp and the smoke-test mod
 | `docs/` | pre-registration draft, annotation guidelines, review checklists |
 | `runs/` | the append-only test-run log (run outputs are not versioned) |
 | `tests/` | unit tests and their fixtures |
-| `docker/` | the intended Docker image (not built yet: Docker is not installed on this machine) |
+| `docker/` | the intended Docker image (not built yet) |
 
 Large downloads (llama.cpp b12020, the smoke-test model, the embedding model and its llama.cpp b10333) and per-run working
 directories live outside the repository, in `~/grc-bench-cache` and `~/grc-bench-work` inside WSL.
