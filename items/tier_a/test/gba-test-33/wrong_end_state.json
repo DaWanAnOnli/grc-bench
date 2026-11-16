@@ -1,0 +1,3 @@
+{
+ "final_text": "modulator sensitivity: 0.1309 rad/sample\ndemodulator gain: 3.8197\naveraging length: 1000\nquantizer scale: 1\nFloat To Short default scale: 1000\nmean power: -13.98 dB\nquantized peak: 6400 Hz\nI did not change the flowgraph."
+}

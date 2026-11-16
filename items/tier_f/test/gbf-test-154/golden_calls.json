@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "Channel Model",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "channel",
+    "params": {
+     "freq_offset": "-1750/samp_rate"
+    }
+   }
+  ]
+ }
+}

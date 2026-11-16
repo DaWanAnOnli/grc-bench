@@ -6,7 +6,8 @@ reviewers, and a note of who decided, followed by the task's own notes as the de
 edits, written as patches (reviews/<sheet>_patches.json, see review.patches), change task.json
 (file "task.json") or another file of the task (file "<name>", a text patch on path ["text"]). A task
 whose decided edits are applied gets version 2. A rejected task is kept, with status `rejected`, and
-active() leaves it out of every benchmark run (eval plan §5.3: removed and counted).
+active() leaves it out of every benchmark run (eval plan §5.3: removed and counted). An accepted replacement
+beyond the slots of the tasks it replaces (review.replacements) has status `reserve`: kept, and not run either.
 """
 
 from __future__ import annotations
@@ -19,6 +20,9 @@ from grcbench.review import patches
 from grcbench.review.records import decided
 
 STATUS = {"approve": "approved", "approve with edits": "approved-with-edits", "reject": "rejected"}
+NOT_RUN = ("rejected", "reserve")
+RESERVE_NOTE = ("an accepted replacement beyond the slots of the tasks it replaces: kept and not scored "
+                "(pre-registration §10)")
 
 
 def _dir(reviews_dir: Path | None) -> Path:
@@ -34,8 +38,12 @@ def review_field(sheet: str, item_id: str, reviews_dir: Path | None = None) -> d
     notes = f"decided by {by}" + (f" ({rec['route']})" if by == "EX" else "")
     if rec["final"] == "approve with edits":
         notes += "; decided edits applied"
-    return {"status": STATUS[rec["final"]], "reviewers": ["R1", "R2"] + (["EX"] if by.startswith("EX") else []),
-            "notes": notes}
+    status = STATUS[rec["final"]]
+    if status != "rejected":
+        from grcbench.review import replacements
+        if item_id in replacements.reserve(sheet, reviews_dir=_dir(reviews_dir)):
+            status, notes = "reserve", f"{notes}; {RESERVE_NOTE}"
+    return {"status": status, "reviewers": ["R1", "R2"] + (["EX"] if by.startswith("EX") else []), "notes": notes}
 
 
 def apply(sheet: str, item_id: str, record: Mapping[str, Any], files: Mapping[str, str],
@@ -73,22 +81,34 @@ def apply(sheet: str, item_id: str, record: Mapping[str, Any], files: Mapping[st
 
 
 def refuse_rejected(records: Iterable[Mapping[str, Any]]) -> None:
-    """A benchmark run never uses a task the review rejected (eval plan §5.3: removed and counted)."""
+    """A benchmark run never uses a task the review rejected or keeps as a reserve (eval plan §5.3)."""
     from grcbench.runlog.log import RunRefused
-    bad = [r.get("id", "?") for r in records if (r.get("review") or {}).get("status") == "rejected"]
+    bad = [r.get("id", "?") for r in records if (r.get("review") or {}).get("status") in NOT_RUN]
     if bad:
-        raise RunRefused(f"tasks {bad} were rejected by the review (reviews/) and are not part of the benchmark")
+        raise RunRefused(f"tasks {bad} were rejected or kept as a reserve by the review (reviews/) and are not part "
+                         f"of the benchmark")
 
 
 def active_dirs(dirs: Iterable[Path]) -> list[Path]:
-    """The task folders a split-wide run uses: every one but those whose task.json the review rejected."""
+    """The task folders a split-wide run uses: every one but those the review rejected or keeps as a reserve,
+    and a replacement the review has not decided yet (it is not part of the benchmark until it is accepted)."""
     import json
-    return [Path(d) for d in dirs
-            if (json.loads((Path(d) / "task.json").read_text(encoding="utf-8")).get("review") or {}).get("status")
-            != "rejected"]
+
+    from grcbench.review import replacements
+    pending = replacements.all_ids()
+    out = []
+    for d in dirs:
+        t = json.loads((Path(d) / "task.json").read_text(encoding="utf-8"))
+        status = (t.get("review") or {}).get("status")
+        if status in NOT_RUN or (status == "pending-team-review" and t.get("id", Path(d).name) in pending):
+            continue
+        out.append(Path(d))
+    return out
 
 
 def active(sheet: str, item_ids: Iterable[str], reviews_dir: Path | None = None) -> list[str]:
-    """The items a benchmark run uses: every item but the rejected ones."""
-    rejected = {k[0] for k, r in decided(sheet, reviews_dir=_dir(reviews_dir)).items() if r["final"] == "reject"}
-    return [i for i in item_ids if i not in rejected]
+    """The items a benchmark run uses: every item but the rejected ones and the reserves."""
+    from grcbench.review import replacements
+    gone = {k[0] for k, r in decided(sheet, reviews_dir=_dir(reviews_dir)).items() if r["final"] == "reject"}
+    gone |= replacements.reserve(sheet, reviews_dir=_dir(reviews_dir))
+    return [i for i in item_ids if i not in gone]

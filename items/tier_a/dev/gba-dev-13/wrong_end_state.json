@@ -1,0 +1,3 @@
+{
+ "final_text": "strobe period: 200 ms\nretune frequency: -4900 Hz\nAGC reference: 2\nMessage Strobe input port: strobe\nmean power: -6.02 dB\nlevelled RMS: 2.0\nI did not change the flowgraph."
+}

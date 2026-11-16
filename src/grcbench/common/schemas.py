@@ -18,7 +18,7 @@ import jsonschema
 
 from .canary import CANARY
 
-REVIEW_STATUSES = ["pending-team-review", "approved", "approved-with-edits", "rejected", "not-required"]
+REVIEW_STATUSES = ["pending-team-review", "approved", "approved-with-edits", "rejected", "reserve", "not-required"]
 DRAFTERS_NOTE = "Claude (Anthropic)"   # value used in provenance.drafted_by for Claude-drafted text
 
 BASE: dict[str, Any] = {

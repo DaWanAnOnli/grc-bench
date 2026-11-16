@@ -1,0 +1,85 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "embedded python block"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "epy_block",
+      "instance_name": "clip",
+      "params": {
+       "_source_code": "\"\"\"Clipper: y = x limited to -0.3 .. 0.3.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    \"\"\"Clipper: y = x limited to -0.3 .. 0.3.\"\"\"\n\n    def __init__(self):\n        gr.sync_block.__init__(self, name=\"Clipper\", in_sig=[np.float32], out_sig=[np.float32])\n\n    def work(self, input_items, output_items):\n        x = input_items[0]\n        output_items[0][:] = np.clip(x, -0.3, 0.3)\n        return len(output_items[0])\n"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "added_sink",
+      "params": {
+       "file": "clipped.dat",
+       "type": "float"
+      }
+     }
+    ],
+    "add_connections": [
+     "throttle:0->clip:0",
+     "clip:0->added_sink:0"
+    ],
+    "reason": "Add the Clipper Embedded Python block writing to clipped.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "clip"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('clipped.dat',dtype=np.float32)[4800:]; print(len(x), float(x.mean()), float(x.min()), float(x.max()), float(np.sqrt(np.mean(x*x))))\""
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "block_id": "clipper",
+    "instance_name": "clip",
+    "label": "Clipper"
+   },
+   "tool": "save_block"
+  }
+ ],
+ "final_text": "I added an Embedded Python block after the tone that limits it to -0.3 .. 0.3, and a File Sink writing it to clipped.dat. A run gives a maximum of 0.3, a minimum of -0.3 and an RMS of about 0.257 for the 0.5 tone. I saved the block to the library as clipper (label Clipper) and saved the flowgraph. mirrored.dat and second_quantized.dat are unchanged."
+}

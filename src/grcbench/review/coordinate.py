@@ -214,10 +214,14 @@ def expert_rows(work: Path, sheet: str) -> tuple[dict, dict]:
 
 
 def decide_sheet(work: Path, sheet: str, reviews_dir: Path | None = None, sheet_dir: Path | None = None,
-                 require_all: bool = True) -> list[dict]:
+                 require_all: bool = True, merge: bool = False) -> list[dict]:
+    """Decide one sheet from WORK's outputs. With `merge` (a second round: the replacement items), the rows
+    of WORK are decided alone, with their own audit sample, and added to the sheet's decided records; a row
+    that is already decided is refused, never decided again."""
     from grcbench.common.paths import REPO
     from grcbench.review import fill
     spec = SHEETS[sheet]
+    earlier = records.decided(sheet, reviews_dir=Path(reviews_dir or REPO / "reviews")) if merge else {}
     check_independence(work, sheet)
     r1, r2 = collect(work, sheet)
     ex, audit = expert_rows(work, sheet)
@@ -227,7 +231,11 @@ def decide_sheet(work: Path, sheet: str, reviews_dir: Path | None = None, sheet_
         h1b, _ = expert.first_pass(work)
         audit = {**full_review_rows(spec, r1, r2, h1b, router=router), **audit}
     recs = records.build(spec, r1, r2, ex, audit, router=router)
+    again = sorted(set(earlier) & {r["key"] for r in recs})
+    if again:
+        raise ValueError(f"{sheet}: {len(again)} row(s) already decided in an earlier round, e.g. {again[:3]}")
     check_audit(spec, recs, decide.audit_sample(sheet, [r["key"] for r in recs if "agreed" in r]))
+    recs = list(earlier.values()) + recs
     if spec.group:                       # the final values, too, carry one decision per group
         _, rows = inputs.read_sheet(sheet)
         records.check_groups(spec, rows, {r["key"]: {"value": r["final"]} for r in recs})

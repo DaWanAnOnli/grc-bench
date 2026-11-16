@@ -1,0 +1,59 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "hpf",
+     "agc",
+     "average",
+     "to_db"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "AGC max gain"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "moving average type"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('received.dat',dtype=np.complex64)[4800:]; print(len(x), float(np.sqrt(np.mean(np.abs(x)**2))))\""
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('second_power_db.dat',dtype=np.float32)[4800:]; print(len(x), float(np.mean(x)))\""
+   },
+   "tool": "run_command"
+  }
+ ],
+ "final_text": "high-pass cutoff: 6150 Hz\nAGC reference: 0.5\naveraging length: 500\nAGC default maximum gain: 65536\nMoving Average types: complex, float, int, short\nreceived RMS: 0.5\nmean power: -6.02 dB\nI did not change the flowgraph."
+}

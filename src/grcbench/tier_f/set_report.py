@@ -75,7 +75,10 @@ def build(today: str | None = None) -> str:
     n_pass = sum(1 for g in gates.values() if g and g["passed"])
     n_test = sum(t["split"] == "test" for t in tasks)
     status = Counter(t["review"]["status"] for t in tasks)
-    active = [t for t in tasks if t["review"]["status"] != "rejected"]
+    from grcbench.review.replacements import all_ids
+    pending = all_ids()                  # an undecided replacement is not part of the benchmark yet
+    active = [t for t in tasks if t["review"]["status"] not in ("rejected", "reserve")
+              and not (t["review"]["status"] == "pending-team-review" and t["id"] in pending)]
     lv = Counter(t["level"] for t in active if t["split"] == "test")
     n_gen = sum(t["source"]["kind"] == "generated_chain" for t in tasks)
     today = today or dt.date.today().isoformat()

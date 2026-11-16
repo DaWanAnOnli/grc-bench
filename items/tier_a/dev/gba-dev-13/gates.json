@@ -1,0 +1,56 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "files[0]: power_db.dat does not exist",
+    "files[1]: second_levelled.dat does not exist",
+    "answer[0]: strobe period: no answer line names 'strobe period'",
+    "answer[1]: retune frequency: no answer line names 'retune frequency'",
+    "answer[2]: AGC reference: no answer line names 'agc reference'",
+    "answer[3]: Message Strobe input port: no answer line names '(strobe )?input port'",
+    "answer[4]: mean power: expected value not derivable: 'power_db.dat does not exist in the project folder'",
+    "answer[5]: levelled RMS: expected value not derivable: 'second_levelled.dat does not exist in the project folder'"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "files[0]: power_db.dat does not exist",
+      "files[1]: second_levelled.dat does not exist",
+      "answer[1]: retune frequency: expects -7800 after 'retune frequency'",
+      "answer[3]: Message Strobe input port: expects 'set_msg' after '(strobe )?input port'",
+      "answer[4]: mean power: expected value not derivable: 'power_db.dat does not exist in the project folder'",
+      "answer[5]: levelled RMS: expected value not derivable: 'second_levelled.dat does not exist in the project folder'"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "64a6f1c4b071d10739553f42c05dee94d8f2700ebf906ddc55cf4f05d182a50d",
+ "passed": true,
+ "task": "gba-dev-13"
+}

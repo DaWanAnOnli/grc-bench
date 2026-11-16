@@ -18,6 +18,7 @@ refusal or abstention tasks (eval plan §4.4: 30 test tasks).
 from __future__ import annotations
 
 import csv
+import io
 import json
 import sys
 from collections import Counter
@@ -601,11 +602,15 @@ def main(argv: list[str]) -> int:
         DRAFTS.unlink()
     built, spec_rows = built_rows(), draft_rows()
     SHEET.parent.mkdir(parents=True, exist_ok=True)
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=SHEET_COLUMNS)
+    w.writeheader()
+    for r in built + spec_rows:
+        w.writerow({**r, **{k: "" for k in SHEET_COLUMNS if k.startswith(("reviewer", "final"))}})
+    from grcbench.review.fill import with_new_rows
+    text = with_new_rows("tier_a", buf.getvalue(), path=SHEET)  # once decided, the reviewed rows stay as reviewed
     with open(SHEET, "w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=SHEET_COLUMNS)
-        w.writeheader()
-        for r in built + spec_rows:
-            w.writerow({**r, **{k: "" for k in SHEET_COLUMNS if k.startswith(("reviewer", "final"))}})
+        fh.write(text)
     REPORT.write_text(_report(built, spec_rows), encoding="utf-8", newline="\n")
     for p in ((DRAFTS,) if drafts else ()) + (SHEET, REPORT):
         print("wrote", p)

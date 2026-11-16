@@ -4,7 +4,7 @@
 # The test-run guard (grcbench.runlog) accepts a test-split run only for a configuration listed here,
 # and only once `status` is "declared". The team sets it to "declared" when it signs the
 # pre-registration off at G2 (30 Oct 2026); until then every test-split run is refused.
-# The list is amended once, at the freeze (17 Nov 2026): the panel's members fill their slots.
+# The list is amended once, at the freeze (20 Nov 2026): the panel's members fill their slots.
 #
 # tiers: K and F give n, the samples per item; A gives k, the runs per task; BFCL marks a run of the
 # Berkeley Function-Calling Leaderboard. Tier E (speed and memory) uses no test items and is not listed.

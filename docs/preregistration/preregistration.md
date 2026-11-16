@@ -2,7 +2,7 @@
 
 **Status: draft for the team's sign-off at gate G2 (Friday 30 October 2026).** After sign-off it is
 published on the Open Science Framework (OSF), before any fine-tuned model is run on the test split.
-It is amended once, at the freeze on Tuesday 17 November 2026 (§10). Any later deviation is reported
+It is amended once, at the freeze on Friday 20 November 2026 (§10). Any later deviation is reported
 in the 7 December report.
 
 - **Team:** JJJP, University of Toronto MScAC: Joel Rompis (evaluation lead), Jiuyue Cai, Patricio
@@ -32,7 +32,7 @@ before this document is published.
 GRC-Bench measures how well a language model develops GNU Radio flowgraphs with GRC-Agent, the
 assistant inside GNU Radio Companion. It has four tiers.
 
-| Tier | What it measures | Dev split (for every choice) | Test split v1.0 (frozen 17 Nov) | Built by G2 |
+| Tier | What it measures | Dev split (for every choice) | Test split v1.0 (frozen 20 Nov) | Built by G2 |
 |---|---|---|---|---|
 | K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 107 questions: the training team's validation questions that have no twin left in training and are not close to a test question | 285: the 185 frozen questions and 100 GNU Radio behaviour questions, each answered by running GNU Radio (the public reference set; any seed draws a fresh set of the same composition) | all 285 test questions and the dev questions; rubric templates (the prose is written and checked by the review agents, §10) |
 | F: flowgraphs | Making a correct flowgraph edit for a stated goal: one documentation lookup and one edit inside GRC-Agent, judged by running the result | 45 tasks | 150 tasks (60 L1, 60 L2, 30 L3) | a first set of 30 (20 test, 10 dev), all gates passed, then reviewed with the rest (§10) |
@@ -238,8 +238,10 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 - **Scripted user.** Set replies for the questions a task expects; otherwise "please use your best
   judgement".
 - **Grading by end state.** The final saved flowgraph is re-run by the grader through the Tier-F
-  ladder and checked against the task's assertions; knowledge and refusal tasks check the answer
-  against facts read from the graph. An empty or missing answer never counts.
+  ladder and checked against the task's assertions. Knowledge and refusal tasks check the answer
+  against facts the grader works out itself: from the graph, from GNU Radio's block definitions or from
+  the files the run wrote. A fact with a label is read from the first line of the answer that names its
+  label, and a number must be the first one after the label. An empty or missing answer never counts.
 - **Metrics.** Task success and pass^k over k runs; the share of tool calls that are well-formed and
   match the tool's schema; calls to tools that do not exist; correct refusals; first-attempt success
   against recovery after an error; steps, tokens and time per task.
@@ -378,7 +380,7 @@ MiniMax-M3 and produces the record that the judge runner (`./gb tier-k judge`) r
 grades a test answer; and dev-split rubrics with graded numbers, so that the rule cascade's deferral
 rate on dev answers (round-2 finding F5) can be measured.
 
-## 9. Fixed at the freeze (17 November)
+## 9. Fixed at the freeze (20 November)
 
 - The v1.0 items of every tier, after the two-reviewer and expert reviews and pruning, with the number
   of removed items and the reasons (`reports/review_summary.md`).
@@ -457,8 +459,9 @@ rate on dev answers (round-2 finding F5) can be measured.
   - **Similarity sheets.** Both reviewers label every contamination pair, not reviewer 2 on a sample,
     and the agreement is reported on every pair and on the every-fifth sample.
 - **The freeze date.** The approved plans freeze benchmark v1.0 at gate G3 on Friday 13 November. The
-  review by agents (above) needs until Tuesday 17 November, so the freeze is then. Gate G4
-  (27 November) and the 7 December report keep their dates.
+  review by agents (above), and the second round for the replacement tasks (below), need until Friday
+  20 November, so the freeze is then. Gate G4 (27 November) and the 7 December report keep their
+  dates.
 - **Items the review removed or rewrote** (eval plan §5.3: removed and counted). The test split of
   §2 is counted before the review. A removed item keeps its record, with the reason, and no run uses
   it (`reports/review_summary.md` lists each one).
@@ -481,6 +484,23 @@ rate on dev answers (round-2 finding F5) can be measured.
     8-call floor of eval plan §4.4. So 25 test and 10 dev tasks remain. The test split has no
     knowledge task and one save_block task, so Tier-A results are reported for the categories that
     remain.
+  - **Replacement tasks for Tiers F and A.** Each rejected Tier-F and Tier-A task is replaced by a task
+    built after the review and reviewed in a second round under the same protocol: two reviewers, the
+    expert agent with its audit, and its expert review. The second round uses 8 more declared agent runs.
+    - Tier F: one new task per rejected task, in its family. It is L1 where a cell has room for an L1
+      edit no other task of the cell makes, and L2 otherwise. There are 3 test spares and 1 dev spare:
+      `gbf-test-151` to `gbf-test-174` and `gbf-dev-46` to `gbf-dev-48`.
+    - Tier A: 3 knowledge and 2 save_block test tasks, and one of each in dev, built to need at least
+      8 tool calls, plus one spare of each category: `gba-test-31` to `gba-test-37`, `gba-dev-13` and
+      `gba-dev-14`. The knowledge tasks are graded with labelled facts (§5), so an answer that gives
+      the right values to the wrong items fails.
+
+    The replacements are numbered before the review. The first ones it accepts, in id order, fill the
+    slots: per split for Tier F, and per category and split for Tier A. An accepted replacement beyond
+    the slots is kept as a reserve and not scored.
+
+    Tier K's removed questions are not replaced. Its frozen and dev questions come from the training
+    team's held-out splits, and any new question from that source would overlap the training data.
   - **Sizes stated elsewhere in this document.** They are the sizes before the review. The analyses use
     the items that remain: H1c subsamples Tier K to Tier F's 129 test tasks, and the minimum detectable
     effects of §7 are computed at 277 (K), 129 (F) and 25 (A) items.
@@ -490,7 +510,9 @@ rate on dev answers (round-2 finding F5) can be measured.
   expert accepted no removed item: in Tier F every removed task is a duplicate or does nothing, and in
   Tier A every removed task is below the 8-call floor. So under this rule H1b cannot hold for Tier F
   (at most 172 of 195) or Tier A (at most 35 of 42). Beside the test, `reports/review_summary.md`
-  gives the share over the items the review kept, as a description, not a test.
+  gives the share over the items the review kept, as a description, not a test. The replacement tasks
+  are not in the test either: they were built after the expert's verdicts were known. So H1b is
+  counted on the original pool, and the replacements' acceptance is reported beside it.
 
 ## Appendix A: analysis proposals
 

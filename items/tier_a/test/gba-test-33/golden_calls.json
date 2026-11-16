@@ -1,0 +1,59 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "fm_mod",
+     "fm_demod",
+     "average",
+     "to_short"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "float to short scale"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "moving average length"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('power_db.dat',dtype=np.float32)[4800:]; print(len(x), float(np.mean(x)))\""
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('second_quantized.dat',dtype=np.float32)[4800:]; print(len(x), float(np.fft.fftfreq(len(x), 1/48000)[np.argmax(np.abs(np.fft.fft(x)))]))\""
+   },
+   "tool": "run_command"
+  }
+ ],
+ "final_text": "modulator sensitivity: 0.1309 rad/sample\ndemodulator gain: 3.8197\naveraging length: 1000\nquantizer scale: 1000\nFloat To Short default scale: 1\nmean power: -13.98 dB\nquantized peak: 6400 Hz\nI did not change the flowgraph."
+}

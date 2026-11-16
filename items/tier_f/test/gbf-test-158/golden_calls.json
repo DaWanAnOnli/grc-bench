@@ -1,0 +1,46 @@
+{
+ "query_knowledge": {
+  "query": "Signal Source Complex Conjugate Channel Model File Sink",
+  "domain": "catalog",
+  "k": 8
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_1",
+    "params": {
+     "type": "complex",
+     "freq": "-10500"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "channels_channel_model",
+    "instance_name": "channel",
+    "params": {
+     "noise_voltage": "0",
+     "freq_offset": "-3000/samp_rate",
+     "taps": "[1.0]"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "received.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_1:0->conj:0",
+   "conj:0->channel:0",
+   "channel:0->out:0"
+  ]
+ }
+}

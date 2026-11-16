@@ -1,0 +1,3 @@
+{
+ "final_text": "high-pass cutoff: 6150 Hz\nAGC reference: 0.5\naveraging length: 500\nAGC default maximum gain: 1\nMoving Average types: complex, float, int, short\nreceived RMS: 1.0\nmean power: -6.02 dB\nI did not change the flowgraph."
+}

@@ -66,6 +66,8 @@ SUBCOMMANDS: dict[str, tuple[str, str]] = {
     "gates": ("grcbench.tier_a.cli:_gates", "Tier-A task gates (golden replay, do-nothing, wrong end state)"),
     "first-set": ("grcbench.tier_a.first_set:main", "write the Tier-A first set under items/tier_a"),
     "second-set": ("grcbench.tier_a.second_set:main", "build the 20 Tier-A test specs (gba-test-11..30) into tasks"),
+    "replacements": ("grcbench.tier_a.replacements:main",
+                     "build the replacements of the rejected Tier-A tasks (gba-test-31..37, gba-dev-13..14)"),
     "sheet": ("grcbench.tier_a.spec_drafts:main", "test spec drafts, the Tier-A review sheet and first-set report"),
     "smoke": ("grcbench.tier_a.cli:_smoke", "smoke test on fixture tasks (golden replays; optional real model)"),
     "tier-f-golden": ("grcbench.tier_a.cli:_tier_f_golden", "derive + verify Tier-F golden_calls.json, replay gate"),

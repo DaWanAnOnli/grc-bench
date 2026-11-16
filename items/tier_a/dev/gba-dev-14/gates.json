@@ -1,0 +1,48 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V5: observation 'added': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'sign.dat', 'type': 'float'}}; added max = observation missing; added min = observation missing; added rms = observation missing; graph check path: no such path",
+    "blocks_present[0]: 0 matching block(s) []",
+    "blocks_present[1]: 0 matching block(s) []; candidates: [\"out (enabled): file='quantized.dat'\"]",
+    "hier_block: sign_detect.block.yml is not in the run's block library; sign_detect.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V5: added rms = 0.89601",
+      "hier_block: sign_detect.block.yml is not in the run's block library; sign_detect.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "ad764af53c10a497f29bda027b6cf76fda311319cd0e89c0f051430ceefc378d",
+ "passed": true,
+ "task": "gba-dev-14"
+}

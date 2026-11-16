@@ -14,7 +14,9 @@ def test_the_report_counts_the_review_outcome_and_the_levels_without_the_rejecte
     assert text.startswith("# Tier F first set: status after the review")
     assert (f"{status['approved']} approved, {status['approved-with-edits']} approved with edits "
             f"and {status['rejected']} rejected") in text
-    active = [t for t in tasks if t["review"]["status"] != "rejected"]
+    from grcbench.review.replacements import all_ids   # an undecided replacement is not in the benchmark yet
+    active = [t for t in tasks if t["review"]["status"] not in ("rejected", "reserve")
+              and not (t["review"]["status"] == "pending-team-review" and t["id"] in all_ids())]
     test = Counter(t["level"] for t in active if t["split"] == "test")
     assert (f"the test split has {sum(test.values())} tasks: L1 {test['L1']}, L2 {test['L2']}, "
             f"L3 {test['L3']}") in text

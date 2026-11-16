@@ -1,0 +1,80 @@
+{
+ "query_knowledge": {
+  "query": "Signal Source Noise Source Add Multiply Complex Conjugate Rational Resampler File Sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_1",
+    "params": {
+     "type": "complex",
+     "freq": "4100",
+     "amp": "0.25"
+    }
+   },
+   {
+    "block_id": "analog_noise_source_x",
+    "instance_name": "noise",
+    "params": {
+     "type": "complex",
+     "amp": "0.05"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "lo",
+    "params": {
+     "type": "complex",
+     "freq": "5000"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_conjugate_cc",
+    "instance_name": "conj"
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "ccc",
+     "interp": "2"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "resampled.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_1:0->sum_of_tones:0",
+   "noise:0->sum_of_tones:1",
+   "sum_of_tones:0->mixer:0",
+   "lo:0->mixer:1",
+   "mixer:0->conj:0",
+   "conj:0->resampler:0",
+   "resampler:0->out:0"
+  ]
+ }
+}

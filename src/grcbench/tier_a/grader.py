@@ -50,9 +50,13 @@ task.json "acceptance" (all keys optional, at least one assertion required; chec
                    Radio's catalog loads it from that library
   graph_unchanged  true   the final graph equals the start graph as GRC resolves both (same block
                    names, ids, states, parameter values and connections; positions ignored)
-  answer           {"facts": [{"name": str, "source": SOURCE, "match": MATCH, "tol"?, "rel_tol"?}],
+  answer           {"facts": [{"name": str, "source": SOURCE, "match": MATCH, "tol"?, "rel_tol"?,
+                               "label"?: regex}],
                     "forbid"?: [regex, ...]}  every forbid pattern must NOT match the final answer
                    (a false success claim on a refusal task)
+                   label: the fact is read from the first line of the answer the label matches
+                   (case-insensitive), after the label; a "number" fact must be the first number
+                   there, so an answer that gives the right values to the wrong items fails
                    rule-checked facts in the final answer; each expected value is DERIVED at
                    grading time from the graph or block YAML, never written by hand:
                      SOURCE {"graph": "start" | "final", "block": {"name": n} | {"id": block id},
@@ -91,7 +95,7 @@ from ..common.paths import GNURADIO_BLOCKS
 from . import isolation
 from .task import Task, load_task
 
-GRADER_VERSION = "grcbench.tier_a.grader/2"     # 2: answer.forbid and files[].oracle (review decisions, Nov 2026)
+GRADER_VERSION = "grcbench.tier_a.grader/3"     # 2: answer.forbid, files[].oracle; 3: answer.facts[].label
 # oracle features that measure a number (a "file" fact source; grcbench.tier_f.oracles)
 NUMERIC_FEATURES = ("peak_freq", "band_fraction", "rms", "mean", "max_abs", "min", "max", "max_int_dev",
                     "int_fraction")
@@ -242,6 +246,11 @@ def acceptance_errors(acceptance: dict[str, Any]) -> list[str]:
                     groups = f"invalid ({exc})"
                 if groups != 1:
                     errs.append(f"answer.facts[{i}].source.regex needs exactly one group: {groups}")
+            if "label" in fact:
+                try:
+                    re.compile(fact["label"])
+                except (re.error, TypeError) as exc:
+                    errs.append(f"answer.facts[{i}].label {fact['label']!r}: {exc}")
     return errs
 
 
@@ -629,6 +638,24 @@ def _measured(src: dict[str, Any], project: Path | None) -> float:
     return float(oracles.feature_value(chk["feature"], x, chk))
 
 
+def _labelled(value: Any, answer: str, fact: dict[str, Any]) -> tuple[bool, str]:
+    """A fact with a label: read from the first answer line the label matches, after the label; a number
+    fact is the first number there (module docstring, answer)."""
+    for line in (answer or "").splitlines():
+        m = re.search(fact["label"], line, re.IGNORECASE)
+        if m is None:
+            continue
+        rest = line[m.end():]
+        if fact["match"] == "number":
+            first = _NUMBER.search(rest)
+            ok, detail = match_fact(value, first.group(0) if first else "", "number", fact.get("tol"),
+                                    fact.get("rel_tol"))
+        else:
+            ok, detail = match_fact(value, rest, fact["match"], fact.get("tol"), fact.get("rel_tol"))
+        return ok, f"{detail} after {fact['label']!r}"
+    return False, f"no answer line names {fact['label']!r}"
+
+
 def _answer(answer_text: str, spec: dict[str, Any], graphs: dict[str, dict[str, Any] | None],
             project: Path | None = None) -> list[dict[str, Any]]:
     out = []
@@ -644,7 +671,10 @@ def _answer(answer_text: str, spec: dict[str, Any], graphs: dict[str, dict[str, 
         if empty:
             out.append(_check(name, False, f"{label}: the final answer is empty", fact=label, expected=value))
             continue
-        ok, detail = match_fact(value, answer_text, fact["match"], fact.get("tol"), fact.get("rel_tol"))
+        if "label" in fact:
+            ok, detail = _labelled(value, answer_text, fact)
+        else:
+            ok, detail = match_fact(value, answer_text, fact["match"], fact.get("tol"), fact.get("rel_tol"))
         out.append(_check(name, ok, f"{label}: {detail}", fact=label, expected=value))
     for i, rx in enumerate(spec.get("forbid") or []):     # claims the answer must not make (review decision)
         m = re.search(rx, answer_text or "")

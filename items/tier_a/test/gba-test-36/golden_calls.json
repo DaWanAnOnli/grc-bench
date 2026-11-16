@@ -1,0 +1,58 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "hpf",
+     "lo",
+     "channel"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "channel model epsilon"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "channel model frequency offset normalized"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('received.dat',dtype=np.complex64)[3200:]; print(len(x), float(np.fft.fftfreq(len(x), 1/32000)[np.argmax(np.abs(np.fft.fft(x)))]))\""
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('received.dat',dtype=np.complex64)[3200:]; print(len(x), float(np.sqrt(np.mean(np.abs(x)**2))))\""
+   },
+   "tool": "run_command"
+  }
+ ],
+ "final_text": "high-pass cutoff: 1100 Hz\nLO frequency: 5250 Hz\nchannel offset: 0.0859375\nChannel Model default epsilon: 1.0\nreceived peak: 11400 Hz\nreceived RMS: 1.03\nI did not change the flowgraph."
+}

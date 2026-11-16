@@ -2,7 +2,8 @@
 
 One entry per agent run in reviews/review_log.jsonl: agent number, role, sheets, row count, model,
 date, the SHA-256 of the brief, and once the run ends the SHA-256 of its outputs. The review uses at
-most 30 agent runs in total; a 31st declaration is refused.
+most 38 agent runs in total: 30 for the first round (agents 1 to 30) and 8 for the second round, the tasks that
+replace the ones the first round rejected (agents 31 to 38; pre-registration §10). A 39th declaration is refused.
 """
 
 from __future__ import annotations
@@ -16,7 +17,8 @@ from grcbench.common.paths import REPO
 
 LOG = REPO / "reviews" / "review_log.jsonl"
 MODEL = "claude-opus-5-5"
-MAX_AGENTS = 30
+ROUNDS = {1: (1, 30), 2: (31, 38)}          # round -> its agent numbers
+MAX_AGENTS = 38
 
 
 def _entries(path: Path) -> list[dict]:

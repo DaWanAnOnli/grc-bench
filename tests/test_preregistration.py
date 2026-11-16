@@ -219,4 +219,4 @@ def test_the_mdes_of_section_7_are_at_the_v1_test_items():
 
 def test_the_run_list_names_the_freeze_date():
     head = runlog.RUN_LIST.read_text(encoding="utf-8").split("status:", 1)[0]
-    assert "at the freeze (17 Nov 2026)" in head and "13 Nov" not in head
+    assert "at the freeze (20 Nov 2026)" in head and "13 Nov" not in head and "17 Nov" not in head

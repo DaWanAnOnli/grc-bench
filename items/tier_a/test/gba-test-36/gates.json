@@ -1,0 +1,53 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "files[0]: received.dat does not exist",
+    "answer[0]: high-pass cutoff: no answer line names 'high.?pass cut.?off'",
+    "answer[1]: LO frequency: no answer line names 'lo frequency'",
+    "answer[2]: channel frequency offset: no answer line names 'channel (frequency )?offset'",
+    "answer[3]: Channel Model default epsilon: no answer line names 'channel model default epsilon'",
+    "answer[4]: received peak frequency: expected value not derivable: 'received.dat does not exist in the project folder'",
+    "answer[5]: received RMS: expected value not derivable: 'received.dat does not exist in the project folder'"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "files[0]: received.dat does not exist",
+      "answer[2]: channel frequency offset: expects 0.0859375 after 'channel (frequency )?offset'",
+      "answer[4]: received peak frequency: expected value not derivable: 'received.dat does not exist in the project folder'",
+      "answer[5]: received RMS: expected value not derivable: 'received.dat does not exist in the project folder'"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "80f61d8105b173b4cb592782bceb17c8a81f83ee73404dc0b69365c5121aced9",
+ "passed": true,
+ "task": "gba-test-36"
+}

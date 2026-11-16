@@ -1067,7 +1067,8 @@ def test_a_patched_task_that_was_approved_becomes_approved_with_edits(tmp_path):
 
 # ------------------------------------------------------------------ declared runs ----------------
 
-def test_every_agent_run_is_declared_and_the_cap_of_thirty_holds(tmp_path):
+def test_every_agent_run_is_declared_and_the_cap_of_each_round_holds(tmp_path):
+    """30 runs for the first round (agents 1-30) and 8 for the second, the replacement tasks (31-38)."""
     from grcbench.review import log
     path = tmp_path / "review_log.jsonl"
     for i in range(1, 31):
@@ -1076,8 +1077,11 @@ def test_every_agent_run_is_declared_and_the_cap_of_thirty_holds(tmp_path):
     entries = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
     assert len(entries) == 30 and entries[0]["model"] == log.MODEL
     assert len(entries[0]["brief_sha256"]) == 64 and entries[0]["output_sha256"] is None
-    with pytest.raises(ValueError, match="30"):
-        log.declare(path, agent=31, role="R1", sheets=["twins"], rows=1, brief_text="x", date="2026-11-10")
+    assert log.ROUNDS == {1: (1, 30), 2: (31, 38)} and log.MAX_AGENTS == 38
+    for i in range(31, 39):
+        log.declare(path, agent=i, role="R1", sheets=["tier_f"], rows=1, brief_text=f"b{i}", date="2026-11-17")
+    with pytest.raises(ValueError, match="38"):
+        log.declare(path, agent=39, role="R1", sheets=["twins"], rows=1, brief_text="x", date="2026-11-10")
     with pytest.raises(ValueError, match="already"):
         log.declare(path, agent=3, role="R1", sheets=["twins"], rows=1, brief_text="x", date="2026-11-10")
 
@@ -1151,3 +1155,124 @@ def test_blinded_input_copy_has_no_hidden_column(tmp_path):
     n = len(list(csv.DictReader(io.StringIO(out.read_text(encoding="utf-8")))))
     assert n == len(list(csv.DictReader(io.StringIO((SHEET_DIR / "tier_k_block_questions.csv")
                                                       .read_text(encoding="utf-8")))))
+
+
+# ---------------------------------------------------------------- round 2: the replacement items
+def test_a_second_round_is_decided_onto_the_first_rounds_records(tmp_path):
+    from grcbench.review import coordinate
+    round1, round2, reviews = tmp_path / "w1", tmp_path / "w2", tmp_path / "reviews"
+    _jsonl(round1 / "out" / "a01-R1-K.jsonl", [_twin("a", "b", "twin")])
+    _jsonl(round1 / "out" / "a02-R2-K.jsonl", [_twin("a", "b", "twin")])
+    _jsonl(round1 / "out" / "a07-EX.jsonl", [{**_twin("a", "b", "twin"), "pass": "audit"}])
+    coordinate.decide_sheet(round1, "twins", reviews_dir=reviews, sheet_dir=tmp_path / "s", require_all=False)
+    _jsonl(round2 / "out" / "a31-R1-F.jsonl", [_twin("c", "d", "not twin")])
+    _jsonl(round2 / "out" / "a32-R2-F.jsonl", [_twin("c", "d", "not twin")])
+    _jsonl(round2 / "out" / "a35-EX.jsonl", [{**_twin("c", "d", "not twin"), "pass": "audit"}])
+    recs = coordinate.decide_sheet(round2, "twins", reviews_dir=reviews, sheet_dir=tmp_path / "s",
+                                   require_all=False, merge=True)
+    assert [r["key"] for r in recs] == [("lexical", "a", "b"), ("lexical", "c", "d")]
+    with pytest.raises(ValueError, match="already decided"):        # a second round never re-decides a row
+        coordinate.decide_sheet(round2, "twins", reviews_dir=reviews, sheet_dir=tmp_path / "s",
+                                require_all=False, merge=True)
+
+
+def test_a_second_rounds_input_holds_only_the_undecided_rows(tmp_path, monkeypatch):
+    from grcbench.review import inputs, records
+    from grcbench.review.sheets import SHEETS
+    header = (SHEET_DIR / SHEETS["twins"].file).read_text(encoding="utf-8-sig").splitlines()[0]
+    cols = header.split(",")
+    rows = [dict.fromkeys(cols, "") | {"source": "lexical", "id_a": a, "id_b": b} for a, b in (("a", "b"), ("c", "d"))]
+    sheet_dir = tmp_path / "sheets"
+    sheet_dir.mkdir()
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=cols, lineterminator="\n")
+    w.writeheader()
+    w.writerows(rows)
+    (sheet_dir / SHEETS["twins"].file).write_text(buf.getvalue(), encoding="utf-8")
+    monkeypatch.setattr(inputs, "SHEET_DIR", sheet_dir)
+    records.write_records(tmp_path / "reviews" / "twins.jsonl",
+                          [_rec("twins", ("lexical", "a", "b"), {"value": "twin"}, {"value": "twin"}, "twin", "R1;R2")])
+    out = inputs.write_blinded("twins", tmp_path / "in", undecided_only=True, reviews_dir=tmp_path / "reviews")
+    assert [(r["id_a"], r["id_b"]) for r in _rows(out.read_text(encoding="utf-8"))] == [("c", "d")]
+
+
+def test_a_second_expert_review_round_merges_and_h1b_counts_the_original_pool(tmp_path):
+    from grcbench.review import expert
+    items = [{"item_id": f"gba-test-{i}", "item_kind": "tier_a_task", "split": "test", "packet_ref": "p"}
+             for i in (1, 2, 31)]
+    row = lambda i, **kw: {**_verdict(f"gba-test-{i}", **kw), "sheet": "expert_review", "key": {"item_id": f"gba-test-{i}"}}
+    _jsonl(tmp_path / "w1" / "out" / "a27-EX-H1b.jsonl",
+           [row(1), row(2, correct="no", verdict="reject", reason_code="other", comment="short")])
+    expert.write(tmp_path / "w1", items[:2], date="2026-11-15", reviews_dir=tmp_path / "reviews",
+                 sheet=tmp_path / "e.csv")
+    _jsonl(tmp_path / "w2" / "out" / "a37-EX-H1b.jsonl", [row(31)])
+    h = expert.write(tmp_path / "w2", items, date="2026-11-18", reviews_dir=tmp_path / "reviews",
+                     sheet=tmp_path / "e.csv", merge=True, replacements={"gba-test-31"})["A"]
+    assert (h["items"], h["accepted"], h["share"]) == (2, 1, 0.5)          # the original pool only
+    assert (h["replacements"], h["replacements_accepted"]) == (1, 1)
+    recs = [json.loads(l) for l in (tmp_path / "reviews" / "expert_review.jsonl").read_text().splitlines()]
+    assert [r["item_id"] for r in recs] == ["gba-test-1", "gba-test-2", "gba-test-31"]
+    assert [r["replacement"] for r in recs] == [False, False, True]
+    with pytest.raises(ValueError, match="already reviewed"):
+        _jsonl(tmp_path / "w3" / "out" / "a38-EX-H1b.jsonl", [row(1)])
+        expert.write(tmp_path / "w3", items, date="2026-11-18", reviews_dir=tmp_path / "reviews",
+                     sheet=tmp_path / "e.csv", merge=True, replacements={"gba-test-31"})
+
+
+def test_the_first_accepted_replacements_in_id_order_fill_the_slots():
+    from grcbench.review import replacements
+    finals = {"r1": "reject", "r2": "approve", "r3": "approve with edits", "r4": "approve"}
+    assert replacements.pick([(["r1", "r2", "r3", "r4"], 2)], finals) == {"r4"}
+    assert replacements.pick([(["r1", "r2", "r3", "r4"], 3)], finals) == set()
+    assert replacements.pick([(["r1", "r2"], 1)], {"r2": "approve"}) == set()     # r1 undecided: nothing yet
+    from grcbench.tier_a import replacements as A
+    from grcbench.tier_f import generate as G
+    assert replacements.groups("tier_f") == [(list(G.replacement_plan(s)), G.REPLACEMENTS[s]["slots"])
+                                             for s in ("test", "dev")]
+    assert sorted(replacements.groups("tier_a")) == sorted((list(ids), slots) for splits in A.SLOTS.values()
+                                                          for ids, slots in splits.values())
+    assert replacements.all_ids() == {i for s in ("test", "dev") for i in G.replacement_plan(s)} | A.REPLACEMENT_IDS
+
+
+def test_a_reserve_task_is_neither_run_nor_counted_as_removed(tmp_path):
+    from grcbench.review import items
+    for name, status in (("t1", "approved"), ("t2", "reserve"), ("t3", "rejected"),
+                         ("gba-test-01", "pending-team-review"), ("gba-test-31", "pending-team-review")):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "task.json").write_text(json.dumps({"id": name, "review": {"status": status}}))
+    # an undecided replacement is not part of the benchmark yet; an original pending task is
+    assert [d.name for d in items.active_dirs(sorted(tmp_path.iterdir()))] == ["gba-test-01", "t1"]
+    from grcbench.runlog.log import RunRefused
+    with pytest.raises(RunRefused):
+        items.refuse_rejected([{"id": "t2", "review": {"status": "reserve"}}])
+
+
+def test_a_regenerated_sheet_appends_new_rows_and_keeps_the_reviewed_rows_as_they_were(tmp_path):
+    from grcbench.review import fill, records
+    sheet = tmp_path / "tier_f_first_set.csv"
+    sheet.write_text("task_id,instruction,final_decision\ngbf-test-21,the text as reviewed,approve\n", encoding="utf-8")
+    generated = ("task_id,instruction,final_decision\r\ngbf-test-21,the text after the edits,\r\n"
+                 "gbf-test-151,a replacement,\r\n")
+    assert fill.with_new_rows("tier_f", generated, reviews_dir=tmp_path / "none", path=sheet) == generated
+    records.write_records(tmp_path / "reviews" / "tier_f.jsonl",
+                          [_rec("tier_f", ("gbf-test-21",), {"value": "approve"}, {"value": "approve"}, "approve",
+                                "R1;R2")])
+    out = fill.with_new_rows("tier_f", generated, reviews_dir=tmp_path / "reviews", path=sheet)
+    assert out == ("task_id,instruction,final_decision\ngbf-test-21,the text as reviewed,approve\n"
+                   "gbf-test-151,a replacement,\n")
+
+
+def test_the_tier_a_sheet_generator_keeps_the_reviewed_rows(tmp_path, monkeypatch):
+    """`./gb tier-a sheet` on a decided sheet: the reviewed rows stay byte for byte, new tasks are appended."""
+    import shutil
+
+    from grcbench.tier_a import spec_drafts
+    sheet = tmp_path / "tier_a_first_set.csv"
+    shutil.copy(SHEET_DIR / "tier_a_first_set.csv", sheet)
+    before = sheet.read_text(encoding="utf-8")
+    monkeypatch.setattr(spec_drafts, "SHEET", sheet)
+    monkeypatch.setattr(spec_drafts, "REPORT", tmp_path / "report.md")
+    monkeypatch.setattr(spec_drafts, "DRAFTS", tmp_path / "drafts.jsonl")
+    spec_drafts.main([])
+    after = sheet.read_text(encoding="utf-8")
+    assert after.startswith(before) and len(after) >= len(before)

@@ -1,0 +1,57 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "files[0]: power_db.dat does not exist",
+    "files[1]: second_quantized.dat does not exist",
+    "answer[0]: modulator sensitivity: no answer line names 'modulator sensitivity'",
+    "answer[1]: demodulator gain: no answer line names 'demodulator gain'",
+    "answer[2]: averaging length: no answer line names 'averaging length'",
+    "answer[3]: quantizer scale: no answer line names 'quantizer scale'",
+    "answer[4]: Float To Short default scale: no answer line names 'float to short default scale'",
+    "answer[5]: mean power: expected value not derivable: 'power_db.dat does not exist in the project folder'",
+    "answer[6]: quantized peak frequency: expected value not derivable: 'second_quantized.dat does not exist in the project folder'"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "files[0]: power_db.dat does not exist",
+      "files[1]: second_quantized.dat does not exist",
+      "answer[3]: quantizer scale: expects 1000 after 'quantizer scale'",
+      "answer[4]: Float To Short default scale: expects 1 after 'float to short default scale'",
+      "answer[5]: mean power: expected value not derivable: 'power_db.dat does not exist in the project folder'",
+      "answer[6]: quantized peak frequency: expected value not derivable: 'second_quantized.dat does not exist in the project folder'"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "83d634fed5d7e08cc0e38ae60d15e45b0761b9834a0987dad4e83002ed3ef026",
+ "passed": true,
+ "task": "gba-test-33"
+}

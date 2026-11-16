@@ -1,0 +1,56 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "files[0]: received.dat does not exist",
+    "files[1]: second_power_db.dat does not exist",
+    "answer[0]: high-pass cutoff: no answer line names 'high.?pass cut.?off'",
+    "answer[1]: AGC reference: no answer line names 'agc reference'",
+    "answer[2]: averaging length: no answer line names 'averaging length'",
+    "answer[3]: AGC default maximum gain: no answer line names 'agc default max(imum)? gain'",
+    "answer[4]: Moving Average item types: no answer line names 'moving average (item )?types'",
+    "answer[5]: received RMS: expected value not derivable: 'received.dat does not exist in the project folder'",
+    "answer[6]: mean power: expected value not derivable: 'second_power_db.dat does not exist in the project folder'"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 8
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "files[0]: received.dat does not exist",
+      "files[1]: second_power_db.dat does not exist",
+      "answer[3]: AGC default maximum gain: expects 65536 after 'agc default max(imum)? gain'",
+      "answer[5]: received RMS: expected value not derivable: 'received.dat does not exist in the project folder'",
+      "answer[6]: mean power: expected value not derivable: 'second_power_db.dat does not exist in the project folder'"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc + wrong_end_state.json"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "a253a7b5384da56e5fca13d8c3f31d901c3fd6f44d52954994fcd2f0cb22b3cf",
+ "passed": true,
+ "task": "gba-test-31"
+}

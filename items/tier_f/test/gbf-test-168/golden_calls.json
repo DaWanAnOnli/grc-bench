@@ -1,0 +1,81 @@
+{
+ "query_knowledge": {
+  "query": "Signal Source Frequency Mod Quadrature Demod Hilbert AGC Multiply File Sink",
+  "domain": "catalog",
+  "k": 14
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_1",
+    "params": {
+     "type": "float",
+     "freq": "7500",
+     "amp": "0.8"
+    }
+   },
+   {
+    "block_id": "analog_frequency_modulator_fc",
+    "instance_name": "fm_mod",
+    "params": {
+     "sensitivity": "2*math.pi*2500/samp_rate"
+    }
+   },
+   {
+    "block_id": "analog_quadrature_demod_cf",
+    "instance_name": "fm_demod",
+    "params": {
+     "gain": "samp_rate/(2*math.pi*1250)"
+    }
+   },
+   {
+    "block_id": "hilbert_fc",
+    "instance_name": "hilbert"
+   },
+   {
+    "block_id": "analog_agc_xx",
+    "instance_name": "agc",
+    "params": {
+     "type": "complex",
+     "rate": "1e-2",
+     "reference": "0.5",
+     "gain": "1"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "lo",
+    "params": {
+     "type": "complex",
+     "freq": "-3750"
+    }
+   },
+   {
+    "block_id": "blocks_multiply_xx",
+    "instance_name": "mixer",
+    "params": {
+     "type": "complex"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "complex",
+     "file": "shifted.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_1:0->fm_mod:0",
+   "fm_mod:0->fm_demod:0",
+   "fm_demod:0->hilbert:0",
+   "hilbert:0->agc:0",
+   "agc:0->mixer:0",
+   "lo:0->mixer:1",
+   "mixer:0->out:0"
+  ]
+ }
+}

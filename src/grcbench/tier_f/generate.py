@@ -87,6 +87,18 @@ TARGETS = {
             "families": {"build": 8, "modify": 10, "repair": 8, "parameter-tune": 9}},
 }
 
+# Replacements for the tasks the review rejected (pre-registration §10): one new id per rejected task, in that
+# task's family, at L1, plus spares. The ids continue after the planned ones, in a seeded order of families. A
+# replacement with no room for a distinct L1 edit is searched at L2 (`generate --fallback L2`; its build.py
+# names the level). The first replacements the review accepts, in id order, fill the `slots`; any further
+# accepted one is kept as a reserve and not scored.
+REPLACEMENTS = {
+    "test": {"start": 151, "slots": 21, "spare_families": ["build", "parameter-tune", "modify"],
+             "families": {"build": 8, "parameter-tune": 7, "repair": 3, "modify": 3}},
+    "dev": {"start": 46, "slots": 2, "spare_families": ["build"],
+            "families": {"build": 1, "parameter-tune": 1}},
+}
+
 
 # =============================================================================================== the model
 @dataclass(frozen=True)
@@ -1070,6 +1082,34 @@ def plan(split: str) -> dict[str, tuple[str, str]]:
     return {f"gbf-{split}-{tgt['start'] + i:02d}": (fams[i], levels[i]) for i in range(len(levels))}
 
 
+def replacement_plan(split: str) -> dict[str, tuple[str, str]]:
+    """task id -> (family, "L1") for every replacement of the split (deterministic, seeded order)."""
+    rp = REPLACEMENTS[split]
+    fams = [fm for fm, n in rp["families"].items() for _ in range(n)] + list(rp["spare_families"])
+    random.Random(f"{SEED}\0replacements\0{split}").shuffle(fams)
+    return {f"gbf-{split}-{rp['start'] + i:02d}": (fm, "L1") for i, fm in enumerate(fams)}
+
+
+def all_plans(split: str) -> dict[str, tuple[str, str]]:
+    return {**plan(split), **replacement_plan(split)}
+
+
+def is_replacement(task_id: str) -> bool:
+    split = task_id.split("-")[1]
+    return split in REPLACEMENTS and int(task_id.split("-")[-1]) >= REPLACEMENTS[split]["start"]
+
+
+def rejected_ids() -> set[str]:
+    """Tier-F and Tier-A items the review rejected: they are not part of the benchmark and hold no cell."""
+    import json
+    out = set()
+    for p in list(TF.glob("*/*/task.json")) + list((ITEMS / "tier_a").glob("*/*/task.json")):
+        t = json.loads(p.read_text(encoding="utf-8"))
+        if (t.get("review") or {}).get("status") == "rejected":
+            out.add(t.get("id", p.parent.name))
+    return out
+
+
 def rng_for(task_id: str, attempt: int) -> random.Random:
     return random.Random(int(hashlib.sha256(f"{SEED}\0{task_id}\0{attempt}".encode()).hexdigest()[:16], 16))
 
@@ -1743,8 +1783,13 @@ sys.path.insert(0, str(HERE.parents[3] / "src"))
 
 from grcbench.tier_f.generate import build_task  # noqa: E402
 
-raise SystemExit(build_task("{tid}", {attempt}, HERE))
+raise SystemExit(build_task("{tid}", {attempt}, HERE{level_arg}))
 '''
+
+
+def build_py(tid: str, attempt: int, split: str, level: str | None = None) -> str:
+    """The task's build.py; a replacement searched at its fallback level names that level."""
+    return BUILD_PY.format(tid=tid, attempt=attempt, split=split, level_arg=f', level="{level}"' if level else "")
 
 
 def write(task_dir: Path, cand: dict) -> list[str]:
@@ -1757,10 +1802,11 @@ def write(task_dir: Path, cand: dict) -> list[str]:
     return taskio.save(task_dir, cand["record"], files)
 
 
-def build_task(task_id: str, attempt: int, task_dir: Path) -> int:
-    """Rebuild one generated task from its attempt (its build.py)."""
+def build_task(task_id: str, attempt: int, task_dir: Path, level: str | None = None) -> int:
+    """Rebuild one generated task from its attempt (its build.py); `level` for a replacement searched at L2."""
     split = task_id.split("-")[1]
-    family, level = plan(split)[task_id]
+    family, planned = all_plans(split)[task_id]
+    level = level or planned
     cand = assemble(task_id, split, family, level, attempt)
     if cand is None:
         print(f"{task_id}: attempt {attempt} no longer gives a task", file=sys.stderr)
@@ -1814,46 +1860,59 @@ def _may_share(cand: dict, counts: dict[str, int], tasks: dict[str, list[tuple[s
         and all(lv in CELL_CAP for lv, _ in others) and cand.get("edit_key") not in {k for _, k in others}
 
 
-def generate(ids: list[str], first_attempt: int = 0, share: bool = False) -> list[str]:
+def generate(ids: list[str], first_attempt: int = 0, share: bool = False, fallback: str | None = None,
+             max_attempts: int | None = None) -> list[str]:
     """Search each id's first attempt with a new cell of the right split (or, with `share`, a cell of its split
-    that _may_share allows); write the task and its build.py."""
-    done = []
-    taken = used_cells(exclude=set(ids))
-    counts = cell_counts(exclude=set(ids))
-    tasks = cell_tasks(exclude=set(ids))
+    that _may_share allows); write the task and its build.py. A task the review rejected holds no cell. With
+    `fallback`, an id that finds no task at its planned level is searched again at that level (its build.py
+    names it). `max_attempts` bounds each search (default: the generator's full range)."""
+    done: list[str] = []
+    gone = set(ids) | rejected_ids()
+    state = (used_cells(exclude=gone), cell_counts(exclude=gone), cell_tasks(exclude=gone))
     for tid in ids:
         split = tid.split("-")[1]
-        family, level = plan(split)[tid]
-        shares = share and level in CELL_CAP
-        start = max(first_attempt, SHARE_FROM) if shares else first_attempt
-        stop = start + (MAX_ATTEMPTS - EXTENDED_FROM) if shares else MAX_ATTEMPTS
-        for attempt in range(start, stop):
-            try:
-                cand = assemble(tid, split, family, level, attempt)
-            except (ValueError, ZeroDivisionError, KeyError, IndexError, StopIteration) as exc:   # a candidate that breaks
-                print(f"{tid} attempt {attempt}: skipped ({type(exc).__name__}: {exc})", file=sys.stderr)
-                continue
-            if cand is None or search_rule_misses(cand):
-                continue
-            sharing = shares and attempt >= SHARE_FROM
-            if cand["cell"] in taken and not (sharing and _may_share(cand, counts, tasks)):
-                continue
-            d = TF / split / tid
-            errors = write(d, cand)
-            if errors:
-                print(f"{tid} attempt {attempt}: schema errors {errors}", file=sys.stderr)
-                continue
-            (d / "build.py").write_text(BUILD_PY.format(tid=tid, attempt=attempt, split=split), encoding="utf-8",
-                                        newline="\n")
-            taken[cand["cell"]] = tid
-            counts[cand["cell"]] = counts.get(cand["cell"], 0) + 1
-            tasks.setdefault(cand["cell"], []).append((cand["record"]["level"], cand.get("edit_key")))
+        family, level = all_plans(split)[tid]
+        if _search(tid, split, family, level, first_attempt, share, state, max_attempts):
             done.append(tid)
-            print(f"{tid}: {family} {level} attempt {attempt}: {cand['cell']}")
-            break
-        else:
-            print(f"{tid}: no task in attempts {start} to {stop - 1}", file=sys.stderr)
+        elif fallback and fallback != level:
+            print(f"{tid}: searched at {fallback}", file=sys.stderr)
+            if _search(tid, split, family, fallback, first_attempt, share, state, max_attempts, named=fallback):
+                done.append(tid)
     return done
+
+
+def _search(tid: str, split: str, family: str, level: str, first_attempt: int, share: bool, state: tuple,
+            max_attempts: int | None, named: str | None = None) -> bool:
+    taken, counts, tasks = state
+    shares = share and level in CELL_CAP
+    start = max(first_attempt, SHARE_FROM) if shares else first_attempt
+    stop = start + (MAX_ATTEMPTS - EXTENDED_FROM) if shares else MAX_ATTEMPTS
+    if max_attempts is not None:
+        stop = min(stop, start + max_attempts)
+    for attempt in range(start, stop):
+        try:
+            cand = assemble(tid, split, family, level, attempt)
+        except (ValueError, ZeroDivisionError, KeyError, IndexError, StopIteration) as exc:   # a candidate that breaks
+            print(f"{tid} attempt {attempt}: skipped ({type(exc).__name__}: {exc})", file=sys.stderr)
+            continue
+        if cand is None or search_rule_misses(cand):
+            continue
+        sharing = shares and attempt >= SHARE_FROM
+        if cand["cell"] in taken and not (sharing and _may_share(cand, counts, tasks)):
+            continue
+        d = TF / split / tid
+        errors = write(d, cand)
+        if errors:
+            print(f"{tid} attempt {attempt}: schema errors {errors}", file=sys.stderr)
+            continue
+        (d / "build.py").write_text(build_py(tid, attempt, split, named), encoding="utf-8", newline="\n")
+        taken[cand["cell"]] = tid
+        counts[cand["cell"]] = counts.get(cand["cell"], 0) + 1
+        tasks.setdefault(cand["cell"], []).append((cand["record"]["level"], cand.get("edit_key")))
+        print(f"{tid}: {family} {level} attempt {attempt}: {cand['cell']}")
+        return True
+    print(f"{tid}: no task at {level} in attempts {start} to {stop - 1}", file=sys.stderr)
+    return False
 
 
 def main(argv: list[str]) -> int:
@@ -1865,18 +1924,25 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--missing", action="store_true", help="with --split: only the ids without a task folder")
     ap.add_argument("--share-cells", action="store_true", help="L1 and L3: allow a cell of the split already "
                     f"used (tasks per cell {CELL_CAP}; attempts from {SHARE_FROM})")
+    ap.add_argument("--replacements", action="store_true",
+                    help="with --split: the replacements of the tasks the review rejected (REPLACEMENTS)")
+    ap.add_argument("--fallback", default=None, help="level to search an id at when its planned level gives none")
+    ap.add_argument("--max-attempts", type=int, default=None, help="bound each search to this many attempts")
     a = ap.parse_args(argv)
     if a.plan:
         for split in TARGETS:
-            for tid, (fam, lev) in plan(split).items():
+            for tid, (fam, lev) in all_plans(split).items():
                 print(tid, fam, lev)
         return 0
-    ids = a.ids.split(",") if a.ids else list(plan(a.split)) if a.split else []
+    if a.ids:
+        ids = a.ids.split(",")
+    else:
+        ids = list(replacement_plan(a.split) if a.replacements else plan(a.split)) if a.split else []
     if a.missing:
         ids = [i for i in ids if not (TF / i.split("-")[1] / i / "task.json").exists()]
     if not ids:
         ap.error("give --ids or --split")
-    done = generate(ids, a.from_attempt, a.share_cells)
+    done = generate(ids, a.from_attempt, a.share_cells, a.fallback, a.max_attempts)
     print(f"{len(done)} of {len(ids)} tasks written")
     return 0 if len(done) == len(ids) else 1
 

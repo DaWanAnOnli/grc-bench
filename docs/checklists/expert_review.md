@@ -53,7 +53,7 @@ records the deviation.
 
 ## What is in scope
 
-Every item is reviewed before the freeze on Tue 17 Nov. Eval plan §5.3 asks for "every GNU Radio
+Every item is reviewed before the freeze on Fri 20 Nov. Eval plan §5.3 asks for "every GNU Radio
 question and every Tier-F and Tier-A task", dev items included.
 
 | Items | Count |
@@ -61,9 +61,18 @@ question and every Tier-F and Tier-A task", dev items included.
 | GNU Radio block questions (script-generated, test) | 100 |
 | The frozen test questions that are about GNU Radio | 40 |
 | The dev questions that are about GNU Radio | 20 |
-| Tier-F tasks (150 test, 45 dev) | 195 |
-| Tier-A tasks (30 test, 12 dev) | 42 |
-| **Total** | **397** |
+| Tier-F tasks (174 test, 48 dev) | 222 |
+| Tier-A tasks (37 test, 14 dev) | 51 |
+| **Total** | **433** |
+
+**The replacement tasks are reviewed in a second round.** The two-reviewer review rejected 23 Tier-F
+and 7 Tier-A tasks. Tasks that replace them were then built, as follows:
+- Tier F: the test tasks numbered 151 to 174 and the dev tasks numbered 46 to 48;
+- Tier A: the test tasks numbered 31 to 37 and the dev tasks numbered 13 and 14.
+
+These 36 tasks go through the same reviews, and the expert reviews each of them like any other item.
+H1b is counted on the original pool, the 397 items without the replacements. The replacements'
+acceptance is reported beside it, because they were built after the expert's first verdicts were known.
 
 **A question is about GNU Radio** when its text names GNU Radio, GRC, GNU Radio Companion, a flowgraph,
 a GNU Radio module (`gr-…`, `gr.…`), VOLK or pybind, or when its task type is `gnuradio_usage`. This

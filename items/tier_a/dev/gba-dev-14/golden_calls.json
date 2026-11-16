@@ -1,0 +1,85 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "docs",
+    "k": 3,
+    "query": "embedded python block"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "add_blocks": [
+     {
+      "block_id": "epy_block",
+      "instance_name": "sign",
+      "params": {
+       "_source_code": "\"\"\"Sign: y = 1 where x >= 0, else -1.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    \"\"\"Sign: y = 1 where x >= 0, else -1.\"\"\"\n\n    def __init__(self):\n        gr.sync_block.__init__(self, name=\"Sign\", in_sig=[np.float32], out_sig=[np.float32])\n\n    def work(self, input_items, output_items):\n        x = input_items[0]\n        output_items[0][:] = np.where(x >= 0, 1.0, -1.0)\n        return len(output_items[0])\n"
+      }
+     },
+     {
+      "block_id": "blocks_file_sink",
+      "instance_name": "added_sink",
+      "params": {
+       "file": "sign.dat",
+       "type": "float"
+      }
+     }
+    ],
+    "add_connections": [
+     "resampler:0->sign:0",
+     "sign:0->added_sink:0"
+    ],
+    "reason": "Add the Sign Detector Embedded Python block writing to sign.dat."
+   },
+   "tool": "change_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "sign"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {},
+   "tool": "generate_python"
+  },
+  {
+   "args": {},
+   "tool": "save_graph"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('sign.dat',dtype=np.float32)[4800:]; print(len(x), float(x.mean()), float(x.min()), float(x.max()), float(np.sqrt(np.mean(x*x))))\""
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "block_id": "sign_detect",
+    "instance_name": "sign",
+    "label": "Sign Detector"
+   },
+   "tool": "save_block"
+  }
+ ],
+ "final_text": "I added an Embedded Python block after the resampler that outputs 1 where the input is at least 0 and -1 elsewhere, and a File Sink writing it to sign.dat. A run gives only the values 1 and -1 (RMS 1). I saved the block to the library as sign_detect (label Sign Detector) and saved the flowgraph. quantized.dat is unchanged."
+}

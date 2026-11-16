@@ -151,6 +151,12 @@ The same settings apply to every model (eval plan §4.4, §7.1):
   - a number measured from a file the agent's run wrote (`file`, with an oracle feature such as
     `rms` or `peak_freq`). The expected value follows whatever the run wrote, so another check must
     make sure that the file comes from the graph the instruction asks for.
+
+  A fact with a `label` (a regular expression) is read from the first line of the answer that names
+  the label, and a number fact must be the first number after the label on that line. Check that:
+  - the instruction names each item with words the label matches;
+  - an answer that swaps two values fails;
+  - an answer that lists a second candidate on a later line gains nothing.
 - [ ] **File checks** (`acceptance.files`). Besides existence, patterns and JSON or YAML keys, a
       file can be checked as a CSV manifest (`csv_sizes`): a header row, then one `name,size` row
       per file of a folder, each size equal to that file's real size. The instruction states the

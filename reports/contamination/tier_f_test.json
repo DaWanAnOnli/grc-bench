@@ -2,7 +2,7 @@
  "all_corpora": {
   "any": {
    "items_flagged": 12,
-   "rate": 0.08
+   "rate": 0.069
   },
   "embed": {
    "items_flagged": 0,
@@ -10,7 +10,7 @@
   },
   "ngram": {
    "items_flagged": 12,
-   "rate": 0.08
+   "rate": 0.069
   },
   "tfidf": {
    "items_flagged": 0,
@@ -27,17 +27,17 @@
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.84,
-     "min": 0.7483,
-     "p10": 0.7944,
-     "p25": 0.8003,
-     "p50": 0.8085,
-     "p75": 0.8199,
-     "p90": 0.8253,
-     "p95": 0.8299,
-     "p99": 0.8392
+     "max": 0.8459,
+     "min": 0.7582,
+     "p10": 0.7946,
+     "p25": 0.8004,
+     "p50": 0.8089,
+     "p75": 0.82,
+     "p90": 0.8266,
+     "p95": 0.8305,
+     "p99": 0.84
     },
-    "passages_embedded": 77,
+    "passages_embedded": 83,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -74,21 +74,31 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.3262,
+     "max": 0.3282,
      "min": 0.1728,
-     "p10": 0.2023,
-     "p25": 0.2161,
+     "p10": 0.2015,
+     "p25": 0.2147,
      "p50": 0.2318,
      "p75": 0.2559,
-     "p90": 0.2764,
-     "p95": 0.29,
-     "p99": 0.313
+     "p90": 0.2771,
+     "p95": 0.2916,
+     "p99": 0.321
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
     "threshold": 0.55
    },
    "top_pairs": [
+    {
+     "doc_id": "tier1/t1_addwire_fec_bercurve_generator_out5",
+     "doc_ref": "t1_addwire_fec_bercurve_generator_out5",
+     "embed": 0.8459,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a -2.8 kHz complex tone with amplitude 0.4, add complex Gaussian noise of amplitude…",
+     "item_id": "gbf-test-169",
+     "ngram_shared": 0,
+     "tfidf": 0.3282,
+     "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
+    },
     {
      "doc_id": "tier2/t2_query_analog_wfm_rcv",
      "doc_ref": "t2_query_analog_wfm_rcv",
@@ -132,11 +142,31 @@
     {
      "doc_id": "tier2/t2_query_analog_wfm_rcv",
      "doc_ref": "t2_query_analog_wfm_rcv",
+     "embed": 0.8345,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a -10.5 kHz complex tone with amplitude 1; then take its complex conjugate with a Co…",
+     "item_id": "gbf-test-158",
+     "ngram_shared": 0,
+     "tfidf": 0.229,
+     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
+    },
+    {
+     "doc_id": "tier2/t2_query_analog_wfm_rcv",
+     "doc_ref": "t2_query_analog_wfm_rcv",
      "embed": 0.8329,
      "item": "The open flowgraph is meant to do the following, at a sample rate of 48 kHz: use Signal Sources to make a 11.3 kHz cosine with amplitude 0.6 and a 3.1 kHz cosi…",
      "item_id": "gbf-test-74",
      "ngram_shared": 0,
      "tfidf": 0.2651,
+     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
+    },
+    {
+     "doc_id": "tier2/t2_query_analog_wfm_rcv",
+     "doc_ref": "t2_query_analog_wfm_rcv",
+     "embed": 0.8315,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 10.8 kHz cosine with amplitude 0.5; then frequency-modulate it with a Frequency Mo…",
+     "item_id": "gbf-test-162",
+     "ngram_shared": 0,
+     "tfidf": null,
      "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
     },
     {
@@ -158,59 +188,29 @@
      "ngram_shared": 0,
      "tfidf": 0.1868,
      "training": "php?title=File:MorseGen_fg.png)\\nFor this example, the output Audio Sink has a sample rate of 48 kHz. This is fed by a Rational Resampler which interpolates (multiplies) the sample rate by 4, so the input sample rate must be 12000 (12 kHz)…"
-    },
-    {
-     "doc_id": "tier2/t2_query_analog_wfm_rcv",
-     "doc_ref": "t2_query_analog_wfm_rcv",
-     "embed": 0.83,
-     "item": "The open flowgraph is meant to do the following, at a sample rate of 48 kHz: use a Signal Source to make a 8.4 kHz complex tone with amplitude 1; then take its…",
-     "item_id": "gbf-test-54",
-     "ngram_shared": 0,
-     "tfidf": 0.2241,
-     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
-    },
-    {
-     "doc_id": "tier2/t2_query_analog_wfm_rcv",
-     "doc_ref": "t2_query_analog_wfm_rcv",
-     "embed": 0.8297,
-     "item": "The open flowgraph is meant to do the following, at a sample rate of 48 kHz: use a Signal Source to make a 9.1 kHz complex tone with amplitude 0.5; then change…",
-     "item_id": "gbf-test-123",
-     "ngram_shared": 0,
-     "tfidf": 0.2496,
-     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
-    },
-    {
-     "doc_id": "tier2/t2_query_analog_wfm_rcv",
-     "doc_ref": "t2_query_analog_wfm_rcv",
-     "embed": 0.8272,
-     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 9.8 kHz cosine with amplitude 1; then frequency-modulate it with a Frequency Mod b…",
-     "item_id": "gbf-test-40",
-     "ngram_shared": 0,
-     "tfidf": 0.2495,
-     "training": "nThe flowgraph should now look like the following:\\n[](https://wiki.gnuradio.org/index.php?title=File:B200mini_FM_Receiver_flowgraph_audio_sink.png)\\n\\nThe question is how to get from the output of the USRP which is complex IQ sampled at 2…"
     }
    ]
   },
   "repaired": {
    "any_signal": {
     "items_flagged": 2,
-    "rate": 0.0133
+    "rate": 0.0115
    },
    "description": "repaired answers (10_repaired)",
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.8502,
-     "min": 0.7774,
-     "p10": 0.8092,
-     "p25": 0.8165,
-     "p50": 0.8235,
-     "p75": 0.8307,
-     "p90": 0.8352,
-     "p95": 0.8381,
-     "p99": 0.8467
+     "max": 0.8499,
+     "min": 0.7922,
+     "p10": 0.8098,
+     "p25": 0.8169,
+     "p50": 0.8244,
+     "p75": 0.8318,
+     "p90": 0.8372,
+     "p95": 0.8416,
+     "p99": 0.8469
     },
-    "passages_embedded": 105,
+    "passages_embedded": 107,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -222,7 +222,7 @@
    "ngram": {
     "items_coverage_ge_50pct": 0,
     "items_with_twin": 2,
-    "rate": 0.0133,
+    "rate": 0.0115,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -245,13 +245,13 @@
     "max_cosine_quantiles": {
      "max": 0.3146,
      "min": 0.1822,
-     "p10": 0.2073,
-     "p25": 0.2279,
-     "p50": 0.2445,
-     "p75": 0.261,
-     "p90": 0.278,
+     "p10": 0.2067,
+     "p25": 0.2251,
+     "p50": 0.2429,
+     "p75": 0.2608,
+     "p90": 0.2745,
      "p95": 0.2838,
-     "p99": 0.3017
+     "p99": 0.3019
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -261,8 +261,8 @@
     {
      "doc_id": "gemma4-31b/q_a575129c52598319",
      "doc_ref": "q_a575129c52598319",
-     "embed": 0.8502,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 32 kHz: use a Signal Source to make a 5.1 kHz cosine with amplitude 1; then turn it into a c…",
+     "embed": 0.8499,
+     "item": "The open flowgraph was built with these steps, at a sample rate of 32 kHz: use a Signal Source to make a 5.6 kHz cosine with amplitude 1; then turn it into a c…",
      "item_id": "gbf-test-105",
      "ngram_shared": 0,
      "tfidf": null,
@@ -271,9 +271,39 @@
     {
      "doc_id": "gemma4-31b/q_a575129c52598319",
      "doc_ref": "q_a575129c52598319",
-     "embed": 0.8494,
+     "embed": 0.8484,
      "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 6 kHz cosine with amplitude 0.8; then frequency-modulate it with a Frequency Mod b…",
      "item_id": "gbf-test-29",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "complex baseband signal, where the phase of the complex vector $e^{j\\phi(t)}$ is manipulated. ### Flowgraph Design #### 1. Required Blocks and Parameters | Block | Parameter | Value (Example) | Description | | :--- | :--- | :--- | :--- | |…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_20b479577147d8ea",
+     "doc_ref": "q_20b479577147d8ea",
+     "embed": 0.8464,
+     "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 4.1 kHz complex tone with amplitude 0.25, add complex Gaussian noise of amplitude…",
+     "item_id": "gbf-test-171",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Flowgraph** Signal Source + Noise Source -> Add -> FIR Filter -> Sinks or for a recorded noisy signal File Source -> FIR Filter -> File Sink / QT GUI Sinks 1. **Signal generation / input** * `Signal Source` for a test tone, or `File Source…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_a575129c52598319",
+     "doc_ref": "q_a575129c52598319",
+     "embed": 0.8456,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 10.8 kHz cosine with amplitude 0.5; then frequency-modulate it with a Frequency Mo…",
+     "item_id": "gbf-test-162",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "complex baseband signal, where the phase of the complex vector $e^{j\\phi(t)}$ is manipulated. ### Flowgraph Design #### 1. Required Blocks and Parameters | Block | Parameter | Value (Example) | Description | | :--- | :--- | :--- | :--- | |…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_a575129c52598319",
+     "doc_ref": "q_a575129c52598319",
+     "embed": 0.8456,
+     "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 7.5 kHz cosine with amplitude 0.8; then frequency-modulate it with a Frequency Mod…",
+     "item_id": "gbf-test-168",
      "ngram_shared": 0,
      "tfidf": null,
      "training": "complex baseband signal, where the phase of the complex vector $e^{j\\phi(t)}$ is manipulated. ### Flowgraph Design #### 1. Required Blocks and Parameters | Block | Parameter | Value (Example) | Description | | :--- | :--- | :--- | :--- | |…"
@@ -301,85 +331,55 @@
     {
      "doc_id": "muse-glimmer-30b/q_dafdb0d3b587bf61",
      "doc_ref": "q_dafdb0d3b587bf61",
-     "embed": 0.8433,
+     "embed": 0.8435,
      "item": "In this flowgraph, at a sample rate of 48 kHz, use Signal Sources to make a 6.7 kHz cosine with amplitude 0.4 and a 10 kHz cosine with amplitude 0.5, and add t…",
      "item_id": "gbf-test-94",
      "ngram_shared": 0,
-     "tfidf": 0.2523,
+     "tfidf": 0.2492,
      "training": "same Fs File Source / RTL-SDR Source, center 100 kHz, Fs = 1e6 S/s, decimation if needed Low Pass Filter FIR, transition ~ 2 kHz, cutoff ~ 5 kHz to limit AM bandwidth AM Demod: envelope detector (magnitude/abs followed by Low Pass Filter,…"
-    },
-    {
-     "doc_id": "gemma4-31b/q_a575129c52598319",
-     "doc_ref": "q_a575129c52598319",
-     "embed": 0.8398,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use a Signal Source to make a 5 kHz cosine with amplitude 1; then frequency-modulate…",
-     "item_id": "gbf-test-70",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "complex baseband signal, where the phase of the complex vector $e^{j\\phi(t)}$ is manipulated. ### Flowgraph Design #### 1. Required Blocks and Parameters | Block | Parameter | Value (Example) | Description | | :--- | :--- | :--- | :--- | |…"
-    },
-    {
-     "doc_id": "gpt-oss-120b/q_609d652cf5167382",
-     "doc_ref": "q_609d652cf5167382",
-     "embed": 0.8395,
-     "item": "This flowgraph runs at a sample rate of 48 kHz and writes a complex tone to a File Sink that stores complex samples in the file qtgui_time_sink_x_0_0.dat. When…",
-     "item_id": "gbf-test-06",
-     "ngram_shared": 0,
-     "tfidf": 0.2712,
-     "training": "1 kHz or native rate. 2. **(Optional) Rational Resampler** - 48 kHz -> 44.1 kHz. 3. **(Optional) Float-to-Short** - for integer PCM. 4. **File Sink** (or **WAV File Sink**) - writes the samples to disk. 5. **(Optional) Head** - to limit re…"
-    },
-    {
-     "doc_id": "gemma4-31b/q_a575129c52598319",
-     "doc_ref": "q_a575129c52598319",
-     "embed": 0.8384,
-     "item": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 8.3 kHz cosine with amplitude 0.5; then frequency-mo…",
-     "item_id": "gbf-test-143",
-     "ngram_shared": 0,
-     "tfidf": 0.2277,
-     "training": "complex baseband signal, where the phase of the complex vector $e^{j\\phi(t)}$ is manipulated. ### Flowgraph Design #### 1. Required Blocks and Parameters | Block | Parameter | Value (Example) | Description | | :--- | :--- | :--- | :--- | |…"
     },
     {
      "doc_id": "muse-glimmer-30b/q_20b479577147d8ea",
      "doc_ref": "q_20b479577147d8ea",
-     "embed": 0.8378,
-     "item": "In this flowgraph, at a sample rate of 32 kHz, use Signal Sources to make a 6.1 kHz cosine with amplitude 0.25 and a 7.8 kHz cosine with amplitude 0.8, and add…",
-     "item_id": "gbf-test-135",
+     "embed": 0.8434,
+     "item": "In this flowgraph, at a sample rate of 32 kHz, use Signal Sources to make a 3.2 kHz cosine with amplitude 0.25 and a 1.7 kHz cosine with amplitude 0.4, and add…",
+     "item_id": "gbf-test-174",
      "ngram_shared": 0,
      "tfidf": null,
      "training": "Flowgraph** Signal Source + Noise Source -> Add -> FIR Filter -> Sinks or for a recorded noisy signal File Source -> FIR Filter -> File Sink / QT GUI Sinks 1. **Signal generation / input** * `Signal Source` for a test tone, or `File Source…"
     },
     {
-     "doc_id": "laguna-s21/q_534200e2f63f3d14",
-     "doc_ref": "q_534200e2f63f3d14",
-     "embed": 0.8378,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 32 kHz: use a Signal Source to make a 6.2 kHz complex tone with amplitude 0.5; then take its…",
-     "item_id": "gbf-test-64",
+     "doc_id": "nemotron3-super-120b/q_1abd02848f9b4159",
+     "doc_ref": "q_1abd02848f9b4159",
+     "embed": 0.8406,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a -2.8 kHz complex tone with amplitude 0.4, add complex Gaussian noise of amplitude…",
+     "item_id": "gbf-test-169",
      "ngram_shared": 0,
-     "tfidf": 0.2292,
-     "training": "the power of each signal 3. Calculate the ratio and convert to dB ## Flowgraph Structure ``` [Source 1] -> [Complex to Mag^2] -> [Moving Average] -> [Log10 (nlog10_ff)] -> [Multiply by 10] [Source 2] -> [Complex to Mag^2] -> [Moving Averag…"
+     "tfidf": 0.2982,
+     "training": "kHz output. | | **Throttle (optional)** | Sample rate = 48 kHz | Matches the hardware/sink rate if the downstream block expects a fixed rate. | | **Sink** | e.g. Audio Sink, File Sink, or USRP Sink set to 48 kS/s | Consumes the up-sampled…"
     }
    ]
   },
   "repaired_glm": {
    "any_signal": {
     "items_flagged": 3,
-    "rate": 0.02
+    "rate": 0.0172
    },
    "description": "repaired answers (10_repaired_glm)",
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.858,
-     "min": 0.8003,
-     "p10": 0.8225,
-     "p25": 0.8285,
-     "p50": 0.8359,
-     "p75": 0.8435,
-     "p90": 0.8473,
-     "p95": 0.8521,
-     "p99": 0.8558
+     "max": 0.86,
+     "min": 0.7989,
+     "p10": 0.8227,
+     "p25": 0.8286,
+     "p50": 0.8376,
+     "p75": 0.8438,
+     "p90": 0.8479,
+     "p95": 0.8519,
+     "p99": 0.8563
     },
-    "passages_embedded": 108,
+    "passages_embedded": 113,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -391,7 +391,7 @@
    "ngram": {
     "items_coverage_ge_50pct": 0,
     "items_with_twin": 3,
-    "rate": 0.02,
+    "rate": 0.0172,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -412,15 +412,15 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.3082,
+     "max": 0.304,
      "min": 0.2,
-     "p10": 0.2206,
-     "p25": 0.2333,
+     "p10": 0.2202,
+     "p25": 0.2329,
      "p50": 0.2507,
-     "p75": 0.2686,
-     "p90": 0.2853,
-     "p95": 0.2926,
-     "p99": 0.3049
+     "p75": 0.2684,
+     "p90": 0.2862,
+     "p95": 0.2925,
+     "p99": 0.3034
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -430,7 +430,17 @@
     {
      "doc_id": "devstral-small2-24b/q_070f1980d777e0da",
      "doc_ref": "q_070f1980d777e0da",
-     "embed": 0.858,
+     "embed": 0.86,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a -2.8 kHz complex tone with amplitude 0.4, add complex Gaussian noise of amplitude…",
+     "item_id": "gbf-test-169",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Flowgraph: 1. Use a `Vector Source` / `Signal Source` (or file source) generating a signal sampled at 12 kHz. 2. Use an `Interpolating FIR Filter` block (or `Rational Resampler`) with: - Interpolation: 4 - Taps: the ~219 taps from the FIR…"
+    },
+    {
+     "doc_id": "devstral-small2-24b/q_070f1980d777e0da",
+     "doc_ref": "q_070f1980d777e0da",
+     "embed": 0.8576,
      "item": "In this flowgraph, at a sample rate of 48 kHz, use Signal Sources to make a 6.7 kHz cosine with amplitude 0.4 and a 10 kHz cosine with amplitude 0.5, and add t…",
      "item_id": "gbf-test-94",
      "ngram_shared": 0,
@@ -498,16 +508,6 @@
      "training": "Flowgraph: 1. Use a `Vector Source` / `Signal Source` (or file source) generating a signal sampled at 12 kHz. 2. Use an `Interpolating FIR Filter` block (or `Rational Resampler`) with: - Interpolation: 4 - Taps: the ~219 taps from the FIR…"
     },
     {
-     "doc_id": "muse-glimmer-30b/q_b98fc9144705d112",
-     "doc_ref": "q_b98fc9144705d112",
-     "embed": 0.8522,
-     "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 6 kHz cosine with amplitude 0.8; then frequency-modulate it with a Frequency Mod b…",
-     "item_id": "gbf-test-29",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "GRC flowgraph** * Sample rate: 1e6 sps. Nyquist = 500 kHz * f1 = 100 kHz, f2 = 250 kHz, both < Nyquist 1. Signal Source 0 * Waveform: Sine * Output type: **Complex** (the FFT block takes complex input) * Frequency: 100e3 Hz * Amplitude: 1.…"
-    },
-    {
      "doc_id": "devstral-small2-24b/q_070f1980d777e0da",
      "doc_ref": "q_070f1980d777e0da",
      "embed": 0.852,
@@ -520,9 +520,9 @@
     {
      "doc_id": "muse-glimmer-30b/q_b98fc9144705d112",
      "doc_ref": "q_b98fc9144705d112",
-     "embed": 0.8494,
-     "item": "In this flowgraph, at a sample rate of 32 kHz, use Signal Sources to make a 2.6 kHz complex tone with amplitude 0.6 and a 7.5 kHz complex tone with amplitude 0…",
-     "item_id": "gbf-test-33",
+     "embed": 0.8518,
+     "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 6 kHz cosine with amplitude 0.8; then frequency-modulate it with a Frequency Mod b…",
+     "item_id": "gbf-test-29",
      "ngram_shared": 0,
      "tfidf": null,
      "training": "GRC flowgraph** * Sample rate: 1e6 sps. Nyquist = 500 kHz * f1 = 100 kHz, f2 = 250 kHz, both < Nyquist 1. Signal Source 0 * Waveform: Sine * Output type: **Complex** (the FFT block takes complex input) * Frequency: 100e3 Hz * Amplitude: 1.…"
@@ -532,23 +532,23 @@
   "sft_sessions": {
    "any_signal": {
     "items_flagged": 1,
-    "rate": 0.0067
+    "rate": 0.0057
    },
    "description": "SFT sessions and quarantine (grc-agent-sft-v0.1.0), all message text",
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.8319,
-     "min": 0.7621,
-     "p10": 0.7905,
-     "p25": 0.799,
-     "p50": 0.806,
-     "p75": 0.8144,
-     "p90": 0.8191,
-     "p95": 0.8214,
-     "p99": 0.8314
+     "min": 0.7613,
+     "p10": 0.7914,
+     "p25": 0.7998,
+     "p50": 0.8078,
+     "p75": 0.815,
+     "p90": 0.8205,
+     "p95": 0.8255,
+     "p99": 0.8317
     },
-    "passages_embedded": 74,
+    "passages_embedded": 81,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -560,7 +560,7 @@
    "ngram": {
     "items_coverage_ge_50pct": 0,
     "items_with_twin": 1,
-    "rate": 0.0067,
+    "rate": 0.0057,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -585,15 +585,15 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.3433,
-     "min": 0.2184,
-     "p10": 0.2406,
-     "p25": 0.2505,
-     "p50": 0.2638,
-     "p75": 0.2793,
-     "p90": 0.2965,
-     "p95": 0.3027,
-     "p99": 0.3225
+     "max": 0.3621,
+     "min": 0.2139,
+     "p10": 0.2403,
+     "p25": 0.2506,
+     "p50": 0.2648,
+     "p75": 0.2802,
+     "p90": 0.2962,
+     "p95": 0.3034,
+     "p99": 0.3321
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -613,12 +613,22 @@
     {
      "doc_id": "sft_train/10/session-7",
      "doc_ref": "t16_am_demod_build",
-     "embed": 0.8314,
+     "embed": 0.8318,
      "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 9.8 kHz cosine with amplitude 1; then frequency-modulate it with a Frequency Mod b…",
      "item_id": "gbf-test-40",
      "ngram_shared": 0,
-     "tfidf": 0.2612,
+     "tfidf": null,
      "training": "a 5 kHz complex carrier to produce an analytic AM signal, then recovered by the AM Demod block (envelope detection + audio low-pass + 4x decimation to 8 kHz), high-passed by a DC blocker, and written to am_audio.wav in 16-bit mono. A frequ…"
+    },
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.8316,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a -10.5 kHz complex tone with amplitude 1; then take its complex conjugate with a Co…",
+     "item_id": "gbf-test-158",
+     "ngram_shared": 0,
+     "tfidf": 0.2696,
+     "training": "the chain works end-to-end. Hmm, should I also add a 19 kHz pilot / stereo subcarrier? No, keep mono. Hmm, but careful: the file source is complex interleaved float32 (gr_complex) — so I write complex64 samples. That's a good end-to-end ve…"
     },
     {
      "doc_id": "sft_train/10/session-7",
@@ -631,19 +641,29 @@
      "training": "end: the saved WAV is a clean 1 kHz tone at 8 kHz mono with DC removed — the modulation and demodulation both work. ## What's in the flowgraph Signal path (all at samp_rate = 32 kHz): 1. **audio_src** — Signal Source, float sine, 1 kHz, am…"
     },
     {
-     "doc_id": "sft_train/10/session-7",
-     "doc_ref": "t16_am_demod_build",
-     "embed": 0.8292,
-     "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 6 kHz cosine with amplitude 0.8; then frequency-modulate it with a Frequency Mod b…",
-     "item_id": "gbf-test-29",
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.8311,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 6.5 kHz complex tone with amplitude 0.6; then take its complex conjugate with a Co…",
+     "item_id": "gbf-test-117",
      "ngram_shared": 0,
-     "tfidf": 0.2553,
-     "training": "a 5 kHz complex carrier to produce an analytic AM signal, then recovered by the AM Demod block (envelope detection + audio low-pass + 4x decimation to 8 kHz), high-passed by a DC blocker, and written to am_audio.wav in 16-bit mono. A frequ…"
+     "tfidf": 0.2436,
+     "training": "the chain works end-to-end. Hmm, should I also add a 19 kHz pilot / stereo subcarrier? No, keep mono. Hmm, but careful: the file source is complex interleaved float32 (gr_complex) — so I write complex64 samples. That's a good end-to-end ve…"
+    },
+    {
+     "doc_id": "quarantine/10/session-23",
+     "doc_ref": "t03_fm_receiver_repair",
+     "embed": 0.83,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 6.6 kHz complex tone with amplitude 0.8; then take its complex conjugate with a Co…",
+     "item_id": "gbf-test-79",
+     "ngram_shared": 0,
+     "tfidf": 0.2448,
+     "training": "the chain works end-to-end. Hmm, should I also add a 19 kHz pilot / stereo subcarrier? No, keep mono. Hmm, but careful: the file source is complex interleaved float32 (gr_complex) — so I write complex64 samples. That's a good end-to-end ve…"
     },
     {
      "doc_id": "sft_train/10/session-7",
      "doc_ref": "t16_am_demod_build",
-     "embed": 0.8282,
+     "embed": 0.8288,
      "item": "In this flowgraph, at a sample rate of 48 kHz, use Signal Sources to make a 6.7 kHz cosine with amplitude 0.4 and a 10 kHz cosine with amplitude 0.5, and add t…",
      "item_id": "gbf-test-94",
      "ngram_shared": 0,
@@ -653,52 +673,32 @@
     {
      "doc_id": "sft_train/10/session-7",
      "doc_ref": "t16_am_demod_build",
-     "embed": 0.8244,
-     "item": "In this flowgraph, at a sample rate of 32 kHz, use Signal Sources to make a -3.2 kHz complex tone with amplitude 0.8 and a 6.8 kHz complex tone with amplitude…",
-     "item_id": "gbf-test-134",
+     "embed": 0.8282,
+     "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 6 kHz cosine with amplitude 0.8; then frequency-modulate it with a Frequency Mod b…",
+     "item_id": "gbf-test-29",
      "ngram_shared": 0,
-     "tfidf": null,
-     "training": "end: the saved WAV is a clean 1 kHz tone at 8 kHz mono with DC removed — the modulation and demodulation both work. ## What's in the flowgraph Signal path (all at samp_rate = 32 kHz): 1. **audio_src** — Signal Source, float sine, 1 kHz, am…"
-    },
-    {
-     "doc_id": "sft_train/10/session-7",
-     "doc_ref": "t16_am_demod_build",
-     "embed": 0.8228,
-     "item": "In this flowgraph, at a sample rate of 32 kHz, use Signal Sources to make a 6.4 kHz cosine with amplitude 0.25 and a 900 Hz cosine with amplitude 0.5, and add…",
-     "item_id": "gbf-test-114",
-     "ngram_shared": 0,
-     "tfidf": null,
+     "tfidf": 0.2534,
      "training": "a 5 kHz complex carrier to produce an analytic AM signal, then recovered by the AM Demod block (envelope detection + audio low-pass + 4x decimation to 8 kHz), high-passed by a DC blocker, and written to am_audio.wav in 16-bit mono. A frequ…"
     },
     {
      "doc_id": "sft_train/10/session-7",
      "doc_ref": "t16_am_demod_build",
-     "embed": 0.8215,
-     "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 1.1 kHz complex tone with amplitude 0.5; then take its complex conjugate with a Co…",
-     "item_id": "gbf-test-146",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "end: the saved WAV is a clean 1 kHz tone at 8 kHz mono with DC removed — the modulation and demodulation both work. ## What's in the flowgraph Signal path (all at samp_rate = 32 kHz): 1. **audio_src** — Signal Source, float sine, 1 kHz, am…"
-    },
-    {
-     "doc_id": "sft_train/10/session-7",
-     "doc_ref": "t16_am_demod_build",
-     "embed": 0.8213,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use a Signal Source to make a 5 kHz cosine with amplitude 1; then frequency-modulate…",
-     "item_id": "gbf-test-70",
+     "embed": 0.8268,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 10.8 kHz cosine with amplitude 0.5; then frequency-modulate it with a Frequency Mo…",
+     "item_id": "gbf-test-162",
      "ngram_shared": 0,
      "tfidf": null,
      "training": "a 5 kHz complex carrier to produce an analytic AM signal, then recovered by the AM Demod block (envelope detection + audio low-pass + 4x decimation to 8 kHz), high-passed by a DC blocker, and written to am_audio.wav in 16-bit mono. A frequ…"
     },
     {
-     "doc_id": "quarantine/03/session-9",
+     "doc_id": "quarantine/10/session-23",
      "doc_ref": "t03_fm_receiver_repair",
-     "embed": 0.821,
-     "item": "In this empty flowgraph, build a loopback test for a narrowband FM voice link: frequency-modulate a test tone and then demodulate it again. Set samp_rate to 40…",
-     "item_id": "gbf-test-14",
+     "embed": 0.8248,
+     "item": "In this flowgraph, at a sample rate of 32 kHz, use Signal Sources to make a -7.6 kHz complex tone with amplitude 1 and a -6 kHz complex tone with amplitude 1,…",
+     "item_id": "gbf-test-28",
      "ngram_shared": 0,
-     "tfidf": null,
-     "training": "1 representing full deviation. Generating a tone at in_rate with amplitude 1 → deviation = 74.5 kHz. Then feed the complex FM signal to the receiver's quadrature demod. The demod recovers the tone → deemph → resampler → audio. But careful…"
+     "tfidf": 0.2602,
+     "training": "the chain works end-to-end. Hmm, should I also add a 19 kHz pilot / stereo subcarrier? No, keep mono. Hmm, but careful: the file source is complex interleaved float32 (gr_complex) — so I write complex64 samples. That's a good end-to-end ve…"
     }
    ]
   },
@@ -712,14 +712,14 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.8106,
-     "min": 0.7405,
+     "min": 0.7412,
      "p10": 0.7728,
      "p25": 0.7779,
-     "p50": 0.7833,
+     "p50": 0.7841,
      "p75": 0.7874,
      "p90": 0.792,
-     "p95": 0.7964,
-     "p99": 0.8076
+     "p95": 0.7944,
+     "p99": 0.8087
     },
     "passages_embedded": 75,
     "rate": 0.0,
@@ -756,13 +756,13 @@
     "max_cosine_quantiles": {
      "max": 0.2773,
      "min": 0.1462,
-     "p10": 0.1953,
-     "p25": 0.2118,
-     "p50": 0.2261,
-     "p75": 0.2366,
-     "p90": 0.2501,
-     "p95": 0.255,
-     "p99": 0.2677
+     "p10": 0.1959,
+     "p25": 0.2137,
+     "p50": 0.2257,
+     "p75": 0.2358,
+     "p90": 0.2499,
+     "p95": 0.2549,
+     "p99": 0.2669
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -777,6 +777,16 @@
      "item_id": "gbf-test-149",
      "ngram_shared": 0,
      "tfidf": 0.2055,
+     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
+     "doc_ref": "",
+     "embed": 0.8099,
+     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use Signal Sources to make a 10.4 kHz complex tone with amplitude 0.6 and a -1.3 kHz…",
+     "item_id": "gbf-test-26",
+     "ngram_shared": 0,
+     "tfidf": 0.2007,
      "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
     },
     {
@@ -798,16 +808,6 @@
      "ngram_shared": 0,
      "tfidf": 0.1451,
      "training": "Inspect the flowgraph — right now it's empty except for the samp_rate variable. Build a minimal signal chain: a signal source called `sig` (type float, freq 1000, amp 0.5, using samp_rate), a throttle called `throttle` (type float, samples…"
-    },
-    {
-     "doc_id": "grc_agent_scenario/22_fm_rx_filter_squelch",
-     "doc_ref": "",
-     "embed": 0.8045,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use Signal Sources to make a 10.4 kHz complex tone with amplitude 0.6 and a -1.3 kHz…",
-     "item_id": "gbf-test-26",
-     "ngram_shared": 0,
-     "tfidf": 0.1957,
-     "training": "call it `channel_filter`. Set its type parameter to `fir_filter_ccf` (complex input/output, float taps). Set its sample rate to `in_rate`, cutoff frequency to `100e3`, and transition width to `20e3`. 3. Search the catalog for a squelch blo…"
     },
     {
      "doc_id": "grc_agent_scenario/14_build_chain_from_scratch",
@@ -850,47 +850,47 @@
      "training": "one float input stream, multiplies every sample by a constant `scale` parameter (default 3.0), and produces one float output stream. Add a signal source called `sig` (type float, freq 1000, amp 1.0, using samp_rate) and a null sink called…"
     },
     {
-     "doc_id": "grc_agent_scenario/14_build_chain_from_scratch",
-     "doc_ref": "",
-     "embed": 0.7949,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 32 kHz: use a Signal Source to make a 5.1 kHz cosine with amplitude 1; then turn it into a c…",
-     "item_id": "gbf-test-105",
-     "ngram_shared": 0,
-     "tfidf": 0.1626,
-     "training": "Inspect the flowgraph — right now it's empty except for the samp_rate variable. Build a minimal signal chain: a signal source called `sig` (type float, freq 1000, amp 0.5, using samp_rate), a throttle called `throttle` (type float, samples…"
-    },
-    {
      "doc_id": "grc_agent_scenario/11_scoped_inspect_and_update",
      "doc_ref": "",
-     "embed": 0.7938,
-     "item": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 6 kHz cosine with amplitude 0.5; then turn it into a complex analytic signal with…",
-     "item_id": "gbf-test-87",
+     "embed": 0.7951,
+     "item": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 4.1 kHz complex tone with amplitude 0.25, add complex Gaussian noise of amplitude…",
+     "item_id": "gbf-test-171",
      "ngram_shared": 0,
-     "tfidf": 0.1539,
+     "tfidf": 0.1474,
      "training": "This flowgraph has several blocks in it. Using inspect_graph's targets option, look at just the sample rate variable and the 350 Hz tone source — don't pull the whole overview. Then change the sample rate to 96000. Check just those same tw…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/14_build_chain_from_scratch",
+     "doc_ref": "",
+     "embed": 0.794,
+     "item": "The open flowgraph was built with these steps, at a sample rate of 32 kHz: use a Signal Source to make a 5.6 kHz cosine with amplitude 1; then turn it into a c…",
+     "item_id": "gbf-test-105",
+     "ngram_shared": 0,
+     "tfidf": 0.1642,
+     "training": "Inspect the flowgraph — right now it's empty except for the samp_rate variable. Build a minimal signal chain: a signal source called `sig` (type float, freq 1000, amp 0.5, using samp_rate), a throttle called `throttle` (type float, samples…"
     }
    ]
   },
   "teacher_answers": {
    "any_signal": {
     "items_flagged": 11,
-    "rate": 0.0733
+    "rate": 0.0632
    },
    "description": "teacher answers and rationales (05_answers)",
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.8643,
-     "min": 0.7702,
-     "p10": 0.8145,
-     "p25": 0.8266,
-     "p50": 0.8388,
-     "p75": 0.8463,
-     "p90": 0.8534,
-     "p95": 0.8585,
-     "p99": 0.8623
+     "max": 0.8672,
+     "min": 0.8002,
+     "p10": 0.8165,
+     "p25": 0.8301,
+     "p50": 0.8407,
+     "p75": 0.8482,
+     "p90": 0.856,
+     "p95": 0.8596,
+     "p99": 0.8644
     },
-    "passages_embedded": 137,
+    "passages_embedded": 151,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -902,7 +902,7 @@
    "ngram": {
     "items_coverage_ge_50pct": 0,
     "items_with_twin": 11,
-    "rate": 0.0733,
+    "rate": 0.0632,
     "rate_coverage_ge_50pct": 0.0
    },
    "notes": [
@@ -951,14 +951,14 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.3418,
-     "min": 0.2044,
-     "p10": 0.2292,
-     "p25": 0.2465,
-     "p50": 0.2627,
-     "p75": 0.2784,
-     "p90": 0.2946,
+     "min": 0.2043,
+     "p10": 0.2276,
+     "p25": 0.2462,
+     "p50": 0.2618,
+     "p75": 0.2791,
+     "p90": 0.2944,
      "p95": 0.3029,
-     "p99": 0.3215
+     "p99": 0.3254
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -966,11 +966,21 @@
    },
    "top_pairs": [
     {
+     "doc_id": "gemma4-31b/q_b98fc9144705d112",
+     "doc_ref": "q_b98fc9144705d112",
+     "embed": 0.8672,
+     "item": "The open flowgraph was built with these steps, at a sample rate of 32 kHz: use a Signal Source to make a 3.1 kHz cosine with amplitude 0.5; then frequency-modu…",
+     "item_id": "gbf-test-173",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "samp_rate` = 32000. * *Step 2: Signal Source 1.* * Sample Rate: `samp_rate` * Waveform: Cosine (or Sine) * Frequency: 1000 * Amplitude: 0.5 * *Step 3: Signal Source 2.* * Sample Rate: `samp_rate` * Waveform: Cosine (or Sine) * Frequency: 2…"
+    },
+    {
      "doc_id": "muse-glimmer-30b/q_537d718ca5273cc9",
      "doc_ref": "q_537d718ca5273cc9",
-     "embed": 0.8643,
-     "item": "In this flowgraph, at a sample rate of 48 kHz, use Signal Sources to make a 7.8 kHz cosine with amplitude 0.5 and a 5.8 kHz cosine with amplitude 0.6, and add…",
-     "item_id": "gbf-test-24",
+     "embed": 0.8647,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use Signal Sources to make a 6.7 kHz cosine with amplitude 0.4 and a 10 kHz cosine with amplitude 0.5, and add t…",
+     "item_id": "gbf-test-94",
      "ngram_shared": 0,
      "tfidf": null,
      "training": "0.5, audio bandwidth 4 kHz. Provide flowgraph blocks: 1. Audio Source (samplerate 48k, channels 1) 2. Low Pass FIR Filter (cutoff 3.4 kHz) 3. Resampler (Rational 50/1 -> 2.4 MS/s) 4. Multiply Const (0.5) 5. Add Const (1) 6. Signal Source (…"
@@ -978,9 +988,9 @@
     {
      "doc_id": "muse-glimmer-30b/q_537d718ca5273cc9",
      "doc_ref": "q_537d718ca5273cc9",
-     "embed": 0.8623,
-     "item": "In this flowgraph, at a sample rate of 48 kHz, use Signal Sources to make a 6.7 kHz cosine with amplitude 0.4 and a 10 kHz cosine with amplitude 0.5, and add t…",
-     "item_id": "gbf-test-94",
+     "embed": 0.8643,
+     "item": "In this flowgraph, at a sample rate of 48 kHz, use Signal Sources to make a 7.8 kHz cosine with amplitude 0.5 and a 5.8 kHz cosine with amplitude 0.6, and add…",
+     "item_id": "gbf-test-24",
      "ngram_shared": 0,
      "tfidf": null,
      "training": "0.5, audio bandwidth 4 kHz. Provide flowgraph blocks: 1. Audio Source (samplerate 48k, channels 1) 2. Low Pass FIR Filter (cutoff 3.4 kHz) 3. Resampler (Rational 50/1 -> 2.4 MS/s) 4. Multiply Const (0.5) 5. Add Const (1) 6. Signal Source (…"
@@ -1001,6 +1011,26 @@
      "embed": 0.8613,
      "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use a Signal Source to make a 1.6 kHz sawtooth wave that rises from 0 to 1; then low…",
      "item_id": "gbf-test-32",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "0.5, audio bandwidth 4 kHz. Provide flowgraph blocks: 1. Audio Source (samplerate 48k, channels 1) 2. Low Pass FIR Filter (cutoff 3.4 kHz) 3. Resampler (Rational 50/1 -> 2.4 MS/s) 4. Multiply Const (0.5) 5. Add Const (1) 6. Signal Source (…"
+    },
+    {
+     "doc_id": "gemma4-31b/q_b98fc9144705d112",
+     "doc_ref": "q_b98fc9144705d112",
+     "embed": 0.8611,
+     "item": "The open flowgraph was built with these steps, at a sample rate of 32 kHz: use a Signal Source to make a 8.3 kHz complex tone with amplitude 1; then take its c…",
+     "item_id": "gbf-test-159",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "samp_rate` = 32000. * *Step 2: Signal Source 1.* * Sample Rate: `samp_rate` * Waveform: Cosine (or Sine) * Frequency: 1000 * Amplitude: 0.5 * *Step 3: Signal Source 2.* * Sample Rate: `samp_rate` * Waveform: Cosine (or Sine) * Frequency: 2…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_537d718ca5273cc9",
+     "doc_ref": "q_537d718ca5273cc9",
+     "embed": 0.8604,
+     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use a Signal Source to make a 600 Hz square wave that switches between 0 and 2; then…",
+     "item_id": "gbf-test-164",
      "ngram_shared": 0,
      "tfidf": null,
      "training": "0.5, audio bandwidth 4 kHz. Provide flowgraph blocks: 1. Audio Source (samplerate 48k, channels 1) 2. Low Pass FIR Filter (cutoff 3.4 kHz) 3. Resampler (Rational 50/1 -> 2.4 MS/s) 4. Multiply Const (0.5) 5. Add Const (1) 6. Signal Source (…"
@@ -1034,36 +1064,6 @@
      "ngram_shared": 0,
      "tfidf": null,
      "training": "0.5, audio bandwidth 4 kHz. Provide flowgraph blocks: 1. Audio Source (samplerate 48k, channels 1) 2. Low Pass FIR Filter (cutoff 3.4 kHz) 3. Resampler (Rational 50/1 -> 2.4 MS/s) 4. Multiply Const (0.5) 5. Add Const (1) 6. Signal Source (…"
-    },
-    {
-     "doc_id": "gemma4-31b/q_b98fc9144705d112",
-     "doc_ref": "q_b98fc9144705d112",
-     "embed": 0.8594,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 32 kHz: use a Signal Source to make a 5.1 kHz cosine with amplitude 1; then turn it into a c…",
-     "item_id": "gbf-test-105",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "samp_rate` = 32000. * *Step 2: Signal Source 1.* * Sample Rate: `samp_rate` * Waveform: Cosine (or Sine) * Frequency: 1000 * Amplitude: 0.5 * *Step 3: Signal Source 2.* * Sample Rate: `samp_rate` * Waveform: Cosine (or Sine) * Frequency: 2…"
-    },
-    {
-     "doc_id": "muse-glimmer-30b/q_537d718ca5273cc9",
-     "doc_ref": "q_537d718ca5273cc9",
-     "embed": 0.8575,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use Signal Sources to make a 12.2 kHz complex tone with amplitude 0.5, a 11.3 kHz co…",
-     "item_id": "gbf-test-77",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "0.5, audio bandwidth 4 kHz. Provide flowgraph blocks: 1. Audio Source (samplerate 48k, channels 1) 2. Low Pass FIR Filter (cutoff 3.4 kHz) 3. Resampler (Rational 50/1 -> 2.4 MS/s) 4. Multiply Const (0.5) 5. Add Const (1) 6. Signal Source (…"
-    },
-    {
-     "doc_id": "nemotron3-super-120b/q_b656b3ba8bb9cdb7",
-     "doc_ref": "q_b656b3ba8bb9cdb7",
-     "embed": 0.8575,
-     "item": "This flowgraph is meant to clean up a test tone. It runs at a sample rate of 32 kHz. The Signal Source block tone produces a 1.2 kHz cosine (float samples, amp…",
-     "item_id": "gbf-test-10",
-     "ngram_shared": 0,
-     "tfidf": 0.2656,
-     "training": "GNU Radio Flowgraph for Low‑Pass Filtering a Noisy Signal** | Block (GNU Radio) | Purpose | Key Parameters (example) | |-------------------|---------|--------------------------| | **Signal Source** (e.g., `Waveform Source` → *Cosine* or *N…"
     }
    ]
   },
@@ -1077,14 +1077,14 @@
     "items_flagged": 0,
     "max_cosine_quantiles": {
      "max": 0.8325,
-     "min": 0.7393,
-     "p10": 0.7953,
+     "min": 0.7578,
+     "p10": 0.7949,
      "p25": 0.8021,
-     "p50": 0.8083,
-     "p75": 0.814,
-     "p90": 0.8201,
-     "p95": 0.8221,
-     "p99": 0.8309
+     "p50": 0.8086,
+     "p75": 0.815,
+     "p90": 0.8205,
+     "p95": 0.8223,
+     "p99": 0.8304
     },
     "passages_embedded": 1561,
     "rate": 0.0,
@@ -1119,15 +1119,15 @@
    "tfidf": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.314,
+     "max": 0.3338,
      "min": 0.1735,
-     "p10": 0.2203,
-     "p25": 0.2312,
-     "p50": 0.2462,
+     "p10": 0.2195,
+     "p25": 0.2298,
+     "p50": 0.2455,
      "p75": 0.2626,
-     "p90": 0.2791,
-     "p95": 0.2928,
-     "p99": 0.3064
+     "p90": 0.2786,
+     "p95": 0.2925,
+     "p99": 0.3082
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -1207,31 +1207,31 @@
     {
      "doc_id": "q_e88d0cd13dd8fb15",
      "doc_ref": "",
+     "embed": 0.8234,
+     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use a Signal Source to make a -10.5 kHz complex tone with amplitude 0.4; then pass i…",
+     "item_id": "gbf-test-160",
+     "ngram_shared": 0,
+     "tfidf": 0.2684,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
+     "embed": 0.8224,
+     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use a Signal Source to make a -6.8 kHz complex tone with amplitude 0.5; then take it…",
+     "item_id": "gbf-test-154",
+     "ngram_shared": 0,
+     "tfidf": 0.2277,
+     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
+    },
+    {
+     "doc_id": "q_e88d0cd13dd8fb15",
+     "doc_ref": "",
      "embed": 0.8223,
      "item": "The open flowgraph is meant to do the following, at a sample rate of 48 kHz: use Signal Sources to make a 6 kHz complex tone with amplitude 0.4 and a 11 kHz co…",
      "item_id": "gbf-test-30",
      "ngram_shared": 0,
      "tfidf": 0.1913,
-     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
-    },
-    {
-     "doc_id": "q_e88d0cd13dd8fb15",
-     "doc_ref": "",
-     "embed": 0.8219,
-     "item": "The open flowgraph is meant to do the following, at a sample rate of 48 kHz: use Signal Sources to make a 11.3 kHz cosine with amplitude 0.6 and a 3.1 kHz cosi…",
-     "item_id": "gbf-test-74",
-     "ngram_shared": 0,
-     "tfidf": 0.2178,
-     "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
-    },
-    {
-     "doc_id": "q_e88d0cd13dd8fb15",
-     "doc_ref": "",
-     "embed": 0.8218,
-     "item": "The open flowgraph was built with these steps, at a sample rate of 48 kHz: use a Signal Source to make a 10.9 kHz cosine with amplitude 1; then turn it into a…",
-     "item_id": "gbf-test-113",
-     "ngram_shared": 0,
-     "tfidf": 0.2411,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     }
    ]
@@ -1286,607 +1286,703 @@
   "eval plan §6: contamination audit, a contamination rate for each tier",
   "proposal §4.5: 8-gram decontamination; embedding near-duplicates"
  ],
- "n_items": 150,
+ "n_items": 174,
  "sources": [
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-01/task.json",
-   "sha256": "807f3eaf581fd717fec6247daf7a06e5c9d55821b393ae06a5f3197f8fc042e1"
+   "sha256": "1daeae689f26baebd012bc254a4686eed2c3c53a0a74dbc71046e9d22f88f250"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-02/task.json",
-   "sha256": "98c5e9ae1526e948125dd039b1dd98a58909b5a901c615bd490987775b6fb750"
+   "sha256": "6f45a410a06b455a0b7cbd0a036798a25ae58ad7396c4e2756d96487c870683d"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-03/task.json",
-   "sha256": "1e9f585e3ddc2645283a1db82fb45ac863a4eecc207dc163dfb2cd21772af098"
+   "sha256": "93b82c810dc298fa4db131e727a793464e5dce6695ced1864ce68e601ab2deef"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-04/task.json",
-   "sha256": "c728f45a04735cd4f2e8ccedd04911e478d42b85f5b5243fb94ff37bfb2c7f3b"
+   "sha256": "31cf4976d458d24edd66c842a5430bfa28f6f4e176556ab29707f1611981df5e"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-05/task.json",
-   "sha256": "d8611306b594c8dc461ab0a8dab54b97f0203ad7cbc65f060a40f98fa9a735a9"
+   "sha256": "113ff38e2ad39df2c9fcea424f37cb51eb4115198db10589e4d2f05ec99d6275"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-06/task.json",
-   "sha256": "5cb5610373dac4a5f2dfe915de5a5b7334fde1e55c8ee8d7cdd942adab4cf3be"
+   "sha256": "5d1056801347dcc521c64707e51b24732f08aa232b8564473952f67e15dcfca1"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-07/task.json",
-   "sha256": "d365c22277eca8bd1083d33d4ed3b6b8787c77744009eb3cb4c4b0a4e64cd094"
+   "sha256": "f183d7152d4a8d33e5c76f07bf8a3322dd99c83752b25a51495d0f6207b02dea"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-08/task.json",
-   "sha256": "a4b8fd047bf0a8af7e0f09640f0b411b4264c4c298daf166135cc3f9057480d9"
+   "sha256": "d16a5044c9f1efafe82aed0d913be52bb76cb4aba2deb43145ca9645d0c5897a"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-09/task.json",
-   "sha256": "99a897602f0e69910be5346875905a42cb85d609afa992366aed747acd7624a2"
+   "sha256": "b5492b1a2f74adfe5f5953aa9adb203c0490087f2de59507f8c399b0c02eb67e"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-10/task.json",
-   "sha256": "55002b182d61625fa592dbc033564fc55b865e7063f1100afc34a2faec608692"
+   "sha256": "0b6a6e11de8207a5dc60cafa488996c1259defad8e86f8dc276f6b2d13f1b172"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-100/task.json",
-   "sha256": "66623ef22ebfc87c1a9e8059e4c58be0bea71189b4ec0d21357ec0de94e54af9"
+   "sha256": "fa772d273fe780059d89d8bf8f4620ce1aeadfb6332e15637c2160957b399829"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-101/task.json",
-   "sha256": "119d4ebbd83ab540cc21aa27592035188e457a6fd24b49a0bef54798a4fd7e1e"
+   "sha256": "8328f00ea87e84b0dfb58f766cf4390e291c3b2c341d36c274a83273c3a2d70e"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-102/task.json",
-   "sha256": "6f6a10aba203193a8291bc8a21d9217c13d2887976a6d7a2c0c51eea8ebd40df"
+   "sha256": "2a03da841bbc4491ba556a35fa2514e7f4ddc6db41f0061dd74f6ba2b452f272"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-103/task.json",
-   "sha256": "bf1a2d5da7bd63cca5200c17231b0d0cbf69d1d3fbd8b43126cc917ffd7b401e"
+   "sha256": "dadd253a36da01c55c52b495b3d9dbffa8ed164968a673cb6bc450cf0426e56b"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-104/task.json",
-   "sha256": "59bb103e0f7877e52d246c1a21878cef1cde9fcf616c27705c1532a5e76e15a6"
+   "sha256": "def0c9567b2a1ba8420e86631680a109dd26ba84aa64d8203e67e2b323dfc305"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-105/task.json",
-   "sha256": "d9ac83702fc9422c3ac4e40ff023c69e24a3905cbc0396ade1a96584ca369433"
+   "sha256": "3c31c7bd40ce381e0beb2d50d8befbff101e701562f50c9baf85b573c04e37a1"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-106/task.json",
-   "sha256": "0acb37f0b7497cf8081605b6155cb93553dfd1d49e7784bd25c11c269437cd3a"
+   "sha256": "2a4be6faeed00c13ba48c7c3dffa962230c00304038376587f5fc420244d0bc7"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-107/task.json",
-   "sha256": "bd011711ddb6a0d9e684c67acb3e19f17e735790155192ff06cce541193e8890"
+   "sha256": "064ba2ea08aa283b6c164172920ce7071bf93658c53c208b2a827d87c863c132"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-108/task.json",
-   "sha256": "e18eec3781c934d986346b397099b2133d92d209e8174899069d6ff9ab15f9ed"
+   "sha256": "23da52ed9f762bcaeebb704fe4a57fc01150866a2b50a085612e8739957f36b9"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-109/task.json",
-   "sha256": "67b178cce004071c2565c0f03c22bc6b81f3da82f835868dab826ae65027a111"
+   "sha256": "79efb24072c54b701aef001d37b9263594be8b2dda36da6d074959837393c5ae"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-11/task.json",
-   "sha256": "2e37459e0dffe504e61e0f2b660760f47c7e76ab4a7f6123ecf788b4324feed1"
+   "sha256": "6d1a6c095e063dd8d7ccdf3be6c37cbb1a893dc894c6335ca787fe304fb28a9c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-110/task.json",
-   "sha256": "a46765bc325426ea3bb30b2103eab9960d82e6c7f15efb57748ab4a6c61b04cd"
+   "sha256": "e12799e2988e956cb167c50aea50711f9f18387d00ec829f494e76610182265c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-111/task.json",
-   "sha256": "e66e2fb9fcb29fc3fbb6ed2ee6a95f0d49c35d55e9fa141a9ea8aabbb9d34830"
+   "sha256": "e22fff3c2020fb8c2dd36f9cdd01876790a2a86bf7c1770c37e8397314b710ee"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-112/task.json",
-   "sha256": "727198cd033b1ac76da779f7ecbfd55941d92229cbef1823d847963f046acd85"
+   "sha256": "a6b7af9018eec9b36f1d3bac711aad62bd0d8cde7bfcf64320c449efffeffac2"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-113/task.json",
-   "sha256": "3ec8940db96d8339b992bbabca680acf132c4300266b340094c693711a4621ce"
+   "sha256": "6d9bda475db99484ef6a5a5963eb355c4787f648c14ed07867d14acd2fea7907"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-114/task.json",
-   "sha256": "85984e6664c424f57d6761350176c1c90b346b31107a52619993b60e628c711c"
+   "sha256": "a4ac18e78dafe191ad8f7945c853fda0ed3812eb8869df51f8ae68da25f3f825"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-115/task.json",
-   "sha256": "5689de69d56ff922e241602a81f18aa964102bac52c8af62ac86b62e3b67e6ae"
+   "sha256": "4b6c14e7e13322d0dcbcd97b34ad1804bce2b28422a6fc8a34b4be2790d3fd73"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-116/task.json",
-   "sha256": "5d67266e4c289630ae6f1b9795770e6f0cc5b88666f646e25e796ae6382264ce"
+   "sha256": "95110bf0599dd1f8ca01936f6f21299641a474223d460bcb80bd92ee18d77bed"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-117/task.json",
-   "sha256": "5272ab6f937fa618ec8dfc6442d3a29240a84fe73ac84e9bd15af4f10b840e6d"
+   "sha256": "77f54907be4f018e1d35a42145829a66b01bd765dc0b8eb8e3865f2f0b80acf6"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-118/task.json",
-   "sha256": "e2e3f9145f2bc485f3c058d11d59a747cd3ca8002ceb83e92058631104597463"
+   "sha256": "b935b59b6d49ac994709b560e0c489b0573a0f284074f50ae802e2bdc5f6bb4c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-119/task.json",
-   "sha256": "59b44b63549d2fb0a9be5140f71cf0ec72e16914c4e6b7ca59e6630823701bf9"
+   "sha256": "22e51d8714e9e168ff859f4468d07e8228d7716d7b2a911564e38e5110fdccca"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-12/task.json",
-   "sha256": "d1b20bb1509a3bd624383258b4b90990e96760426cc2f3a84a01a6876d403e27"
+   "sha256": "1ec92ee115d094f44e82e6b48eb36606d778bc67fdb5e8c59178381fc90d8ba9"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-120/task.json",
-   "sha256": "4ea1dcf09240c64f33b5a4f1c7d2d9d13be16027e4b16b46fc1cbb418310b63c"
+   "sha256": "664f019c055c8ca3608c928cb1023a67d50f0262734d179ae2dd93e7da6f3f3d"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-121/task.json",
-   "sha256": "a8b89bab0668cbfafc69e6810f5878c20f375ffbb70e7a7614ee96ca2bf42efb"
+   "sha256": "4f69d7c34350f6b9009a8b1d028a30f4581a4b6eae2213cc4d8f22b2f59fdde5"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-122/task.json",
-   "sha256": "c742f2760867a4a18b58206dfe37e921e4cea14ad75ec2fd3934dfc1eff3e1f1"
+   "sha256": "10fc1533346b9dfe4d01ded1838b0603be54d2aa589099066c7e75555cb7d6b8"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-123/task.json",
-   "sha256": "a595e83142b747517129bce8c871586118de2ebe14967ec87dbe501e46b2b860"
+   "sha256": "dd10087262cf8461f566b0e05f31a25560db9f87f2f3d7c8c0ea6c561662dfa5"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-124/task.json",
-   "sha256": "faf5228a86e298e6bcac3e5eca96932e6916d69b6cf1d6c7ffc43fac76f4c4b0"
+   "sha256": "002127431ea3522698a700d83093dc155d027d07b552dd0159d897d7af446864"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-125/task.json",
-   "sha256": "2e6a7bdb5844d631fb96ba75a37a9b997c6bbb719db4a729aba1d18e1e0dba51"
+   "sha256": "02e2bb6e87d502cc3a5cdb2ee6fe52397774f254b9e59751d7921365ae21bb99"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-126/task.json",
-   "sha256": "0f02a43756c5e9dbe9895cc0d518d7a3ffd92b43e7e739a1f26d8c3cca554e8c"
+   "sha256": "8e3d5b2bbe0519f006c333908bc2db26b21853dbe1ebe414e1ba3069821160df"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-127/task.json",
-   "sha256": "32d495b72c5c0c7f76f867531f7ece1fb2aa237e4bc24a3da11db74e2b58a77c"
+   "sha256": "9638b566f84f6de67e8ef0a91689a86e1cec7b654262a356aa6a6a40e7cc5749"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-128/task.json",
-   "sha256": "8838d087b013d3b3f7451eafe126b485946e201b0af53f9fb1c7cb089261e2bf"
+   "sha256": "e5406e880bc269d5eedd53350521da3e8eb7d9dff2cb071015caf27105987413"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-129/task.json",
-   "sha256": "9fd5373166bef1a3764c63f53723c1e700349188cb34e6a519274be5b44ff4d5"
+   "sha256": "f3006b2044d9454bec72b36e99fc21a446dcee623275d774c6c9d71ac6f787de"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-13/task.json",
-   "sha256": "a92bbd04e96b837a36df5a2e600f2edc0d4b03a64cd36f53e25b9605a46f9e9d"
+   "sha256": "01a5b210b4dec7955dfff95b24abe1dfa047fb82686708afae281a3a170e4132"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-130/task.json",
-   "sha256": "80b1eea669dddb985657f9bf9abac54644b18d77cf4e46c2cad1e1e131660f6c"
+   "sha256": "2fb10cb21fd1e307a865a7f3d781d12d983cd54d8c3727a02bae96e5805e716e"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-131/task.json",
-   "sha256": "5aaf17a195a5fcea5297aa16cb21e9e443b6f1de8e6bc81fa2868ed711b4da9b"
+   "sha256": "0b6c80a461a223fb4dad66e99baa37c2275d7b0092708d2e71a43dd44ecdb971"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-132/task.json",
-   "sha256": "829223a1775f96042df9b51b65d3172219b32969582d9ddd6b2d6150515e4438"
+   "sha256": "975d58750b95d19beb76cc672b128925c5ed92da3b724c920a34e942b0b3d9a2"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-133/task.json",
-   "sha256": "553cf32ef1ee9b7f369cde452c6868c3eb4e23e4dfefa2608b036df2328b31e8"
+   "sha256": "82d110ef4f36317aad253a72acb51d8897f618902affdcaee1cd09d209fee7ae"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-134/task.json",
-   "sha256": "2260615d3b1b0f63a9fdb38546641a4e1d0ac151a0f14a923f79ab78a5fa9a97"
+   "sha256": "41756abe316764ff9ab9fd93f507c2c2614c03faddb85750f640d7d8bca4a731"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-135/task.json",
-   "sha256": "88b2748515dd78dda14312cdeca0cfc00adabd1177e6c71ec4c28ee4e7b37cdb"
+   "sha256": "6f24d03514fdd34122a3bdd18f98a97710d10fdd431c32086be2325a30c487b3"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-136/task.json",
-   "sha256": "413b42745114434ef2b932f99571ef65284e8680f8df5ed062966783b2ea28ff"
+   "sha256": "2d130ba13ea4f74e42d0a27c73da264cf34b6f8f79944f76ace9fbd18e4bd677"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-137/task.json",
-   "sha256": "a0232f5c398fcc8c4703591d0380c9c923fdc407d049932b9370b03abdcce61a"
+   "sha256": "30f1e286bf201cb7066e064861e0e8f3d8fdd60401327380c5922c9140c5d722"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-138/task.json",
-   "sha256": "46469cd8345113ec3c9c23a0e14052c118bb8095bf097ca9af4aaf32d049a1b8"
+   "sha256": "cb7f3c1bddd6360dad1d4cecf9d4969671129a3503f9145132834a06344a9ac0"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-139/task.json",
-   "sha256": "03cff345ef079d559855752015de1d375ce8519851da98be52caa7cce450b53e"
+   "sha256": "11f99bf34067f2efd193dff722b2ef21013b65cfe9164c21ad9e4a1889ab2869"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-14/task.json",
-   "sha256": "b859841e3ce8af2c0091e7571b609fda8ca1ff7313c56bd538ffeee5d9c84699"
+   "sha256": "ecd31fc490a06f2481a831fefc98777bcd16beff813a48b1a90fd17e1dd4eb58"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-140/task.json",
-   "sha256": "cb0090aff341b6662c9ac50f75b3577fcfee0aae9ce3870fa951c0eb67bf593b"
+   "sha256": "4e4ab31aa3e501c6a02d5deea4da32f12d5221cb832120ef4cd7705c00e22d87"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-141/task.json",
-   "sha256": "8c29a493fbbb28b34bb715ed3ab4ef0978b2dbaba1c714bdc7b46bfec1a8dd7e"
+   "sha256": "c04c804664ad821349614fbc86f832c416ff93b17854510d36fea1b10550f31d"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-142/task.json",
-   "sha256": "1f26be925d4e9e6e65569fedc87fd147c1ee6f7d1fc8cd759aeaa1e5d8a6825e"
+   "sha256": "ab0a174639bc5b8df71664c2cc2d5b0ae7d2935d7e466cb82fc73290218be045"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-143/task.json",
-   "sha256": "9fede78cd0fa6b032603e20b7572acbbdaa3ea95496e4db05e03bdc52c9add39"
+   "sha256": "99fedeb608c3984fecb9b2444a4d4c3f9bc88492f669ffef8907f39ef370bfb5"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-144/task.json",
-   "sha256": "dc4a373c47533aa36afc09fb6d6ae8d65380a8a1d34ad8c9ca9eb18692d8419f"
+   "sha256": "a6e8c102426fac52c12a4fa17c0389c882e48e86571b652bcb2a6e0947cb36a6"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-145/task.json",
-   "sha256": "f3b12c9002a419ff894fb734d06b757b672abecf27cd727e498699ceaa81a379"
+   "sha256": "3111c96af1d2bc067f81c481f3caf582b2823764ae3cd854a5c6b04661735669"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-146/task.json",
-   "sha256": "16108e14f93f0058f7347fa6979542a393c4f3c101e1c6a1630b147097827c88"
+   "sha256": "b2f1046307e95a81f884a39a48ac22c664ad2cda33cffbd9731ccafc585b0c02"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-147/task.json",
-   "sha256": "ca36cb72ab0011b4e760ec05e6937787f4e08addea467598c41b5f0f117369eb"
+   "sha256": "0cd5cb47cc5ddb72f8ea95949fec61766d3d5ca75a045707ca5beee6932f3c07"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-148/task.json",
-   "sha256": "c86df3d776c9694c797930f39511407ebd57053c92cebd310e6e476457a2ecc0"
+   "sha256": "607d0268c6ce4cc62128ce93a0cf93f5b70c10e9a0cfe7bb44b9a1ccac6b847d"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-149/task.json",
-   "sha256": "890cbe87e246b6e9dd41fa5faa7b1a889f0c6beadb9af4ddfe1227128a52f367"
+   "sha256": "6ea6c23c89cefab1c3df95c8d8dd625a59e3216eef8f9062b41463b24f48a496"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-15/task.json",
-   "sha256": "76ba344fe27685c01add2d85d5bb545704bec12a907a5a06c0a0cc2e880e807a"
+   "sha256": "7091cedfc54941a6f6de3c566a1357392fdbcb151b726b648536b0abdc0ccb41"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-150/task.json",
-   "sha256": "cdaa4c1dfa984c07b19254ec68e84388e45bf0af0becd765ecc5353fb59fffe4"
+   "sha256": "ab89d1bee99fcfb9d15ef66750b992639df7d3d60298656b4c12cd87b2c4c376"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-151/task.json",
+   "sha256": "bdbb758362e58d2ef1d1af089ead5424a6753190052d0d2c7d9e754706f865c2"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-152/task.json",
+   "sha256": "3fb6ef43dc5b3e4832d4d10e959e1418aca6c5aa00a9c12068f14b56decdee8a"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-153/task.json",
+   "sha256": "5cbe42b774168bcd80a1f69dee2e2aaeca275662f1b75656960217a4d7831f54"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-154/task.json",
+   "sha256": "d2d45fd24f6a23d740f9bd7e3539f9dc702ff2a635d896d77b79945e27db5f7b"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-155/task.json",
+   "sha256": "2846f0e2a5955f8a7c8ae29c44abab23139e297659b98c12ddefffed6cbf15c5"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-156/task.json",
+   "sha256": "67e352c20381119d612ada42d18d39835d5e9002be2ee08f7c9a541d23cad96e"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-157/task.json",
+   "sha256": "19d1fdf511ef73c27f5ca6ebb21c1d3a0aed2bc001adfac777e118a0f849ad62"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-158/task.json",
+   "sha256": "d9433ac89b46294126f1db85233f9f2a6c45a70bda6de11c432f034db7a0e898"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-159/task.json",
+   "sha256": "3d5ae30aff4bc7beb3667fe9408b87bafd8a275b7fdd0de25012f6cbe81586dc"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-16/task.json",
-   "sha256": "cccb8ee00323cad922794ff7e525ef2906fafd86fa2d18819c569fb21cb98f19"
+   "sha256": "3aba0a39fdf723fcc8dc798af117e7e7411159eba83e8569ce83f805c38872e2"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-160/task.json",
+   "sha256": "461356dae0548193347c29b34df62d8686fa7779acc826e8ab69192973556773"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-161/task.json",
+   "sha256": "fa59a99d2a785b252c35509faf26d67c190ae82330191a45dd20bf5fff987206"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-162/task.json",
+   "sha256": "8d3adad85e9ed927654cbb6ef4fbdd6d2c62e3b6c54f3f2d990794fda4cd8b5d"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-163/task.json",
+   "sha256": "532cccc8a2b5dd6a89b2e263ad824f350b3a63ecd8ad023f201515f8c0893342"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-164/task.json",
+   "sha256": "9861b5121108bd71335367c5563ff3a7b8cd44a8286372dd7e648e816e4218ce"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-165/task.json",
+   "sha256": "7ee52cd1d2d8f6bbefee2dee7079df99baa034ef28c2f43135b0cb8d647cc481"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-166/task.json",
+   "sha256": "595be87f78a100016c791245791cbb06bd98fe19f1babc61af790ffb31dfc720"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-167/task.json",
+   "sha256": "8a808e844b2be9d174e1febe9bb11c8a73f7241c7d752dd4a069aba0f78dc758"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-168/task.json",
+   "sha256": "f320aea51fb2f0523b372c5a124fc4ee7ae7ac6d74b54b1e5cf45ca3d8163735"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-169/task.json",
+   "sha256": "1d6324612f483f1b96d3af97d94b5f557dd435a3188997cb4d603169ce1fb65f"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-17/task.json",
-   "sha256": "61470db41cf2b97d3d7fcc6ece9f3cdb4b69db103780d4e1da53ebd283a46da8"
+   "sha256": "62630cb94cf82ccf41cb74812eb8faf55d3001abb32dea4e092259a58884f822"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-170/task.json",
+   "sha256": "38cf09b5fa0cbcc25688a17c3fa24e13fb22fb50a4e8713797aa151d44838eb4"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-171/task.json",
+   "sha256": "a73925f10cc6a57246e1943b8acaa8d584a655674a36d558e9c630a1c5e0cd03"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-172/task.json",
+   "sha256": "20e8bce6dfb509782058f70d567a40d93e2b2fb11e25768c98df80a5512ba6d6"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-173/task.json",
+   "sha256": "166ec469e5bb51d6b4af88ae4fa2b03ecedf25cc6fdf16fd6db4f0dafaf0bc8c"
+  },
+  {
+   "path": "grc-bench/items/tier_f/test/gbf-test-174/task.json",
+   "sha256": "337b518d64eaae89e530d75421a8aa7900cf8cd069051ad6d8f81db5c0315d6f"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-18/task.json",
-   "sha256": "093a60f6c224d57b441ef96122827ebee4c28fb8c1e4bbd05a912e9eb18d8410"
+   "sha256": "afcd7f57a114ba85272bf31f52db0dbe1db0fbf553ca4ac076070a29b0813727"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-19/task.json",
-   "sha256": "5e12bfff1c0d50c5102f9f7e136e36e778166ccfb1e6e3dd4107a6265a82eb56"
+   "sha256": "cf55ad388195e0248b7ffcf18e30858d3ad233b3d39cff75157c509be04c78b5"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-20/task.json",
-   "sha256": "ef511ed36e49904344c86f7f6588196dfde473e9541d214fabf0ecf8b108241f"
+   "sha256": "c39d6fdf6d71b7bda57897b05440d576b120df1790d2ca01b5dadf5e22a6138e"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-21/task.json",
-   "sha256": "8644efd0a36ce9ed8489faf26a6a1fbf537694ace4bd2b2507f1729d7d48bc1d"
+   "sha256": "b3416a9c693154e2398575677e5af2495df6acb9b2bcc7cf023640b92bdc4797"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-22/task.json",
-   "sha256": "6c53646d6a5c4be1f897257e4cf28fc5bfc62d0a9d8b7469dce6b9eea42345f2"
+   "sha256": "37c8036a69786ae7936ea291c3a1a1fcaa5d35f7ee64b1372e19eea2c873c42c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-23/task.json",
-   "sha256": "68e12d9ee6e1ec07e0eca0e4cd8c6986f80201193d3b57f536dc1669f9a873dd"
+   "sha256": "301ae28dea66beacdd4203eb8124c03437736a042f06ca42ba3a6b6d2f8f1819"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-24/task.json",
-   "sha256": "2d0eb9a254752768e83f89ca7c15c407bb83f22c47370cea406490b8af46f15a"
+   "sha256": "197aff790ef28a372b2b6e15b5d7b04c48388ce6ce789937a55264b87a492d23"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-25/task.json",
-   "sha256": "496b2764ea11c83f61cef518241f27568e436c22a8dd18498923ccd686f9aebf"
+   "sha256": "0364a1685c2e812d29a7d5f14cef611b2ce04c30b48d48504518482e4c447fa4"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-26/task.json",
-   "sha256": "6f8d0b9839767de37c0ec5ef4faf7dc7e4054cc039db1246deea9ffa12c5a974"
+   "sha256": "f4265d09effd767f0a75dc7344d35225edbacff30e8c8ff2b8e36b86c3a9dd34"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-27/task.json",
-   "sha256": "67043e1e4aac5d0169d41bd87ff4c32e8cc73562c6e060c9b811b3dbe22aa41f"
+   "sha256": "0d4cc04a9093c101a08eb6f28cfdc4af1c7a4ec84692d259926b845ac6efd401"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-28/task.json",
-   "sha256": "84af219d7bb1118568ad87b03ede7983d4333c071ed8104ac00030a0cab0a87c"
+   "sha256": "aa7f55da62990a8f5075cf9736e1dddfb5a2a9ebe5941c1c6e1d04dd426f90f3"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-29/task.json",
-   "sha256": "79a7657179455804fb85c1ee32db8c72da4252f9b22b88c96f24fc24edd9bdd3"
+   "sha256": "2ad07023e8cb35b1f01e045e271c3b36cad3d8849b5f05442b71cc2fa9f0b457"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-30/task.json",
-   "sha256": "6b0d0ee27fd804453102e10da09d1b4c0b80055a4ebb3121e17514a6920ce7e8"
+   "sha256": "cf0c6bd97d1dd81f5c7804196bf22974fe8eec2263e3187b22576f6048653e40"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-31/task.json",
-   "sha256": "00c39974014f8272896d3f500f4c47e681fcd0d2ccd7f4c137a1727c05a778a7"
+   "sha256": "26ba5df3543c9820ed70faeb373b68cc67e8dde7ccc0acfc1e29b74b1f454481"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-32/task.json",
-   "sha256": "2c167776c3ce0ac44103dbd0520823f24872b72de3944b49cc713264a7c0ac1c"
+   "sha256": "db20fbe086103ebe1d7244becd16fd02a01a2bf081d7f3a3931a5853bb8c0f9c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-33/task.json",
-   "sha256": "efe0768519f7b92e85dd75487ed1d193b2558d25c0b144285d90d90ec79d6d27"
+   "sha256": "c0430a3570127ba518fc7d71827f52add76233d74f8b5c502ff8737e337b4900"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-34/task.json",
-   "sha256": "6178a0506835d1ab3be250ca8099ee7f84b5e550b6e9aac68c74e512049a80be"
+   "sha256": "bbd3712182a4c9cc5e1515c8071124a7e39e7047fa51aa291aa243efa890f42d"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-35/task.json",
-   "sha256": "42b85b8f1e8aa97ec1e0f195ab4c4beb23c64031e32885003e21fae23b3b15b3"
+   "sha256": "1d8ba8cdbe1821002c48f87b8b7cf8a03935f4d2045b7d095f182c675a0f3f39"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-36/task.json",
-   "sha256": "7405e3a1c9d424817a0ad662589f675515ce0c73771d8d587ab98425f5ec2bab"
+   "sha256": "59767bb7808e2e44d2f9484b07250be6555a37a0953e8dc455b42cd230380a23"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-37/task.json",
-   "sha256": "677e1ed5ccdb07b9bb77720c706907e088c57a48fa5f61c591b8c75ae09edae5"
+   "sha256": "16369cb15309aea9db4802fb48b7b8675d94fdb6db086788e5f781acd2ab745e"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-38/task.json",
-   "sha256": "256e15ffd14a6b217f33173c0985d160959016389e057dc01f7752421bb9bc57"
+   "sha256": "eb065e2ab13005709f9410768716425fd9696002e2357cda7e0db83925187957"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-39/task.json",
-   "sha256": "2499d5948ef00dd52f17a9571465cdb5b0a3acda6328b48563cea2c935a13467"
+   "sha256": "a98a1957c155fec212034f19fef74ab51196ea8e3f9071181bb7f027decef232"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-40/task.json",
-   "sha256": "7ae90a933c347314e0a30006b342f8afdacf8edfcd82a8d180a554221e699678"
+   "sha256": "544a50907de04a7da4b0747b33f6a226ae8ae83de98e5800fcf2ed4e9fb1ac86"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-41/task.json",
-   "sha256": "1d48e70741ac0948ffeb3bc03bee1e6287209233e4d8d8d15369920a27779d0c"
+   "sha256": "575e3271c94034893c6965dc4e0ece61bdffd9b74e76c8ff406dbba9606f8129"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-42/task.json",
-   "sha256": "8d1e6c6cfd3f6037ff4b8db1d61d6ada03275b1d43f5bd967a11ba6bd6a60a27"
+   "sha256": "762e16cbbc11e6604820d6683100189c7b5c969583155ea8d1bac6cad45c2049"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-43/task.json",
-   "sha256": "5128feecbadffe96a10cd995deacd31f0d92370fabd12cae0529bcfbe9b44da2"
+   "sha256": "ef8cc135f53226fbba71845148bbd6686f1eb694959f0383d074b54864732b32"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-44/task.json",
-   "sha256": "e8e0f1ce53438f4aee1785c015825c5cb3101873d86445d321142068586518e4"
+   "sha256": "c3ba03da3da06709cca098ee8de8fef2f1e8630eaf31434d1f8cda59760434d7"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-45/task.json",
-   "sha256": "7adcae3c64edb41f432e39d0e3a2e8521de2a6651127bb88eac2798915f983c7"
+   "sha256": "849de069b22eef880a36ab750192451bff6fc80c5f38de1d7dcafbfa0959bd1b"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-46/task.json",
-   "sha256": "2ecc7be883db8cdd70b5fa54772050a61e0975a9406a36d8d9122d05d9104fec"
+   "sha256": "5ea4cb2a3f054eedb183c2ec55098ca809ddf37d2f2b81de3c159605e73fd8d2"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-47/task.json",
-   "sha256": "91dd77c03bf1cd286031914629ead4f42803e9601d5e566194f09c1459cce944"
+   "sha256": "2d92785cb5ad5b507e3185dd2547fbfd114edca6ee5c3442b6f8b4ef4cdea481"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-48/task.json",
-   "sha256": "c81583b61ac9334c245cfea1ac23fbc8c133ff94822fd0de7ec74ec2fc5e0b29"
+   "sha256": "685977e1cdd926cf263c0af8fc72e918c6014b3b6174c494889605c6f5049c21"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-49/task.json",
-   "sha256": "4f8a729aba04f25c5e6e2309656b179fad93827ffc3e68d33e2af32886418730"
+   "sha256": "d492e4da0c944e673232b51d740e343264ffb6f6adee3e9fe09eda41fefc44b6"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-50/task.json",
-   "sha256": "6cd8c9a1b46819cc36b282d3dc75fdbe7b21982fd35cbd19c5ff9b6c93c5359d"
+   "sha256": "ea80c4771677629abfb4ab60bf0faba0521df7db9bcea351659d601a18798dac"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-51/task.json",
-   "sha256": "50fe9fa49f233f4828c5d82e44d78431b95cd531a71a75392d52f5cd7bd4fd2d"
+   "sha256": "5136021f1ed194535d93d5ceb008687f0512368fedff643e2776e4e280dd3072"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-52/task.json",
-   "sha256": "8d315e610cb1134498b61685e7af01d02f01accd1a6754449bc2961483ba0b09"
+   "sha256": "97c61c4afc58981e6711623bf06417ecfb1d6c6fce5d04289f8a2782c4debb4c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-53/task.json",
-   "sha256": "3e80f57c1542c6ddb51bddc20418586ca587de0565ea96646b01c49ccebb4709"
+   "sha256": "a2d9175f7fc5a3f979b28c90b24de5df9ece89cefb34b4962ffff2cb4fbe5bdc"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-54/task.json",
-   "sha256": "061188622798e54883d29a8ff2b1721635ca9ccc23a1e7b3d76f7ee1ead764aa"
+   "sha256": "8e20df51666948d08ba5af66344bf69ebb2e63d04cf54ae905a8c696687f3ac5"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-55/task.json",
-   "sha256": "ae23b04aad4f255b1f0bd5d2f9f02a6c283672bd4c5271697d8dc479b5fe15ba"
+   "sha256": "5588ae580c6afcec0fdf6b9233fe0d48a4c845253e59b1bb8160803f1b001c28"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-56/task.json",
-   "sha256": "05039cf5ba3f8c4f6965c9c55afaab59310572efbc0b809221a69dcfc4029f32"
+   "sha256": "6d541f1edfacf1883b1691167f90ff4e6b308e8d86c7bc9ae54e310d5db9ee4d"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-57/task.json",
-   "sha256": "e83ba64ea888769ab7caa0c50012ccd80b99313b7c5ea3d3274409352df071bc"
+   "sha256": "0418cfcb2fe733b3afcd7cbca8bc1b3820886b772c5796b1c56ca658d0ad3473"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-58/task.json",
-   "sha256": "9bc1bbe8ac257a53f051f2eeb67474ceb801570761e5940b123fc22f6e486b0c"
+   "sha256": "42c73d2a0442e6d59f09ecc263474b101a9dbf43e1ddf28254c786842dd893d3"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-59/task.json",
-   "sha256": "05029d5cece264562c45084703e249924e1435c6667ce1f645927dff1f34b639"
+   "sha256": "983857b6ca86843ebbe7e29e7e18f9a5a0d67a30ff88643d9417f72b5caf6db0"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-60/task.json",
-   "sha256": "182ff2212e4926122db78a1f2f992a84784a87378a47308d7a27f470ae17043c"
+   "sha256": "ebaec1b594964e99224efb2664f8a0c8f4ba24bf7f5039d78c8b26eddd06087b"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-61/task.json",
-   "sha256": "dccbd49c8ca3dfc897cb3417db32b2d7a7a96624a8168180edb8a89892aef5e2"
+   "sha256": "153d6168a0915c33c41b80b207bd73ac3d3e66d2c8ad6d8b11def28896fa4bab"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-62/task.json",
-   "sha256": "98dedba38ba61c16708c97dd6f7592eeb715c889444cee6583cf1fb0aa7e5ee9"
+   "sha256": "1449233281b5071204e75b5723e6b209095f05ba468d0339f92379a515083edf"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-63/task.json",
-   "sha256": "a4dada9ca7e295e64b6a2de944088b46e769fd791c9570206a67a42f08201f1b"
+   "sha256": "08ab00be8bf651b63dc4fecd92dcad782d1503ce3805138d70b38748c26d5f1c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-64/task.json",
-   "sha256": "c63aa79d16825fb69ffe723fa36c0fe87be064ff5aaf9d9c78edad24e107a095"
+   "sha256": "0f0c8301c69910555ca35ae43702137dff3f5ac7f1ee3c5136fba1a03e2a9134"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-65/task.json",
-   "sha256": "8357697cecff1d00cbe43b4a3a870548146ecf776b1cb4957d09b039ddcd6aa1"
+   "sha256": "a0dc36c19d5a5b7edf5a0e3b8a83c08d95be1e50bfc0da351eda5ce6b1de7fe1"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-66/task.json",
-   "sha256": "aaae274cbf8798b1aeb01de7e927fad581513c9beff506601f36fe4afd2cc6fe"
+   "sha256": "9d71b85f16103fd92d15310f0308661ac8e97dc15042b47951c2c28703d34297"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-67/task.json",
-   "sha256": "82f7774f98162a54cae7be350b679448397d5978ff50206bc1c703f21bd0c441"
+   "sha256": "741755b00d61bf3a61ace4f9b1a727a221a40006fa88e75c95cff28b9f93ee89"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-68/task.json",
-   "sha256": "a422948b8db3ef0bac04b45a4260387c1ec305119df416546f482df5937ee5e7"
+   "sha256": "d376e1d55184d9826f900607966bf0758980ba4c6c3bc75bf9b44a20d6e2253c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-69/task.json",
-   "sha256": "89f6888f52188b116d09f01514e89bb90b7eed36419f43dab497f41af752cec9"
+   "sha256": "75f5b195eaa2f0aa223ff5eabaea0ee919285dfc2d7bcca7789702139dd8b696"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-70/task.json",
-   "sha256": "05d0166c021a25eb3a339c4f345a0395be168356647da177b09f8246a7199c46"
+   "sha256": "91dfabbcb4e063f967419cd99d9f05cf1f610ef9711e432952cbed1b62e7ee30"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-71/task.json",
-   "sha256": "8889d1812228a63db4b6581ba5fdd99aff08412cd81a0dec5af104e531306edd"
+   "sha256": "3bd8d97fa1aab3a5d69df16ac4a9a9e843abae5aa8d9979c209b479582c4fc53"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-72/task.json",
-   "sha256": "8d3fb16aafc38162c4b485df981eb7d253d7a765829b889614cd05708681cf83"
+   "sha256": "545b20a304881474d4f2389e7b89275d5faf53bbd54be14c357baa2d40d87bd8"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-73/task.json",
-   "sha256": "1e1fc4926e5c506be4421586e22614abe7efd979f1fd8020f61f5e0fdce48657"
+   "sha256": "95219199c7815e03d24f59556dc9c3d5c3090003d344fea62a886e20fe822688"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-74/task.json",
-   "sha256": "1de630c8d410bf5ef80befa41470285019497b0c095e34ad1286d25ea7669068"
+   "sha256": "64afd28aa0c54d55c2b760d070eb14db4117aa090ed4157ca059d231873f2d11"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-75/task.json",
-   "sha256": "8bf3b9a6f3796b9cc166b1e1c77909a006a7b939c85686436b3a0cee8052bd34"
+   "sha256": "e91164a3bfe7d21dd42c40d08d746e9ebedfcd3bd6f3b01968c140d9c31c770e"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-76/task.json",
-   "sha256": "29ebb2f99e0021c6484b7edf80cb000c8ae77f92878a7feb0f0d0062c606298d"
+   "sha256": "929ceace754b38b44982ea21a403e79fc510e28d09d60f6381278d490c3754f9"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-77/task.json",
-   "sha256": "78d40b6dfac214dfeb6321c21c0b75c412440cf5c0a6a07b1d0d0c0cec8d6620"
+   "sha256": "d3c07a468451ef8b14a9af711ffe90457a23df24cfea5ba3680be1a9f486722d"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-78/task.json",
-   "sha256": "39e94fde8641336406a0a03a375f9ed450a836bdd04b56775ea8991118aa5022"
+   "sha256": "c78965019622ba83f8521daa57222d83e053f8f3a40992cdd6a36be01e63bd04"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-79/task.json",
-   "sha256": "700cb2bd5d789c19db73c2f9eec598df3ae04b185ebb4a5a28adb61eaead696c"
+   "sha256": "1ff1315ec6bf755050c275ec65f19f4e8bfb537d4ecef21cfbab5ec43b09f46b"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-80/task.json",
-   "sha256": "6e7d0d025fea37410b84b21663d8da6ae328d54d9aef82592fa17c1edfbe847f"
+   "sha256": "b18e322fedb3a20606b9b46353d3c0ff6fbfe37d6f35b0e7a3d02981338ca41b"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-81/task.json",
-   "sha256": "5275d0c8f2ec933efc762529a014dad9a7599cba1a1aa3e271992c49dff97820"
+   "sha256": "0abe3d4053e2e1838d63c3228f3bb33d6b2d61cd642a283a99f7bfaf1f67666c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-82/task.json",
-   "sha256": "bd0b07220fb2b4929f2eec0796b8dc6d34489fc9652b524673786e8184e40aa1"
+   "sha256": "b1b6e4d73fb8cf99af4e5a6dc9a22e2ce81a048175c67ba652d4501f1aa5f06c"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-83/task.json",
-   "sha256": "84f07da85de6ea73fc25ca24061dcda7a895f1836a94c5c3fbca241be835e28f"
+   "sha256": "a06dd6879bd98a404459ebd9ef4baf86e298fe49eb35e41906bf8ba39c429c15"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-84/task.json",
-   "sha256": "0eb4d24100564cf28bcd407c58e7a931647c2de51143bf07fb6c886edf37c72d"
+   "sha256": "a691993203c4a4a4d4f2ef7878d548c0f89d571f8405cf7bc5f50a76a74f7e51"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-85/task.json",
-   "sha256": "46c7a6445b4641700482d79d03779fff31291bb0ababb05ad235b8f2c8b7126b"
+   "sha256": "8636d80b4310a20acffb79e64514776ac21ebb4303500b1e1e9954294a96ac48"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-86/task.json",
-   "sha256": "1435b88660141ef53dc094170128151889ba443f1aadef6d1b1e75de1431e9cb"
+   "sha256": "d562fcc9dc8d2097068a6ea77d504e26a1c094f15c71e4bcd3734c8940849821"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-87/task.json",
-   "sha256": "a0c07f79e71387274197e891477e0f5e51a6c8696ab4fd0694719c6396c63416"
+   "sha256": "8482a11b6d4c39e79f5634faa9e4117b6a484e2cf9023540d3bf9cf19d334fba"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-88/task.json",
-   "sha256": "0462e268143bb6587b6138357c4515bf5ebf768e58c6332fb687801d94dd75d7"
+   "sha256": "6222ca93268c3b5d2ac0a9a2d87056f1606fe9734e62d4bb29af9c3f75af26e9"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-89/task.json",
-   "sha256": "db9b8d65eaee93b5ddf7535791e159503b045629a826e6a65a421c4138edc10c"
+   "sha256": "777fd4848656880c71b23b43542e9f169fdf3a18455a308302382b178b6b291a"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-90/task.json",
-   "sha256": "df1517ea3a20e2d8999592f3ad03218a2ffbdf06ab9adb243c42bcd4ba0a2dd0"
+   "sha256": "4e7a0be772e1dc9a3ee0418b2f54440ca5f3527947c595d112de419ff38eae05"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-91/task.json",
-   "sha256": "44a98c41973d2dfe9e8e0d2c35f481ca0dfe65f6569960e9bf61bd4d2932b723"
+   "sha256": "8d17cbf87e7628556cba7533efe088720e23a2880b254b9b20a33ff3d5a271a6"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-92/task.json",
-   "sha256": "3be97594882ede3550738ccb4da82c855f87733f8b195eb2d1606a5d516ffaee"
+   "sha256": "b63948ff2c5393bc21d1fa601a5ce96b85e5fa20463fc0bf97034b52268f6b00"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-93/task.json",
-   "sha256": "9f1220c70ea0107e69fd875019905c7c9f58cfcbf8f88d6be57cf6452b1747d7"
+   "sha256": "0042312f2254d6e6d64630423b4b7c81c8b73fa51f428ca6c865ef056a5f4923"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-94/task.json",
-   "sha256": "41edd1821b1960085f3522c5c15fcdb983036f1a9f6cdb1d4ffe8ee86b54f5ec"
+   "sha256": "15088220b520ef5da0434e626309e2d1ba3dc7db7c362a544e9f5c512d684c78"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-95/task.json",
-   "sha256": "8c1b4de042156126fc76c742ad2739204f5a0a335a0ee8671b0a42deb9e4100e"
+   "sha256": "d8680ae96dada80bdfe8cf98463803a2e0eb901e2e0cd1a32696ea14838b3b42"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-96/task.json",
-   "sha256": "878e4036ab002847eab2e4e9e9f362ac8138c5fabd86aa2ab411aa53728e6466"
+   "sha256": "dc97f0e1b74cdc10fb06b163dd3beb452ef6aa7bec9e8e6473c9012db9960362"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-97/task.json",
-   "sha256": "e103cf86a0879b0597784e9f08b686e4e4af29f4706f87cfb54ac6d1784333b8"
+   "sha256": "e72a83df0488054a9ac564f4c561af0d1494d8b86ceafc8bf8fa7c4ed0897a9f"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-98/task.json",
-   "sha256": "e0cf64653e908888ff968e3612e46cb58c3a968272bcfc4d3da46bf541828407"
+   "sha256": "ed81e6ed1d1436468071119f5ee9fa2982ae7de0403283b1484f9154e67713b9"
   },
   {
    "path": "grc-bench/items/tier_f/test/gbf-test-99/task.json",
-   "sha256": "0a1c5532daa7f3e712e3dbcf8bf16e7c1d25bd04cdf5a7e96da9a5e15fd1842a"
+   "sha256": "3abb27776b45e6571a7b8977f7f1f2df865a449c49567f266886e813205f743b"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",

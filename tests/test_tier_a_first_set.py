@@ -31,7 +31,9 @@ def test_first_set_is_10_test_and_12_dev_tasks_covering_every_category():
 
 
 def test_the_test_split_has_three_tasks_per_category():
-    cats = Counter(t["category"] for t in _built() if t["split"] == "test")
+    """The test split as planned (the replacements of rejected tasks come after it: tier_a.replacements)."""
+    from grcbench.review.replacements import all_ids
+    cats = Counter(t["category"] for t in _built() if t["split"] == "test" and t["id"] not in all_ids())
     assert sum(cats.values()) == 30
     assert set(cats.values()) == {3} and set(cats) == set(spec_drafts.CATEGORIES)
 
@@ -142,7 +144,7 @@ def test_sheet_columns_match_the_checklist():
 
 def test_sheet_rows_cover_built_tasks_and_specs():
     rows = spec_drafts.built_rows() + spec_drafts.draft_rows()
-    assert len(rows) == 42
+    assert len(rows) == len(_built()) == 51                    # 42 planned tasks and 9 replacements
     for r in rows:
         assert set(r) <= set(spec_drafts.SHEET_COLUMNS)
         assert r["instruction"] and r["acceptance"] and r["start_state"]

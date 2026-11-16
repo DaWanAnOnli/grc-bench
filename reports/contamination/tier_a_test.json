@@ -29,15 +29,15 @@
     "max_cosine_quantiles": {
      "max": 0.8256,
      "min": 0.7142,
-     "p10": 0.7429,
-     "p25": 0.749,
-     "p50": 0.7634,
-     "p75": 0.7838,
-     "p90": 0.8036,
-     "p95": 0.8048,
-     "p99": 0.8197
+     "p10": 0.7442,
+     "p25": 0.7495,
+     "p50": 0.7621,
+     "p75": 0.7704,
+     "p90": 0.8029,
+     "p95": 0.8045,
+     "p99": 0.8183
     },
-    "passages_embedded": 75,
+    "passages_embedded": 89,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -76,13 +76,13 @@
     "max_cosine_quantiles": {
      "max": 0.342,
      "min": 0.1854,
-     "p10": 0.1947,
-     "p25": 0.2045,
-     "p50": 0.2346,
-     "p75": 0.2499,
-     "p90": 0.3038,
-     "p95": 0.3378,
-     "p99": 0.3409
+     "p10": 0.1978,
+     "p25": 0.2085,
+     "p50": 0.2337,
+     "p75": 0.2488,
+     "p90": 0.2942,
+     "p95": 0.3373,
+     "p99": 0.3407
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -160,6 +160,16 @@
      "training": "QPSK TX RX 2.grc\\\\\\\").\\\\nThis flowgraph\\\\n * generate a single signal composed of:\\\\n * our QPSK signal at _F 0_\\\\n * the BPSK signal at _F 0_+25 kHz\\\\n * simulate a channel frequency offset\\\\n * use a Xlating filter to shift the received…"
     },
     {
+     "doc_id": "tier1/t1_addwire_freq_xlating_fir_filter_xxx_in0",
+     "doc_ref": "t1_addwire_freq_xlating_fir_filter_xxx_in0",
+     "embed": 0.7884,
+     "item": "The open flowgraph should remove the DC offset (0.75) from a 1.2 kHz test tone with amplitude 0.4 and then amplify it by 2.5, so that clean_tone.dat holds a 1.…",
+     "item_id": "gba-test-13",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "errors. Let me run with a small stop_after_seconds. Let me run. save_graph {} {\"error\":\"Saving the flowgraph is not wired up in this environment. Tell the user to save it in GRC (File > Save) and continue without this tool.\"} Save isn't av…"
+    },
+    {
      "doc_id": "tier2/t2_correct_analog_pll_refout_cc",
      "doc_ref": "t2_correct_analog_pll_refout_cc",
      "embed": 0.7883,
@@ -178,16 +188,6 @@
      "ngram_shared": 0,
      "tfidf": 0.1834,
      "training": "the block's interface, which is why the block's ports and parameters\\nchange when its source changes.\\n\\nThe corresponding block id in the platform library is `epy_block`. Exported\\nhier-block library versions and saved example blocks are…"
-    },
-    {
-     "doc_id": "tier1/t1_topo_blocks_pack_k_bits_bb_disable",
-     "doc_ref": "t1_topo_blocks_pack_k_bits_bb_disable",
-     "embed": 0.7661,
-     "item": "The open flowgraph is a loopback test of a narrowband FM link: a 1.2 kHz test tone is frequency-modulated with a peak deviation of 2.5 kHz (fm_iq.dat) and demo…",
-     "item_id": "gba-test-15",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "rate which equal 5 kHz.\\n * allowing a maximum carrier frequency close to 100kHz\\n\\n[](https://wiki.gnuradio.org/index.php?title=File:IQ_complex_tutorial_AM_TX_complex.png)AM modulator flowgraph\\n * the lower one uses an equivalent baseban…"
     }
    ]
   },
@@ -202,15 +202,15 @@
     "max_cosine_quantiles": {
      "max": 0.8403,
      "min": 0.7183,
-     "p10": 0.7374,
-     "p25": 0.7509,
-     "p50": 0.7741,
-     "p75": 0.8105,
-     "p90": 0.8197,
-     "p95": 0.8341,
-     "p99": 0.8386
+     "p10": 0.7405,
+     "p25": 0.7564,
+     "p50": 0.783,
+     "p75": 0.8111,
+     "p90": 0.8241,
+     "p95": 0.8339,
+     "p99": 0.8381
     },
-    "passages_embedded": 71,
+    "passages_embedded": 81,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -245,13 +245,13 @@
     "max_cosine_quantiles": {
      "max": 0.2895,
      "min": 0.1802,
-     "p10": 0.1936,
-     "p25": 0.2115,
-     "p50": 0.2325,
+     "p10": 0.1958,
+     "p25": 0.2111,
+     "p50": 0.2337,
      "p75": 0.2461,
-     "p90": 0.2597,
-     "p95": 0.2748,
-     "p99": 0.2874
+     "p90": 0.2601,
+     "p95": 0.2689,
+     "p99": 0.2869
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -289,6 +289,26 @@
      "training": "1 kHz or native rate. 2. **(Optional) Rational Resampler** - 48 kHz -> 44.1 kHz. 3. **(Optional) Float-to-Short** - for integer PCM. 4. **File Sink** (or **WAV File Sink**) - writes the samples to disk. 5. **(Optional) Head** - to limit re…"
     },
     {
+     "doc_id": "muse-glimmer-30b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8304,
+     "item": "Add an Embedded Python block to the open flowgraph that limits the tone to the range -0.3 to 0.3 (values beyond it are set to the limit), and write its output…",
+     "item_id": "gba-test-37",
+     "ngram_shared": 0,
+     "tfidf": 0.2327,
+     "training": "type. A `blocks.head` / `blocks.tail` can be used to limit the number of samples read/written. * **blocks.file_sink** → `Filename` = output file, `Type` = same as the input or the type produced by the processing chain, `Append` = Off. It w…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8199,
+     "item": "Add an Embedded Python block to the open flowgraph that squares the low-pass filter's output (y = x * x), and write its output as float samples to a new File S…",
+     "item_id": "gba-test-34",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "type. A `blocks.head` / `blocks.tail` can be used to limit the number of samples read/written. * **blocks.file_sink** → `Filename` = output file, `Type` = same as the input or the type produced by the processing chain, `Append` = Off. It w…"
+    },
+    {
      "doc_id": "nemotron3-super-120b/q_757965c9a466fe61",
      "doc_ref": "q_757965c9a466fe61",
      "embed": 0.8181,
@@ -297,6 +317,16 @@
      "ngram_shared": 0,
      "tfidf": 0.2823,
      "training": "GNU Radio flow-graph for \"FFT of a sine wave\"** | Block (in order) | Purpose | Key parameters | |------------------|---------|----------------| | Signal Source | Generates the test tone | Waveform: Sine, Frequency: 1 kHz, Amplitude: 1.0, S…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8178,
+     "item": "Add an Embedded Python block to the open flowgraph that rectifies the low-pass filter's output to its positive half-waves (y = max(x, 0)), and write its output…",
+     "item_id": "gba-test-35",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "type. A `blocks.head` / `blocks.tail` can be used to limit the number of samples read/written. * **blocks.file_sink** → `Filename` = output file, `Type` = same as the input or the type produced by the processing chain, `Append` = Off. It w…"
     },
     {
      "doc_id": "devstral-small2-24b/q_adff30cd72dfbaa5",
@@ -327,36 +357,6 @@
      "ngram_shared": 0,
      "tfidf": 0.2272,
      "training": "paths** (`input.dat` and `filtered_output.dat`) to match your environment. 3. Adjust **sample rate**, **filter cutoff**, **UDP IP/port**, and **packet size** to suit your signal and network. 4. Run the flowgraph. - The file sink will conti…"
-    },
-    {
-     "doc_id": "gpt-oss-120b/q_609d652cf5167382",
-     "doc_ref": "q_609d652cf5167382",
-     "embed": 0.8109,
-     "item": "This flowgraph tests a radio channel at a sample rate of 48 kHz: a complex 3 kHz tone with amplitude 0.5 goes through a Channel Model that adds noise and a car…",
-     "item_id": "gba-test-02",
-     "ngram_shared": 0,
-     "tfidf": 0.2091,
-     "training": "1 kHz or native rate. 2. **(Optional) Rational Resampler** - 48 kHz -> 44.1 kHz. 3. **(Optional) Float-to-Short** - for integer PCM. 4. **File Sink** (or **WAV File Sink**) - writes the samples to disk. 5. **(Optional) Head** - to limit re…"
-    },
-    {
-     "doc_id": "nemotron3-super-120b/q_757965c9a466fe61",
-     "doc_ref": "q_757965c9a466fe61",
-     "embed": 0.8092,
-     "item": "Build a new flowgraph that makes a beat-note test signal at a sample rate of 32 kHz: multiply two real-valued (float) cosine tones, one at 1000 Hz and one at 1…",
-     "item_id": "gba-test-01",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "GNU Radio flow-graph for \"FFT of a sine wave\"** | Block (in order) | Purpose | Key parameters | |------------------|---------|----------------| | Signal Source | Generates the test tone | Waveform: Sine, Frequency: 1 kHz, Amplitude: 1.0, S…"
-    },
-    {
-     "doc_id": "gpt-oss-120b/q_eb47d74d3b3f7b55",
-     "doc_ref": "q_eb47d74d3b3f7b55",
-     "embed": 0.8007,
-     "item": "Add an Embedded Python block to the open flowgraph that converts the DAC test signal into a level in dB: 20 * log10(|x|), with a floor of -120 dB for x = 0. Wr…",
-     "item_id": "gba-test-24",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "the desired RMS level (e.g., -12 dBFS for the DAC). --- ## 3. Making the hierarchical block in GNU Radio Companion (GRC) 1. **Create a new folder** `my_qpsk_tx` inside `~/.grc_gnuradio/blocks/` (or any path you add to `PYTHONPATH`). 2. Ins…"
     }
    ]
   },
@@ -371,15 +371,15 @@
     "max_cosine_quantiles": {
      "max": 0.8404,
      "min": 0.7176,
-     "p10": 0.7304,
-     "p25": 0.7558,
-     "p50": 0.7785,
-     "p75": 0.8026,
-     "p90": 0.8226,
-     "p95": 0.834,
-     "p99": 0.8399
+     "p10": 0.7383,
+     "p25": 0.7569,
+     "p50": 0.7842,
+     "p75": 0.801,
+     "p90": 0.8189,
+     "p95": 0.8304,
+     "p99": 0.8398
     },
-    "passages_embedded": 73,
+    "passages_embedded": 82,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -414,13 +414,13 @@
     "max_cosine_quantiles": {
      "max": 0.3138,
      "min": 0.1626,
-     "p10": 0.1893,
-     "p25": 0.2135,
-     "p50": 0.2443,
-     "p75": 0.2603,
-     "p90": 0.277,
-     "p95": 0.2791,
-     "p99": 0.3041
+     "p10": 0.1965,
+     "p25": 0.2277,
+     "p50": 0.2482,
+     "p75": 0.268,
+     "p90": 0.2772,
+     "p95": 0.2814,
+     "p99": 0.3037
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -488,6 +488,16 @@
      "training": "native rate. 2. **(Optional) Rational Resampler** (from `gnuradio.filter`) – 48 kHz → 44.1 kHz. 3. **(Optional) Float‑to‑Short** – for integer PCM. 4. **File Sink** (or **WAV File Sink**) – writes the samples to disk. 5. **(Optional) Head*…"
     },
     {
+     "doc_id": "muse-glimmer-30b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.806,
+     "item": "Add an Embedded Python block to the open flowgraph that squares the low-pass filter's output (y = x * x), and write its output as float samples to a new File S…",
+     "item_id": "gba-test-34",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "Filename` = output file, `Type` = the data type produced by the processing chain (same as the input if the chain is type-preserving), `Unbuffered`/`Append` as desired. It writes the incoming stream verbatim to disk. Minimal flowgraph: `Fil…"
+    },
+    {
      "doc_id": "gpt-oss-120b/q_eb47d74d3b3f7b55",
      "doc_ref": "q_eb47d74d3b3f7b55",
      "embed": 0.8055,
@@ -516,16 +526,6 @@
      "ngram_shared": 0,
      "tfidf": null,
      "training": "GNU Radio flow‑graph for “FFT of a sine wave”** | Block (in order) | Purpose | Key parameters | |------------------|---------|----------------| | **Signal Source** | Generates the test tone (complex or real) | Waveform: *Sine* <br>Frequenc…"
-    },
-    {
-     "doc_id": "gpt-oss-120b/q_609d652cf5167382",
-     "doc_ref": "q_609d652cf5167382",
-     "embed": 0.7965,
-     "item": "The open flowgraph marks the peaks of a 600 Hz sawtooth (sample rate 48 kHz) with a Peak Detector2 block: peaks.dat holds 1.0 at the top of every ramp and 0.0…",
-     "item_id": "gba-test-16",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "native rate. 2. **(Optional) Rational Resampler** (from `gnuradio.filter`) – 48 kHz → 44.1 kHz. 3. **(Optional) Float‑to‑Short** – for integer PCM. 4. **File Sink** (or **WAV File Sink**) – writes the samples to disk. 5. **(Optional) Head*…"
     }
    ]
   },
@@ -540,15 +540,15 @@
     "max_cosine_quantiles": {
      "max": 0.8206,
      "min": 0.716,
-     "p10": 0.7349,
-     "p25": 0.7521,
-     "p50": 0.7702,
-     "p75": 0.8001,
-     "p90": 0.8122,
-     "p95": 0.8159,
-     "p99": 0.8195
+     "p10": 0.7491,
+     "p25": 0.7598,
+     "p50": 0.7711,
+     "p75": 0.7922,
+     "p90": 0.8119,
+     "p95": 0.8151,
+     "p99": 0.8193
     },
-    "passages_embedded": 67,
+    "passages_embedded": 79,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -587,13 +587,13 @@
     "max_cosine_quantiles": {
      "max": 0.3561,
      "min": 0.1755,
-     "p10": 0.2299,
-     "p25": 0.2403,
-     "p50": 0.2607,
-     "p75": 0.2874,
-     "p90": 0.3422,
-     "p95": 0.3515,
-     "p99": 0.3549
+     "p10": 0.2341,
+     "p25": 0.2457,
+     "p50": 0.2663,
+     "p75": 0.2892,
+     "p90": 0.3375,
+     "p95": 0.3511,
+     "p99": 0.3547
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -691,14 +691,14 @@
      "training": "to 32000). - No throttle needed — wavfile sink will sink at max rate; for a file that's fine, it will run fast and terminate? Actually a wavfile sink doesn't stop the flowgraph; the flowgraph runs until stopped. To generate a finite file,…"
     },
     {
-     "doc_id": "quarantine/10/session-23",
-     "doc_ref": "t03_fm_receiver_repair",
-     "embed": 0.7905,
-     "item": "The open flowgraph writes the phase of a 1.005 kHz oscillator relative to a 1 kHz oscillator to phase.dat, wrapped to the range -pi to pi, so it jumps back by…",
-     "item_id": "gba-test-18",
+     "doc_id": "sft_train/02/session-14",
+     "doc_ref": "t08_run_verify_probe",
+     "embed": 0.7922,
+     "item": "Without changing the open flowgraph, write me a short data sheet of it. Run it for about two seconds for the measured items, and ignore the first 0.1 s of each…",
+     "item_id": "gba-test-32",
      "ngram_shared": 0,
-     "tfidf": 0.2395,
-     "training": "complex IQ, FM-modulated 1 kHz tone at 75 kHz deviation, amplitude 1.0, ~2 s (800k samples = 6.4 MB). Write to dummy.dat. Hmm, should I keep this file at the end? It's the graph's expected input. Keeping it is helpful (and it's not a \".dat…"
+     "tfidf": 0.216,
+     "training": "itemsize : size of each stream item\\n update_rate_ms : minimum update time in milliseconds\\n alpha : gain for running average filter\\n name : name for this probe (used in generated dictionaries)\"}, {\"block_id\": \"blocks_moving_average_xx\",…"
     }
    ]
   },
@@ -711,15 +711,15 @@
    "embedding": {
     "items_flagged": 0,
     "max_cosine_quantiles": {
-     "max": 0.7932,
+     "max": 0.813,
      "min": 0.6758,
-     "p10": 0.7234,
-     "p25": 0.7352,
-     "p50": 0.7646,
-     "p75": 0.7748,
-     "p90": 0.786,
-     "p95": 0.7907,
-     "p99": 0.7926
+     "p10": 0.724,
+     "p25": 0.7425,
+     "p50": 0.7639,
+     "p75": 0.778,
+     "p90": 0.7919,
+     "p95": 0.8034,
+     "p99": 0.813
     },
     "passages_embedded": 75,
     "rate": 0.0,
@@ -756,19 +756,49 @@
     "max_cosine_quantiles": {
      "max": 0.266,
      "min": 0.1259,
-     "p10": 0.1425,
-     "p25": 0.1559,
-     "p50": 0.1733,
-     "p75": 0.191,
-     "p90": 0.2126,
-     "p95": 0.2202,
-     "p99": 0.2529
+     "p10": 0.1474,
+     "p25": 0.1596,
+     "p50": 0.177,
+     "p75": 0.2015,
+     "p90": 0.2206,
+     "p95": 0.226,
+     "p99": 0.2522
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
     "threshold": 0.55
    },
    "top_pairs": [
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.813,
+     "item": "Add an Embedded Python block to the open flowgraph that squares the low-pass filter's output (y = x * x), and write its output as float samples to a new File S…",
+     "item_id": "gba-test-34",
+     "ngram_shared": 0,
+     "tfidf": 0.2262,
+     "training": "1.0, using samp_rate) and a null sink called `null_sink` (type float). Wire the source into your new epy block, and the epy block into the sink. Inspect to confirm the chain is valid. Then use the save_block tool to export `scale_by_three`…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.8129,
+     "item": "Add an Embedded Python block to the open flowgraph that limits the tone to the range -0.3 to 0.3 (values beyond it are set to the limit), and write its output…",
+     "item_id": "gba-test-37",
+     "ngram_shared": 0,
+     "tfidf": 0.2204,
+     "training": "1.0, using samp_rate) and a null sink called `null_sink` (type float). Wire the source into your new epy block, and the epy block into the sink. Inspect to confirm the chain is valid. Then use the save_block tool to export `scale_by_three`…"
+    },
+    {
+     "doc_id": "grc_agent_scenario/25_save_epy_block_to_library",
+     "doc_ref": "",
+     "embed": 0.801,
+     "item": "Add an Embedded Python block to the open flowgraph that rectifies the low-pass filter's output to its positive half-waves (y = max(x, 0)), and write its output…",
+     "item_id": "gba-test-35",
+     "ngram_shared": 0,
+     "tfidf": 0.2255,
+     "training": "1.0, using samp_rate) and a null sink called `null_sink` (type float). Wire the source into your new epy block, and the epy block into the sink. Inspect to confirm the chain is valid. Then use the save_block tool to export `scale_by_three`…"
+    },
     {
      "doc_id": "grc_agent_scenario/11_scoped_inspect_and_update",
      "doc_ref": "",
@@ -838,36 +868,6 @@
      "ngram_shared": 0,
      "tfidf": 0.1775,
      "training": "This flowgraph has several blocks in it. Using inspect_graph's targets option, look at just the sample rate variable and the 350 Hz tone source — don't pull the whole overview. Then change the sample rate to 96000. Check just those same tw…"
-    },
-    {
-     "doc_id": "grc_agent_scenario/11_scoped_inspect_and_update",
-     "doc_ref": "",
-     "embed": 0.7751,
-     "item": "The open flowgraph is a loopback test of a narrowband FM link: a 1.2 kHz test tone is frequency-modulated with a peak deviation of 2.5 kHz (fm_iq.dat) and demo…",
-     "item_id": "gba-test-15",
-     "ngram_shared": 0,
-     "tfidf": 0.1006,
-     "training": "This flowgraph has several blocks in it. Using inspect_graph's targets option, look at just the sample rate variable and the 350 Hz tone source — don't pull the whole overview. Then change the sample rate to 96000. Check just those same tw…"
-    },
-    {
-     "doc_id": "grc_agent_scenario/05_full_rewire",
-     "doc_ref": "",
-     "embed": 0.774,
-     "item": "The open flowgraph should remove the DC offset (0.75) from a 1.2 kHz test tone with amplitude 0.4 and then amplify it by 2.5, so that clean_tone.dat holds a 1.…",
-     "item_id": "gba-test-13",
-     "ngram_shared": 0,
-     "tfidf": 0.1204,
-     "training": "Inspect the flowgraph. I don't want the noise source anymore — remove it. In its place, add a constant source block, call it `dc_offset`, with its constant value set to 0.0, and wire its output into the same input on the adder that the noi…"
-    },
-    {
-     "doc_id": "grc_agent_scenario/01_add_throttle",
-     "doc_ref": "",
-     "embed": 0.7729,
-     "item": "This flowgraph tests a radio channel at a sample rate of 48 kHz: a complex 3 kHz tone with amplitude 0.5 goes through a Channel Model that adds noise and a car…",
-     "item_id": "gba-test-02",
-     "ngram_shared": 0,
-     "tfidf": 0.1351,
-     "training": "Take a look at the flowgraph, then add a throttle block in the path between the 350 Hz tone and the adder that mixes the tones together. Call it `mid_throttle`, set its type to float, and have it use the samp_rate variable for its rate. Ma…"
     }
    ]
   },
@@ -882,15 +882,15 @@
     "max_cosine_quantiles": {
      "max": 0.8353,
      "min": 0.7209,
-     "p10": 0.7401,
-     "p25": 0.7501,
-     "p50": 0.7643,
-     "p75": 0.8037,
-     "p90": 0.8188,
-     "p95": 0.8315,
-     "p99": 0.8349
+     "p10": 0.74,
+     "p25": 0.7546,
+     "p50": 0.7792,
+     "p75": 0.807,
+     "p90": 0.8233,
+     "p95": 0.8311,
+     "p99": 0.8348
     },
-    "passages_embedded": 76,
+    "passages_embedded": 86,
     "rate": 0.0,
     "scope": "best passage of each item's 3 nearest TF-IDF documents (max is a lower bound)",
     "signal": "semantic",
@@ -952,13 +952,13 @@
     "max_cosine_quantiles": {
      "max": 0.3388,
      "min": 0.1995,
-     "p10": 0.2108,
-     "p25": 0.2448,
-     "p50": 0.2632,
-     "p75": 0.2891,
-     "p90": 0.3027,
-     "p95": 0.3268,
-     "p99": 0.3377
+     "p10": 0.2118,
+     "p25": 0.2446,
+     "p50": 0.2685,
+     "p75": 0.2957,
+     "p90": 0.3138,
+     "p95": 0.3252,
+     "p99": 0.3374
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -986,6 +986,16 @@
      "training": "Connection: Audio Source out -> WAV File Sink / File Sink in. The flowgraph will record the live audio stream at 44.1 kHz to the chosen file. Design a GNU Radio flowgraph that samples an audio signal at 44.1 kHz and saves it to a file. Wha…"
     },
     {
+     "doc_id": "muse-glimmer-30b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8304,
+     "item": "Add an Embedded Python block to the open flowgraph that limits the tone to the range -0.3 to 0.3 (values beyond it are set to the limit), and write its output…",
+     "item_id": "gba-test-37",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "type. A `blocks.head` / `blocks.tail` can be used to limit the number of samples read/written. * **blocks.file_sink** → `Filename` = output file, `Type` = same as the input or the type produced by the processing chain, `Append` = Off. It w…"
+    },
+    {
      "doc_id": "laguna-s21/q_a394759c54df61b6",
      "doc_ref": "q_a394759c54df61b6",
      "embed": 0.8285,
@@ -994,6 +1004,26 @@
      "ngram_shared": 0,
      "tfidf": 0.3136,
      "training": "Monitor │ └─────────────┘ └──────────┘ └─────────────┘ └──────────┘ └─────────────┘└─────────┘ ``` ### Detailed Implementation #### Block 1: Signal Source ``` - Type: Analog Signal Source - Waveform: Cosine (f = 1 kHz) - Amplitude: 1.0 - S…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8199,
+     "item": "Add an Embedded Python block to the open flowgraph that squares the low-pass filter's output (y = x * x), and write its output as float samples to a new File S…",
+     "item_id": "gba-test-34",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "type. A `blocks.head` / `blocks.tail` can be used to limit the number of samples read/written. * **blocks.file_sink** → `Filename` = output file, `Type` = same as the input or the type produced by the processing chain, `Append` = Off. It w…"
+    },
+    {
+     "doc_id": "muse-glimmer-30b/q_2bce8f4f13f014be",
+     "doc_ref": "q_2bce8f4f13f014be",
+     "embed": 0.8178,
+     "item": "Add an Embedded Python block to the open flowgraph that rectifies the low-pass filter's output to its positive half-waves (y = max(x, 0)), and write its output…",
+     "item_id": "gba-test-35",
+     "ngram_shared": 0,
+     "tfidf": null,
+     "training": "type. A `blocks.head` / `blocks.tail` can be used to limit the number of samples read/written. * **blocks.file_sink** → `Filename` = output file, `Type` = same as the input or the type produced by the processing chain, `Append` = Off. It w…"
     },
     {
      "doc_id": "devstral-small2-24b/q_adff30cd72dfbaa5",
@@ -1034,36 +1064,6 @@
      "ngram_shared": 0,
      "tfidf": null,
      "training": "Monitor │ └─────────────┘ └──────────┘ └─────────────┘ └──────────┘ └─────────────┘└─────────┘ ``` ### Detailed Implementation #### Block 1: Signal Source ``` - Type: Analog Signal Source - Waveform: Cosine (f = 1 kHz) - Amplitude: 1.0 - S…"
-    },
-    {
-     "doc_id": "nemotron3-super-120b/q_08b42acdc578660c",
-     "doc_ref": "q_08b42acdc578660c",
-     "embed": 0.8039,
-     "item": "Add an Embedded Python block to the open flowgraph that converts the DAC test signal into a level in dB: 20 * log10(|x|), with a floor of -120 dB for x = 0. Wr…",
-     "item_id": "gba-test-24",
-     "ngram_shared": 0,
-     "tfidf": 0.2624,
-     "training": "File Sink** (optional) | Save the noisy waveform for later analysis. | • File type = `float` or `complex` <br>• File name = `awgn_out.dat` | --- ## 2. Detailed block‑by‑block description ### 2.1 Signal Source *If you already have a modulat…"
-    },
-    {
-     "doc_id": "nemotron3-super-120b/q_b656b3ba8bb9cdb7",
-     "doc_ref": "q_b656b3ba8bb9cdb7",
-     "embed": 0.8031,
-     "item": "Build a new flowgraph at a sample rate of 32 kHz that makes a test signal for a detector: a complex tone at 5 kHz with amplitude 0.1 plus complex Gaussian nois…",
-     "item_id": "gba-test-11",
-     "ngram_shared": 0,
-     "tfidf": 0.2973,
-     "training": "GNU Radio Flowgraph for Low‑Pass Filtering a Noisy Signal** | Block (GNU Radio) | Purpose | Key Parameters (example) | |-------------------|---------|--------------------------| | **Signal Source** (e.g., `Waveform Source` → *Cosine* or *N…"
-    },
-    {
-     "doc_id": "qwen36-27b/q_ffc2b8a9ba0932f9",
-     "doc_ref": "q_ffc2b8a9ba0932f9",
-     "embed": 0.8024,
-     "item": "The open flowgraph writes the phase of a 1.005 kHz oscillator relative to a 1 kHz oscillator to phase.dat, wrapped to the range -pi to pi, so it jumps back by…",
-     "item_id": "gba-test-18",
-     "ngram_shared": 0,
-     "tfidf": null,
-     "training": "fromfile('out.dat', dtype=np.complex64)` and plot histogram/spectrum. If values are uniform/zero, upstream is not generating data or is muted. Key engineering notes: - The file sink does not silently drop samples; it blocks the producing t…"
     }
    ]
   },
@@ -1078,13 +1078,13 @@
     "max_cosine_quantiles": {
      "max": 0.8156,
      "min": 0.7084,
-     "p10": 0.7207,
-     "p25": 0.7377,
-     "p50": 0.7587,
-     "p75": 0.7848,
-     "p90": 0.8061,
-     "p95": 0.8101,
-     "p99": 0.8142
+     "p10": 0.7265,
+     "p25": 0.7453,
+     "p50": 0.7624,
+     "p75": 0.7835,
+     "p90": 0.7978,
+     "p95": 0.8096,
+     "p99": 0.8139
     },
     "passages_embedded": 1561,
     "rate": 0.0,
@@ -1121,13 +1121,13 @@
     "max_cosine_quantiles": {
      "max": 0.3322,
      "min": 0.1614,
-     "p10": 0.189,
-     "p25": 0.2012,
-     "p50": 0.221,
-     "p75": 0.2572,
-     "p90": 0.2898,
-     "p95": 0.2961,
-     "p99": 0.3227
+     "p10": 0.1848,
+     "p25": 0.2024,
+     "p50": 0.223,
+     "p75": 0.2492,
+     "p90": 0.2885,
+     "p95": 0.2935,
+     "p99": 0.3204
     },
     "rate": 0.0,
     "signal": "lexical (not paraphrase detection)",
@@ -1227,11 +1227,11 @@
     {
      "doc_id": "q_e88d0cd13dd8fb15",
      "doc_ref": "",
-     "embed": 0.7738,
-     "item": "The open flowgraph is a loopback test of a narrowband FM link: a 1.2 kHz test tone is frequency-modulated with a peak deviation of 2.5 kHz (fm_iq.dat) and demo…",
-     "item_id": "gba-test-15",
+     "embed": 0.7835,
+     "item": "Without changing the open flowgraph, write me a short data sheet of it. Run it for about two seconds for the measured items, and ignore the first 0.1 s of each…",
+     "item_id": "gba-test-36",
      "ngram_shared": 0,
-     "tfidf": 0.1023,
+     "tfidf": 0.1284,
      "training": "In GNU Radio, you create a flowgraph with a USRP source, a decimate-by-4 FIR filter, a frequency translator (multiply by complex exponential), and a file sink. The USRP source runs at 100 MS/s. The file sink writes to an SSD with 500 MB/s…"
     }
    ]
@@ -1244,127 +1244,155 @@
   "eval plan §6: contamination audit, a contamination rate for each tier",
   "proposal §4.5: 8-gram decontamination; embedding near-duplicates"
  ],
- "n_items": 30,
+ "n_items": 37,
  "sources": [
   {
    "path": "grc-bench/items/tier_a/test/gba-test-01/task.json",
-   "sha256": "00fc049836586ac5971000b454aefe8456c9c0a48b68307eba50976b56b88ad5"
+   "sha256": "7dbff94b6366deae302b643026b43e6d99ae9c1c66ea69002b6f6048d6c9e135"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-02/task.json",
-   "sha256": "9f82780c4ee272d0bea7f7462420cc4e6788eff06b5a0a91db6c8fe61e753fec"
+   "sha256": "9f7a085ccfcad9c4e6572c127943c869383dfac30e63088d850474de7aa0df5e"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-03/task.json",
-   "sha256": "d3be7db1d9fab1b88d9663d88da46bd7eb4386dc5d0fd02bb2296ecebf9dec4e"
+   "sha256": "5b1485d644525c69e9732e89623961c01ac929ffb8d1548ce75a4b45546f8f4c"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-04/task.json",
-   "sha256": "339dffb8ad64297c4879f8ec7ba45b946ed1ddf7cd1cb5a4a07ab663f72cbea0"
+   "sha256": "cade379af5f8d6b129232fdd54b7fd45026e8b40543f9d1178571572a24a2f36"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-05/task.json",
-   "sha256": "44f5ced6a7e07a108775701ac308ef534936921fde5eb4edd557ca754f1df9d3"
+   "sha256": "feef4de858227c61e0e5ffd0065113b7875d0c289d76163fb2aec382c7949591"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-06/task.json",
-   "sha256": "4e386c685405a500fe2d17dbb084c62f300f45a59a1f90f9d7b0f95bb287de56"
+   "sha256": "551412326e3f6481ec9d478f48df98eeec742cadd432894f581e9e97e2fa8376"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-07/task.json",
-   "sha256": "f1bf140ffddd90fcc63b31aff21bc5eb8e5a9e4a3a669f0ace8a7f1ad5859f13"
+   "sha256": "35806831be50e8dce9b8114f98622f28c9bfa912e0b4835c3be1abdd74eda21a"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-08/task.json",
-   "sha256": "ae902f0413f65f5f0c90319595ede7ee57e613f5977e989f661744ff13b224cf"
+   "sha256": "e2e2b59629435ddb95c493786660a99c7aabf661cc1ae4ae26c383d5465cc9e4"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-09/task.json",
-   "sha256": "ad5cb4767694f2b03600b28e94edf5a8578d815d7241a3bb5dba27607f28d8c8"
+   "sha256": "13eadea86ed89c40de2be663cd061852a96655d45f6825bc5af71a7c0551bfd1"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-10/task.json",
-   "sha256": "d3aca3a78394399cc53a8e61b8b2fc9a891e3a3f9d28d023435d6296bdd84843"
+   "sha256": "01be28d004dab9c7bf1e2ad807b1e730479eacd3c049ecf255a172d8db179cb3"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-11/task.json",
-   "sha256": "6137d919369751533b8484ff035d8ebb671552398c628a93ec3a80568cdf7f37"
+   "sha256": "04486a348e90e9e849d63b5f82dd3e9c988575ee1f4e14f909533b9ae25b9c0b"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-12/task.json",
-   "sha256": "772965527722c60447e37ea3ea62be25bf72609429343073306e058678646228"
+   "sha256": "07818ee2274ced33d01933f95ed0cae5f5cb0a9025fa4d389747c163fa459ad9"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-13/task.json",
-   "sha256": "a864284c8c17ca670890f99cfbadd70fa469c944195bb79d446c63572ec44e5c"
+   "sha256": "b3db6c7454d8f53d15f2e9c8b69fa64e6010abc892ad80dd80e573c4a71f5d32"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-14/task.json",
-   "sha256": "4cb8bc882819e4cb2b194c21da914d8010953f063164df6596c1a657ffaea8e6"
+   "sha256": "755c60e01bc84909dc31ae7be8b6cdc4ab797bca785448c8dec6b35462cf3168"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-15/task.json",
-   "sha256": "f5ec0ad378761b240e123b990c8604436e8e1951e7e4870002e599b7ab83d175"
+   "sha256": "31af2b9d29f6bacde7cf265cf9ba9b699260e62551577b9b573892443d57c45d"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-16/task.json",
-   "sha256": "d7ff1437e4ec3db7e18d5e890f2443ba0e74859b1d4e44bfb16bba68d7b66969"
+   "sha256": "365b1aeadcb73498256fe1c0a383c620f99f886baa02ffed40b3378ba1fde042"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-17/task.json",
-   "sha256": "8118b54ba80699f5cb9f0bc18a799c232d8884681267cfcd4fe39a7fe1098df5"
+   "sha256": "8cab2a5f4d489042f3a6bbf0ed57f5231e197f45db6421a177a37ff33dddcad4"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-18/task.json",
-   "sha256": "55b254812324391068328dc8b1ba6419b7db91bb7c5547c364f59ba357760ed7"
+   "sha256": "55e9ada3ab240ffe2d935d28e81ab5ad89577764e74c6bf249facdf115707c9e"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-19/task.json",
-   "sha256": "41417b818d6216760460aef697c15a7c2aeab7480f2e71a0a775b12ccdf85828"
+   "sha256": "2f2bc8b018b43b93eb85a6e1dfb80467cab19c5f93654595802db137c7ae046a"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-20/task.json",
-   "sha256": "dcc174445c4099d5092724aa9092f645835786d0b80c9d06051690ef99e7cbb0"
+   "sha256": "a166fc04635ae20dd23cfafc88a062f92a260bef1e9303eae55a2cb295c2b204"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-21/task.json",
-   "sha256": "e0de75c7c811f20035ed9b8fe6698a0547d504263fdaaec1f551be21a503db29"
+   "sha256": "75650e234c70943b329128f83c0b35d1860221f44fc694e35de4a9b68d3387c8"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-22/task.json",
-   "sha256": "73a071f663972d0721cea507902acd38f92b1e355684fd17506c5158fd66501d"
+   "sha256": "d6af776f9adfcb40de221c8bbefd939687e2aff1ad4d8b6837c1b1a8b0ac7d2b"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-23/task.json",
-   "sha256": "0bb2e4b5f6bed90667276baa29db86955353cacec568797a1163674b3f1c7e95"
+   "sha256": "7c34cbca919123c156e097decdc49d3dc79f7f07a780929d9ab4d9642ee392a5"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-24/task.json",
-   "sha256": "53b9bef9e20b2b4e0af2ef2164751062572622c564c55e3368217775ca336c55"
+   "sha256": "84a2a8a9493d893ec0eb59cbcc6a54ae4a94800c79b82106e5f272f27c2b3459"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-25/task.json",
-   "sha256": "352ff46d69ad57d91ea7e5770ca9763996384cbc7e4767eed991d4032c998452"
+   "sha256": "91a48d0e4c7ee22b06191f93e0b3fba112ff0abf89aa55c8a1fa9968caa45473"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-26/task.json",
-   "sha256": "1f7793d0843c2a2b5f8d4d5693f17aa3f05994b11c70249d5e0df54c0a719c46"
+   "sha256": "f778e4d71faf5f09f48ac12b3324da758a487f33859e3f7a85309df024d69e09"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-27/task.json",
-   "sha256": "91e475700d6108afb70f6b68684ab8d4b716de8a869bb1c5042ee93bd434d836"
+   "sha256": "6b9ef5baf56b1535a56ca21e37e50cfbced762e3c9d676ee9a6c540946561ff5"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-28/task.json",
-   "sha256": "9b58ad9dae594518a4a19757b89bdf8bb54e874d2054d977665ba86d5d94b5b9"
+   "sha256": "44030ca9f3864a61f4c3d49c4197105cfdeabcdda96ee7fc07c780943dad9c61"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-29/task.json",
-   "sha256": "ef1038b8fc4b1a9f7147669ce3c473ebd112402908ff635732d92c35c83f8615"
+   "sha256": "390c749f6074bc76771e2ff61e7602ef2e37a0cd759c5d5afab947c88856ceea"
   },
   {
    "path": "grc-bench/items/tier_a/test/gba-test-30/task.json",
-   "sha256": "854f8451bc87170e59e8f74356bd1494de7fefd1a391f2780ccf84552f074c0e"
+   "sha256": "4cdcb436e6528b327c3ae69b307d9395c26f22f8dedcbd1a37c5f528e88a51e8"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-31/task.json",
+   "sha256": "2e6e210470002293f4049b7db2318059bc7d156bc68c5bec1c0f05fffc277af1"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-32/task.json",
+   "sha256": "14d2ce87c29f60b8ad555293aa61a7fd7b98d4756a9177c29fa08874e2583e93"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-33/task.json",
+   "sha256": "49f79c275113818b460391f571970f747d18f058b29e635f5f1934ab583be32e"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-34/task.json",
+   "sha256": "76a41b8d83d65d529cb076659a1fa74e0156601bb53b14318f57d599e2812c32"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-35/task.json",
+   "sha256": "599807aca43979de22efe1455b3bb599f4347f7373e66591eeac15a43cdae17e"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-36/task.json",
+   "sha256": "f81cbec00b32b4d49147c0dceae9dfe03a7d0678c1cada58d938efc600abf6db"
+  },
+  {
+   "path": "grc-bench/items/tier_a/test/gba-test-37/task.json",
+   "sha256": "6e12948b23a3f2399a02d7e713a827fecb2af262e0a0f4e47ea7958b63f0e219"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",

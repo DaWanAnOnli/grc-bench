@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "Short To Float",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "to_float",
+    "params": {
+     "scale": "10"
+    }
+   }
+  ]
+ }
+}

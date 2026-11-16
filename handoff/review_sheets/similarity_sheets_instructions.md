@@ -7,7 +7,7 @@ every row, each alone, and the expert agent decides every disagreement.
 
 | Sheet | Rows | Decision per | Reviewers | When |
 |---|---|---|---|---|
-| `tier_k_test_clusters.csv` | 10 (5 clusters of 2 test questions) | cluster | two, every row | before the freeze (17 Nov) |
+| `tier_k_test_clusters.csv` | 10 (5 clusters of 2 test questions) | cluster | two, every row | before the freeze (20 Nov) |
 | `tier_k_twin_threshold_review.csv` | 235 pairs of training questions | pair | two, every row | before the freeze |
 | `contamination_tier_k_test.csv`, `contamination_tier_k_dev.csv`, `contamination_tier_f_test.csv`, `contamination_tier_f_dev.csv` | 188, 30, 17 and 6 pairs | pair | two, every row (section C) | once the twin thresholds are final |
 

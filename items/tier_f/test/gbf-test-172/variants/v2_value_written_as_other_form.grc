@@ -1,0 +1,39 @@
+options:
+  parameters: {id: gbf_test_172, generate_options: no_gui, output_language: python}
+blocks:
+- name: samp_rate
+  id: variable
+  parameters: {value: '48000'}
+- name: tone_1
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '7100', amp: '0.6'}
+- name: noise
+  id: analog_noise_source_x
+  parameters: {type: complex, amp: '0.1'}
+- name: sum_of_tones
+  id: blocks_add_xx
+  parameters: {type: complex}
+- name: lo
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '7.500000e+03'}
+- name: mixer
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: lo_2
+  id: analog_sig_source_x
+  parameters: {type: complex, freq: '-6500'}
+- name: mixer_2
+  id: blocks_multiply_xx
+  parameters: {type: complex}
+- name: out
+  id: blocks_file_sink
+  parameters: {type: complex, file: shifted.dat}
+connections:
+- [tone_1, '0', sum_of_tones, '0']
+- [noise, '0', sum_of_tones, '1']
+- [sum_of_tones, '0', mixer, '0']
+- [lo, '0', mixer, '1']
+- [mixer, '0', mixer_2, '0']
+- [lo_2, '0', mixer_2, '1']
+- [mixer_2, '0', out, '0']
+metadata: {file_format: 1}

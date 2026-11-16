@@ -1,0 +1,18 @@
+{
+ "query_knowledge": {
+  "query": "Signal Source",
+  "domain": "catalog",
+  "k": 10
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "update_params": [
+   {
+    "instance_name": "square",
+    "params": {
+     "freq": "450"
+    }
+   }
+  ]
+ }
+}

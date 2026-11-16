@@ -126,12 +126,14 @@ def render(summaries: Sequence[Mapping[str, Any]], runs: Sequence[Mapping[str, A
                   "Every GNU Radio question and every Tier-F and Tier-A task, reviewed by the expert agent "
                   "(`docs/checklists/expert_review.md`). H1b holds for a tier when at least 90 % of its reviewed "
                   "items are accepted (first pass; the items the two-reviewer review removed count too); this is the "
-                  "expert agent's acceptance, not a GNU Radio engineer's (pre-registration §10). The last two "
-                  "columns describe the items the review kept; they are not the test.", "",
+                  "expert agent's acceptance, not a GNU Radio engineer's (pre-registration §10). H1b counts the "
+                  "original pool of items; the tasks that replace the rejected ones are counted beside it. The "
+                  "columns after 'H1b holds' describe; they are not the test.", "",
                   _table(["tier", "items", "accepted", "accepted with no edit", "unsure", "share", "H1b holds",
-                          "items kept", "share of the kept"],
+                          "items kept", "share of the kept", "replacements accepted"],
                          [[t, c["items"], c["accepted"], c["accepted_no_edit"], c["unsure"], c["share"],
-                           "yes" if c["holds"] else "no", c.get("kept", "–"), c.get("share_kept", "–")]
+                           "yes" if c["holds"] else "no", c.get("kept", "–"), c.get("share_kept", "–"),
+                           f"{c['replacements_accepted']} of {c['replacements']}" if "replacements" in c else "–"]
                           for t, c in sorted(h1b.items())])]
     if notes:
         lines += ["", "## Coordinator notes (`reviews/coordinator_notes.json`)", ""] + [f"- {n}" for n in notes]

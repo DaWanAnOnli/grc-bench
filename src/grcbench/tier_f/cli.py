@@ -69,29 +69,35 @@ def main(argv: list[str]) -> int:
         print(json.dumps(res, indent=1, default=str))
         return 0 if res["first_failed"] is None else 1
     if args.cmd == "sheet":
+        import io
+
+        from ..review.fill import with_new_rows
         path = HANDOFF / "review_sheets" / "tier_f_first_set.csv"
         path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, "w", newline="", encoding="utf-8") as fh:
-            w = csv.writer(fh)
-            w.writerow(["task_id", "split", "family", "level", "source", "instruction", "observation",
-                        "oracle_checks", "gates", "known_limits", "reviewer_1_decision", "reviewer_1_edits",
-                        "reviewer_2_decision", "reviewer_2_edits", "final_decision"])
-            for d in taskio.task_dirs():
-                t = taskio.load(d)
-                gp = d / "gates.json"
-                gsum = "not run"
-                if gp.exists():
-                    gj = read_json(gp)
-                    gsum = ("PASS" if gj["passed"] else "FAIL") + " " + ", ".join(
-                        f"{k}={'ok' if v['passed'] else 'fail'}" for k, v in gj["gates"].items())
-                oracle = t.get("oracle") or {}
-                checks = "; ".join([f"{c.get('group', 'main')}:{c['feature']}@{c['point']}"
-                                    for c in oracle.get("checks", [])]
-                                   + [f"{g.get('group', 'main')}:graph:{g['kind']}"
-                                      for g in oracle.get("graph_checks", [])])
-                w.writerow([t["id"], t["split"], t["family"], t["level"], t["source"].get("ref", t["source"]["kind"]),
-                            t["instruction"], (t.get("observation") or {}).get("contract", ""), checks, gsum,
-                            t["review"].get("notes", ""), "", "", "", "", ""])
+        fh = io.StringIO()
+        w = csv.writer(fh)
+        w.writerow(["task_id", "split", "family", "level", "source", "instruction", "observation",
+                    "oracle_checks", "gates", "known_limits", "reviewer_1_decision", "reviewer_1_edits",
+                    "reviewer_2_decision", "reviewer_2_edits", "final_decision"])
+        for d in taskio.task_dirs():
+            t = taskio.load(d)
+            gp = d / "gates.json"
+            gsum = "not run"
+            if gp.exists():
+                gj = read_json(gp)
+                gsum = ("PASS" if gj["passed"] else "FAIL") + " " + ", ".join(
+                    f"{k}={'ok' if v['passed'] else 'fail'}" for k, v in gj["gates"].items())
+            oracle = t.get("oracle") or {}
+            checks = "; ".join([f"{c.get('group', 'main')}:{c['feature']}@{c['point']}"
+                                for c in oracle.get("checks", [])]
+                               + [f"{g.get('group', 'main')}:graph:{g['kind']}"
+                                  for g in oracle.get("graph_checks", [])])
+            w.writerow([t["id"], t["split"], t["family"], t["level"], t["source"].get("ref", t["source"]["kind"]),
+                        t["instruction"], (t.get("observation") or {}).get("contract", ""), checks, gsum,
+                        t["review"].get("notes", ""), "", "", "", "", ""])
+        text = with_new_rows("tier_f", fh.getvalue())     # once decided, the reviewed rows stay as reviewed
+        with open(path, "w", newline="", encoding="utf-8") as out:
+            out.write(text)
         print(f"wrote {path}")
         return 0
     if args.cmd == "reserved":

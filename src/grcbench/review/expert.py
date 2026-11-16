@@ -58,13 +58,18 @@ def accepted(row: Mapping[str, Any]) -> bool:
 
 
 def h1b(items: Sequence[Mapping[str, str]], rows: Mapping[tuple, Mapping[str, Any]],
-        removed: frozenset[str] | set[str] = frozenset()) -> dict[str, dict[str, Any]]:
+        removed: frozenset[str] | set[str] = frozenset(),
+        replacements: frozenset[str] | set[str] = frozenset()) -> dict[str, dict[str, Any]]:
     """H1b per tier on the first-pass rows: every item in scope counts, the ones the two-reviewer review
     removed included (the rule fixed before the expert review). `removed` gives, beside it and as a
-    description only, the share over the items the review kept."""
+    description only, the share over the items the review kept. The replacement items (review.replacements)
+    are not in the test: H1b is counted on the original pool, and a tier with replacements reports how many
+    the expert accepted beside it."""
     by_tier: dict[str, list[tuple[str, Mapping[str, Any]]]] = defaultdict(list)
+    repl: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     for it in items:
-        by_tier[TIER[it["item_kind"]]].append((it["item_id"], rows[(it["item_id"],)]))
+        (repl[TIER[it["item_kind"]]].append(rows[(it["item_id"],)]) if it["item_id"] in replacements
+         else by_tier[TIER[it["item_kind"]]].append((it["item_id"], rows[(it["item_id"],)])))
     out = {}
     for tier, pairs in sorted(by_tier.items()):
         rs = [r for _, r in pairs]
@@ -77,6 +82,9 @@ def h1b(items: Sequence[Mapping[str, str]], rows: Mapping[tuple, Mapping[str, An
                      "share": round(acc / n, 4) if n else None, "holds": bool(n) and acc / n >= H1B_SHARE,
                      "kept": len(kept), "accepted_kept": acc_kept,
                      "share_kept": round(acc_kept / len(kept), 4) if kept else None}
+        if repl.get(tier):
+            out[tier].update({"replacements": len(repl[tier]),
+                              "replacements_accepted": sum(accepted(r) for r in repl[tier])})
     return out
 
 
@@ -101,7 +109,9 @@ def first_pass(work: Path) -> tuple[dict[tuple, dict[str, Any]], dict[tuple, lis
     return first, dict(later)
 
 
-def sheet_text(items: Sequence[Mapping[str, str]], rows: Mapping[tuple, Mapping[str, Any]], date: str) -> str:
+def sheet_text(items: Sequence[Mapping[str, str]], rows: Mapping[tuple, Mapping[str, Any]], date: str,
+               dates: Mapping[str, str] | None = None) -> str:
+    """The filled sheet; `dates` keeps an earlier round's date for its items."""
     header = next(csv.reader(io.StringIO(TEMPLATE.read_text(encoding="utf-8-sig"))))
     buf = io.StringIO()
     w = csv.DictWriter(buf, fieldnames=header, lineterminator="\n")
@@ -112,36 +122,55 @@ def sheet_text(items: Sequence[Mapping[str, str]], rows: Mapping[tuple, Mapping[
             raise ValueError(f"{it['item_id']}: no expert row")
         w.writerow({**it, **{k: r.get(k, "") for k in ("correct", "relevant", "verdict", "reason_code", "comment",
                                                         "suggested_fix")},
-                    "minutes": "", "expert": "EX", "date": date, "team_action": r.get("team_action", ""),
-                    "team_action_by": r.get("team_action_by", "")})
+                    "minutes": "", "expert": "EX", "date": (dates or {}).get(it["item_id"]) or date,
+                    "team_action": r.get("team_action", ""), "team_action_by": r.get("team_action_by", "")})
     return buf.getvalue()
 
 
 def write(work: Path, items: Sequence[Mapping[str, str]], date: str, reviews_dir: Path | None = None,
-          sheet: Path | None = None, removed: frozenset[str] | set[str] = frozenset()) -> dict[str, dict[str, Any]]:
+          sheet: Path | None = None, removed: frozenset[str] | set[str] = frozenset(), merge: bool = False,
+          replacements: frozenset[str] | set[str] = frozenset()) -> dict[str, dict[str, Any]]:
     """The expert's rows (WORK/out/*-EX-*.jsonl, sheet `expert_review`) for every item in scope, checked
     against the checklist's rules: reviews/expert_review.jsonl (the records, in scope order),
-    reviews/expert_review_h1b.json (H1b per tier) and the filled sheet. Returns the H1b counts."""
+    reviews/expert_review_h1b.json (H1b per tier) and the filled sheet. Returns the H1b counts. With `merge` (a
+    second round: the replacement items), WORK holds only the new items; the earlier records give the rest,
+    with their own dates, and an item reviewed before is refused."""
     from grcbench.common.paths import REPO
     from grcbench.review import records
     rows, later = first_pass(work)
+    out = Path(reviews_dir or REPO / "reviews")
+    dates: dict[str, str] = {}
+    if merge:
+        keep_ = ("correct", "relevant", "verdict", "reason_code", "comment", "suggested_fix", "notes", "evidence")
+        earlier = [json.loads(x) for x in (out / "expert_review.jsonl").read_text(encoding="utf-8").splitlines()
+                   if x.strip()]
+        again = sorted({r["item_id"] for r in earlier} & {k[0] for k in rows})
+        if again:
+            raise ValueError(f"{len(again)} item(s) already reviewed in an earlier round, e.g. {again[:3]}")
+        old_sheet = Path(sheet or SHEET)
+        if old_sheet.exists():
+            dates = {r["item_id"]: r.get("date", "") for r in csv.DictReader(
+                io.StringIO(old_sheet.read_text(encoding="utf-8-sig")))}
+        for r in earlier:
+            rows[(r["item_id"],)] = {k: r.get(k, "") for k in keep_}
+            later[(r["item_id"],)] = list(r.get("rechecks") or [])
     missing = [it["item_id"] for it in items if (it["item_id"],) not in rows]
     if missing:
         raise ValueError(f"{len(missing)} item(s) with no expert row, e.g. {missing[:3]}")
     bad = {it["item_id"]: found for it in items if (found := problems(rows[(it["item_id"],)]))}
     if bad:
         raise ValueError(f"expert rows the checklist refuses: {bad}")
-    out = Path(reviews_dir or REPO / "reviews")
     out.mkdir(parents=True, exist_ok=True)
     keep = ("correct", "relevant", "verdict", "reason_code", "comment", "suggested_fix", "notes", "evidence")
     (out / "expert_review.jsonl").write_text("".join(
         json.dumps(records.redact({**dict(it), **{k: rows[(it["item_id"],)].get(k, "") for k in keep},
                                    "removed_by_review": it["item_id"] in removed,
+                                   "replacement": it["item_id"] in replacements,
                                    "rechecks": [{k: r.get(k, "") for k in keep}
                                                 for r in later.get((it["item_id"],), [])]}),
                    ensure_ascii=False, sort_keys=True) + "\n" for it in items), encoding="utf-8")
-    counts = h1b(items, rows, removed)
+    counts = h1b(items, rows, removed, replacements)
     (out / "expert_review_h1b.json").write_text(json.dumps(counts, indent=1, sort_keys=True) + "\n",
                                                 encoding="utf-8")
-    Path(sheet or SHEET).write_text(records.redact(sheet_text(items, rows, date)), encoding="utf-8")
+    Path(sheet or SHEET).write_text(records.redact(sheet_text(items, rows, date, dates)), encoding="utf-8")
     return counts

@@ -20,7 +20,7 @@ GRC-Bench does these reviews with Claude review agents instead (`docs/guidelines
 - **Evidence.** Every factual claim is checked by a quoted source or by running GNU Radio.
 - **Logging.** Every agent run is declared and logged.
 
-So no expert time is needed before the freeze (Tue 17 Nov). The pre-registration states the limits
+So no expert time is needed before the freeze (Fri 20 Nov). The pre-registration states the limits
 openly. The expert-acceptance figure (H1b) is the agent's, not a GNU Radio engineer's. If a Qoherent
 engineer later wants to look at a sample of items, the sheet and checklist are ready, and we would
 report that review next to the agent's.

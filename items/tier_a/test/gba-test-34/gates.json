@@ -1,0 +1,48 @@
+{
+ "acceptance_errors": [],
+ "gates": {
+  "do_nothing": {
+   "end_reason": "agent_finished",
+   "passed": true,
+   "reasons": [
+    "ladder: fails at V5: observation 'added': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'squared.dat', 'type': 'float'}}; added mean = observation missing; added max = observation missing; added min = observation missing; graph check path: no such path",
+    "blocks_present[0]: 0 matching block(s) []",
+    "blocks_present[1]: 0 matching block(s) []; candidates: [\"out (enabled): file='quantized.dat'\"]",
+    "hier_block: square_law.block.yml is not in the run's block library; square_law.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
+   ],
+   "status": "completed"
+  },
+  "golden_replay": {
+   "expected_tool_calls": [
+    8,
+    20
+   ],
+   "failures": [],
+   "in_range": true,
+   "passed": true,
+   "passes": 10,
+   "runs": 10,
+   "tool_calls": 10
+  },
+  "grader_reruns": {
+   "detail": "the grader judged each replay's saved final graph file itself and re-ran it through the ladder",
+   "passed": true
+  },
+  "wrong_end_state": {
+   "cases": [
+    {
+     "reasons": [
+      "ladder: fails at V5: added mean = 0.381748; added max = 0.599996",
+      "hier_block: square_law.block.yml is not in the run's block library; square_law.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
+     ],
+     "rejected": true,
+     "source": "wrong_end_state.grc"
+    }
+   ],
+   "passed": true
+  }
+ },
+ "golden_end_state_sha256": "e2941215523e963fa69571515ca5d4d15aa76052b67061d060d42fad4d64d64f",
+ "passed": true,
+ "task": "gba-test-34"
+}

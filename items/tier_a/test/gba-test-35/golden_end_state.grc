@@ -1,0 +1,354 @@
+options:
+    parameters:
+        alias: ''
+        author: null
+        catch_exceptions: 'True'
+        comment: ''
+        copyright: null
+        description: null
+        gen_linking: dynamic
+        generate_options: no_gui
+        generator_class_name: PythonNoGuiGenerator
+        generator_module: gnuradio.grc.workflows.python_nogui
+        hier_block_src_path: '.:'
+        id: shifted_tones
+        max_nouts: '0'
+        output_language: python
+        realtime_scheduling: ''
+        run_command: '{python} -u {filename}'
+        run_options: prompt
+        thread_safe_setters: ''
+        title: null
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 0
+        - 12.0
+        state: enabled
+blocks:
+-   name: samp_rate
+    id: variable
+    parameters:
+        comment: ''
+        value: '48000'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 232
+        - 12.0
+        state: enabled
+-   name: added_sink
+    id: blocks_file_sink
+    parameters:
+        affinity: ''
+        alias: ''
+        append: 'False'
+        comment: ''
+        file: rectified.dat
+        type: float
+        unbuffered: 'False'
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 1160
+        - 412.0
+        state: enabled
+-   name: hilbert
+    id: hilbert_fc
+    parameters:
+        affinity: ''
+        alias: ''
+        beta: '6.76'
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        num_taps: '65'
+        win: window.WIN_HAMMING
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 928
+        - 212.0
+        state: enabled
+-   name: lo
+    id: analog_sig_source_x
+    parameters:
+        affinity: ''
+        alias: ''
+        amp: '1'
+        comment: ''
+        freq: '1500'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        offset: '0'
+        phase: '0'
+        samp_rate: samp_rate
+        showports: 'False'
+        type: complex
+        waveform: analog.GR_COS_WAVE
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 0
+        - 212.0
+        state: enabled
+-   name: lpf
+    id: low_pass_filter
+    parameters:
+        affinity: ''
+        alias: ''
+        beta: '6.76'
+        comment: ''
+        cutoff_freq: '6000'
+        decim: '1'
+        gain: '1'
+        interp: '1'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        samp_rate: samp_rate
+        type: fir_filter_fff
+        width: '400'
+        win: window.WIN_HAMMING
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 696
+        - 212.0
+        state: enabled
+-   name: mixer
+    id: blocks_multiply_xx
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        num_inputs: '2'
+        type: complex
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 1160
+        - 212.0
+        state: enabled
+-   name: out
+    id: blocks_file_sink
+    parameters:
+        affinity: ''
+        alias: ''
+        append: 'False'
+        comment: ''
+        file: shifted.dat
+        type: complex
+        unbuffered: 'False'
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 1392
+        - 212.0
+        state: enabled
+-   name: rectify
+    id: epy_block
+    parameters:
+        _source_code: "\"\"\"Half-wave rectifier: y = max(x, 0).\"\"\"\n\nimport numpy\
+            \ as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    \"\
+            \"\"Half-wave rectifier: y = max(x, 0).\"\"\"\n\n    def __init__(self):\n\
+            \        gr.sync_block.__init__(self, name=\"Half-Wave Rectifier\", in_sig=[np.float32],\
+            \ out_sig=[np.float32])\n\n    def work(self, input_items, output_items):\n\
+            \        x = input_items[0]\n        output_items[0][:] = np.maximum(x,\
+            \ 0.0)\n        return len(output_items[0])\n"
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+    states:
+        _io_cache: '(''Half-Wave Rectifier'', ''blk'', [], [(''0'', ''float'', 1)],
+            [(''0'', ''float'', 1)], ''Half-wave rectifier: y = max(x, 0).'', [])'
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 928
+        - 412.0
+        state: enabled
+-   name: sum_of_tones
+    id: blocks_add_xx
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        num_inputs: '3'
+        type: float
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 232
+        - 212.0
+        state: enabled
+-   name: throttle
+    id: blocks_throttle2
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        ignoretag: 'True'
+        limit: auto
+        maximum: '0.1'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        samples_per_second: samp_rate
+        type: float
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 464
+        - 212.0
+        state: enabled
+-   name: tone_1
+    id: analog_sig_source_x
+    parameters:
+        affinity: ''
+        alias: ''
+        amp: '0.5'
+        comment: ''
+        freq: '7200'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        offset: '0'
+        phase: '0'
+        samp_rate: samp_rate
+        showports: 'False'
+        type: float
+        waveform: analog.GR_COS_WAVE
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 0
+        - 412.0
+        state: enabled
+-   name: tone_2
+    id: analog_sig_source_x
+    parameters:
+        affinity: ''
+        alias: ''
+        amp: '0.25'
+        comment: ''
+        freq: '4800'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        offset: '0'
+        phase: '0'
+        samp_rate: samp_rate
+        showports: 'False'
+        type: float
+        waveform: analog.GR_COS_WAVE
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 0
+        - 612.0
+        state: enabled
+-   name: tone_3
+    id: analog_sig_source_x
+    parameters:
+        affinity: ''
+        alias: ''
+        amp: '0.8'
+        comment: ''
+        freq: '2600'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        offset: '0'
+        phase: '0'
+        samp_rate: samp_rate
+        showports: 'False'
+        type: float
+        waveform: analog.GR_COS_WAVE
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 0
+        - 812.0
+        state: enabled
+connections:
+-   - hilbert
+    - '0'
+    - mixer
+    - '0'
+-   - lo
+    - '0'
+    - mixer
+    - '1'
+-   - lpf
+    - '0'
+    - hilbert
+    - '0'
+-   - lpf
+    - '0'
+    - rectify
+    - '0'
+-   - mixer
+    - '0'
+    - out
+    - '0'
+-   - rectify
+    - '0'
+    - added_sink
+    - '0'
+-   - sum_of_tones
+    - '0'
+    - throttle
+    - '0'
+-   - throttle
+    - '0'
+    - lpf
+    - '0'
+-   - tone_1
+    - '0'
+    - sum_of_tones
+    - '0'
+-   - tone_2
+    - '0'
+    - sum_of_tones
+    - '1'
+-   - tone_3
+    - '0'
+    - sum_of_tones
+    - '2'
+metadata:
+    file_format: 1
+    grc_version: 3.10.12.0

@@ -1,0 +1,59 @@
+{
+ "calls": [
+  {
+   "args": {},
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "targets": [
+     "lpf",
+     "lo",
+     "average",
+     "to_db"
+    ]
+   },
+   "tool": "inspect_graph"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "moving average length"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "domain": "catalog",
+    "k": 3,
+    "query": "log10 block n k"
+   },
+   "tool": "query_knowledge"
+  },
+  {
+   "args": {
+    "action": "start",
+    "stop_after_seconds": 2
+   },
+   "tool": "run_flowgraph"
+  },
+  {
+   "args": {},
+   "tool": "get_run_log"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('shifted.dat',dtype=np.complex64)[4800:]; print(len(x), float(np.sqrt(np.mean(np.abs(x)**2))))\""
+   },
+   "tool": "run_command"
+  },
+  {
+   "args": {
+    "command": "python3 -c \"import numpy as np; x=np.fromfile('second_power_db.dat',dtype=np.float32)[4800:]; print(len(x), float(np.mean(x)))\""
+   },
+   "tool": "run_command"
+  }
+ ],
+ "final_text": "low-pass cutoff: 7750 Hz\nLO frequency: 2250 Hz\naveraging length: 2000\nMoving Average default length: 1000\nLog10 default n: 1\nshifted RMS: 0.6\nmean power: -4.44 dB\nI did not change the flowgraph."
+}

@@ -1,0 +1,3 @@
+{
+ "final_text": "low-pass cutoff: 7750 Hz\nLO frequency: 2250 Hz\naveraging length: 1000\nMoving Average default length: 2000\nLog10 default n: 10\nshifted RMS: 0.6\nmean power: -4.44 dB\nI did not change the flowgraph."
+}

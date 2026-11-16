@@ -161,6 +161,24 @@ def filled_text(sheet: str, raw: str, reviews_dir=None) -> str:
     return _fill(sheet, raw, recs, require_all=False) if recs else raw
 
 
+def with_new_rows(sheet: str, generated: str, reviews_dir=None, path=None) -> str:
+    """A generator's sheet text once the sheet has decided records: the current sheet file, its reviewed rows
+    exactly as they were reviewed, with the generator's rows for new keys appended (a second round: the
+    replacement items). Before any decision, the generated text itself."""
+    from grcbench.review.records import decided, redact
+    spec = SHEETS[sheet]
+    path = path or SHEET_DIR / spec.file
+    if not decided(sheet, reviews_dir=reviews_dir) or not path.exists():
+        return generated
+    current = path.read_text(encoding="utf-8")
+    reader = csv.DictReader(io.StringIO(current.lstrip("﻿")))
+    have = {key_of(spec, r) for r in reader}
+    new = [r for r in csv.DictReader(io.StringIO(generated.lstrip("﻿"))) if key_of(spec, r) not in have]
+    buf = io.StringIO()
+    csv.DictWriter(buf, fieldnames=reader.fieldnames or [], lineterminator="\n", extrasaction="ignore").writerows(new)
+    return (current if current.endswith("\n") else current + "\n") + redact(buf.getvalue())
+
+
 def _fill(sheet: str, raw: str, recs: list[Rec], require_all: bool) -> str:
     spec = SHEETS[sheet]
     bom = raw.startswith("﻿")

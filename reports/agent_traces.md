@@ -38,7 +38,7 @@ Reference: Qoherent's SFT release (`grc-agent-sft-v0.1.0/grc-agent-sft-v0.1.0/sf
 
 ## 5. Task-level check (eval plan §6)
 
-Each trace's start graph (the empty canvas or a one-block scaffold) and final functional blocks against the start, reference and golden graphs of every Tier-F and Tier-A task (421 graphs).
+Each trace's start graph (the empty canvas or a one-block scaffold) and final functional blocks against the start, reference and golden graphs of every Tier-F and Tier-A task (482 graphs).
 
 - Same start graph: **0** traces.
 - Same final functional blocks: **0** traces.

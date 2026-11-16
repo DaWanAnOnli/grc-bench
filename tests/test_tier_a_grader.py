@@ -145,6 +145,35 @@ def test_a_fact_can_take_a_number_out_of_a_parameter_expression():
     assert any("regex" in e for e in grader.acceptance_errors(bad))
 
 
+def test_a_labelled_fact_must_stand_on_its_own_line():
+    """A fact with a label passes only when its value follows the label on one line of the answer, so an
+    answer that gives the right values to the wrong items fails (the review's swapped-answer finding)."""
+    view = {"ok": True, "blocks": {"lpf": {"key": "low_pass_filter", "evaluated": {"decim": 5, "cutoff_freq": 3000},
+                                           "params": {"decim": "5", "cutoff_freq": "3000"}}}}
+    src = {"graph": "start", "block": {"name": "lpf"}}
+    spec = {"facts": [{"name": "decimation", "source": {**src, "param": "decim"}, "match": "number",
+                       "label": r"decimat"},
+                      {"name": "cutoff", "source": {**src, "param": "cutoff_freq"}, "match": "number",
+                       "label": r"cut-?off"}]}
+    right = "Decimation: 5\nCutoff: 3 kHz"
+    swapped = "Decimation: 3000\nCutoff: 5"
+    assert all(c["passed"] for c in grader._answer(right, spec, {"start": view}))
+    assert not any(c["passed"] for c in grader._answer(swapped, spec, {"start": view}))
+    # a number fact is the first number after its label, so prose works and a swapped sentence fails
+    assert all(c["passed"] for c in grader._answer("Decimation is 5. The cutoff is 3000 Hz.", spec, {"start": view}))
+    assert not any(c["passed"] for c in grader._answer("Decimation is 3000. The cutoff is 5.", spec, {"start": view}))
+    assert not grader._answer("Cutoff: 3000 (decimation 1)\n", spec, {"start": view})[0]["passed"]
+    # only the first line naming the label counts: listing a second candidate does not hedge
+    assert not grader._answer("Decimation: 3000\nDecimation: 5\nCutoff: 3000", spec, {"start": view})[0]["passed"]
+    # the label's own digits are not the value: "filter 2" names the item, the value comes after the label
+    two = {"facts": [{"name": "taps", "source": {**src, "param": "decim"}, "match": "number", "label": r"filter 2"}]}
+    assert not grader._answer("filter 2: 7", two, {"start": view})[0]["passed"]
+    assert grader._answer("filter 2: 5", two, {"start": view})[0]["passed"]
+    assert grader.acceptance_errors({"answer": spec}) == []
+    bad = {"answer": {"facts": [{**spec["facts"][0], "label": "("}]}}
+    assert any("label" in e for e in grader.acceptance_errors(bad))
+
+
 def test_a_csv_manifest_is_checked_against_the_sizes_of_the_files_it_lists(tmp_path):
     """outputs/manifest.csv: a header, then one row per copied file whose size it states; the sizes depend on
     how long the agent ran, so they are compared with the files themselves."""

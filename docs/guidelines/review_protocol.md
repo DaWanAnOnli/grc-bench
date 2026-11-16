@@ -128,6 +128,29 @@ it reviews every agreed row of that sheet.
   - the H1b counts per tier into `reviews/expert_review_h1b.json`, which the summary reports.
 - **The raw outputs.** The agents' own outputs stay outside the repository (`<project>/review_work/`).
 
+## A second round: the replacement tasks
+
+Each Tier-F and Tier-A task the first round rejected is replaced by a new task (pre-registration §10;
+`grcbench.tier_f.generate.REPLACEMENTS`, `grcbench.tier_a.replacements`). The replacements go through
+this protocol in a second round, with the same roles and rules:
+
+- **Agents.** Agents 31 to 38 (`reviews/review_log.jsonl`): two reviewers per tier, the expert agent
+  that decides and audits, the expert review, a code review and one reserve run. No agent of the first
+  round takes part.
+- **Inputs.** Each sheet's generator appends the new rows and keeps the decided rows exactly as they were
+  reviewed. The reviewers get only the rows with no decision:
+  `./gb review inputs <work folder> <sheet> --undecided`.
+- **Decisions.** `./gb review decide <work folder> <sheet> --merge` decides the second round's rows
+  alone, with their own seeded audit sample, and adds them to the decided records. A row decided in the
+  first round is refused, never decided again.
+- **The expert review.** `./gb review expert <work folder> --merge` adds the new verdicts to the first
+  round's records. H1b is counted on the original pool. The replacements were built after the first
+  verdicts were known, so their acceptance is reported beside H1b and is not part of it.
+- **Which replacements count.** The replacements are numbered before the review. The first ones the
+  review accepts, in id order, fill the slots of the tasks they replace (`grcbench.review.replacements`):
+  per split for Tier F, and per category and split for Tier A. An accepted replacement beyond its slots
+  gets status `reserve`. It keeps its record and, like a rejected task, no run uses it.
+
 ## What this protocol does not show
 
 These limits are reported with the results (pre-registration §10):

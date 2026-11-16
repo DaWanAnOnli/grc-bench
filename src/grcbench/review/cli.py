@@ -1,15 +1,18 @@
 """./gb review: the review protocol's coordinator commands (docs/guidelines/review_protocol.md).
 
-  inputs WORK SHEET...                write each reviewer's blinded input copy to WORK/inputs/
+  inputs WORK SHEET... [--undecided]  write each reviewer's blinded input copy to WORK/inputs/ (--undecided:
+                                      only the rows with no decided record, a second round)
   declare --agent N --role R --sheets S... --rows N --brief FILE
                                       declare an agent run in reviews/review_log.jsonl (cap: 30)
   finish --agent N OUTPUT...          record the run's output hash and row count
   route WORK SHEET...                 apply the decision rules; write the expert's queue and audit sample
-  decide WORK SHEET...                with the expert's rows: write reviews/<sheet>.jsonl and the filled sheet
+  decide WORK SHEET... [--merge]      with the expert's rows: write reviews/<sheet>.jsonl and the filled sheet
+                                      (--merge: WORK is a second round, added to the decided records)
   rubrics WORK [--date D]             decide both rubric sheets (rubric router, the writer's rows kept), check
                                       every final rubric, write the filled sheets and items/tier_k/<split>/rubrics.jsonl
-  expert WORK [--date D]              the expert review (H1b): reviews/expert_review.jsonl, the H1b counts and
-                                      handoff/review_sheets/expert_review.csv
+  expert WORK [--date D] [--merge]    the expert review (H1b): reviews/expert_review.jsonl, the H1b counts (on
+                                      the original pool; the replacements beside it) and
+                                      handoff/review_sheets/expert_review.csv (--merge: a second round)
   summary                             write reports/review_summary.md from reviews/
 """
 
@@ -30,6 +33,7 @@ def main(argv: list[str]) -> int:
     p = sub.add_parser("inputs")
     p.add_argument("work", type=Path)
     p.add_argument("sheets", nargs="+", choices=sorted(SHEETS))
+    p.add_argument("--undecided", action="store_true")
     p = sub.add_parser("declare")
     p.add_argument("--agent", type=int, required=True)
     p.add_argument("--role", required=True)
@@ -43,21 +47,27 @@ def main(argv: list[str]) -> int:
         p = sub.add_parser(name)
         p.add_argument("work", type=Path)
         p.add_argument("sheets", nargs="+", choices=sorted(SHEETS))
+        if name == "decide":
+            p.add_argument("--merge", action="store_true")
     p = sub.add_parser("rubrics")
     p.add_argument("work", type=Path)
     p.add_argument("--date", default=datetime.date.today().isoformat())
     p = sub.add_parser("expert")
     p.add_argument("work", type=Path)
     p.add_argument("--date", default=datetime.date.today().isoformat())
+    p.add_argument("--merge", action="store_true")
     sub.add_parser("summary")
     args = ap.parse_args(argv)
 
     if args.cmd == "expert":
-        from grcbench.review import expert, scope
-        counts = expert.write(args.work, scope.expert_items(), date=args.date, removed=scope.removed_ids())
+        from grcbench.review import expert, replacements, scope
+        counts = expert.write(args.work, scope.expert_items(), date=args.date, removed=scope.removed_ids(),
+                              merge=args.merge, replacements=replacements.all_ids())
         for tier, c in sorted(counts.items()):
             print(f"H1b tier {tier}: {c['accepted']} of {c['items']} accepted ({c['share']}); holds: {c['holds']}; "
-                  f"kept by the review: {c['accepted_kept']} of {c['kept']} ({c['share_kept']})")
+                  f"kept by the review: {c['accepted_kept']} of {c['kept']} ({c['share_kept']})"
+                  + (f"; replacements accepted: {c['replacements_accepted']} of {c['replacements']}"
+                     if "replacements" in c else ""))
         return 0
 
     if args.cmd == "rubrics":
@@ -92,13 +102,13 @@ def main(argv: list[str]) -> int:
     if args.cmd == "decide":
         from grcbench.review import coordinate
         for name in args.sheets:
-            recs = coordinate.decide_sheet(args.work, name)
+            recs = coordinate.decide_sheet(args.work, name, merge=args.merge)
             print(f"{name}: {len(recs)} decided rows -> reviews/{name}.jsonl and the filled sheet")
         return 0
 
     if args.cmd == "inputs":
         for name in args.sheets:
-            print(inputs.write_blinded(name, args.work / "inputs"))
+            print(inputs.write_blinded(name, args.work / "inputs", undecided_only=args.undecided))
         return 0
     if args.cmd == "declare":
         e = log.declare(log.LOG, agent=args.agent, role=args.role, sheets=args.sheets, rows=args.rows,

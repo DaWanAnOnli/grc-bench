@@ -1,0 +1,93 @@
+{
+ "query_knowledge": {
+  "query": "Signal Source Add Low Pass Filter Rational Resampler Frequency Mod Quadrature Demod Abs File Sink",
+  "domain": "catalog",
+  "k": 16
+ },
+ "change_graph": {
+  "reason": "Edit the flowgraph as the instruction asks.",
+  "add_blocks": [
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_1",
+    "params": {
+     "type": "float",
+     "freq": "8000",
+     "amp": "0.4"
+    }
+   },
+   {
+    "block_id": "analog_sig_source_x",
+    "instance_name": "tone_2",
+    "params": {
+     "type": "float",
+     "freq": "5700",
+     "amp": "0.25"
+    }
+   },
+   {
+    "block_id": "blocks_add_xx",
+    "instance_name": "sum_of_tones",
+    "params": {
+     "type": "float"
+    }
+   },
+   {
+    "block_id": "low_pass_filter",
+    "instance_name": "lpf",
+    "params": {
+     "type": "fir_filter_fff",
+     "cutoff_freq": "6850",
+     "width": "400"
+    }
+   },
+   {
+    "block_id": "rational_resampler_xxx",
+    "instance_name": "resampler",
+    "params": {
+     "type": "fff",
+     "interp": "2"
+    }
+   },
+   {
+    "block_id": "analog_frequency_modulator_fc",
+    "instance_name": "fm_mod",
+    "params": {
+     "sensitivity": "2*math.pi*1000/(samp_rate*2/1)"
+    }
+   },
+   {
+    "block_id": "analog_quadrature_demod_cf",
+    "instance_name": "fm_demod",
+    "params": {
+     "gain": "samp_rate*2/1/(2*math.pi*500)"
+    }
+   },
+   {
+    "block_id": "blocks_abs_xx",
+    "instance_name": "rectifier",
+    "params": {
+     "type": "float"
+    }
+   },
+   {
+    "block_id": "blocks_file_sink",
+    "instance_name": "out",
+    "params": {
+     "type": "float",
+     "file": "rectified.dat"
+    }
+   }
+  ],
+  "add_connections": [
+   "tone_1:0->sum_of_tones:0",
+   "tone_2:0->sum_of_tones:1",
+   "sum_of_tones:0->lpf:0",
+   "lpf:0->resampler:0",
+   "resampler:0->fm_mod:0",
+   "fm_mod:0->fm_demod:0",
+   "fm_demod:0->rectifier:0",
+   "rectifier:0->out:0"
+  ]
+ }
+}

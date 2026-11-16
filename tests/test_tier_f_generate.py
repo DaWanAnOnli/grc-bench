@@ -74,12 +74,13 @@ def test_a_repair_symptom_states_what_differs():
 
 def test_tasks_of_a_cell_stay_within_the_level_cap():
     """L2 keeps one task per cell; L1 and L3 tasks of a split share a cell up to CELL_CAP[level], with one
-    cluster_id per cell."""
+    cluster_id per cell. A task the review rejected holds no cell."""
     import json
     cells: dict[tuple[str, str, str], int] = Counter()
     for p in sorted(G.TF.glob("*/*/task.json")):
         t = json.loads(p.read_text(encoding="utf-8"))
-        cells[(t["split"], t["level"], t["cluster_id"])] += 1
+        if (t.get("review") or {}).get("status") != "rejected":
+            cells[(t["split"], t["level"], t["cluster_id"])] += 1
     assert cells
     for (split, level, _), n in cells.items():
         assert n <= G.CELL_CAP.get(level, 1), (split, level, n)
