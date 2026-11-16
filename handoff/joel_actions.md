@@ -46,9 +46,9 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
 
 ## On this machine
 
-7. **Delete the stale migration package** `C:\Users\POPA\Documents\GRC-Bench\GRC-Bench-migration`.
+7. **Delete the stale migration package** `<home>\Documents\GRC-Bench\GRC-Bench-migration`.
    It is an old copy, and its `wsl-grcbench.tar` contains the GRC-Agent API key. The working copy is
-   `C:\Users\POPA\Documents\!MScAC\2701\ml_ops_project\project`.
+   the `project` folder that holds this repository (`<project>` in the reports).
 8. **Install build tools in WSL** (needs your sudo password), for the Tier-E build of Nanbeige's
    llama.cpp fork: `sudo apt install build-essential cmake`. Docker is optional (the Dockerfile in
    `docker/` pins GNU Radio 3.10.12; the benchmark runs natively in WSL today).

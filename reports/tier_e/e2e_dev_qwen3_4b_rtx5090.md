@@ -65,7 +65,7 @@ The load average before a process shows what else was running; after it, it also
 | RAM | 140.47 GiB visible to the OS |
 | OS | Ubuntu 26.04.1 LTS, kernel 6.18.54.1-microsoft-standard-WSL2 (WSL2) |
 | GPUs | NVIDIA GeForce RTX 5090 (32,607 MiB, driver 610.88) |
-| llama.cpp | build 10333 (commit 08659901c; pin b10333: match), backends CUDA, CPU variant –, from `/home/lenovo/grc-bench-cache/llama.cpp/b10333-cuda` |
+| llama.cpp | build 10333 (commit 08659901c; pin b10333: match), backends CUDA, CPU variant –, from `~/grc-bench-cache/llama.cpp/b10333-cuda` |
 | GRC-Bench code | 7ebc32160e10b17589d9771405ff79f219a2a229 |
 
 ## Model
@@ -80,7 +80,7 @@ The load average before a process shows what else was running; after it, it also
 
 ## Timing and raw output
 
-Started 2026-10-27T21:21:39Z, finished 2026-10-27T21:21:50Z (UTC). Warm-up invocation: 2 s (discarded). Raw llama-bench JSON and logs: `/home/lenovo/grc-bench-work/tier_e/e2e_dev_qwen3_4b_rtx5090`.
+Started 2026-10-27T21:21:39Z, finished 2026-10-27T21:21:50Z (UTC). Warm-up invocation: 2 s (discarded). Raw llama-bench JSON and logs: `~/grc-bench-work/tier_e/e2e_dev_qwen3_4b_rtx5090`.
 
 ## Notes
 

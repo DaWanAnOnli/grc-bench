@@ -10,11 +10,11 @@ The last row for a key wins, so an agent may correct itself by writing the row a
 from __future__ import annotations
 
 import json
-import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
 
+from grcbench.common.privacy import redact          # the decided records are published
 from grcbench.review import decide
 from grcbench.review.sheets import SHEETS, Sheet, key_of
 
@@ -96,46 +96,6 @@ def build(spec: Sheet, r1: Outputs, r2: Outputs, ex: Outputs, audit: Outputs | N
         raise ValueError(f"{spec.name}: expert decision rows for rows not sent to the expert (an audit row needs "
                          f'"pass": "audit"): {stray[:5]}')
     return recs
-
-
-_DRIVE = r"(?:/mnt/[a-z]|\b[A-Za-z]:|/[a-z])"
-_END = r"(?=[\\/\s\"'`]|$)"
-
-
-def _patterns(root: Path, home: Path) -> list[tuple[re.Pattern, str]]:
-    """The project folder (WSL, Windows and Git Bash spellings), the rest of its user's Windows folder,
-    and this machine's own home folder. Only these: a sandbox path such as /home/user/project stays."""
-    parts, out = list(Path(root).parts), []
-    if "Users" in parts and parts.index("Users") + 1 < len(parts):
-        i = parts.index("Users")
-        rest = "".join(r"[\\/]+" + re.escape(x) for x in parts[i + 1:])
-        out.append((re.compile(_DRIVE + r"?[\\/]+Users" + rest + _END), "<project>"))
-        out.append((re.compile(_DRIVE + r"[\\/]+Users[\\/]+" + re.escape(parts[i + 1]) + _END), "<home>"))
-    else:
-        out.append((re.compile(re.escape(str(root)) + _END), "<project>"))
-    if str(home) not in ("", "/", "."):
-        out.append((re.compile(re.escape(str(home)) + _END), "~"))
-    return out
-
-
-def redact(obj: Any, project_root: Path | None = None, home: Path | None = None) -> Any:
-    """obj with every private device path in its strings replaced: the project folder by `<project>`,
-    the rest of its user's Windows folder by `<home>`, this machine's home folder by `~`. The agents'
-    evidence quotes such paths; the decided records and filled sheets are published."""
-    from grcbench.common.paths import REPO
-    pats = _patterns(project_root or REPO.parent, home or Path.home())
-
-    def one(x: Any) -> Any:
-        if isinstance(x, str):
-            for p, sub in pats:
-                x = p.sub(sub, x)
-            return x
-        if isinstance(x, dict):
-            return {k: one(v) for k, v in x.items()}
-        if isinstance(x, (list, tuple)):
-            return type(x)(one(v) for v in x)
-        return x
-    return one(obj)
 
 
 def write_records(path: Path, recs: list[dict[str, Any]]) -> None:

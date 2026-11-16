@@ -1,4 +1,7 @@
-"""Deterministic reading and writing, so that re-running a generator gives byte-identical files."""
+"""Deterministic reading and writing, so that re-running a generator gives byte-identical files.
+
+A file written under reports/ is published: its private device paths are redacted as it is written
+(common/privacy.py)."""
 
 from __future__ import annotations
 
@@ -25,12 +28,28 @@ def dumps(obj: Any) -> str:
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ": "))
 
 
+def _published(path: Path) -> bool:
+    from . import paths
+    try:
+        Path(path).resolve().relative_to(Path(paths.REPORTS).resolve())
+    except ValueError:
+        return False
+    return True
+
+
+def _clean(path: Path, obj: Any) -> Any:
+    if not _published(path):
+        return obj
+    from .privacy import redact
+    return redact(obj)
+
+
 def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     n = 0
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
         for row in rows:
-            fh.write(json.dumps(row, sort_keys=True, ensure_ascii=False) + "\n")
+            fh.write(json.dumps(_clean(path, row), sort_keys=True, ensure_ascii=False) + "\n")
             n += 1
     return n
 
@@ -38,7 +57,7 @@ def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> int:
 def write_json(path: Path, obj: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(json.dumps(obj, sort_keys=True, ensure_ascii=False, indent=1) + "\n")
+        fh.write(json.dumps(_clean(path, obj), sort_keys=True, ensure_ascii=False, indent=1) + "\n")
 
 
 def read_json(path: Path) -> Any:
@@ -48,6 +67,7 @@ def read_json(path: Path) -> Any:
 
 def write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    text = _clean(path, text)
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(text if text.endswith("\n") else text + "\n")
 

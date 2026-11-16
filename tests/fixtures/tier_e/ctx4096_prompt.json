@@ -5,7 +5,7 @@
     "cpu_info": "Intel(R) Core(TM) Ultra 9 285K",
     "gpu_info": "",
     "backends": "CPU",
-    "model_filename": "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+    "model_filename": "~/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
     "model_type": "qwen3 4B Q4_K - Medium",
     "model_size": 2491323904,
     "model_n_params": 4022468096,

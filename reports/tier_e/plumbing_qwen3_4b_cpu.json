@@ -4,7 +4,7 @@
   "tier-e",
   "run",
   "--model",
-  "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+  "~/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
   "--hardware",
   "H1",
   "--contexts",
@@ -101,9 +101,9 @@
    "invocations": [
     {
      "argv": [
-      "/home/lenovo/grc-bench-cache/llama.cpp/b10333/llama-bench",
+      "~/grc-bench-cache/llama.cpp/b10333/llama-bench",
       "-m",
-      "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+      "~/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
       "-p",
       "4096",
       "-n",
@@ -148,16 +148,16 @@
      ],
      "returncode": 0,
      "started_utc": "2026-10-18T09:12:39Z",
-     "stderr": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_prompt.log",
-     "stdout": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_prompt.json",
+     "stderr": "~/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_prompt.log",
+     "stdout": "~/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_prompt.json",
      "vmhwm_sampled_bytes": 4717330432,
      "wall_s": 417.04
     },
     {
      "argv": [
-      "/home/lenovo/grc-bench-cache/llama.cpp/b10333/llama-bench",
+      "~/grc-bench-cache/llama.cpp/b10333/llama-bench",
       "-m",
-      "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+      "~/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
       "-p",
       "512",
       "-n",
@@ -200,8 +200,8 @@
      "other_llama_processes": [],
      "returncode": 0,
      "started_utc": "2026-10-18T09:19:36Z",
-     "stderr": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_depth.log",
-     "stdout": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_depth.json",
+     "stderr": "~/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_depth.log",
+     "stdout": "~/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu/ctx4096_depth.json",
      "vmhwm_sampled_bytes": 5078855680,
      "wall_s": 149.1
     }
@@ -299,7 +299,7 @@
     "libggml-cpu-zen4.so",
     "libggml-rpc.so"
    ],
-   "dir": "/home/lenovo/grc-bench-cache/llama.cpp/b10333",
+   "dir": "~/grc-bench-cache/llama.cpp/b10333",
    "gpu_backend_libraries": [],
    "pinned_build": "b10333"
   },
@@ -315,7 +315,7 @@
   "llama_bench_model_size": 2491323904,
   "llama_bench_model_type": "qwen3 4B Q4_K - Medium",
   "n_params": 4022468096,
-  "path": "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+  "path": "~/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
   "quant": "Q4_K_M",
   "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
   "size_bytes": 2497280256
@@ -364,7 +364,7 @@
   "warmup": "one short warm-up llama-bench invocation per run (pp512 + tg16, 1 repetition; discarded) to page the weights in, plus llama-bench's own warm-up run before every test (discarded)"
  },
  "purpose": "plumbing",
- "raw_dir": "/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu",
+ "raw_dir": "~/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu",
  "requested": {
   "contexts": [
    4096,
@@ -411,9 +411,9 @@
  "status": "failed",
  "warmup": {
   "argv": [
-   "/home/lenovo/grc-bench-cache/llama.cpp/b10333/llama-bench",
+   "~/grc-bench-cache/llama.cpp/b10333/llama-bench",
    "-m",
-   "/home/lenovo/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
+   "~/grc-bench-cache/models/Qwen3-4B-Q4_K_M.gguf",
    "-p",
    "512",
    "-n",

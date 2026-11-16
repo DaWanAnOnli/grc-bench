@@ -65,7 +65,7 @@ The load average before a process shows what else was running; after it, it also
 | RAM | 140.47 GiB visible to the OS |
 | OS | Ubuntu 26.04.1 LTS, kernel 6.18.54.1-microsoft-standard-WSL2 (WSL2) |
 | GPUs | NVIDIA GeForce RTX 5090 (32,607 MiB, driver 596.36) — not used: llama-bench ran on the CPU backend only |
-| llama.cpp | build 10333 (commit 08659901c; pin b10333: match), backends CPU, CPU variant alderlake, from `/home/lenovo/grc-bench-cache/llama.cpp/b10333` |
+| llama.cpp | build 10333 (commit 08659901c; pin b10333: match), backends CPU, CPU variant alderlake, from `~/grc-bench-cache/llama.cpp/b10333` |
 | GRC-Bench code | uncommitted |
 
 ## Model
@@ -80,7 +80,7 @@ The load average before a process shows what else was running; after it, it also
 
 ## Timing and raw output
 
-Started 2026-10-18T09:12:31Z, finished 2026-10-18T09:52:58Z (UTC). Warm-up invocation: 8 s (discarded). Raw llama-bench JSON and logs: `/home/lenovo/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu`.
+Started 2026-10-18T09:12:31Z, finished 2026-10-18T09:52:58Z (UTC). Warm-up invocation: 8 s (discarded). Raw llama-bench JSON and logs: `~/grc-bench-work/tier_e/plumbing_qwen3_4b_cpu`.
 
 ## Notes
 

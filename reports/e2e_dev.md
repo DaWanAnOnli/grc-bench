@@ -36,7 +36,7 @@ Tier E is recorded under hardware label H3, the nearest setup (a desktop GPU); i
 
 ## Where the outputs are
 
-- Tier K: `/home/lenovo/grc-bench-work/e2e/2026-10-28/tier_k`
-- Tier F: `/home/lenovo/grc-bench-work/e2e/2026-10-28/tier_f`
-- Tier A: `/home/lenovo/grc-bench-work/e2e/2026-10-28/tier_a`
-- Tier E: `/home/lenovo/grc-bench-work/e2e/2026-10-28`
+- Tier K: `~/grc-bench-work/e2e/2026-10-28/tier_k`
+- Tier F: `~/grc-bench-work/e2e/2026-10-28/tier_f`
+- Tier A: `~/grc-bench-work/e2e/2026-10-28/tier_a`
+- Tier E: `~/grc-bench-work/e2e/2026-10-28`
