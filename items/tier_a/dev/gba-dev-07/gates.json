@@ -5,7 +5,7 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V5: observation 'ph': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'phase.dat', 'type': 'float'}}; ph rms = observation missing; ph mean = observation missing; ph min = observation missing; ph max = observation missing",
+    "ladder: fails at V5: observation 'ph': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'phase.dat', 'type': 'float'}}; ph rms = observation missing; ph mean = observation missing; ph min = observation missing; ph max = observation missing; graph check path: no such path",
     "blocks_present[0]: 0 matching block(s) []; candidates: [\"snk (enabled): file='envelope.dat'\"]"
    ],
    "status": "completed"

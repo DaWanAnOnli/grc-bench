@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_6800
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '-6800', showports: 'True'}
 - name: agc
@@ -28,8 +28,8 @@ blocks:
 connections:
 - [agc, '0', resampler, '0']
 - [resampler, '0', channel, '0']
-- [retune, strobe, tone_6800, cmd]
-- [tone_6800, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', agc, '0']
 - [channel, '0', out, '0']
 metadata: {file_format: 1}

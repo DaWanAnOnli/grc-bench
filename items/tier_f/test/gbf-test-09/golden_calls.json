@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_peak_detector2_fb blocks_char_to_float blocks_file_sink",
+  "query": "convert byte (char) samples to float",
   "domain": "catalog",
   "k": 8
  },

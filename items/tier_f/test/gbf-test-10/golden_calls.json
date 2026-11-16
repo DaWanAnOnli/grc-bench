@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x high_pass_filter blocks_multiply_const_vxx blocks_file_sink",
+  "query": "high pass filter block",
   "domain": "catalog",
   "k": 8
  },

@@ -103,7 +103,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 464
+        - 696
         - 212.0
         state: enabled
 -   name: blocks_file_sink_0
@@ -122,7 +122,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 696
+        - 928
         - 212.0
         state: enabled
 -   name: blocks_multiply_conjugate_cc_0
@@ -140,6 +140,28 @@ blocks:
         bus_structure: null
         coordinate:
         - 232
+        - 212.0
+        state: enabled
+-   name: blocks_throttle2_0
+    id: blocks_throttle2
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        ignoretag: 'True'
+        limit: auto
+        maximum: '0.1'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        samples_per_second: samp_rate
+        type: complex
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 464
         - 212.0
         state: enabled
 -   name: unwrap
@@ -171,7 +193,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 696
+        - 928
         - 412.0
         state: enabled
 -   name: unwrapped_sink
@@ -190,7 +212,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 928
+        - 1160
         - 212.0
         state: enabled
 connections:
@@ -211,6 +233,10 @@ connections:
     - unwrap
     - '0'
 -   - blocks_multiply_conjugate_cc_0
+    - '0'
+    - blocks_throttle2_0
+    - '0'
+-   - blocks_throttle2_0
     - '0'
     - blocks_complex_to_arg_0
     - '0'

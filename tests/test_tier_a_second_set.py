@@ -19,12 +19,18 @@ def _task(task_id: str) -> dict:
 def test_every_spec_is_built_with_the_spec_s_own_wording():
     specs = spec_drafts.draft_records()
     assert len(specs) == 20 and {s["id"] for s in specs} == {f"gba-test-{i}" for i in range(11, 31)}
+    from grcbench.review import patches
+    from grcbench.tier_a import first_set
     for spec in specs:
         task = _task(spec["id"])
+        # the spec's wording, with the review's decided edits to those fields (reviews/tier_a_patches.json)
+        decided = [p for p in patches.for_item(first_set.REVIEWS / "tier_a_patches.json", spec["id"])
+                   if p["path"][0] in FROM_SPEC]
+        want = patches.apply({key: spec[key] for key in FROM_SPEC}, decided)
         for key in FROM_SPEC:
-            assert task[key] == spec[key], (spec["id"], key)
+            assert task[key] == want[key], (spec["id"], key)
         assert task["provenance"]["generator"] == second_set.GENERATOR[0]
-        assert task["review"]["status"] == "pending-team-review"
+        assert task["review"] == first_set.review_of(spec["id"])
 
 
 def test_every_built_task_passed_its_gates():

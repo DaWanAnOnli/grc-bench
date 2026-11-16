@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_complex_to_mag blocks_nlog10_ff blocks_file_sink blocks_multiply_xx",
+  "query": "Signal Source Multiply File Sink",
   "domain": "catalog",
   "k": 10
  },
@@ -32,7 +32,7 @@
    }
   ],
   "add_connections": [
-   "tone_6200:0->mixer:0",
+   "tone_1:0->mixer:0",
    "lo:0->mixer:1",
    "mixer:0->out_b:0"
   ]

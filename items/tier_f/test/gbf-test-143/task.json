@@ -15,18 +15,18 @@
  "disjointness": "A generated chain (tones, fm, hilbert, conjugate) whose functional signature conjugate|fm_demod|fm_mod|hilbert|message_source|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "repair",
  "fault": {
-  "connection": "tone_8300:0->throttle:0",
-  "description": "the connection tone_8300 -> throttle is missing, so GRC reports an unconnected port and the flowgraph does not run",
+  "connection": "tone_1:0->throttle:0",
+  "description": "the connection tone_1 -> throttle is missing, so GRC reports an unconnected port and the flowgraph does not run",
   "expected_rung": "V3",
   "type": "missing_connection"
  },
  "id": "gbf-test-143",
- "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 8.3 kHz cosine with amplitude 0.5; then frequency-modulate it with a Frequency Mod block (sensitivity 2*pi*2500/samp_rate, so an input of 1.0 deviates by 2.5 kHz) and demodulate it with a Quadrature Demod block whose gain turns 2.5 kHz of deviation into an output of 1.0 (gain samp_rate/(2*pi*2500)); then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency. Throttle the first Signal Source's output to real time with a Throttle block, and connect a Message Strobe that sends pmt.to_pmt({'freq': 5800}) every 250 ms to that Signal Source's message input cmd, so that the 8.3 kHz tone is retuned to 5.8 kHz while the flowgraph runs; and write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 16,384 samples after the first 50,368, the output should have its strongest component at -5.8 kHz (within 58 Hz); 100 % of its power within 50 Hz of -5.8 kHz (within a tenth of that share); an RMS level of 0.5 (within 5 %). Instead, GRC reports an error and the flowgraph does not run. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
+ "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 8.3 kHz cosine with amplitude 0.5; then frequency-modulate it with a Frequency Mod block (sensitivity 2*math.pi*2500/samp_rate, so an input of 1.0 deviates by 2.5 kHz) and demodulate it with a Quadrature Demod block whose gain turns 2.5 kHz of deviation into an output of 1.0 (gain samp_rate/(2*math.pi*2500)); then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency. Throttle the first Signal Source's output to real time with a Throttle block, and connect a Message Strobe that sends pmt.to_pmt({'freq': 5800}) every 250 ms to that Signal Source's message input cmd, so that the 8.3 kHz tone is retuned to 5.8 kHz while the flowgraph runs; and write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 16,384 samples after the first 50,368, the output should have its strongest component at -5.8 kHz (within 58 Hz); 100 % of its power within 50 Hz of -5.8 kHz (within a tenth of that share); an RMS level of 0.5 (within 5 %). Instead, GRC reports an error and the flowgraph does not run. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L3",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_8300",
+   "block": "tone_1",
    "breaks": "the 5.8 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -185,9 +185,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 827,

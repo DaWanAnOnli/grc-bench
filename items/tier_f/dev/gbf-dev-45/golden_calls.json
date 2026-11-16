@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x hilbert_fc blocks_multiply_xx blocks_conjugate_cc blocks_file_sink",
+  "query": "Signal Source Hilbert Multiply Complex Conjugate File Sink",
   "domain": "catalog",
   "k": 10
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_10500",
+    "instance_name": "tone_1",
     "params": {
      "type": "float",
      "freq": "10500",
@@ -49,7 +49,7 @@
    }
   ],
   "add_connections": [
-   "tone_10500:0->hilbert:0",
+   "tone_1:0->hilbert:0",
    "hilbert:0->mixer:0",
    "lo:0->mixer:1",
    "mixer:0->conj:0",

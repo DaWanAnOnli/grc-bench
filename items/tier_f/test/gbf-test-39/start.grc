@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_5400
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '5400', amp: '0.8',
     offset: '0', showports: 'True'}
@@ -36,7 +36,7 @@ connections:
 - [noise, '0', sum_of_tones, '1']
 - [sum_of_tones, '0', channel, '0']
 - [channel, '0', channel_2, '0']
-- [retune, strobe, tone_5400, cmd]
+- [retune, strobe, tone_1, cmd]
 - [throttle, '0', sum_of_tones, '0']
 - [channel_2, '0', out, '0']
 metadata: {file_format: 1}

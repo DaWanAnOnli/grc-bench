@@ -31,7 +31,7 @@
    "cases": [
     {
      "reasons": [
-      "ladder: fails at V5: unwrapped min = -34.553619; unwrapped max = 3.14159"
+      "ladder: fails at V5: unwrapped min = -160.217438; unwrapped max = 3.14159"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc"
@@ -40,7 +40,7 @@
    "passed": true
   }
  },
- "golden_end_state_sha256": "b21a4f1be2ce6e20332c1f7c01086df46084951246c12fb69a6fea488878c2d8",
+ "golden_end_state_sha256": "3675424cde10ceed2bbe3b5263e50e7d0e4efe3a6a8d3cf12bf91af1bca1c66c",
  "passed": true,
  "task": "gba-test-18"
 }

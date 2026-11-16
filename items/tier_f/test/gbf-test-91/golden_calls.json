@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_conjugate_cc blocks_file_sink",
+  "query": "Signal Source Complex Conjugate File Sink",
   "domain": "catalog",
   "k": 6
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_3700",
+    "instance_name": "tone_1",
     "params": {
      "type": "complex",
      "freq": "-3700",
@@ -34,7 +34,7 @@
    }
   ],
   "add_connections": [
-   "tone_3700:0->conj:0",
+   "tone_1:0->conj:0",
    "conj:0->conj_2:0",
    "conj_2:0->out:0"
   ]

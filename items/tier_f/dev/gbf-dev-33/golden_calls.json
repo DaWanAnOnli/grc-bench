@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx low_pass_filter hilbert_fc blocks_conjugate_cc blocks_file_sink",
+  "query": "Signal Source Add Low Pass Filter Hilbert Complex Conjugate File Sink",
   "domain": "catalog",
   "k": 12
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_7000",
+    "instance_name": "tone_1",
     "params": {
      "type": "float",
      "freq": "7000",
@@ -18,7 +18,7 @@
    },
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_1600",
+    "instance_name": "tone_2",
     "params": {
      "type": "float",
      "freq": "1600",
@@ -27,7 +27,7 @@
    },
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_3600",
+    "instance_name": "tone_3",
     "params": {
      "type": "float",
      "freq": "3600",
@@ -69,9 +69,9 @@
    }
   ],
   "add_connections": [
-   "tone_7000:0->sum_of_tones:0",
-   "tone_1600:0->sum_of_tones:1",
-   "tone_3600:0->sum_of_tones:2",
+   "tone_1:0->sum_of_tones:0",
+   "tone_2:0->sum_of_tones:1",
+   "tone_3:0->sum_of_tones:2",
    "sum_of_tones:0->lpf:0",
    "lpf:0->hilbert:0",
    "hilbert:0->conj:0",

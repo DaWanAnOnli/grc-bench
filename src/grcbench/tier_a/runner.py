@@ -401,6 +401,8 @@ def run_tasks(tasks: Iterable[Task | Path | str], model_factory: ModelSpec | str
     """Run `samples` episodes of every task: one guard and one run-log entry for the whole batch,
     written before the first episode starts (eval plan §4.1)."""
     loaded = [t if isinstance(t, Task) else load_task(t) for t in tasks]
+    from ..review.items import refuse_rejected
+    refuse_rejected([{"id": t.id, **t.record} for t in loaded])      # rejected tasks are not run (eval plan §5.3)
     if not loaded:
         return []
     spec = as_spec(model_factory)

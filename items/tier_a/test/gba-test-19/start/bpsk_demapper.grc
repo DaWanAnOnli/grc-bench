@@ -52,6 +52,25 @@ blocks:
     bus_source: false
     bus_structure: null
     state: enabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
 - name: negate
   id: blocks_multiply_const_vxx
   parameters:
@@ -121,10 +140,11 @@ blocks:
     state: enabled
 
 connections:
+- [blocks_throttle2_0, '0', negate, '0']
 - [negate, '0', slicer, '0']
 - [pack, '0', bits_sink, '0']
 - [slicer, '0', pack, '0']
-- [soft, '0', negate, '0']
+- [soft, '0', blocks_throttle2_0, '0']
 
 metadata:
   file_format: 1

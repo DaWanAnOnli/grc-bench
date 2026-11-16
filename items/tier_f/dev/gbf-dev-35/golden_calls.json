@@ -1,13 +1,13 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x channels_channel_model blocks_conjugate_cc blocks_file_sink",
+  "query": "channel model block with a frequency offset",
   "domain": "catalog",
   "k": 8
  },
  "change_graph": {
   "reason": "Edit the flowgraph as the instruction asks.",
   "remove_connections": [
-   "tone_4000:0->channel:0",
+   "tone_1:0->channel:0",
    "channel:0->conj:0"
   ],
   "remove_blocks": [
@@ -25,7 +25,7 @@
    }
   ],
   "add_connections": [
-   "tone_4000:0->channel:0",
+   "tone_1:0->channel:0",
    "channel:0->conj:0"
   ]
  }

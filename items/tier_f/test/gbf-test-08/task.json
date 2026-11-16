@@ -1797,9 +1797,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Re-themed 18 Oct (fix plan G4): the old square-to-sine repair became a phase-comparator repair with the same fault type (deleted connection). Known oracle limits: (1) a 'repair' that keeps both oscillators (parked on Null Sinks) but builds the ramp from a NEW 5 Hz complex Signal Source -> Complex To Arg would pass (the path check cannot tell which Signal Source feeds the phase block); it ignores the instruction and is far more work than the one-connection fix. (2) Oscillator waveform, phase and sample-rate parameters are not compared; frequency, amplitude and type are. (3) The rate is measured at 1 Hz resolution (1 s); the one-period signed correlation also needs the period right to about 1 %. Sample rate 8 kHz instead of the planned 48 kHz keeps the corr_ref reference at 1,600 values. Fault-type overlap with training-side t04_broken_sink_repair is recorded under disjointness.",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2. Re-themed 18 Oct (fix plan G4): the old square-to-sine repair became a phase-comparator repair with the same fault type (deleted connection). Known oracle limits: (1) a 'repair' that keeps both oscillators (parked on Null Sinks) but builds the ramp from a NEW 5 Hz complex Signal Source -> Complex To Arg would pass (the path check cannot tell which Signal Source feeds the phase block); it ignores the instruction and is far more work than the one-connection fix. (2) Oscillator waveform, phase and sample-rate parameters are not compared; frequency, amplitude and type are. (3) The rate is measured at 1 Hz resolution (1 s); the one-period signed correlation also needs the period right to about 1 %. Sample rate 8 kHz instead of the planned 48 kHz keeps the corr_ref reference at 1,600 values. Fault-type overlap with training-side t04_broken_sink_repair is recorded under disjointness.",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "kind": "composed_chain",

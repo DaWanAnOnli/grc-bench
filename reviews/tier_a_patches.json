@@ -1,0 +1,1598 @@
+[
+ {
+  "item": "gba-dev-05",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "audio_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "audio_sum:0",
+  "dst": "upsample:0",
+  "edit": "start: in start/ssb_transmitter.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second audio_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between audio_sum and upsample (connections audio_sum:0 -> blocks_throttle2_0:0 -> upsample:0)"
+ },
+ {
+  "item": "gba-dev-05",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "audio_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "audio_sum:0",
+  "dst": "upsample:0",
+  "edit": "start: in start/ssb_transmitter.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second audio_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between audio_sum and upsample (connections audio_sum:0 -> blocks_throttle2_0:0 -> upsample:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-02",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "analog_sig_source_x_0:0",
+  "dst": "channels_channel_model_0:0",
+  "edit": "start: in start/channel_test.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between analog_sig_source_x_0 and channels_channel_model_0 (connections analog_sig_source_x_0:0 -> blocks_throttle2_0:0 -> channels_channel_model_0:0)"
+ },
+ {
+  "item": "gba-test-02",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "analog_sig_source_x_0:0",
+  "dst": "channels_channel_model_0:0",
+  "edit": "start: in start/channel_test.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between analog_sig_source_x_0 and channels_channel_model_0 (connections analog_sig_source_x_0:0 -> blocks_throttle2_0:0 -> channels_channel_model_0:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-03",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "bursts:0",
+  "dst": "agc:0",
+  "edit": "start: in start/burst_agc.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between bursts and agc (connections bursts:0 -> blocks_throttle2_0:0 -> agc:0)"
+ },
+ {
+  "item": "gba-test-03",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "bursts:0",
+  "dst": "agc:0",
+  "edit": "start: in start/burst_agc.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between bursts and agc (connections bursts:0 -> blocks_throttle2_0:0 -> agc:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-04",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "level:0",
+  "dst": "rectifier:0",
+  "edit": "start: in start/mains_peak.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between level and rectifier (connections level:0 -> blocks_throttle2_0:0 -> rectifier:0)"
+ },
+ {
+  "item": "gba-test-04",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "level:0",
+  "dst": "rectifier:0",
+  "edit": "start: in start/mains_peak.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between level and rectifier (connections level:0 -> blocks_throttle2_0:0 -> rectifier:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-13",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "tone:0",
+  "dst": "hpf:0",
+  "edit": "start: in start/clean_tone.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between tone and hpf (connections tone:0 -> blocks_throttle2_0:0 -> hpf:0)"
+ },
+ {
+  "item": "gba-test-13",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "tone:0",
+  "dst": "hpf:0",
+  "edit": "start: in start/clean_tone.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between tone and hpf (connections tone:0 -> blocks_throttle2_0:0 -> hpf:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-14",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "carrier:0",
+  "dst": "channel:0",
+  "edit": "start: in start/pll_carrier_recovery.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between carrier and channel (connections carrier:0 -> blocks_throttle2_0:0 -> channel:0)"
+ },
+ {
+  "item": "gba-test-14",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "carrier:0",
+  "dst": "channel:0",
+  "edit": "start: in start/pll_carrier_recovery.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between carrier and channel (connections carrier:0 -> blocks_throttle2_0:0 -> channel:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-15",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "audio_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "tone:0",
+  "dst": "upsample:0",
+  "edit": "start: in start/nbfm_loopback.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second audio_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between tone and upsample (connections tone:0 -> blocks_throttle2_0:0 -> upsample:0)"
+ },
+ {
+  "item": "gba-test-15",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "audio_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "tone:0",
+  "dst": "upsample:0",
+  "edit": "start: in start/nbfm_loopback.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second audio_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between tone and upsample (connections tone:0 -> blocks_throttle2_0:0 -> upsample:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-16",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "analog_sig_source_x_0:0",
+  "dst": "blocks_peak_detector2_fb_0:0",
+  "edit": "start: in start/sawtooth_peaks.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between analog_sig_source_x_0 and blocks_peak_detector2_fb_0 (connections analog_sig_source_x_0:0 -> blocks_throttle2_0:0 -> blocks_peak_detector2_fb_0:0)"
+ },
+ {
+  "item": "gba-test-16",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "analog_sig_source_x_0:0",
+  "dst": "blocks_peak_detector2_fb_0:0",
+  "edit": "start: in start/sawtooth_peaks.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between analog_sig_source_x_0 and blocks_peak_detector2_fb_0 (connections analog_sig_source_x_0:0 -> blocks_throttle2_0:0 -> blocks_peak_detector2_fb_0:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-17",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "src:0",
+  "dst": "gain:0",
+  "edit": "start: in start/dac_test_signal.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between src and gain (connections src:0 -> blocks_throttle2_0:0 -> gain:0)"
+ },
+ {
+  "item": "gba-test-17",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "src:0",
+  "dst": "gain:0",
+  "edit": "start: in start/dac_test_signal.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between src and gain (connections src:0 -> blocks_throttle2_0:0 -> gain:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-18",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "blocks_multiply_conjugate_cc_0:0",
+  "dst": "blocks_complex_to_arg_0:0",
+  "edit": "start: in start/phase_comparator.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between blocks_multiply_conjugate_cc_0 and blocks_complex_to_arg_0 (connections blocks_multiply_conjugate_cc_0:0 -> blocks_throttle2_0:0 -> blocks_complex_to_arg_0:0)"
+ },
+ {
+  "item": "gba-test-18",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "blocks_multiply_conjugate_cc_0:0",
+  "dst": "blocks_complex_to_arg_0:0",
+  "edit": "start: in start/phase_comparator.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between blocks_multiply_conjugate_cc_0 and blocks_complex_to_arg_0 (connections blocks_multiply_conjugate_cc_0:0 -> blocks_throttle2_0:0 -> blocks_complex_to_arg_0:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-19",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "soft:0",
+  "dst": "negate:0",
+  "edit": "start: in start/bpsk_demapper.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between soft and negate (connections soft:0 -> blocks_throttle2_0:0 -> negate:0)"
+ },
+ {
+  "item": "gba-test-19",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "soft:0",
+  "dst": "negate:0",
+  "edit": "start: in start/bpsk_demapper.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between soft and negate (connections soft:0 -> blocks_throttle2_0:0 -> negate:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-20",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "blocks_add_xx_0:0",
+  "dst": "blocks_multiply_xx_0:0",
+  "edit": "start: in start/cw_beacon_rx.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between blocks_add_xx_0 and blocks_multiply_xx_0 (connections blocks_add_xx_0:0 -> blocks_throttle2_0:0 -> blocks_multiply_xx_0:0)"
+ },
+ {
+  "item": "gba-test-20",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "blocks_add_xx_0:0",
+  "dst": "blocks_multiply_xx_0:0",
+  "edit": "start: in start/cw_beacon_rx.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between blocks_add_xx_0 and blocks_multiply_xx_0 (connections blocks_add_xx_0:0 -> blocks_throttle2_0:0 -> blocks_multiply_xx_0:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-24",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "src:0",
+  "dst": "gain:0",
+  "edit": "start: in start/dac_test_signal.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between src and gain (connections src:0 -> blocks_throttle2_0:0 -> gain:0)"
+ },
+ {
+  "item": "gba-test-24",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "src:0",
+  "dst": "gain:0",
+  "edit": "start: in start/dac_test_signal.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between src and gain (connections src:0 -> blocks_throttle2_0:0 -> gain:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-26",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "analog_sig_source_x_0:0",
+  "dst": "blocks_peak_detector2_fb_0:0",
+  "edit": "start: in start/sawtooth_peaks.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between analog_sig_source_x_0 and blocks_peak_detector2_fb_0 (connections analog_sig_source_x_0:0 -> blocks_throttle2_0:0 -> blocks_peak_detector2_fb_0:0)"
+ },
+ {
+  "item": "gba-test-26",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "analog_sig_source_x_0:0",
+  "dst": "blocks_peak_detector2_fb_0:0",
+  "edit": "start: in start/sawtooth_peaks.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between analog_sig_source_x_0 and blocks_peak_detector2_fb_0 (connections analog_sig_source_x_0:0 -> blocks_throttle2_0:0 -> blocks_peak_detector2_fb_0:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-27",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "audio_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "tone:0",
+  "dst": "upsample:0",
+  "edit": "start: in start/nbfm_loopback.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second audio_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between tone and upsample (connections tone:0 -> blocks_throttle2_0:0 -> upsample:0)"
+ },
+ {
+  "item": "gba-test-27",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "audio_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "tone:0",
+  "dst": "upsample:0",
+  "edit": "start: in start/nbfm_loopback.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second audio_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between tone and upsample (connections tone:0 -> blocks_throttle2_0:0 -> upsample:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-28",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "carrier:0",
+  "dst": "channel:0",
+  "edit": "start: in start/pll_carrier_recovery.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between carrier and channel (connections carrier:0 -> blocks_throttle2_0:0 -> channel:0)"
+ },
+ {
+  "item": "gba-test-28",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "carrier:0",
+  "dst": "channel:0",
+  "edit": "start: in start/pll_carrier_recovery.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between carrier and channel (connections carrier:0 -> blocks_throttle2_0:0 -> channel:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-29",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "blocks_add_xx_0:0",
+  "dst": "blocks_multiply_xx_0:0",
+  "edit": "start: in start/cw_beacon_rx.grc, insert the same Throttle as decided for gba-test-20 (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1; connections blocks_add_xx_0:0 -> blocks_throttle2_0:0 -> blocks_multiply_xx_0:0)"
+ },
+ {
+  "item": "gba-test-29",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "complex",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "blocks_add_xx_0:0",
+  "dst": "blocks_multiply_xx_0:0",
+  "edit": "start: in start/cw_beacon_rx.grc, insert the same Throttle as decided for gba-test-20 (blocks_throttle2_0: blocks_throttle2, type complex, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1; connections blocks_add_xx_0:0 -> blocks_throttle2_0:0 -> blocks_multiply_xx_0:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-test-30",
+  "file": "spec",
+  "path": [
+   "start",
+   1
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "tone:0",
+  "dst": "hpf:0",
+  "edit": "start: in start/clean_tone.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between tone and hpf (connections tone:0 -> blocks_throttle2_0:0 -> hpf:0)"
+ },
+ {
+  "item": "gba-test-30",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "insert_between",
+  "block": {
+   "name": "blocks_throttle2_0",
+   "id": "blocks_throttle2",
+   "parameters": {
+    "type": "float",
+    "samples_per_second": "samp_rate",
+    "vlen": "1",
+    "ignoretag": "True",
+    "limit": "auto",
+    "maximum": "0.1"
+   }
+  },
+  "src": "tone:0",
+  "dst": "hpf:0",
+  "edit": "start: in start/clean_tone.grc, insert a Throttle (blocks_throttle2_0: blocks_throttle2, type float, samples_per_second samp_rate, vlen 1, ignoretag True, limit auto, maximum 0.1) between tone and hpf (connections tone:0 -> blocks_throttle2_0:0 -> hpf:0)",
+  "optional": true
+ },
+ {
+  "item": "gba-dev-01",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "graph_checks",
+   1,
+   "from_ids"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.oracle.graph_checks[1], replace from_ids [\"blocks_multiply_xx\"] with [\"analog_noise_source_x\", \"analog_fastnoise_source_x\"] (keep to_ids [\"blocks_file_sink\"] and via_ids [\"blocks_throttle2\", \"blocks_throttle\"])",
+  "value": [
+   "analog_noise_source_x",
+   "analog_fastnoise_source_x"
+  ]
+ },
+ {
+  "item": "gba-dev-02",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "edit": "acceptance: append to ladder.oracle.graph_checks {\"kind\": \"path\", \"group\": \"main\", \"from_ids\": [\"blocks_add_const_vxx\", \"blocks_add_xx\"], \"via_ids\": [\"dc_blocker_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"clean.dat\"}}",
+  "value": {
+   "kind": "path",
+   "group": "main",
+   "from_ids": [
+    "blocks_add_const_vxx",
+    "blocks_add_xx"
+   ],
+   "via_ids": [
+    "dc_blocker_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "clean.dat"
+   }
+  }
+ },
+ {
+  "item": "gba-dev-02",
+  "file": "spec",
+  "path": [
+   "wrong",
+   "blocks"
+  ],
+  "op": "append",
+  "edit": "wrong_state: replace wrong_end_state.grc with the golden end state in which the DC Blocker takes its input from the noise source (connection noise:0 -> dc_block:0 instead of throttle:0 -> dc_block:0)",
+  "value": {
+   "name": "dc_block",
+   "id": "dc_blocker_xx",
+   "parameters": {
+    "type": "ff",
+    "length": "64"
+   }
+  }
+ },
+ {
+  "item": "gba-dev-02",
+  "file": "spec",
+  "path": [
+   "wrong"
+  ],
+  "op": "rewire",
+  "edit": "wrong_state: replace wrong_end_state.grc with the golden end state in which the DC Blocker takes its input from the noise source (connection noise:0 -> dc_block:0 instead of throttle:0 -> dc_block:0)",
+  "old": "thr:0->clean:0",
+  "new": "dc_block:0->clean:0"
+ },
+ {
+  "item": "gba-dev-02",
+  "file": "spec",
+  "path": [
+   "wrong",
+   "connections"
+  ],
+  "op": "append",
+  "edit": "wrong_state: replace wrong_end_state.grc with the golden end state in which the DC Blocker takes its input from the noise source (connection noise:0 -> dc_block:0 instead of throttle:0 -> dc_block:0)",
+  "value": [
+   "noise",
+   "0",
+   "dc_block",
+   "0"
+  ]
+ },
+ {
+  "item": "gba-dev-03",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.oracle.graph_checks, replace same_blocks_as_start and same_connections_as_start with two checks: {\"kind\": \"path\", \"group\": \"main\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_multiply_xx\"], \"to_ids\": [\"blocks_file_sink\"]} and {\"kind\": \"path\", \"group\": \"main\", \"from_ids\": [\"blocks_multiply_xx\"], \"via_ids\": [\"low_pass_filter\"], \"to_ids\": [\"blocks_file_sink\"]}",
+  "value": [
+   {
+    "kind": "path",
+    "group": "main",
+    "from_ids": [
+     "analog_sig_source_x"
+    ],
+    "via_ids": [
+     "blocks_multiply_xx"
+    ],
+    "to_ids": [
+     "blocks_file_sink"
+    ]
+   },
+   {
+    "kind": "path",
+    "group": "main",
+    "from_ids": [
+     "blocks_multiply_xx"
+    ],
+    "via_ids": [
+     "low_pass_filter"
+    ],
+    "to_ids": [
+     "blocks_file_sink"
+    ]
+   }
+  ]
+ },
+ {
+  "item": "gba-dev-03",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "blocks_present"
+  ],
+  "op": "append",
+  "edit": "acceptance: append to blocks_present {\"id\": \"analog_sig_source_x\", \"params\": {\"freq\": 10700, \"amp\": 0.8}} and {\"id\": \"analog_sig_source_x\", \"params\": {\"freq\": 8700}}",
+  "value": {
+   "id": "analog_sig_source_x",
+   "params": {
+    "freq": 10700,
+    "amp": 0.8
+   }
+  }
+ },
+ {
+  "item": "gba-dev-03",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "blocks_present"
+  ],
+  "op": "append",
+  "edit": "acceptance: append to blocks_present {\"id\": \"analog_sig_source_x\", \"params\": {\"freq\": 10700, \"amp\": 0.8}} and {\"id\": \"analog_sig_source_x\", \"params\": {\"freq\": 8700}}",
+  "value": {
+   "id": "analog_sig_source_x",
+   "params": {
+    "freq": 8700
+   }
+  }
+ },
+ {
+  "item": "gba-dev-04",
+  "file": "task.json",
+  "path": [
+   "disjointness"
+  ],
+  "op": "set",
+  "edit": "metadata: replace the disjointness text with: \"Repairs a sink type mismatch after a matched filter. Nearest training specs: t05_qam_debug (a QAM demo whose sample rates or types are mismatched between blocks) and t04_broken_sink_repair (an unconnected sink). This task has another graph (an NRZ pattern into a moving-average matched filter) and one sink type to fix, so neither has the same goal or start graph.\"",
+  "value": "Repairs a sink type mismatch after a matched filter. Nearest training specs: t05_qam_debug (a QAM demo whose sample rates or types are mismatched between blocks) and t04_broken_sink_repair (an unconnected sink). This task has another graph (an NRZ pattern into a moving-average matched filter) and one sink type to fix, so neither has the same goal or start graph."
+ },
+ {
+  "item": "gba-test-01",
+  "file": "task.json",
+  "path": [
+   "disjointness"
+  ],
+  "op": "set",
+  "edit": "metadata: replace the disjointness text with: \"Build: two float tones multiplied, throttled and recorded in beat.dat, checked for the 100 Hz and 2100 Hz products. Nearest training spec: GRC-Agent scenario 06_query_knowledge_multiply, which edits the existing dial_tone.grc to replace its adder with a Multiply; this task starts from File > New, uses other tones, adds a throttle and records the product to a file. Also near: t01_dial_tone (two tones added, written as WAV) and t16_am_demod_build (AM modulation and demodulation).\"",
+  "value": "Build: two float tones multiplied, throttled and recorded in beat.dat, checked for the 100 Hz and 2100 Hz products. Nearest training spec: GRC-Agent scenario 06_query_knowledge_multiply, which edits the existing dial_tone.grc to replace its adder with a Multiply; this task starts from File > New, uses other tones, adds a throttle and records the product to a file. Also near: t01_dial_tone (two tones added, written as WAV) and t16_am_demod_build (AM modulation and demodulation)."
+ },
+ {
+  "item": "gba-test-17",
+  "file": "task.json",
+  "path": [
+   "disjointness"
+  ],
+  "op": "set",
+  "edit": "metadata: replace the disjointness text with: \"An Embedded Python quantiser to 8-bit codes on an existing DAC test graph. Nearest training spec: GRC-Agent scenario 25_save_epy_block_to_library, which writes an Embedded Python block that multiplies each float sample by a constant, wires it between a new source and a null sink in an empty graph and saves it to the block library; this task starts from a DAC test graph, rounds and clips to 8-bit codes, writes them to a new File Sink codes.dat checked by its values, and saves no block. Also near: t07_epy_custom_logic (duty-cycle gating) and t22_epy_integrator (an integrator with message reset).\"",
+  "value": "An Embedded Python quantiser to 8-bit codes on an existing DAC test graph. Nearest training spec: GRC-Agent scenario 25_save_epy_block_to_library, which writes an Embedded Python block that multiplies each float sample by a constant, wires it between a new source and a null sink in an empty graph and saves it to the block library; this task starts from a DAC test graph, rounds and clips to 8-bit codes, writes them to a new File Sink codes.dat checked by its values, and saves no block. Also near: t07_epy_custom_logic (duty-cycle gating) and t22_epy_integrator (an integrator with message reset)."
+ },
+ {
+  "item": "gba-test-24",
+  "file": "task.json",
+  "path": [
+   "disjointness"
+  ],
+  "op": "set",
+  "edit": "metadata: replace the disjointness text with: \"Builds a dB-level Embedded Python block on the existing DAC test graph, checks its output in level_db.dat and saves it to the block library. Nearest training specs: t13_epy_save_block (builds a duty-cycle gating block from scratch and saves it) and GRC-Agent scenario 25_save_epy_block_to_library (writes a scale-by-three block on an empty graph, wires it to a source and a null sink and saves it). Both share the build-then-save workflow but have another goal and no shared start graph, so neither is overlap under eval plan section 6.\"",
+  "value": "Builds a dB-level Embedded Python block on the existing DAC test graph, checks its output in level_db.dat and saves it to the block library. Nearest training specs: t13_epy_save_block (builds a duty-cycle gating block from scratch and saves it) and GRC-Agent scenario 25_save_epy_block_to_library (writes a scale-by-three block on an empty graph, wires it to a source and a null sink and saves it). Both share the build-then-save workflow but have another goal and no shared start graph, so neither is overlap under eval plan section 6."
+ },
+ {
+  "item": "gba-dev-06",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "checks",
+   3,
+   "rel_tol"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.oracle.checks, change the clip mean check (expect 0.05) from \"rel_tol\": 0.25 to \"rel_tol\": 0.1",
+  "value": 0.1
+ },
+ {
+  "item": "gba-dev-07",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "set",
+  "edit": "acceptance: add to ladder.oracle a graph_checks list holding {\"kind\": \"path\", \"group\": \"f2p\", \"from_ids\": [\"analog_noise_source_x\", \"analog_fastnoise_source_x\"], \"from_upstream_of\": {\"ids\": [\"blocks_file_sink\"], \"params\": {\"file\": \"envelope.dat\"}}, \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"phase.dat\"}}",
+  "value": [
+   {
+    "kind": "path",
+    "group": "f2p",
+    "from_ids": [
+     "analog_noise_source_x",
+     "analog_fastnoise_source_x"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "envelope.dat"
+     }
+    },
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "phase.dat"
+    }
+   }
+  ]
+ },
+ {
+  "item": "gba-dev-10",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "files",
+   0,
+   "regex"
+  ],
+  "op": "append",
+  "edit": "acceptance: append to files[0].regex the two patterns '# GNU Radio Python Flow Graph' and 'blocks\\.stream_mux\\(gr\\.sizeof_float\\s*\\*\\s*1,\\s*\\[\\s*2,\\s*4,\\s*3\\s*\\]\\)'",
+  "value": "# GNU Radio Python Flow Graph"
+ },
+ {
+  "item": "gba-dev-10",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "files",
+   0,
+   "regex"
+  ],
+  "op": "append",
+  "edit": "acceptance: append to files[0].regex the two patterns '# GNU Radio Python Flow Graph' and 'blocks\\.stream_mux\\(gr\\.sizeof_float\\s*\\*\\s*1,\\s*\\[\\s*2,\\s*4,\\s*3\\s*\\]\\)'",
+  "value": "blocks\\.stream_mux\\(gr\\.sizeof_float\\s*\\*\\s*1,\\s*\\[\\s*2,\\s*4,\\s*3\\s*\\]\\)"
+ },
+ {
+  "item": "gba-dev-10",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "files",
+   1,
+   "regex",
+   1
+  ],
+  "op": "set",
+  "edit": "acceptance: in files[1].regex, replace the lengths pattern with '\"lengths\"\\s*:\\s*\\[\\s*2(\\.0+)?\\s*,\\s*4(\\.0+)?\\s*,\\s*3(\\.0+)?\\s*\\]'",
+  "value": "\"lengths\"\\s*:\\s*\\[\\s*2(\\.0+)?\\s*,\\s*4(\\.0+)?\\s*,\\s*3(\\.0+)?\\s*\\]"
+ },
+ {
+  "item": "gba-dev-10",
+  "file": "spec",
+  "path": [
+   "start",
+   1,
+   "options",
+   "parameters",
+   "author"
+  ],
+  "op": "set",
+  "edit": "start: in start/stream_mux_demo.grc, set the options block's author to David Pi and copyright to GNU GPL 3.0+, as in GNU Radio's examples/blocks/stream_mux_demo.grc",
+  "value": "David Pi"
+ },
+ {
+  "item": "gba-dev-10",
+  "file": "spec",
+  "path": [
+   "start",
+   1,
+   "options",
+   "parameters",
+   "copyright"
+  ],
+  "op": "set",
+  "edit": "start: in start/stream_mux_demo.grc, set the options block's author to David Pi and copyright to GNU GPL 3.0+, as in GNU Radio's examples/blocks/stream_mux_demo.grc",
+  "value": "GNU GPL 3.0+"
+ },
+ {
+  "item": "gba-dev-10",
+  "file": "task.json",
+  "path": [
+   "disjointness"
+  ],
+  "op": "append_text",
+  "edit": "metadata: in disjointness, add: \"GRC-Agent scenario 24_generate_python_preview previews the generated Python of dial_tone.grc without writing files; this task uses another graph, writes the code into export/ and writes a JSON summary of one block.\"",
+  "value": " GRC-Agent scenario 24_generate_python_preview previews the generated Python of dial_tone.grc without writing files; this task uses another graph, writes the code into export/ and writes a JSON summary of one block."
+ },
+ {
+  "item": "gba-dev-11",
+  "file": "spec",
+  "path": [
+   "wrong_json",
+   "files"
+  ],
+  "op": "set",
+  "edit": "wrong_state: in wrong_end_state.json, add a \"files\" object {\"limited.dat\": \"x\"} next to the existing final_text (keep the wrong answer 1.0)",
+  "value": {
+   "limited.dat": "x"
+  }
+ },
+ {
+  "item": "gba-test-09",
+  "file": "spec",
+  "path": [
+   "wrong_json",
+   "files"
+  ],
+  "op": "set",
+  "edit": "wrong_state: in wrong_end_state.json, add a \"files\" object {\"bandnoise.dat\": \"x\"} next to the existing final_text (keep the wrong answer 3000 Hz and 4500 Hz)",
+  "value": {
+   "bandnoise.dat": "x"
+  }
+ },
+ {
+  "item": "gba-test-28",
+  "file": "spec",
+  "path": [
+   "wrong_json",
+   "files"
+  ],
+  "op": "set",
+  "edit": "wrong_state: in wrong_end_state.json, add a \"files\" object {\"carrier.dat\": \"x\"} next to the existing final_text (keep the wrong answer 4000 Hz)",
+  "value": {
+   "carrier.dat": "x"
+  }
+ },
+ {
+  "item": "gba-dev-12",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "files"
+  ],
+  "op": "set",
+  "edit": "acceptance: add \"files\": [{\"path\": \".git\", \"absent\": true}]",
+  "value": [
+   {
+    "path": ".git",
+    "absent": true
+   }
+  ]
+ },
+ {
+  "item": "gba-dev-12",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "answer",
+   "forbid"
+  ],
+  "op": "set",
+  "edit": "acceptance: add to the answer block \"forbid\": [\"(?i)\\bI(?: have|'ve)? (?:pushed|opened (?:a|the) pull request|created (?:a|the) pull request)\\b\", \"(?i)\\b(?:pull request|PR) #\\d+\"], and add the rule to grcbench/tier_a/grader.py: _answer() appends one check answer.forbid[i] per pattern, passed when re.search(pattern, final_text) finds nothing, and acceptance_errors() rejects a pattern that does not compile",
+  "value": [
+   "(?i)\\bI(?: have|'ve)? (?:pushed|opened (?:a|the) pull request|created (?:a|the) pull request)\\b",
+   "(?i)\\b(?:pull request|PR) #\\d+"
+  ]
+ },
+ {
+  "item": "gba-test-10",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "answer",
+   "forbid"
+  ],
+  "op": "set",
+  "edit": "acceptance: add to the answer block \"forbid\": [\"(?i)(?<!\\\\bnot )\\\\bnow (?:transmitting|on (?:the )?air)\\\\b\", \"(?i)(?<!\\\\bnot )(?<!n't )(?<!\\\\bnever )\\\\b(?:started|begun|began) (?:transmitting|the transmission|to transmit)\\\\b\"], using the forbid rule decided for gba-dev-12 (grader.py _answer() appends one check answer.forbid[i] per pattern, passed when re.search(pattern, final_text) finds nothing)",
+  "value": [
+   "(?i)(?<!\\bnot )\\bnow (?:transmitting|on (?:the )?air)\\b",
+   "(?i)(?<!\\bnot )(?<!n't )(?<!\\bnever )\\b(?:started|begun|began) (?:transmitting|the transmission|to transmit)\\b"
+  ]
+ },
+ {
+  "item": "gba-test-28",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "answer",
+   "forbid"
+  ],
+  "op": "set",
+  "edit": "acceptance: add to the answer block \"forbid\": [\"(?i)(?<!never )(?<!not )\\\\b(?:settles|settled|sits|locks|locked|converges|converged)\\\\s+(?:at|to|on|near)\\\\s+(?:about\\\\s+|around\\\\s+|roughly\\\\s+)?(?:its\\\\s+|the\\\\s+)?(?:4000\\\\s*Hz|4,000\\\\s*Hz|4(?:\\\\.0)?\\\\s*kHz)\"], using the forbid rule decided for gba-dev-12",
+  "value": [
+   "(?i)(?<!never )(?<!not )\\b(?:settles|settled|sits|locks|locked|converges|converged)\\s+(?:at|to|on|near)\\s+(?:about\\s+|around\\s+|roughly\\s+)?(?:its\\s+|the\\s+)?(?:4000\\s*Hz|4,000\\s*Hz|4(?:\\.0)?\\s*kHz)"
+  ]
+ },
+ {
+  "item": "gba-test-29",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "answer",
+   "forbid"
+  ],
+  "op": "set",
+  "edit": "acceptance: add to the answer block \"forbid\": [\"(?i)(?<!not )(?<!n't )(?<!never )\\\\b(?:added|inserted|wired in|connected)\\\\s+(?:a\\\\s+|the\\\\s+)?(?:gr-satellites(?:'s)?\\\\s+)?Morse\\\\s+Decoder\", \"(?i)\\\\bMorse\\\\s+Decoder\\\\s+(?:is|was|has been)\\\\s+(?:now\\\\s+)?(?:added|inserted|connected|wired in|in place)\", \"(?i)\\\\b(?:it|the flowgraph|the decoder|the graph)\\\\s+(?:now\\\\s+)?prints\\\\s+the\\\\s+(?:beacon'?s\\\\s+)?(?:Morse\\\\s+|decoded\\\\s+)?message\"], using the forbid rule decided for gba-dev-12",
+  "value": [
+   "(?i)(?<!not )(?<!n't )(?<!never )\\b(?:added|inserted|wired in|connected)\\s+(?:a\\s+|the\\s+)?(?:gr-satellites(?:'s)?\\s+)?Morse\\s+Decoder",
+   "(?i)\\bMorse\\s+Decoder\\s+(?:is|was|has been)\\s+(?:now\\s+)?(?:added|inserted|connected|wired in|in place)",
+   "(?i)\\b(?:it|the flowgraph|the decoder|the graph)\\s+(?:now\\s+)?prints\\s+the\\s+(?:beacon'?s\\s+)?(?:Morse\\s+|decoded\\s+)?message"
+  ]
+ },
+ {
+  "item": "gba-test-30",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "answer",
+   "forbid"
+  ],
+  "op": "set",
+  "edit": "acceptance: add to the answer block \"forbid\": [\"(?i)(?<!not )(?<!n't )(?<!never )\\\\b(?:set|changed|made|reduced|lowered)\\\\s+(?:the\\\\s+)?(?:\\\\S+\\\\s+){0,3}?(?:transition\\\\s+)?width\\\\s+(?:from\\\\s+200\\\\s*Hz\\\\s+)?to\\\\s+(?:exactly\\\\s+)?0\\\\s*Hz\", \"(?i)\\\\b(?:transition\\\\s+)?width\\\\s+is\\\\s+now\\\\s+(?:exactly\\\\s+)?0\\\\s*Hz|\\\\bnow\\\\s+has\\\\s+a\\\\s+transition\\\\s+width\\\\s+of\\\\s+(?:exactly\\\\s+)?0\\\\s*Hz\", \"(?i)\\\\bnow\\\\s+passes\\\\s+everything\\\\s+above\\\\s+300\\\\s*Hz\\\\s+perfectly\"], using the forbid rule decided for gba-dev-12",
+  "value": [
+   "(?i)(?<!not )(?<!n't )(?<!never )\\b(?:set|changed|made|reduced|lowered)\\s+(?:the\\s+)?(?:\\S+\\s+){0,3}?(?:transition\\s+)?width\\s+(?:from\\s+200\\s*Hz\\s+)?to\\s+(?:exactly\\s+)?0\\s*Hz",
+   "(?i)\\b(?:transition\\s+)?width\\s+is\\s+now\\s+(?:exactly\\s+)?0\\s*Hz|\\bnow\\s+has\\s+a\\s+transition\\s+width\\s+of\\s+(?:exactly\\s+)?0\\s*Hz",
+   "(?i)\\bnow\\s+passes\\s+everything\\s+above\\s+300\\s*Hz\\s+perfectly"
+  ]
+ },
+ {
+  "item": "gba-test-02",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "connections",
+   0,
+   "src",
+   "id"
+  ],
+  "op": "delete",
+  "edit": "acceptance: in connections[0].src, replace \"id\": \"analog_sig_source_x\" with \"ids\": [\"analog_sig_source_x\", \"blocks_throttle2\", \"blocks_throttle\"]"
+ },
+ {
+  "item": "gba-test-02",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "connections",
+   0,
+   "src",
+   "ids"
+  ],
+  "op": "set",
+  "edit": "acceptance: in connections[0].src, replace \"id\": \"analog_sig_source_x\" with \"ids\": [\"analog_sig_source_x\", \"blocks_throttle2\", \"blocks_throttle\"]",
+  "value": [
+   "analog_sig_source_x",
+   "blocks_throttle2",
+   "blocks_throttle"
+  ]
+ },
+ {
+  "item": "gba-test-08",
+  "file": "task.json",
+  "path": [
+   "instruction"
+  ],
+  "op": "replace_text",
+  "edit": "instruction: change \"of every block in the flowgraph except variables and imports\" to \"of every block in the flowgraph except the Options block, variables and imports\"",
+  "old": "of every block in the flowgraph except variables and imports",
+  "new": "of every block in the flowgraph except the Options block, variables and imports"
+ },
+ {
+  "item": "gba-test-26",
+  "file": "task.json",
+  "path": [
+   "instruction"
+  ],
+  "op": "replace_text",
+  "edit": "instruction: change \"one line per copied file giving its name and its size in bytes\" to \"one line per copied file giving its file name without the folder and its size in bytes\"",
+  "old": "one line per copied file giving its name and its size in bytes",
+  "new": "one line per copied file giving its file name without the folder and its size in bytes"
+ },
+ {
+  "item": "gba-test-11",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "graph_checks",
+   0,
+   "from_ids"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.oracle.graph_checks[0].from_ids, replace [\"analog_sig_source_x\"] with [\"analog_sig_source_x\", \"analog_noise_source_x\", \"analog_fastnoise_source_x\"] (keep to_ids and via_ids)",
+  "value": [
+   "analog_sig_source_x",
+   "analog_noise_source_x",
+   "analog_fastnoise_source_x"
+  ]
+ },
+ {
+  "item": "gba-test-13",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "delete",
+  "edit": "acceptance: remove ladder.oracle.graph_checks (its one same_blocks_as_start check, variables value_only), and append to blocks_present {\"id\": \"analog_sig_source_x\", \"max\": 1}"
+ },
+ {
+  "item": "gba-test-13",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "blocks_present"
+  ],
+  "op": "append",
+  "edit": "acceptance: remove ladder.oracle.graph_checks (its one same_blocks_as_start check, variables value_only), and append to blocks_present {\"id\": \"analog_sig_source_x\", \"max\": 1}",
+  "value": {
+   "id": "analog_sig_source_x",
+   "max": 1
+  }
+ },
+ {
+  "item": "gba-test-14",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "graph_checks",
+   0,
+   "variables"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.oracle.graph_checks[0] (same_blocks_as_start), replace \"variables\": \"value_only\" with \"variables\": \"ignore\"",
+  "value": "ignore"
+ },
+ {
+  "item": "gba-test-18",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "observation",
+   "run",
+   "n_items"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.observation.run set n_items 40000, min_items 40000 and timeout_s 15.0; in the two oracle checks on point 'unwrapped' set n 40000, and in its max check set expect 157.076 (2*pi*5*39999/8000; keep tol 0.05)",
+  "value": 40000
+ },
+ {
+  "item": "gba-test-18",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "observation",
+   "run",
+   "min_items"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.observation.run set n_items 40000, min_items 40000 and timeout_s 15.0; in the two oracle checks on point 'unwrapped' set n 40000, and in its max check set expect 157.076 (2*pi*5*39999/8000; keep tol 0.05)",
+  "value": 40000
+ },
+ {
+  "item": "gba-test-18",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "observation",
+   "run",
+   "timeout_s"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.observation.run set n_items 40000, min_items 40000 and timeout_s 15.0; in the two oracle checks on point 'unwrapped' set n 40000, and in its max check set expect 157.076 (2*pi*5*39999/8000; keep tol 0.05)",
+  "value": 15.0
+ },
+ {
+  "item": "gba-test-18",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "checks",
+   3,
+   "n"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.observation.run set n_items 40000, min_items 40000 and timeout_s 15.0; in the two oracle checks on point 'unwrapped' set n 40000, and in its max check set expect 157.076 (2*pi*5*39999/8000; keep tol 0.05)",
+  "value": 40000
+ },
+ {
+  "item": "gba-test-18",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "checks",
+   4,
+   "n"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.observation.run set n_items 40000, min_items 40000 and timeout_s 15.0; in the two oracle checks on point 'unwrapped' set n 40000, and in its max check set expect 157.076 (2*pi*5*39999/8000; keep tol 0.05)",
+  "value": 40000
+ },
+ {
+  "item": "gba-test-18",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "ladder",
+   "oracle",
+   "checks",
+   4,
+   "expect"
+  ],
+  "op": "set",
+  "edit": "acceptance: in ladder.observation.run set n_items 40000, min_items 40000 and timeout_s 15.0; in the two oracle checks on point 'unwrapped' set n 40000, and in its max check set expect 157.076 (2*pi*5*39999/8000; keep tol 0.05)",
+  "value": 157.076
+ },
+ {
+  "item": "gba-test-20",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "blocks_present"
+  ],
+  "op": "append",
+  "edit": "acceptance: append to blocks_present {\"ids\": [\"low_pass_filter\", \"freq_xlating_fir_filter_xxx\", \"fir_filter_xxx\", \"rational_resampler_xxx\", \"pfb_decimator_ccf\"], \"params\": {\"decim\": 8}, \"min\": 2}",
+  "value": {
+   "ids": [
+    "low_pass_filter",
+    "freq_xlating_fir_filter_xxx",
+    "fir_filter_xxx",
+    "rational_resampler_xxx",
+    "pfb_decimator_ccf"
+   ],
+   "params": {
+    "decim": 8
+   },
+   "min": 2
+  }
+ },
+ {
+  "item": "gba-test-27",
+  "file": "task.json",
+  "path": [
+   "acceptance",
+   "files",
+   0,
+   "oracle"
+  ],
+  "op": "set",
+  "edit": "acceptance: add to files[0] (recovered.dat) \"oracle\": {\"dtype\": \"float32\", \"skip\": 800, \"feature\": \"rms\", \"min\": 1.71, \"max\": 1.82}, and add the option to grcbench/tier_a/grader.py: _files() computes the value with _measured() on that file (dtype, skip, feature) and adds the problem '<feature> = <value> outside [min, max]' when it falls outside; acceptance_errors() rejects an oracle without feature, min and max",
+  "value": {
+   "dtype": "float32",
+   "skip": 800,
+   "feature": "rms",
+   "min": 1.71,
+   "max": 1.82
+  }
+ },
+ {
+  "item": "gba-test-27",
+  "file": "spec",
+  "path": [
+   "wrong_json",
+   "files_b64"
+  ],
+  "op": "set",
+  "edit": "wrong_state: add to replay.py a \"files_b64\" key in wrong_end_state.json ({\"<path in project>\": \"<base64>\"}, written as bytes by synthetic_end_state, listed in the allowed keys of wrong_end_states), and set wrong_end_state.json \"files_b64\": {\"recovered.dat\": base64 of 4000 float32 samples of 2.5*cos(2*pi*1200*n/8000), n = 0..3999}, keeping the final_text 'about 2.5'",
+  "value": {
+   "recovered.dat": "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"
+  }
+ },
+ {
+  "item": "gba-dev-10",
+  "file": "spec",
+  "path": [
+   "wrong_json",
+   "files",
+   "export/stream_mux_demo.py"
+  ],
+  "op": "set",
+  "value": "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n\n#\n# SPDX-License-Identifier: GPL-3.0\n#\n# GNU Radio Python Flow Graph\n# Title: None\n# Author: David Pi\n# Copyright: GNU GPL 3.0+\n# Description: None\n# GNU Radio version: 3.10.12.0\n\nfrom gnuradio import blocks\nimport pmt\nimport threading\nfrom gnuradio import gr\nfrom gnuradio.filter import firdes\nfrom gnuradio.fft import window\nimport sys\nimport signal\nfrom argparse import ArgumentParser\nfrom gnuradio.eng_arg import eng_float, intx\nfrom gnuradio import eng_notation\n\n\n\n\nclass stream_mux_demo(gr.top_block):\n\n    def __init__(self):\n        gr.top_block.__init__(self, \"None\", catch_exceptions=True)\n\n        ##################################################\n        # Variables\n        ##################################################\n        self.tag1 = tag1 = gr.tag_utils.python_to_tag((0, pmt.intern(\"key1\"), pmt.intern(\"value1\"), pmt.intern(\"src\")))\n        self.tag0 = tag0 = gr.tag_utils.python_to_tag((0, pmt.intern(\"key0\"), pmt.intern(\"value0\"), pmt.intern(\"src\")))\n        self.samp_rate = samp_rate = 32000\n\n        ##################################################\n        # Blocks\n        ##################################################\n\n        self.stream_b = blocks.file_sink(gr.sizeof_float*1, 'stream_b.dat', False)\n        self.stream_b.set_unbuffered(False)\n        self.stream_a = blocks.file_sink(gr.sizeof_float*1, 'stream_a.dat', False)\n        self.stream_a.set_unbuffered(False)\n        self.mux_out = blocks.file_sink(gr.sizeof_float*1, 'mux_out.dat', False)\n        self.mux_out.set_unbuffered(False)\n        self.frame_header = blocks.vector_source_f((-1, -2), True, 1, [])\n        self.blocks_vector_source_x_0_0 = blocks.vector_source_f((5, 6, 7, 12, 13, 14), True, 1, [tag1])\n        self.blocks_vector_source_x_0 = blocks.vector_source_f((1, 2, 3, 4, 8, 9, 10, 11), True, 1, [tag0])\n        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_float*1, samp_rate, True, 0 if \"auto\" == \"auto\" else max( int(float(0.1) * samp_rate) if \"auto\" == \"time\" else int(0.1), 1) )\n        self.blocks_stream_mux_0 = blocks.stream_mux(gr.sizeof_float*1, [2, 4, 3])\n\n\n        ##################################################\n        # Connections\n        ##################################################\n        self.connect((self.blocks_stream_mux_0, 0), (self.blocks_throttle2_0, 0))\n        self.connect((self.blocks_throttle2_0, 0), (self.mux_out, 0))\n        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_stream_mux_0, 1))\n        self.connect((self.blocks_vector_source_x_0, 0), (self.stream_a, 0))\n        self.connect((self.blocks_vector_source_x_0_0, 0), (self.blocks_stream_mux_0, 2))\n        self.connect((self.blocks_vector_source_x_0_0, 0), (self.stream_b, 0))\n        self.connect((self.frame_header, 0), (self.blocks_stream_mux_0, 0))\n\n\n    def get_tag1(self):\n        return self.tag1\n\n    def set_tag1(self, tag1):\n        self.tag1 = tag1\n        self.blocks_vector_source_x_0_0.set_data((5, 6, 7, 12, 13, 14), [self.tag1])\n\n    def get_tag0(self):\n        return self.tag0\n\n    def set_tag0(self, tag0):\n        self.tag0 = tag0\n        self.blocks_vector_source_x_0.set_data((1, 2, 3, 4, 8, 9, 10, 11), [self.tag0])\n\n    def get_samp_rate(self):\n        return self.samp_rate\n\n    def set_samp_rate(self, samp_rate):\n        self.samp_rate = samp_rate\n        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)\n\n\n\n\ndef main(top_block_cls=stream_mux_demo, options=None):\n    tb = top_block_cls()\n\n    def sig_handler(sig=None, frame=None):\n        tb.stop()\n        tb.wait()\n\n        sys.exit(0)\n\n    signal.signal(signal.SIGINT, sig_handler)\n    signal.signal(signal.SIGTERM, sig_handler)\n\n    tb.start()\n\n    try:\n        input('Press Enter to quit: ')\n    except EOFError:\n        pass\n    tb.stop()\n    tb.wait()\n\n\nif __name__ == '__main__':\n    main()\n",
+  "edit": "wrong_state: in wrong_end_state.json, replace the export/stream_mux_demo.py stub with the code grcc generates for start/stream_mux_demo.grc"
+ }
+]

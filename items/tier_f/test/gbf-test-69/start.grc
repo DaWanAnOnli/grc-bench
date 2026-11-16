@@ -4,11 +4,11 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_2600
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '2600', amp: '0.25',
     offset: '0'}
-- name: tone_8000
+- name: tone_2
   id: analog_sig_source_x
   parameters: {type: complex, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '8000', amp: '1',
     offset: '0'}
@@ -33,8 +33,8 @@ blocks:
   id: blocks_file_sink
   parameters: {type: complex, file: mirrored.dat, append: 'False', unbuffered: 'False', vlen: '1'}
 connections:
-- [tone_2600, '0', sum_of_tones, '0']
-- [tone_8000, '0', sum_of_tones, '1']
+- [tone_1, '0', sum_of_tones, '0']
+- [tone_2, '0', sum_of_tones, '1']
 - [sum_of_tones, '0', mixer, '0']
 - [lo, '0', mixer, '1']
 - [mixer, '0', lpf, '0']

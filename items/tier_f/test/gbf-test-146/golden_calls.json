@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_conjugate_cc rational_resampler_xxx blocks_file_sink",
+  "query": "Signal Source Complex Conjugate Rational Resampler File Sink",
   "domain": "catalog",
   "k": 8
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_1100",
+    "instance_name": "tone_1",
     "params": {
      "type": "complex",
      "freq": "1100",
@@ -46,7 +46,7 @@
    }
   ],
   "add_connections": [
-   "tone_1100:0->conj:0",
+   "tone_1:0->conj:0",
    "conj:0->resampler:0",
    "resampler:0->conj_2:0",
    "conj_2:0->conj_3:0",

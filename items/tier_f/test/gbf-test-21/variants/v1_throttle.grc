@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_3600
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '3600', amp: '0.6', showports: 'True'}
 - name: lo
@@ -39,8 +39,8 @@ connections:
 - [mixer, '0', agc, '0']
 - [agc, '0', mixer_2, '0']
 - [lo_2, '0', mixer_2, '1']
-- [retune, strobe, tone_3600, cmd]
-- [tone_3600, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', mixer, '0']
 - [mixer_2, '0', rate_limit, '0']
 - [rate_limit, '0', out, '0']

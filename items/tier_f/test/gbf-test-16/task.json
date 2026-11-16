@@ -423,6 +423,92 @@
     "skip": 1024,
     "window": "hann"
    }
+  ],
+  "graph_checks": [
+   {
+    "from_ids": [
+     "blocks_add_xx"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "spectrum.dat"
+     }
+    },
+    "group": "p2p",
+    "kind": "path",
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "ch0.dat"
+    }
+   },
+   {
+    "from_ids": [
+     "blocks_add_xx"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "spectrum.dat"
+     }
+    },
+    "group": "p2p",
+    "kind": "path",
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "ch1.dat"
+    }
+   },
+   {
+    "from_ids": [
+     "blocks_add_xx"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "spectrum.dat"
+     }
+    },
+    "group": "p2p",
+    "kind": "path",
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "ch2.dat"
+    }
+   },
+   {
+    "from_ids": [
+     "blocks_add_xx"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "spectrum.dat"
+     }
+    },
+    "group": "f2p",
+    "kind": "path",
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "ch3.dat"
+    }
+   }
   ]
  },
  "perturbation": {
@@ -492,9 +578,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Known oracle limits: (1) 'filtered out' is checked through each channel's RMS (within 5 % of its own tone) and peak, as the instruction spells out: a neighbouring tone that leaks in with up to about 10 % of the channel tone's power (about -10 dB relative to it) would pass. Measured: prototype taps firdes.low_pass(1, samp_rate, 9500, 2000) (stopband from 10.5 kHz; the 13.92 kHz tone leaks into ch2 at -7 dB) fails, low_pass(1, samp_rate, 9000, 2000) and low_pass(1, samp_rate, 6000, 8000) (stopband from 10 kHz; everything outside the ch2 tone, noise included, at -20 / -18 dB relative to it) pass. (2) Gaussian and uniform noise of the same power cannot be told apart (the noise check is a power share within 30 %; uniform noise with the same amplitude has a third of the power and fails). (3) 'Keep producing samples until stopped' is checked only by V4 liveness (4096 items per observation point). (4) Discrimination (round-1 item-quality F4, team decision): the instruction now names the channels by frequency only, so the model must know that output 3 of a 4-channel polyphase channelizer is the -12 kHz channel; the file assignment still follows the channelizer's own output order, so the reference edit is still small (nchans 4, one File Sink, one connection). A non-native order (e.g. ch0.dat = -12 kHz) would need rewiring or outchans and is left to the team. Licence: derived from the GNU Radio 3.10.12 example filter/polyphase_channelizer_demo.grc (GNU Radio project, GPL-3.0-or-later); the item keeps that attribution (licence decision is the team's).",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (audit); decided edits applied. Known oracle limits: (1) 'filtered out' is checked through each channel's RMS (within 5 % of its own tone) and peak, as the instruction spells out: a neighbouring tone that leaks in with up to about 10 % of the channel tone's power (about -10 dB relative to it) would pass. Measured: prototype taps firdes.low_pass(1, samp_rate, 9500, 2000) (stopband from 10.5 kHz; the 13.92 kHz tone leaks into ch2 at -7 dB) fails, low_pass(1, samp_rate, 9000, 2000) and low_pass(1, samp_rate, 6000, 8000) (stopband from 10 kHz; everything outside the ch2 tone, noise included, at -20 / -18 dB relative to it) pass. (2) Gaussian and uniform noise of the same power cannot be told apart (the noise check is a power share within 30 %; uniform noise with the same amplitude has a third of the power and fails). (3) 'Keep producing samples until stopped' is checked only by V4 liveness (4096 items per observation point). (4) Discrimination (round-1 item-quality F4, team decision): the instruction now names the channels by frequency only, so the model must know that output 3 of a 4-channel polyphase channelizer is the -12 kHz channel; the file assignment still follows the channelizer's own output order, so the reference edit is still small (nchans 4, one File Sink, one connection). A non-native order (e.g. ch0.dat = -12 kHz) would need rewiring or outchans and is left to the team. Licence: derived from the GNU Radio 3.10.12 example filter/polyphase_channelizer_demo.grc (GNU Radio project, GPL-3.0-or-later); the item keeps that attribution (licence decision is the team's).",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "kind": "gnuradio_example",
@@ -509,7 +599,8 @@
   "ch2.dat: the channel centred on 24 kHz as a complex 12 kHz stream with its centre at 0 Hz: strongest component at -960 Hz (the 23.04 kHz tone; within 1 %, measured at 12 kHz, so a wrong rate or centre fails) and RMS 0.2 within 5 % (the tone kept at full amplitude, the tones 10 kHz or more away filtered out), and the input noise near the centre passed: power share in +200 to +2000 Hz (tone-free, Hann window) at least half that of the original noise (0.000374), samples 1024-4095",
   "ch3.dat (new File Sink, complex): the channel centred on -12 kHz as a complex 12 kHz stream with its centre at 0 Hz: strongest component at -1440 Hz (the 34.56 kHz tone; within 1 %, measured at 12 kHz, so a wrong rate or centre fails) and RMS 0.3 within 5 % (the tone kept at full amplitude, the tones 10 kHz or more away filtered out), and the input noise near the centre passed: power share in +200 to +2000 Hz (tone-free, Hann window) at least half that of the original noise (0.000166), samples 1024-4095",
   "run condition: the flowgraph keeps producing samples until it is stopped (no sample limit); checked only by V4 liveness (at least 4096 items at every observation point), not by V5",
-  "observation points: complex samples written to the File Sinks spectrum.dat (48 kHz) and ch0.dat - ch3.dat (12 kHz), 4096 items each"
+  "observation points: complex samples written to the File Sinks spectrum.dat (48 kHz) and ch0.dat - ch3.dat (12 kHz), 4096 items each",
+  "structure: each channel file is fed from the Add block whose sum spectrum.dat records (a path from it to the File Sinks of ch0.dat, ch1.dat, ch2.dat and ch3.dat), so an answer that synthesizes the channel outputs fails"
  ],
  "split": "test",
  "start_grc": "start.grc",

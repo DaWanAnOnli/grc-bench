@@ -5,101 +5,97 @@ the judge only when rules cannot decide), §5.1 (Table 5, who may write what), �
 remove underspecified questions, and count them) and proposal §5.1 (tiered relative-error credit; a
 unit or order-of-magnitude error scores zero).
 
-This guide is for the **team members** who write and check rubrics for the Tier-K questions: the
-185 frozen test questions first, then the 107 dev questions. Eval plan Table 7 budgets about
-60 person-hours for checking rubrics ("285 test + dev questions"). It has no line for writing them
-(see "Deviation to record" below).
+This guide is for the **writer agent** (`W`) and the **two checker agents** (`C1`, `C2`) who write and
+check the rubrics for the Tier-K questions under the review protocol
+([review_protocol.md](review_protocol.md)): the 185 frozen test questions first, then the 107 dev
+questions.
 
 ## Who writes what
 
 | Part | Who | Why |
 |---|---|---|
-| Rubric prose: required points, disqualifying errors, tolerance wording | **team members** (or, if the team decides to use it, the drafting model of Table 5, from a family with no other role in the project) | eval plan §5.2 and Table 5 |
-| Checking every rubric | **two team members, independently**, each against a trusted source. **Neither of them is the rubric's writer** | eval plan §5.2 |
-| Settling disagreements between the two checkers | **the Qoherent expert** | eval plan §5.2 and Table 1 |
-| Calculation answers (the values) | **a script** (`./gb calc`, drafted by Claude), then **a team member recomputes each answer blind**. The recomputer is not the rubric's writer | eval plan §5.2; 14 Oct decision |
-| The calculation key's proposed tolerances (`tolerance`, `tolerance_db`, `tolerance_note`) | the same script (Claude): **proposals only**, flagged `pending blind team recomputation` | see below |
-| The rubric's tolerance | **the rubric writer**, from the question, before opening the key | eval plan §5.2 |
+| Rubric prose: required points, disqualifying errors, tolerance wording | **the writer agent** (Claude, Anthropic) | eval plan §5.2; Table 5 departs (see below) |
+| Checking every rubric | **two checker agents, independently**, each against a trusted source. **Neither of them is the rubric's writer** | eval plan §5.2 |
+| Settling disagreements between the two checkers | **the expert agent**, in the place of the Qoherent expert of Table 1 | eval plan §5.2 and Table 1 |
+| Calculation answers (the values) | **a script** (`./gb calc`, drafted by Claude), then **two recomputer agents recompute each answer blind**. A recomputer is never the rubric's writer | eval plan §5.2; 14 Oct decision |
+| The calculation key's proposed tolerances (`tolerance`, `tolerance_db`, `tolerance_note`) | the same script (Claude): **proposals only**, flagged `pending blind team recomputation` until both recomputations agree | see below |
+| The rubric's tolerance | **the writer agent**, from the question, before opening the key | eval plan §5.2 |
 | The rubric file format, these instructions, the scoring code | Claude (Anthropic) | Table 5 allows code and templates |
 
-**Claude does not draft rubric prose.** Table 5 says the models that labelled Qoherent's data,
-Claude among them, never draft references. Claude has written the format, this guide and the
-calculation script. It has not written any required point or disqualifying error. The worked
-examples below therefore use placeholders such as `<point the answer must make>`.
+**Claude does not draft rubric prose** in the design of eval plan Table 5: the models that labelled
+Qoherent's data, Claude among them, never draft references, and a model from an unrelated family
+drafts them. The review protocol departs from this: the writer agent is Claude. Pre-registration §10
+records the deviation, and the review protocol states what it costs ("What this protocol does not
+show"). Two things limit it:
 
-**One exception, to be decided by the team.** The calculation key that Claude's script produced
+- every point rests on a trusted source the writer quotes, or on an executed check, never on a model
+  answer;
+- Anthropic models are not scored on Tier K.
+
+The worked examples below show the format only, with placeholders such as
+`<point the answer must make>`.
+
+**The key's proposals.** The calculation key that Claude's script produced
 (`handoff/review_sheets/tier_k_calc_key.csv`) proposes a tolerance (`tolerance` or `tolerance_db`)
 for every question it gives a value for, and a written reason (`tolerance_note`) for every
 question. `items/tier_k/test/calc_answers.jsonl` also holds a proposed `numeric` reference for some
-questions (`numeric_proposal`). A tolerance is part of a rubric (eval plan §5.2). So treat all of
-these as Claude's proposals, not as rubric content:
+questions (`numeric_proposal`). A tolerance is part of a rubric (eval plan §5.2). So the writer treats
+all of these as proposals, not as rubric content:
 
-- set the rubric's tolerance yourself, from the question, before you open the key;
+- set the rubric's tolerance from the question, before opening the key;
 - use the key's tolerance only as a cross-check afterwards;
 - never copy a key tolerance, a `tolerance_note` or a `numeric_proposal` into a rubric without
   marking it `proposed by script (Claude)` in `sources`, so the checkers know where it came from.
 
-If the team uses the Table-5 drafting model, its family is then not scored on Tier K. The two
-independent checks below apply in exactly the same way.
-
-**Three different people for each rubric.** In eval plan §5.2 a model drafts the rubric, so both
-checks are independent of the writer. With team writers we keep that independence:
+**Three different agent runs for each rubric.** In eval plan §5.2 a model drafts the rubric, so both
+checks are independent of the writer. The review protocol keeps that independence:
 
 - the writer is never checker 1 or checker 2 of the same rubric;
-- the person who recomputes a calculation answer blind is not that rubric's writer. One of the two
-  checkers may do it.
+- the agent that recomputes a calculation answer blind is not that rubric's writer.
 
 The coordinator checks the initials in `writer`, `checker_1_initials`, `checker_2_initials` and
 `calc_status` before a rubric is approved.
 
-**Deviation to record.** Eval plan §5.2 has a model from an unrelated family (Table 5) draft the
-rubrics, and the team check them. If team members write the rubrics instead, that is a deviation
-from §5.2, and it goes into the pre-registration, together with the hours below.
-
-Table 7 budgets ≈ 60 person-hours for checking only, for "285 test + dev questions". That is about
-6.3 minutes per rubric for each of the two checkers. Tier K has rubrics for 292
-questions (185 test, 107 dev). Our estimate, to be updated once the first 20 rubrics are timed:
-
-| Work | In Table 7 | Estimate |
-|---|---|---|
-| Writing 292 rubrics, at about 10 minutes each | not budgeted | ≈ 49 h |
-| Checking 292 rubrics, two checkers at Table 7's rate | ≈ 60 h (for 285) | ≈ 61 h |
-| Recomputing the 25 calculation answers blind, at about 10 minutes each | not budgeted | ≈ 4 h |
-
-The 185 test rubrics come first: about 31 hours to write and 39 hours to check. Record the hours
-actually spent, and any gap to Table 7, as a deviation in the 7 December report.
+**Hours.** Eval plan Table 7 budgets ≈ 60 person-hours for checking the rubrics of "285 test + dev
+questions", about 6.3 minutes per rubric for each of the two checkers. Tier K has rubrics for 292
+questions (185 test, 107 dev). The review protocol does this work in declared agent runs instead
+(`reviews/review_log.jsonl`); pre-registration §10 records the change.
 
 **Calculation answers come from scripts.** The script computes each answer from the question's
-numbers. Every script answer is flagged `pending blind team recomputation` until a team member has
-recomputed it without seeing the script's value (see "Calculation questions" below). Where the
+numbers. Every script answer is flagged `pending blind team recomputation` until two recomputer agents
+have recomputed it without seeing the script's value (see "Calculation questions" below). Where the
 script gives no value, the key's `specification` column says why: `team reference` (the answer is
-an expression or an example) or `underspecified`. The team then writes the reference.
+an expression or an example) or `underspecified`. The writer agent then writes the reference.
 
 ## Ground rules
 
-- **Never paste a test question into ChatGPT, Claude or any other chatbot or online tool.** Look
-  things up in documents, not in a chatbot. Test items reach a model only in a declared, logged run.
-  Eval plan §6 says "no test item is sent to a teacher that creates training data". It adds that
-  the models evaluated through an API (B2 and the panel) "do see the public test items; we use
-  settings that do not keep prompts where providers offer them".
-  - **The one exception** is the Table-5 drafting model, if the team decides to use it (eval plan
-    §5.2). The test questions then go to that one declared model only, through its API, with
-    settings that do not keep prompts, and the run is logged. Its family must have no other role in
-    Table 5. That rules out:
+- **Test questions reach a model only in a declared, logged run.** Look things up in documents and
+  run checks yourself; never send a question to another model or online tool. Eval plan §6 says "no
+  test item is sent to a teacher that creates training data". It adds that the models evaluated
+  through an API (B2 and the panel) "do see the public test items; we use settings that do not keep
+  prompts where providers offer them". The writer and checker agents are declared runs of the review
+  protocol (`reviews/review_log.jsonl`).
+  - **Table 5's drafting model** (eval plan §5.2) is a model whose family has no other role in Table 5.
+    Claude has another role, so the review protocol's writer agent is a deviation, recorded in
+    pre-registration §10, and Anthropic models are not scored on Tier K. That rules out:
     - the families that labelled Qoherent's data: Claude and OpenAI;
     - the teachers: gpt-oss, Nemotron, Gemma, Qwen, Muse, Devstral, Laguna and DeepSeek;
     - GLM and Mistral;
     - the judge (MiniMax) and the fallback judge (Kimi);
     - the models we train (Cohere, Nanbeige).
-- **Do not start from a teacher answer.** Dev questions have teacher answers in Qoherent's data. Do
-  not copy them into a rubric. A rubric built from one teacher's answer rewards answers that sound
-  like that teacher (eval plan §5.2: "The rubric, not a single model answer, is what the judge
-  compares against").
-- **Write from a trusted source**, and name it:
-  - the GNU Radio 3.10 documentation or wiki;
+- **Do not start from a teacher answer.** Dev questions have teacher answers in Qoherent's data.
+  Never open them, and never copy one into a rubric. A rubric built from one teacher's answer rewards
+  answers that sound like that teacher (eval plan §5.2: "The rubric, not a single model answer, is what
+  the judge compares against"). The coordinator checks every rubric for a shared word 8-gram with the
+  question's teacher answers.
+- **Write from a trusted source**, and name it. For a GNU Radio fact, quote a local file:
   - the block YAML files (`/usr/share/gnuradio/grc/blocks` in WSL);
-  - PySDR [10];
-  - a textbook.
+  - GNU Radio's installed Python package (`/usr/lib/python3/dist-packages/gnuradio` in WSL);
+  - GRC-Agent's documentation (`~/grc-agent/docs` in WSL).
+
+  Write such a source line as `<path> :: "<exact quote>"`; the coordinator finds every quote in the
+  file it names. For theory, name the reference (PySDR [10], a textbook, a standard, with the section)
+  and show the derivation or the code you ran.
 
 ## What a rubric contains
 
@@ -162,7 +158,8 @@ Two things are automatic, so you do not need to write them:
    have no disqualifying error, and that is fine.
 5. **Set the numeric tolerance**, if the answer has a number (see the next section). Otherwise set
    `numeric_tolerance` to empty (null).
-6. **Fill in the sheet** and hand it to two checkers.
+6. **Write the row** to your output file (see "Output fields" below). The two checker agents then
+   check it.
 
 ## Numeric answers and tolerances
 
@@ -244,56 +241,57 @@ The files are in `handoff/review_sheets/`, written by `./gb calc`:
 
 - `tier_k_calc_blind_recompute.csv`: the 25 questions, with empty cells for your value;
 - `tier_k_calc_instructions.md`: how to fill it in;
-- `tier_k_calc_key.csv`: the script's values. Do not open it until steps 2 and 3 are done.
+- `tier_k_calc_key.csv`: the script's values. The writer opens it only after step 3.
 
 1. **The script computes the answer.** `./gb calc` computes each calculation answer from the
    question's numbers and flags it `pending blind team recomputation`.
-2. **A team member recomputes it blind** on a copy of `tier_k_calc_blind_recompute.csv`, following
-   `tier_k_calc_instructions.md`. This is not the rubric's writer; it may be one of the checkers.
-   - Take the question text only.
-   - Do not look at the key, `items/tier_k/test/calc_answers.jsonl`, or any file under
-     `src/grcbench/tier_k/` or `tests/` (they hold the script's answers) before you have your own answer.
-   - Compute the answer by hand or with your own code, and write down your value, unit and method.
-3. **The rubric writer sets the tolerance, also before opening the key.** Choose it from the
-   question (see "Choose the tolerance from the question" above), and write it and its reason in the
-   sheet.
-4. **Compare.** Now open the key.
-   - If the recomputed value agrees with the script's within **the writer's** tolerance, the answer
-     is confirmed. Record the recomputer's initials and the date.
-   - If it does not, find out why and write it down: an error in the script, an error in the
-     recomputation, or an ambiguous question. Ambiguous means underspecified (see below). The key's
-     `specification` column marks questions `underspecified`, with the missing assumption.
-   - Compare the writer's tolerance with the key's proposed one. If they differ, keep the writer's
-     and note the difference for the checkers. `tier_k_calc_instructions.md` compares against the
-     key's tolerance. If the two tolerances give different outcomes, treat the case as a
-     disagreement.
-   - The Qoherent expert decides every disagreement, and every question marked underspecified
-     (eval plan §5.2).
-5. **Then write the rubric's `numeric` and `numeric_tolerance`** from the confirmed value and the
-   writer's tolerance. For a decibel value, the tolerance goes in `abs_tolerance`, in dB (see
-   "Decibel units" above). Add required points only if the question asks for more than the number
+2. **Two recomputer agents recompute it blind** from their input copies of
+   `tier_k_calc_blind_recompute.csv`, following `tier_k_calc_instructions.md`. Neither is the rubric's
+   writer.
+   - Each takes the question text only.
+   - Neither looks at the key, `items/tier_k/test/calc_answers.jsonl`, or any file under
+     `src/grcbench/tier_k/` or `tests/` (they hold the script's answers).
+   - Each computes the answer with its own code, runs it, and records its value, unit and method.
+3. **The writer agent sets the tolerance, also before opening the key.** It chooses the tolerance from
+   the question (see "Choose the tolerance from the question" above), and writes it and its reason in
+   its row.
+4. **Compare.** The coordinator scores both recomputations against the key with the rule cascade.
+   - If both agree with the script's value, the answer is confirmed: `recomputed by R1;R2 <date>`.
+   - If not, the expert agent decides why: an error in the script, an error in a recomputation, or an
+     ambiguous question. Ambiguous means underspecified (see below). The key's `specification` column
+     marks questions `underspecified`, with the missing assumption.
+   - The writer's tolerance is checked against the confirmed value and both recomputations. If the
+     writer's tolerance and the key's give different outcomes for a recomputed value, the case goes to
+     the expert agent as a disagreement.
+   - The expert agent decides every disagreement, and every question marked underspecified (eval plan
+     §5.2).
+5. **Then the writer writes the rubric's `numeric` and `numeric_tolerance`** from the confirmed value
+   and its own tolerance. For a decibel value, the tolerance goes in `abs_tolerance`, in dB (see
+   "Decibel units" above). It adds required points only if the question asks for more than the number
    ("calculate ... and explain ...").
 
 ## GNU Radio behaviour questions
 
 The 100 script-generated GNU Radio questions ask for one number each: a block's k-th output for a
 stated input, or how many items it produces. Their answers come from running GNU Radio
-(`./gb blockq`). They are scored by rules (numbers), not by a rubric. For these questions, the two
-team members check **the wording only** (eval plan Table 7, about 13 hours):
+(`./gb blockq`). They are scored by rules (numbers), not by a rubric. Two review agents check **the
+wording only**, each by solving every question blind from its wording
+([tier_k_block_questions_instructions.md](../../handoff/review_sheets/tier_k_block_questions_instructions.md)):
 
 - Is the question clear?
 - Does it state everything the answer depends on?
 
 ## Checking a rubric
 
-Two team members check every rubric. Neither of them wrote it. Each works alone, on their own copy
-of the sheet, and does not see the other checker's verdict. Write your initials in your
+Two checker agents check every rubric. Neither of them wrote it. Each works alone, from its own input
+copy, and never sees the other checker's verdict. Each writes its initials (`C1`, `C2`) in its
 `checker_N_initials` cell.
 
 For each rubric:
 
-1. Look the answer up yourself in a trusted source. Write the source in your `source` cell, even if
-   it is the same as the writer's.
+1. Look the answer up yourself in a trusted source, and quote it (`<path> :: "<exact quote>"`) or show
+   the derivation you ran. Write the source in your `source` cell, even if it is the same as the
+   writer's.
 2. Check each point. Is it right? Is it needed for a correct answer? Is it worded so that a judge
    can decide it?
 3. Check that no needed point is missing.
@@ -310,13 +308,21 @@ For each rubric:
 
 Then:
 
-- **Both checkers agree:** that is the decision. If both give `approve with edits`, the two lists
-  are merged. Two edits that contradict each other count as a disagreement.
-- **They disagree:** the Qoherent expert decides (eval plan §5.2 and Table 1: "A Qoherent expert
-  decides every disagreement"). The checkers do not settle it between themselves first: each
-  checker's note already gives their reason, and the expert reads both. Record the expert's
-  decision in `final_decision` and the expert's initials in `decided_by`. The coordinator counts
-  how many rubrics the expert decided.
+- **Both checkers agree:** that is the decision. If both give `approve with edits`, the expert agent
+  merges the two lists. Two edits that contradict each other count as a disagreement. If both give
+  `reject`, the expert agent rewrites the rubric, or decides `underspecified`.
+- **They disagree:** the expert agent decides (eval plan §5.2 and Table 1, "A Qoherent expert decides
+  every disagreement", with the expert agent in the expert's place). The expert agent decides every
+  disagreement. The checkers do not settle it between themselves first: each checker's note already
+  gives its reason, and the expert reads both. The expert's decision goes in `final_decision`, and
+  `EX` in `decided_by`. The coordinator counts how many rubrics the expert decided.
+- **Checks the coordinator runs** before a rubric is approved, whatever the verdicts:
+  - the record parses into the judge's rubric format and the rule cascade accepts its `numeric`;
+  - its number equals the confirmed calculation within its tolerance;
+  - every quoted source line is found in the file it names;
+  - no point shares a word 8-gram with a teacher answer to the question.
+
+  A rubric that fails one goes to the expert agent with the failure.
 - **Record the result** in the rubric's `review` field:
   - `status`: `approved`, `approved-with-edits` or `rejected`;
   - `reviewers`: the checkers' initials;
@@ -334,15 +340,19 @@ and counted** (eval plan §5.2, §5.3).
 - **Remove** when no small rewrite fixes it, or when the rewrite would change what the question
   tests. Record the reason.
 - **Every rewrite and removal is counted** and published with its reason (eval plan §5.3).
+- **How a removal is recorded.** The question's rubric record keeps status `rejected` and the reason
+  in `review.notes`. The question stays in its frozen file, and runs leave it out
+  (`tier_k/run.py`, `removed`).
 
 ## Where to write: the rubric sheet
 
 `./gb rubrics` writes one sheet per split, with the question already filled in on every row:
 `handoff/review_sheets/rubric_sheet_test.csv` (185 questions) and `rubric_sheet_dev.csv` (107). It also
 writes the matching empty rubric records, `items/tier_k/<split>/rubrics.jsonl`. The columns are those
-of [`rubric_sheet.csv`](../../handoff/review_sheets/templates/rubric_sheet.csv). Work in a copy of the
-sheet. The command refuses to overwrite a sheet or record file that already holds team content.
-Write multi-line cells with Alt+Enter in Excel, or Ctrl+Enter in LibreOffice.
+of [`rubric_sheet.csv`](../../handoff/review_sheets/templates/rubric_sheet.csv). The agents write rows
+to their output files; the coordinator writes the decided rows into the sheet and the records
+(`./gb review`). The command refuses to overwrite a sheet or record file that already holds review
+content. A multi-line cell has one item per line.
 
 | Column | Who | Content |
 |---|---|---|
@@ -351,15 +361,35 @@ Write multi-line cells with Alt+Enter in Excel, or Ctrl+Enter in LibreOffice.
 | `disqualifying_errors` | writer | one per line: `D1: <text>`; empty if none |
 | `numeric` | writer | the rule cascade's reference as JSON, e.g. `{"value": <number>, "unit": "<unit>", "tolerance": <number>}`; for a decibel unit `{"value": <number>, "unit": "dBm", "abs_tolerance": <dB>}`; empty if none |
 | `numeric_tolerance` | writer | the tolerance in words for the judge; empty if none |
-| `calc_status` | writer | calculation questions: `pending blind team recomputation`, then `recomputed by <initials> <date>` |
+| `calc_status` | coordinator | calculation questions: `pending blind team recomputation`, then `recomputed by R1;R2 <date>` or `decided by EX <date>` |
 | `sources` | writer | the trusted sources, one per line |
-| `writer` | writer | initials |
-| `checker_1_initials`, `checker_1_verdict`, `checker_1_source`, `checker_1_note` | checker 1 | initials (never the writer's), verdict (table above), own source, edits or reason |
+| `writer` | writer | `W` |
+| `checker_1_initials`, `checker_1_verdict`, `checker_1_source`, `checker_1_note` | checker 1 | `C1`, verdict (table above), own source, edits or reason |
 | `checker_2_initials`, `checker_2_verdict`, `checker_2_source`, `checker_2_note` | checker 2 | as above |
-| `final_decision`, `decided_by` | after the checks | the agreed verdict, and who decided (`checkers` or the expert's initials) |
+| `final_decision`, `decided_by` | after the checks | the agreed verdict, and who decided (`checkers` or `EX`) |
 
 The sheet converts mechanically into the rubric record: each `P1 (w=2): ...` line becomes
 `{"id": "P1", "weight": 2, "text": "..."}`.
+
+**Output fields.** One JSON object per question, written to the agent's output file as soon as the
+question is done.
+
+- **Writer:**
+  - `sheet`: `"rubric_test"` or `"rubric_dev"`;
+  - `key`: `{"question_id": ...}`;
+  - `value`: `"written"` or `"underspecified"`;
+  - `required_points`, `disqualifying_errors`: lists of lines;
+  - `numeric`: an object or a list, or `null`;
+  - `numeric_tolerance`: a string, or `null`;
+  - `sources`: lines;
+  - `notes`, `edits` (`[]`), `evidence`.
+- **Checkers:**
+  - `sheet`, `key`;
+  - `value`: the verdict;
+  - `source`: your own source;
+  - `edits`: the edit lines;
+  - `notes`;
+  - `evidence`.
 
 ## Worked examples (dev questions, format only)
 
@@ -460,9 +490,10 @@ repeat that.
 - [ ] Numbers have `numeric` and `numeric_tolerance`, with a tolerance that fits the question.
 - [ ] A decibel number has its tolerance in dB in `abs_tolerance`, with no `tolerance` and no
       `tolerance_db`.
-- [ ] Calculation values are confirmed by a blind recomputation, by someone other than you.
+- [ ] Calculation values are confirmed by two blind recomputations, by agent runs other than you.
 - [ ] Neither checker is you.
 - [ ] The tolerance was set from the question before the key was opened. Anything taken from the
       key is marked `proposed by script (Claude)`.
-- [ ] The source is named.
-- [ ] Nothing came from a teacher answer or from a chatbot.
+- [ ] The source is named, and a GNU Radio fact is quoted from a local file as
+      `<path> :: "<exact quote>"`.
+- [ ] Nothing came from a teacher answer or from another model.

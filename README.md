@@ -4,10 +4,11 @@ The execution-grounded benchmark for language models working with GNU Radio (Tea
 UofT MScAC). This folder holds the code, the benchmark items and the reports that implement the
 evaluation plan in `../benchmark and evaluation/Benchmark_Evaluation_Plan_to_7Dec.docx` (CAD 504 plan).
 
-> **Status (23 Oct 2026, week 3):** the parts of the plan that need no money, outside GPU or API
-> access are built, and the G2 pre-registration is drafted for the team's sign-off. Every item drafted
-> by Claude (Anthropic) is marked `pending-team-review`: the team reviews, edits and decides. See
-> [Status](#status) and `reports/compliance_review.md`.
+> **Status:** the parts of the plan that need no money, outside GPU or API access are built, and the
+> G2 pre-registration is drafted for the team's sign-off. Every review sheet is filled in by Claude
+> review agents under the review protocol (`docs/guidelines/review_protocol.md`): two independent
+> reviewers, an expert agent for every disagreement, and decision rules in code. See
+> [Status](#status), `reports/review_summary.md` and `reports/compliance_review.md`.
 
 ## How to run
 
@@ -51,7 +52,8 @@ baseline and `./gb agent`. Model runs also need llama.cpp and the smoke-test mod
 | `src/grcbench/` | the code, one package per part of the plan (below) |
 | `items/` | benchmark items: `tier_k/`, `tier_f/`, `tier_a/`, each with `test/` and `dev/` |
 | `splits/` | manifests: Tier-K dev split, anchor and CI subsets, label map, block partition, flowgraph seed split |
-| `handoff/` | files other people act on: training-team exclusions, review sheets for the team, the Qoherent request draft |
+| `handoff/` | files other people act on: training-team exclusions, the review sheets and their guides, the Qoherent request draft |
+| `reviews/` | the review protocol's decided records (one file per sheet) and the declared agent runs (`review_log.jsonl`) |
 | `reports/` | generated reports (labels, contamination, seeds, gates, smoke test, compliance review) |
 | `docs/` | pre-registration draft, annotation guidelines, review checklists |
 | `runs/` | the append-only test-run log (run outputs are not versioned) |
@@ -73,6 +75,7 @@ directories live outside the repository, in `~/grc-bench-cache` and `~/grc-bench
 | `tier_e/` | §4.5 speed and memory protocol | `tier-e` |
 | `stats/` | §9 analysis functions; the pre-registration's generated appendices | `stats`, `prereg` |
 | `runlog/` | §4.1 test-run log | `runlog` |
+| `review/` | §5.2–§5.4 review protocol: blinded inputs, declared agent runs, decision rules, filled sheets, checks | `review` |
 
 ## Rules this code enforces
 
@@ -86,9 +89,16 @@ directories live outside the repository, in `~/grc-bench-cache` and `~/grc-bench
   A hosted model's key stays on the host (`tier_a/relay.py`).
 - Every item carries the canary string, a licence, its source, a cluster id, provenance and a
   review status. The canary never appears in anything a model under test sees.
-- Claude (Anthropic) drafts natural-language test content for the team to review; it never drafts
-  reference answers or rubric prose (eval plan Table 5), and it does not touch training data.
-  Anthropic models are therefore excluded from the model panel.
+- Claude (Anthropic) drafts the test content and, under the review protocol
+  (`docs/guidelines/review_protocol.md`), also reviews it and writes the Tier-K rubrics:
+  - two independent review agents per sheet;
+  - a writer agent and two checker agents per rubric;
+  - an expert agent that decides every disagreement.
+
+  The decision rules are code (`./gb review`), and every factual claim is checked by a quoted source
+  or a run. Every agent run is declared in `reviews/review_log.jsonl`. Claude never changes training
+  data. Anthropic models are excluded from the model panel. Pre-registration §10 lists what this
+  departs from in the evaluation plan.
 
 ## Fresh GNU Radio question sets
 
@@ -107,19 +117,21 @@ reference minus fresh, paired by slot, clustered by block). There is no test/tra
 
 ## Status
 
-| Part | State (4 Nov) | Where |
+| Part | State | Where |
 |---|---|---|
-| Tier K | 285 test questions (185 frozen, 100 GNU Radio behaviour questions answered by running GNU Radio) and 107 dev questions (the eligible part of the training team's validation split); fresh GNU Radio question sets from any seed; closed-book question prompt, rule cascade and judge prompt; 292 empty rubric templates for the team | `items/tier_k/`, `reports/tier_k_block_questions.md`, `reports/tier_k_fresh_sets.md` |
-| Tier F | 195 tasks: 150 test (60 L1, 60 L2, 30 L3) and 45 dev; 30 drafted by hand, 165 from the seeded generator (`./gb tier-f generate`); all gates passed, in GRC-Agent's harness as one lookup and one edit | `items/tier_f/`, `reports/tier_f_first_set.md` |
-| Tier A | 42 tasks (30 test, three in each category; 12 dev), all gates passed | `items/tier_a/`, `reports/tier_a_first_set.md` |
+| Tier K | 285 test questions (185 frozen, 100 GNU Radio behaviour questions answered by running GNU Radio) and 107 dev questions (the eligible part of the training team's validation split); fresh GNU Radio question sets from any seed; closed-book question prompt, rule cascade and judge prompt; the reviewed rubrics, with 8 frozen and 3 dev questions removed as underspecified, so 277 test and 104 dev questions are scored | `items/tier_k/`, `reports/tier_k_block_questions.md`, `reports/tier_k_fresh_sets.md` |
+| Tier F | 195 tasks, 30 drafted by hand and 165 from the seeded generator (`./gb tier-f generate`); after the review 129 test (L1 25, L2 74, L3 30) and 43 dev tasks remain, 23 removed (22 duplicates); all gates passed, in GRC-Agent's harness as one lookup and one edit | `items/tier_f/`, `reports/tier_f_first_set.md` |
+| Tier A | 42 tasks, all gates passed; after the review 25 test and 10 dev tasks remain (every knowledge task and 3 of 4 save_block tasks removed as too short for the 8-call floor) | `items/tier_a/`, `reports/tier_a_first_set.md` |
 | GRC-Agent runner | `./gb agent`: GRC-Agent headless on any request, outputs as files, conversations continued across calls, local or hosted OpenAI-compatible models; `./gb agent-package` builds the teammates' zip (setup script, tutorial, self-test; no benchmark content) | `handoff/agent_runner.md`, `handoff/agent_package/TUTORIAL.md` |
 | Tier E | llama-bench protocol, checked on a small model (CPU and the local RTX 5090) | `reports/tier_e/` |
-| Pipeline tests | placeholder rubrics for the dev questions (`./gb placeholder-rubrics`: the training release's reference answer as one point; `./gb tier-k score DIR --rubrics FILE`, dev only), so the Tier-K route runs end to end before the team's rubrics exist; `./gb colab-package`: `./gb`, the code and the dev split (no test item) for a pipeline test on a Colab GPU | `handoff/colab/` |
-| Contamination | 8-gram, TF-IDF and embedding audit of every tier, including Qoherent's 1,853 agent traces; task-level check of the traces (`./gb traces`) | `reports/contamination.md`, `reports/agent_traces.md` |
-| Analysis | `grcbench.stats`, self-check 38/38 | `./gb stats selfcheck` |
+| Pipeline tests | placeholder rubrics for the dev questions (`./gb placeholder-rubrics`: the training release's reference answer as one point; `./gb tier-k score DIR --rubrics FILE`, dev only), so the Tier-K route runs end to end apart from the reviewed rubrics; `./gb colab-package`: `./gb`, the code and the dev split (no test item) for a pipeline test on a Colab GPU | `handoff/colab/` |
+| Contamination | 8-gram, TF-IDF and embedding audit of every tier, including Qoherent's 1,853 agent traces; task-level check of the traces (`./gb traces`); the flagged pairs are reviewed (confirmed rate: Tier K test 11.9 %, dev 4.7 %, Tier F 0 %) | `reports/contamination.md`, `reports/agent_traces.md` |
+| Review | every review sheet filled in by review agents and an expert agent (`./gb review`); decided records in `reviews/`; the expert review (H1b) of 397 items | `reports/review_summary.md`, `docs/guidelines/review_protocol.md` |
+| Analysis | `grcbench.stats`, self-check 39/39 | `./gb stats selfcheck` |
 | Pre-registration | draft for sign-off at G2; the run list is `status: draft`, so every test run is refused until then | `docs/preregistration/` |
 | Final check | `./gb test`, `./gb audit`, `./gb baseline check` | `reports/compliance_review.md` |
 
-Waiting for the team: reviews of every drafted item (`handoff/review_sheets/`) and the decisions in
-pre-registration §8. Waiting for access: model runs, judge calibration and
-the throughput pilot (`handoff/joel_actions.md`).
+The reviews of every drafted item (`handoff/review_sheets/`) follow the review protocol; their decided
+records are in `reviews/` and their summary in `reports/review_summary.md`. Waiting for the team: the
+decisions in pre-registration §8. Waiting for access: model runs, judge calibration and the throughput
+pilot (`handoff/joel_actions.md`).

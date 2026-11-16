@@ -1,0 +1,1067 @@
+[
+ {
+  "item": "gbf-dev-01",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "correlate a bit stream with a sync word and threshold the result",
+   "domain": "catalog",
+   "k": 8
+  },
+  "edit": "metadata: in golden_calls.json set the query_knowledge query to \"correlate a bit stream with a sync word and threshold the result\" (keep domain catalog and k 8) -- the current query lists the reference's block ids (fir_filter_xxx, blocks_threshold_ff), which is the design this build task asks the model to find (checklist I)"
+ },
+ {
+  "item": "gbf-dev-08",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "quantizer that rounds float samples to a number of bits",
+   "domain": "catalog",
+   "k": 16
+  },
+  "edit": "metadata: in golden_calls.json set the query_knowledge arguments to {\"query\": \"quantizer that rounds float samples to a number of bits\", \"domain\": \"catalog\", \"k\": 16} -- the current query lists the reference's block ids, including channels_quantizer, which is the answer of this repair (checklist I: a natural lookup that does not paste the answer)"
+ },
+ {
+  "item": "gbf-dev-14",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "channel model block with a frequency offset",
+   "domain": "catalog",
+   "k": 10
+  },
+  "edit": "metadata: in golden_calls.json set the query_knowledge query to \"channel model block with a frequency offset\" (keep domain catalog and k 10) -- the current query lists the reference's block ids, including channels_channel_model, the correct id that is the answer of this repair (checklist I)"
+ },
+ {
+  "item": "gbf-dev-35",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "channel model block with a frequency offset",
+   "domain": "catalog",
+   "k": 8
+  },
+  "edit": "metadata: in golden_calls.json set the query_knowledge query to \"channel model block with a frequency offset\" (keep domain catalog and k 8) -- the current query lists the reference's block ids, including channels_channel_model, the correct id that is the answer of this repair (checklist I)"
+ },
+ {
+  "item": "gbf-test-02",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "phase locked loop that outputs a reference carrier",
+   "domain": "catalog",
+   "k": 8
+  },
+  "edit": "metadata: in golden_calls.json set the query_knowledge query to \"phase locked loop that outputs a reference carrier\" (keep domain catalog and k 8) -- the current query lists the reference's block ids, including analog_pll_refout_cc, the block this build task is about (checklist I)"
+ },
+ {
+  "item": "gbf-test-09",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "convert byte (char) samples to float",
+   "domain": "catalog",
+   "k": 8
+  },
+  "edit": "metadata: in golden_calls.json set the query_knowledge query to \"convert byte (char) samples to float\" (keep domain catalog and k 8) -- the current query lists the reference's block ids, including blocks_char_to_float, the replacement converter that is the answer of this repair (checklist I)"
+ },
+ {
+  "item": "gbf-test-10",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "high pass filter block",
+   "domain": "catalog",
+   "k": 8
+  },
+  "edit": "metadata: in golden_calls.json set the query_knowledge query to \"high pass filter block\" (keep domain catalog and k 8) -- the current query lists the reference's block ids, including high_pass_filter, the correct id of the Missing Block that is the answer of this repair (checklist I)"
+ },
+ {
+  "item": "gbf-test-107",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "convert short integers back to float",
+   "domain": "catalog",
+   "k": 10
+  },
+  "edit": "metadata: in golden_calls.json set the query_knowledge query to \"convert short integers back to float\" (keep domain catalog and k 10) -- the current query lists the reference's block ids, including blocks_short_to_float, the correct id that is the answer of this repair (checklist I)"
+ },
+ {
+  "item": "gbf-dev-06",
+  "file": "task.json",
+  "path": [
+   "tier_a_setting"
+  ],
+  "op": "set",
+  "value": {
+   "start_samp_rate": 48000
+  },
+  "edit": "metadata: add \"tier_a_setting\": {\"start_samp_rate\": 48000} to task.json -- the start-rate rule skips 'Set samp_rate to 48 kHz' (no 'sample rate' words) and reads 'an audio sample rate of 8 kHz', so the empty build graph opens with samp_rate 8000, the audio rate, while samp_rate is the 48 kHz output rate (checklist I)"
+ },
+ {
+  "item": "gbf-test-04",
+  "file": "task.json",
+  "path": [
+   "tier_a_setting"
+  ],
+  "op": "set",
+  "value": {
+   "start_samp_rate": 48000
+  },
+  "edit": "metadata: add \"tier_a_setting\": {\"start_samp_rate\": 48000} to task.json -- the start-rate rule does not read 'set the sample rate to 48 kHz', so the empty build graph opens with samp_rate 32000 (GRC default) while the task's rate is 48 kHz (checklist I)"
+ },
+ {
+  "item": "gbf-dev-13",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2 -- the reference has 6 blocks besides samp_rate (tone_9000, lo, mixer, out, magnitude, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-dev-13",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 6 blocks besides samp_rate",
+  "new": "L2: 6 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2 -- the reference has 6 blocks besides samp_rate (tone_9000, lo, mixer, out, magnitude, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-dev-19",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2 -- the reference has 7 blocks besides samp_rate (tone_6500, lo, mixer, channel, out, agc, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-dev-19",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2 -- the reference has 7 blocks besides samp_rate (tone_6500, lo, mixer, channel, out, agc, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-dev-22",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2 -- the reference has 7 blocks besides samp_rate (tone_4300, noise, sum_of_tones, channel, out, conj, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-dev-22",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2 -- the reference has 7 blocks besides samp_rate (tone_4300, noise, sum_of_tones, channel, out, conj, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-dev-43",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2 -- the reference has 6 blocks besides samp_rate (tone_13000, hilbert, conj, out, agc, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-dev-43",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 6 blocks besides samp_rate",
+  "new": "L2: 6 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2 -- the reference has 6 blocks besides samp_rate (tone_13000, hilbert, conj, out, agc, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-test-100",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2 -- the reference has 7 blocks besides samp_rate (tone_900, tone_6500, sum_of_tones, lpf, out, phase, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-test-100",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2 -- the reference has 7 blocks besides samp_rate (tone_900, tone_6500, sum_of_tones, lpf, out, phase, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-test-102",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2 -- the reference has 7 blocks besides samp_rate (tone_9700, hilbert, conj, out, to_short, to_float, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-test-102",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2 -- the reference has 7 blocks besides samp_rate (tone_9700, hilbert, conj, out, to_short, to_float, out_b) and L1 allows at most 5 blocks (proposal 5.2)"
+ },
+ {
+  "item": "gbf-test-113",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-113",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-118",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-118",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-128",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-128",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-26",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-26",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-dev-22",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_noise_source_x"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "second_mirrored.dat"
+   },
+   "via_ids": [
+    "blocks_conjugate_cc"
+   ],
+   "group": "f2p"
+  },
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"analog_noise_source_x\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_mirrored.dat\"}, \"via_ids\": [\"blocks_conjugate_cc\"], \"group\": \"f2p\"} -- the instruction names the tap ('the output of the sum of the tones', tone plus noise), but a Conjugate fed from the Signal Source alone passes every check (RMS 0.4999 within 5 % of 0.5025)"
+ },
+ {
+  "item": "gbf-dev-40",
+  "file": "task.json",
+  "path": [
+   "instruction"
+  ],
+  "op": "replace_text",
+  "old": "94 % of its power within 50 Hz of -2.45 kHz (within a tenth of that share); 6 % of its power within 50 Hz of 1.65 kHz (within a tenth of that share)",
+  "new": "95 % of its power within 50 Hz of -2.45 kHz (within a tenth of that share); 4.5 % of its power within 50 Hz of 1.65 kHz (within a tenth of that share)",
+  "edit": "instruction: replace \"94 % of its power within 50 Hz of -2.45 kHz (within a tenth of that share); 6 % of its power within 50 Hz of 1.65 kHz (within a tenth of that share)\" with \"95 % of its power within 50 Hz of -2.45 kHz (within a tenth of that share); 4.5 % of its power within 50 Hz of 1.65 kHz (within a tenth of that share)\" -- the stated 65-tap Hilbert attenuates the 600 Hz tone (below fs/20 = 2.4 kHz at 48 kHz), so the reference itself gives 0.954 and 0.0449, and 0.0449 is outside the stated 6 % within a tenth (0.054-0.066)"
+ },
+ {
+  "item": "gbf-dev-40",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "checks",
+   1,
+   "min"
+  ],
+  "op": "set",
+  "value": 0.849,
+  "edit": "oracle: in the band_fraction check 1600-1700 Hz set min 0.03 and max 0.059, and in the band_fraction check -2500 to -2400 Hz set min 0.849 (max stays 1.0); update the two spec_properties lines to the new shares -- the generator's rule (share - a tenth - 0.01, share + a tenth + 0.01) applied to the measured 0.0449 and 0.954"
+ },
+ {
+  "item": "gbf-dev-40",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "checks",
+   2,
+   "min"
+  ],
+  "op": "set",
+  "value": 0.03,
+  "edit": "oracle: in the band_fraction check 1600-1700 Hz set min 0.03 and max 0.059, and in the band_fraction check -2500 to -2400 Hz set min 0.849 (max stays 1.0); update the two spec_properties lines to the new shares -- the generator's rule (share - a tenth - 0.01, share + a tenth + 0.01) applied to the measured 0.0449 and 0.954"
+ },
+ {
+  "item": "gbf-dev-40",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "checks",
+   2,
+   "max"
+  ],
+  "op": "set",
+  "value": 0.059,
+  "edit": "oracle: in the band_fraction check 1600-1700 Hz set min 0.03 and max 0.059, and in the band_fraction check -2500 to -2400 Hz set min 0.849 (max stays 1.0); update the two spec_properties lines to the new shares -- the generator's rule (share - a tenth - 0.01, share + a tenth + 0.01) applied to the measured 0.0449 and 0.954"
+ },
+ {
+  "item": "gbf-dev-40",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   1
+  ],
+  "op": "replace_text",
+  "old": "94 % of its power",
+  "new": "95 % of its power",
+  "edit": "oracle: in the band_fraction check 1600-1700 Hz set min 0.03 and max 0.059, and in the band_fraction check -2500 to -2400 Hz set min 0.849 (max stays 1.0); update the two spec_properties lines to the new shares -- the generator's rule (share - a tenth - 0.01, share + a tenth + 0.01) applied to the measured 0.0449 and 0.954"
+ },
+ {
+  "item": "gbf-dev-40",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   2
+  ],
+  "op": "replace_text",
+  "old": "6 % of its power",
+  "new": "4.5 % of its power",
+  "edit": "oracle: in the band_fraction check 1600-1700 Hz set min 0.03 and max 0.059, and in the band_fraction check -2500 to -2400 Hz set min 0.849 (max stays 1.0); update the two spec_properties lines to the new shares -- the generator's rule (share - a tenth - 0.01, share + a tenth + 0.01) applied to the measured 0.0449 and 0.954"
+ },
+ {
+  "item": "gbf-test-02",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks",
+   0,
+   "to_params"
+  ],
+  "op": "set",
+  "value": {
+   "file": "carrier.dat"
+  },
+  "edit": "oracle: add \"to_params\": {\"file\": \"carrier.dat\"} to the graph check pll_structure (the path from a noise generator through a phase-locked-loop block to a File Sink) -- the instruction asks that the reference written to carrier.dat be recovered by the loop; now a loop into a third File Sink plus a clean Signal Source into carrier.dat passes V5, and with the file tied the reference and all five variants still pass while that shortcut fails (review.notes limit 1 says the check cannot be tied to carrier.dat, but the path check supports to_params)"
+ },
+ {
+  "item": "gbf-test-05",
+  "file": "task.json",
+  "path": [
+   "instruction"
+  ],
+  "op": "replace_text",
+  "old": "The flowgraph should keep producing samples until it is stopped",
+  "new": "In GNU Radio 3.10.12, GRC can evaluate a parameter written as gr.GR_MSB_FIRST (for example the endianness of an Unpacked to Packed block) only if the flowgraph imports gr, for example with an Import block holding 'from gnuradio import gr'. The flowgraph should keep producing samples until it is stopped",
+  "edit": "instruction: insert before \"The flowgraph should keep producing samples until it is stopped\" the sentence \"In GNU Radio 3.10.12, GRC can evaluate a parameter written as gr.GR_MSB_FIRST (for example the endianness of an Unpacked to Packed block) only if the flowgraph imports gr, for example with an Import block holding 'from gnuradio import gr'.\" -- a correct Binary Slicer + Unpacked to Packed (MSB first) answer fails V3 with \"name 'gr' is not defined\"; the model gets one edit and no validation feedback, and this GRC quirk has nothing to do with the slicer polarity and packing order the task tests (review.notes open item 4)"
+ },
+ {
+  "item": "gbf-test-11",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks",
+   2,
+   "to_params"
+  ],
+  "op": "set",
+  "value": {
+   "file": "rx.dat"
+  },
+  "edit": "oracle: add \"to_params\": {\"file\": \"rx.dat\"} to both path checks in graph_checks (the p2p path from analog_sig_source_x to blocks_file_sink, and the f2p path from blocks_vector_source_x through the gain-control ids to blocks_file_sink) -- today both accept any File Sink, so an answer that sends the AGC output to another file and writes a fresh 1.2 kHz tone of amplitude 1 to rx.dat passes V5; with the edit that answer fails and every valid design still passes"
+ },
+ {
+  "item": "gbf-test-11",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks",
+   3,
+   "to_params"
+  ],
+  "op": "set",
+  "value": {
+   "file": "rx.dat"
+  },
+  "edit": "oracle: add \"to_params\": {\"file\": \"rx.dat\"} to both path checks in graph_checks (the p2p path from analog_sig_source_x to blocks_file_sink, and the f2p path from blocks_vector_source_x through the gain-control ids to blocks_file_sink) -- today both accept any File Sink, so an answer that sends the AGC output to another file and writes a fresh 1.2 kHz tone of amplitude 1 to rx.dat passes V5; with the edit that answer fails and every valid design still passes"
+ },
+ {
+  "item": "gbf-test-11",
+  "file": "task.json",
+  "path": [
+   "review",
+   "notes"
+  ],
+  "op": "replace_text",
+  "old": "(4) Writing a fresh constant tone to rx.dat while the original chain feeds another File Sink would pass (contrived). ",
+  "new": "",
+  "edit": "metadata: delete from review.notes the sentence \"(4) Writing a fresh constant tone to rx.dat while the original chain feeds another File Sink would pass (contrived).\" -- the edit above closes that limit"
+ },
+ {
+  "item": "gbf-test-110",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "blocks_message_strobe"
+   ],
+   "via_ids": [
+    "analog_sig_source_x"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "shifted.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"blocks_message_strobe\"], \"via_ids\": [\"analog_sig_source_x\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"shifted.dat\"}, \"group\": \"main\"} -- the instruction asks for a Message Strobe on the Signal Source's cmd input, and a graph with no strobe and no Throttle, the tone set straight to 800 Hz, passes V5 today"
+ },
+ {
+  "item": "gbf-test-110",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_throttle",
+    "blocks_throttle2"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "shifted.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_throttle\", \"blocks_throttle2\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"shifted.dat\"}, \"group\": \"main\"} -- the instruction asks for a Throttle block and nothing checks it; a Throttle anywhere on the path passes"
+ },
+ {
+  "item": "gbf-test-110",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "append_text",
+  "value": "; a Message Strobe reaches the first Signal Source's cmd port, and a Throttle sits on the path to the File Sink",
+  "edit": "metadata: append to the spec_properties line 'structure: a path from a Signal Source through each stated stage to the File Sink' the words '; a Message Strobe reaches the first Signal Source's cmd port, and a Throttle sits on the path to the File Sink' -- spec_properties must list the two new checks"
+ },
+ {
+  "item": "gbf-test-16",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "set",
+  "value": [
+   {
+    "kind": "path",
+    "from_ids": [
+     "blocks_add_xx"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "spectrum.dat"
+     }
+    },
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "ch0.dat"
+    },
+    "group": "p2p"
+   },
+   {
+    "kind": "path",
+    "from_ids": [
+     "blocks_add_xx"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "spectrum.dat"
+     }
+    },
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "ch1.dat"
+    },
+    "group": "p2p"
+   },
+   {
+    "kind": "path",
+    "from_ids": [
+     "blocks_add_xx"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "spectrum.dat"
+     }
+    },
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "ch2.dat"
+    },
+    "group": "p2p"
+   },
+   {
+    "kind": "path",
+    "from_ids": [
+     "blocks_add_xx"
+    ],
+    "from_upstream_of": {
+     "ids": [
+      "blocks_file_sink"
+     ],
+     "params": {
+      "file": "spectrum.dat"
+     }
+    },
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "ch3.dat"
+    },
+    "group": "f2p"
+   }
+  ],
+  "edit": "oracle: add four graph checks {\"kind\": \"path\", \"from_ids\": [\"blocks_add_xx\"], \"from_upstream_of\": {\"ids\": [\"blocks_file_sink\"], \"params\": {\"file\": \"spectrum.dat\"}}, \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"<file>\"}, \"group\": \"<group>\"}, with <file> ch0.dat, ch1.dat and ch2.dat (group p2p) and ch3.dat (group f2p) -- the instruction asks to split the sum into channels ('Signals within 2 kHz of a channel's centre must keep their frequency offset and their amplitude'), but an answer with no channelizer at all, which writes a new tone plus new noise at 12 kHz from fresh Signal and Noise Sources to each channel file, passes V5 today; with the four checks that answer fails, while the reference, all 21 variants and my own designed-taps answer pass, and the start still passes every p2p check"
+ },
+ {
+  "item": "gbf-test-16",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: each channel file is fed from the Add block whose sum spectrum.dat records (a path from it to the File Sinks of ch0.dat, ch1.dat, ch2.dat and ch3.dat), so an answer that synthesizes the channel outputs fails",
+  "edit": "metadata: append to spec_properties the line 'structure: each channel file is fed from the Add block whose sum spectrum.dat records (a path from it to the File Sinks of ch0.dat, ch1.dat, ch2.dat and ch3.dat), so an answer that synthesizes the channel outputs fails' -- spec_properties must list the new checks"
+ },
+ {
+  "item": "gbf-test-36",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-36",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-41",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 6 blocks besides samp_rate' -> 'L2: 6 blocks besides samp_rate' -- the reference has 6 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-41",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 6 blocks besides samp_rate",
+  "new": "L2: 6 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 6 blocks besides samp_rate' -> 'L2: 6 blocks besides samp_rate' -- the reference has 6 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-44",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-44",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-50",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-50",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-64",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-64",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-80",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 6 blocks besides samp_rate' -> 'L2: 6 blocks besides samp_rate' -- the reference has 6 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-80",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 6 blocks besides samp_rate",
+  "new": "L2: 6 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 6 blocks besides samp_rate' -> 'L2: 6 blocks besides samp_rate' -- the reference has 6 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-82",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 6 blocks besides samp_rate' -> 'L2: 6 blocks besides samp_rate' -- the reference has 6 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-82",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 6 blocks besides samp_rate",
+  "new": "L2: 6 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 6 blocks besides samp_rate' -> 'L2: 6 blocks besides samp_rate' -- the reference has 6 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-93",
+  "file": "task.json",
+  "path": [
+   "level"
+  ],
+  "op": "set",
+  "value": "L2",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-93",
+  "file": "task.json",
+  "path": [
+   "authoring_notes",
+   "level"
+  ],
+  "op": "replace_text",
+  "old": "L1: 7 blocks besides samp_rate",
+  "new": "L2: 7 blocks besides samp_rate",
+  "edit": "labels: level L1 -> L2, and authoring_notes.level 'L1: 7 blocks besides samp_rate' -> 'L2: 7 blocks besides samp_rate' -- the reference has 7 blocks besides samp_rate; L1 allows at most 5 and L2 is 6-15 blocks"
+ },
+ {
+  "item": "gbf-test-36",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Low Pass Filter through the Abs block",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"low_pass_filter\", \"fft_filter_xxx\", \"fir_filter_xxx\"], \"via_ids\": [\"blocks_abs_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_rectified.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Low Pass Filter through the Abs block' -- the instruction says 'take the signal at the output of the filter', but a second output made from a new 2.2 kHz Signal Source (amp 0.2546, offset 0.382) through an Abs passes V5 today"
+ },
+ {
+  "item": "gbf-test-41",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Hilbert block through a Channel Model",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"hilbert_fc\"], \"via_ids\": [\"channels_channel_model\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_received.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Hilbert block through a Channel Model' -- the instruction says 'take the signal at the output of the Hilbert block', but a second output made from a new 1.8 kHz complex Signal Source through a Channel Model passes V5 today"
+ },
+ {
+  "item": "gbf-test-43",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Channel Model through a Rational Resampler",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"channels_channel_model\"], \"via_ids\": [\"rational_resampler_xxx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_resampled.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Channel Model through a Rational Resampler' -- the instruction says 'take the signal at the output of the Channel Model', but a second output made from a new 4.9 kHz Signal Source (amp 2) through a Rational Resampler passes V5 today"
+ },
+ {
+  "item": "gbf-test-44",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Add block through a Conjugate",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"blocks_add_xx\"], \"via_ids\": [\"blocks_conjugate_cc\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_mirrored.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Add block through a Conjugate' -- today the path check starts at any Signal Source, so a second output from a new source through a Conjugate passes the structure check (the shortcut I confirmed on gbf-test-36 and gbf-test-41)"
+ },
+ {
+  "item": "gbf-test-50",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Hilbert block through a Channel Model",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"hilbert_fc\"], \"via_ids\": [\"channels_channel_model\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_received.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Hilbert block through a Channel Model' -- the instruction says 'take the signal at the output of the Hilbert block', but today any Signal Source through a Channel Model to that sink passes the structure check (the shortcut I confirmed on gbf-test-41, the same template)"
+ },
+ {
+  "item": "gbf-test-55",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Rational Resampler through the Float To Short block",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"rational_resampler_xxx\"], \"via_ids\": [\"blocks_float_to_short\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_quantized.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Rational Resampler through the Float To Short block' -- the instruction says 'take the signal at the output of the Rational Resampler', but today the path check starts at any Signal Source, so the stated tap is not checked"
+ },
+ {
+  "item": "gbf-test-61",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Signal Source that feeds levelled.dat, through the FM pair",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"from_upstream_of\": {\"ids\": [\"blocks_file_sink\"], \"params\": {\"file\": \"levelled.dat\"}}, \"via_ids\": [\"analog_frequency_modulator_fc\", \"analog_quadrature_demod_cf\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_recovered.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Signal Source that feeds levelled.dat, through the FM pair' -- the instruction says 'take the signal at the output of the Signal Source', but a new 6.2 kHz Signal Source through an FM pair, which skips the retune, passes V5 today"
+ },
+ {
+  "item": "gbf-test-64",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Signal Source that feeds level_db.dat, through a Multiply",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"from_upstream_of\": {\"ids\": [\"blocks_file_sink\"], \"params\": {\"file\": \"level_db.dat\"}}, \"via_ids\": [\"blocks_multiply_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_shifted.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Signal Source that feeds level_db.dat, through a Multiply' -- the instruction says 'take the signal at the output of the Signal Source', but a new 6.2 kHz source into the Multiply passes V5 today (the new LO is itself a Signal Source on the path)"
+ },
+ {
+  "item": "gbf-test-68",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Low Pass Filter through the Log10 block",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"low_pass_filter\", \"fft_filter_xxx\", \"fir_filter_xxx\"], \"via_ids\": [\"blocks_nlog10_ff\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_power_db.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Low Pass Filter through the Log10 block' -- the instruction says 'take the signal at the output of the filter', but a constant Signal Source of 0.0625 into a Log10 passes V5 today"
+ },
+ {
+  "item": "gbf-test-73",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Low Pass Filter through the FM pair",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"low_pass_filter\", \"fft_filter_xxx\", \"fir_filter_xxx\"], \"via_ids\": [\"analog_frequency_modulator_fc\", \"analog_quadrature_demod_cf\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_recovered.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Low Pass Filter through the FM pair' -- the instruction says 'take the signal at the output of the filter', but a new 600 Hz Signal Source through an FM pair passes V5 today"
+ },
+ {
+  "item": "gbf-test-80",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the AGC through a Conjugate",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"analog_agc_xx\", \"analog_agc2_xx\", \"analog_agc3_xx\"], \"via_ids\": [\"blocks_conjugate_cc\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_mirrored.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the AGC through a Conjugate' -- the instruction says 'take the signal at the output of the AGC', but a new -1.1 kHz Signal Source (amp 2) through a Conjugate passes V5 today"
+ },
+ {
+  "item": "gbf-test-82",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Channel Model through a Conjugate",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"channels_channel_model\"], \"via_ids\": [\"blocks_conjugate_cc\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_mirrored.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Channel Model through a Conjugate' -- the instruction says 'take the signal at the output of the Channel Model', but today any Signal Source through a Conjugate to that sink passes the structure check (the shortcut I confirmed on gbf-test-80, the same template)"
+ },
+ {
+  "item": "gbf-test-84",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the mixer through a Complex To Mag",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"blocks_multiply_xx\"], \"via_ids\": [\"blocks_complex_to_mag\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_level.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the mixer through a Complex To Mag' -- the instruction says 'take the signal at the output of the mixer', but the magnitude is 0.25 at every point of this chain, so no signal check sees the tap; a Complex To Mag fed from the Conjugate passes V5 today"
+ },
+ {
+  "item": "gbf-test-86",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Signal Source that feeds shifted.dat, through a Complex To Mag",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"from_upstream_of\": {\"ids\": [\"blocks_file_sink\"], \"params\": {\"file\": \"shifted.dat\"}}, \"via_ids\": [\"blocks_complex_to_mag\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_level.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Signal Source that feeds shifted.dat, through a Complex To Mag' -- the instruction says 'take the signal at the output of the Signal Source', but a new constant complex source of 0.6 through a Complex To Mag passes V5 today"
+ },
+ {
+  "item": "gbf-test-93",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Hilbert block through a Complex To Mag",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"hilbert_fc\"], \"via_ids\": [\"blocks_complex_to_mag\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_level.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Hilbert block through a Complex To Mag' -- the instruction says 'take the signal at the output of the Hilbert block', but a constant complex Signal Source of 0.25 into a Complex To Mag passes V5 today"
+ },
+ {
+  "item": "gbf-test-97",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Signal Source that feeds mirrored.dat, through the Float To Short block",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"from_upstream_of\": {\"ids\": [\"blocks_file_sink\"], \"params\": {\"file\": \"mirrored.dat\"}}, \"via_ids\": [\"blocks_float_to_short\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_quantized.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Signal Source that feeds mirrored.dat, through the Float To Short block' -- the instruction says 'take the signal at the output of the Signal Source', but a new 3.2 kHz Signal Source (amp 0.8) into the quantizer, which skips the retune, passes V5 today"
+ },
+ {
+  "item": "gbf-test-98",
+  "file": "task.json",
+  "path": [
+   "spec_properties"
+  ],
+  "op": "append",
+  "value": "structure: the second output is taken from the Conjugate block through the Log10 block",
+  "edit": "oracle: add the graph check {\"kind\": \"path\", \"from_ids\": [\"blocks_conjugate_cc\"], \"via_ids\": [\"blocks_nlog10_ff\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"second_power_db.dat\"}, \"group\": \"f2p\"}, and the spec_properties line 'structure: the second output is taken from the Conjugate block through the Log10 block' -- the instruction says 'take the signal at the output of the Conjugate block', but the power is the same at every point of this chain, so no signal check sees the tap; the power chain fed from the Channel Model passes V5 today"
+ },
+ {
+  "item": "gbf-test-35",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "; both Multiply blocks are kept",
+  "new": "; both Multiply blocks of the two shifts are kept",
+  "edit": "oracle: replace the third graph check (the second path check via blocks_multiply_xx, identical to the first one) with {\"kind\": \"block_present\", \"ids\": [\"blocks_multiply_xx\"], \"min\": 2, \"group\": \"p2p\"}, and append to the spec_properties line 'structure: a path from a Signal Source through each stated stage to the File Sink' the words '; both Multiply blocks of the two shifts are kept' -- the two path checks via blocks_multiply_xx are identical, so a repair that merges the two shifts into one 6.5 kHz shift passes V5 today, against 'keeping every block and parameter value it does not involve'; p2p because the fault is not in the shifts (the label _repair_groups gives the other stages)"
+ },
+ {
+  "item": "gbf-test-76",
+  "file": "task.json",
+  "path": [
+   "golden_lookup"
+  ],
+  "op": "set",
+  "value": {
+   "query": "Signal Source Throttle Rational Resampler Float To Short Short To Float Message Strobe File Sink",
+   "domain": "catalog"
+  },
+  "edit": "metadata: add to task.json \"golden_lookup\": {\"query\": \"Signal Source Throttle Rational Resampler Float To Short Short To Float Message Strobe File Sink\", \"domain\": \"catalog\"} and re-run ./gb tier-a tier-f-golden on the task -- every block id of the answer is pasted into the golden query; the new query is the catalog labels of the blocks the build adds"
+ }
+]

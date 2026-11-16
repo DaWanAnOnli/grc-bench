@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_6000
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '6000'}
 - name: fm_mod
@@ -38,6 +38,6 @@ connections:
 - [conj, '0', mixer, '0']
 - [lo, '0', mixer, '1']
 - [mixer, '0', out, '0']
-- [tone_6000, '0', gain, '0']
+- [tone_1, '0', gain, '0']
 - [gain, '0', fm_mod, '0']
 metadata: {file_format: 1}

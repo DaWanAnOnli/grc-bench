@@ -20,34 +20,38 @@
   "type": "nonexistent_block",
   "wrong_id": "blocks_conjugate_cc_x"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Complex Conjugate"
+ },
  "id": "gbf-test-92",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use Signal Sources to make a -3.8 kHz complex tone with amplitude 0.5 and a 2.6 kHz complex tone with amplitude 1, and add them; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; and write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at -2.6 kHz (within 26 Hz); 80 % of its power within 50 Hz of -2.6 kHz (within a tenth of that share); 20 % of its power within 50 Hz of 3.8 kHz (within a tenth of that share); an RMS level of 1.118 (within 5 %). Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L1",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_3800",
+   "block": "tone_1",
    "breaks": "the -3.8 kHz tone at -4.75 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "-4750"
   },
   {
-   "block": "tone_3800",
+   "block": "tone_1",
    "breaks": "the -3.8 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "0.75"
   },
   {
-   "block": "tone_2600",
+   "block": "tone_2",
    "breaks": "the 2.6 kHz tone at 3.25 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "3250"
   },
   {
-   "block": "tone_2600",
+   "block": "tone_2",
    "breaks": "the 2.6 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -129,7 +133,7 @@
    {
     "expect": 1.118,
     "feature": "rms",
-    "group": "f2p",
+    "group": "p2p",
     "n": 16384,
     "point": "out",
     "rel_tol": 0.05,
@@ -166,9 +170,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 3610,
@@ -187,5 +195,5 @@
  "split": "test",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

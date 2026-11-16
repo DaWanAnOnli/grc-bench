@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x analog_noise_source_x blocks_add_xx low_pass_filter rational_resampler_xxx blocks_file_sink",
+  "query": "Signal Source Noise Source Add Low Pass Filter Rational Resampler File Sink",
   "domain": "catalog",
   "k": 12
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_6100",
+    "instance_name": "tone_1",
     "params": {
      "type": "float",
      "freq": "6100",
@@ -18,7 +18,7 @@
    },
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_7800",
+    "instance_name": "tone_2",
     "params": {
      "type": "float",
      "freq": "7800",
@@ -68,8 +68,8 @@
    }
   ],
   "add_connections": [
-   "tone_6100:0->sum_of_tones:0",
-   "tone_7800:0->sum_of_tones:1",
+   "tone_1:0->sum_of_tones:0",
+   "tone_2:0->sum_of_tones:1",
    "noise:0->sum_of_tones:2",
    "sum_of_tones:0->lpf:0",
    "lpf:0->resampler:0",

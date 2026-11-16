@@ -49,8 +49,12 @@ def variants(task_dir: Path) -> list[Path]:
 
 
 def save(task_dir: Path, record: dict[str, Any], files: dict[str, str]) -> list[str]:
-    """Write a task; returns schema errors (the task is written only if there are none)."""
+    """Write a task; returns schema errors (the task is written only if there are none). The review
+    protocol's decided status and edits (reviews/tier_f.jsonl, reviews/tier_f_patches.json) are applied here,
+    so every build.py and the generator write the decided task (review.items)."""
+    from grcbench.review import items
     record = {k: v for k, v in record.items() if not k.startswith("_")}
+    record, files = items.apply("tier_f", record["id"], record, files)
     record.setdefault("canary", CANARY)
     errors = validate(record)
     for name, text in files.items():

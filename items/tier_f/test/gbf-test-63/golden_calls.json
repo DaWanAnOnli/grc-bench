@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_conjugate_cc blocks_file_sink",
+  "query": "Signal Source",
   "domain": "catalog",
   "k": 6
  },
@@ -8,7 +8,7 @@
   "reason": "Edit the flowgraph as the instruction asks.",
   "update_params": [
    {
-    "instance_name": "tone_8500",
+    "instance_name": "tone_1",
     "params": {
      "freq": "8500"
     }

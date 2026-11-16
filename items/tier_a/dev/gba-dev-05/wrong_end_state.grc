@@ -88,6 +88,25 @@ blocks:
     bus_source: false
     bus_structure: null
     state: enabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: audio_rate
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
 - name: carrier
   id: analog_sig_source_x
   parameters:
@@ -234,7 +253,8 @@ blocks:
 
 connections:
 - [audio_sum, '0', audio_out, '0']
-- [audio_sum, '0', upsample, '0']
+- [audio_sum, '0', blocks_throttle2_0, '0']
+- [blocks_throttle2_0, '0', upsample, '0']
 - [carrier, '0', mixer, '1']
 - [hilbert, '0', mixer, '0']
 - [mixer, '0', to_real, '0']

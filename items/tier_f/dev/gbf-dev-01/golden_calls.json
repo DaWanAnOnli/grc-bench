@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "blocks_vector_source_x blocks_file_sink fir_filter_xxx blocks_threshold_ff",
+  "query": "correlate a bit stream with a sync word and threshold the result",
   "domain": "catalog",
   "k": 8
  },

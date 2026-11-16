@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x analog_frequency_modulator_fc analog_quadrature_demod_cf hilbert_fc blocks_file_sink",
+  "query": "Signal Source Frequency Mod Quadrature Demod Hilbert File Sink",
   "domain": "catalog",
   "k": 10
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_9800",
+    "instance_name": "tone_1",
     "params": {
      "type": "float",
      "freq": "9800"
@@ -57,7 +57,7 @@
    }
   ],
   "add_connections": [
-   "tone_9800:0->fm_mod:0",
+   "tone_1:0->fm_mod:0",
    "fm_mod:0->fm_demod:0",
    "fm_demod:0->fm_mod_2:0",
    "fm_mod_2:0->fm_demod_2:0",

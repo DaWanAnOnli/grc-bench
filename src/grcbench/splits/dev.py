@@ -218,6 +218,18 @@ def build() -> dict[Path, str]:
                         "training_pool": train, "anchor": [by_id[i] for i in anchor.ids],
                         "ci": [by_id[i] for i in ci.ids]})
     sens = sensitivity(ev, train, rejects, validation, dev_ids)
+    band_reading = {k: twins.band_counts(ev, k) for k in ("semantic", "lexical")}
+    reviewed = all(b["decided_twins"] is not None for k in band_reading for b in band_reading[k])
+    if reviewed:                              # the review's decided labels must give the thresholds in use
+        for kind, used in (("semantic", twins.SEMANTIC_THRESHOLD), ("lexical", twins.LEXICAL_THRESHOLD)):
+            got = twins.decided_threshold(band_reading[kind])
+            if got != used:
+                raise SystemExit(f"split-dev: the review's decided twin labels give a {kind} threshold of {got}, "
+                                 f"not {used}; set it in splits/twins.py, rebuild, and record it in "
+                                 "pre-registration §10")
+    split_status = ("twin thresholds checked by the review protocol: its decided labels give the thresholds "
+                    "in use (reviews/twins.jsonl)" if reviewed else
+                    "draft: twin thresholds are Claude's reading, until the review protocol decides the twin sheet")
 
     def affected(ids: Sequence[str]) -> dict[str, Any]:
         st = Counter()
@@ -236,7 +248,7 @@ def build() -> dict[Path, str]:
                        "of the training team's validation split",
                        "eval plan §4.1: the anchor subset and the CI gate use the dev split",
                        "eval plan §6: near-twins of test questions"],
-        "status": "draft: twin thresholds are Claude's reading, pending team review",
+        "status": split_status,
         "algorithm": {
             "name": frozen.ALGORITHM,
             "dev": ("no draw: every Q&A question of the training release's validation split that the exclusion "
@@ -275,8 +287,8 @@ def build() -> dict[Path, str]:
             "lexical_threshold": twins.LEXICAL_THRESHOLD,
             "threshold_rule": ("lower edge of the lowest score band in which at least half of the training "
                                "pairs Claude read (no shared 8-gram) were twins; checked against union-find "
-                               "chaining"),
-            "band_reading": {k: twins.band_counts(ev, k) for k in ("semantic", "lexical")},
+                               "chaining, and against the review protocol's decided labels of the same pairs"),
+            "band_reading": band_reading,
             "edges_by_kind": twins.edge_kind_counts(g["edges"]),
             "groups": len(g["groups"]),
             "members": len(g["members"]),
@@ -384,7 +396,9 @@ def twins_tsv(ngram_test: Mapping[str, set[str]], neighbours: Mapping[str, Mappi
 
 
 def review_sheet(ev: twins.Evidence, by_id: Mapping[str, Mapping[str, Any]]) -> str:
-    """Every training pair Claude read to set the thresholds (training questions only)."""
+    """Every training pair Claude read to set the thresholds (training questions only), with the review
+    protocol's decided labels once reviews/twins.jsonl exists."""
+    from grcbench.review.fill import filled_text
     buf = io.StringIO()
     w = csv.writer(buf, lineterminator="\n")
     w.writerow(["source", "band", "score", "linked_now", "id_a", "id_b", "origin_a", "origin_b",
@@ -400,7 +414,7 @@ def review_sheet(ev: twins.Evidence, by_id: Mapping[str, Mapping[str, Any]]) -> 
                 w.writerow([kind, f"[{lo:.2f}, {min(hi, 1.0):.2f})", f"{s:.4f}", "yes" if s >= thr else "no",
                             a, b, by_id[a]["origin"], by_id[b]["origin"], by_id[a]["question"],
                             by_id[b]["question"], "", "", ""])
-    return buf.getvalue()
+    return filled_text("twins", buf.getvalue())
 
 
 def _table(header: Sequence[str], rows: Sequence[Sequence[Any]]) -> str:
@@ -506,7 +520,7 @@ close to another test question; `test_twins.tsv` shows that evidence.
 ## 4. Other notes
 
 - The {len(d['all_reject_ids'])} training questions whose every teacher answer was rejected are not in dev. Nothing to do.
-- Claude (Anthropic) wrote this tooling and these lists. Claude never judges, repairs or generates training data.
+- Claude (Anthropic) wrote this tooling and these lists. Claude never repairs, generates or changes training data.
 - Full details (algorithm, seeds, source hashes, sensitivity tables): `splits/tier_k_dev.json` and `reports/tier_k_dev_split.md`.
 """
 
@@ -514,9 +528,10 @@ close to another test question; `test_twins.tsv` shows that evidence.
 def report(d: Mapping[str, Any]) -> str:
     c, x, t = d["counts"], d["exclusions"]["by_reason"], d["twin_groups"]
     fz = d["frozen_split_check"]
-    bands = lambda k: _table(["band", "pairs read", "judged twins", "share"],
+    bands = lambda k: _table(["band", "pairs read", "Claude's twins (14 Oct)", "share", "decided twins (review)"],
                              [[f"[{b['band'][0]:.2f}, {min(b['band'][1], 1.0):.2f})", b["pairs_now"], b["twins"],
-                               b["twin_share"]] for b in t["band_reading"][k]])
+                               b["twin_share"], "–" if b["decided_twins"] is None else b["decided_twins"]]
+                              for b in t["band_reading"][k]])
     strata = [s for s in d["strata"] if s["dev"] or s["validation"] or s["test"]]
     src, rel = d["dev_source"], d["dev_source"]["release"]
     vx = src["excluded_by_reason"]

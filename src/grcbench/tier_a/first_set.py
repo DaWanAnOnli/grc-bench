@@ -1295,25 +1295,62 @@ def _write_json(path: Path, obj: Any) -> None:
                     newline="\n")
 
 
+REVIEWS = ITEMS.parent / "reviews"          # the review protocol's decided records and patches
+PENDING = {"status": "pending-team-review", "reviewers": [], "notes": ""}
+
+
+def review_of(task_id: str) -> dict:
+    """The task's `review` field from its decided record (reviews/tier_a.jsonl; docs/guidelines/review_protocol.md)."""
+    from grcbench.review.items import review_field
+    return review_field("tier_a", task_id, reviews_dir=REVIEWS) or dict(PENDING)
+
+
+def _patches(task_id: str, file: str) -> list[dict]:
+    from grcbench.review.patches import for_item
+    return for_item(REVIEWS / "tier_a_patches.json", task_id, file)
+
+
+def file_names_by_base_name(acceptance: dict) -> dict:
+    """Every File Sink "file" constraint in blocks_present and connections as a base-name regex (review
+    decision, reviews/tier_a.jsonl gba-dev-01): ./x.dat or an absolute path ending in x.dat writes the same
+    file the user named, and the ladder's observation point already accepts it."""
+    import re
+    acc = copy.deepcopy(acceptance)
+
+    def fix(params: dict | None) -> None:
+        if params and isinstance(params.get("file"), str):
+            params["file"] = {"regex": "(^|/)" + re.escape(params["file"]) + "$"}
+    for spec in acc.get("blocks_present") or []:
+        fix(spec.get("params"))
+    for spec in acc.get("connections") or []:
+        for end in ("src", "dst"):
+            fix((spec.get(end) or {}).get("params"))
+    return acc
+
+
 def record(spec: dict, split: str, generator: tuple[str, str] = (GENERATOR, GENERATOR_VERSION)) -> dict:
+    """The task record, with the review protocol's decided status and edits (reviews/tier_a_patches.json)."""
+    from grcbench.review import items
     rec = {"id": spec["id"], "tier": "A", "split": split, "version": 1, "canary": CANARY, "license": spec["license"],
            "source": spec["source"], "cluster_id": spec["cluster_id"],
            "provenance": {"drafted_by": "Claude (Anthropic)", "generator": generator[0],
                           "generator_version": generator[1]},
-           "review": {"status": "pending-team-review", "reviewers": [], "notes": ""},
+           "review": dict(PENDING),
            "category": spec["category"], "instruction": spec["instruction"],
            "start_state": {"active_graph": spec["start"][0] if spec["start"] else None},
-           "scripted_user": spec["scripted_user"], "acceptance": spec["acceptance"],
+           "scripted_user": spec["scripted_user"], "acceptance": file_names_by_base_name(spec["acceptance"]),
            "expected_tool_calls": [8, 20], "disjointness": spec["disjointness"]}
-    return rec
+    return items.apply("tier_a", spec["id"], rec, {}, reviews_dir=REVIEWS)[0]
 
 
 def write(split: str, makers: list, only: set[str] | None = None,
           generator: tuple[str, str] = (GENERATOR, GENERATOR_VERSION)) -> list[Path]:
+    from grcbench.review.patches import apply
     jobs: dict[Path, dict] = {}
     written = []
     for make in makers:
         spec = make()
+        spec = apply(spec, _patches(spec["id"], "spec"))     # decided edits to the start graph, golden calls, ...
         if only and spec["id"] not in only:
             continue
         d = OUT / split / spec["id"]

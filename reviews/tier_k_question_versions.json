@@ -1,0 +1,8 @@
+[
+ {
+  "id": "q_26bef0bdbcea7324",
+  "question": "In GNU Radio, if you change the sample rate of a USRP from 1 MSPS to 2 MSPS using `usrp_source.set_samp_rate()`, what immediate effect does this have on the center frequency tuning range and the instantaneous bandwidth?",
+  "reason": "the question named usrp_source.set_sample_rate(), which GNU Radio 3.10.12 does not have; the method is set_samp_rate() (expert review, H1b, a28)",
+  "decided_by": "EX (expert review)"
+ }
+]

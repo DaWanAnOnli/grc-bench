@@ -10,7 +10,7 @@
   "size": {
    "max": 3000,
    "passed": true,
-   "tokens": 267
+   "tokens": 263
   },
   "solvability": {
    "failures": [],

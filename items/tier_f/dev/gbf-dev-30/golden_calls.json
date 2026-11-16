@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx blocks_multiply_xx channels_channel_model blocks_file_sink",
+  "query": "Signal Source Add Multiply Channel Model File Sink",
   "domain": "catalog",
   "k": 10
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_7300",
+    "instance_name": "tone_1",
     "params": {
      "type": "complex",
      "freq": "7300",
@@ -18,7 +18,7 @@
    },
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_9500",
+    "instance_name": "tone_2",
     "params": {
      "type": "complex",
      "freq": "9500",
@@ -75,8 +75,8 @@
    }
   ],
   "add_connections": [
-   "tone_7300:0->sum_of_tones:0",
-   "tone_9500:0->sum_of_tones:1",
+   "tone_1:0->sum_of_tones:0",
+   "tone_2:0->sum_of_tones:1",
    "sum_of_tones:0->mixer:0",
    "lo:0->mixer:1",
    "mixer:0->channel:0",

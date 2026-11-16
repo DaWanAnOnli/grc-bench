@@ -87,9 +87,12 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "scripted_user": {
   "max_turns": 2,

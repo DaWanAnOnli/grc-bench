@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_12200
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '-12200', amp: '0.5'}
 - name: channel
@@ -26,7 +26,7 @@ blocks:
   id: blocks_throttle2
   parameters: {type: complex, limit: auto}
 connections:
-- [tone_12200, '0', channel, '0']
+- [tone_1, '0', channel, '0']
 - [channel, '0', agc, '0']
 - [agc, '0', resampler, '0']
 - [resampler, '0', conj, '0']

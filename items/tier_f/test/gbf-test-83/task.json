@@ -13,20 +13,24 @@
  "cluster_id": "chain:channel_model|tone",
  "disjointness": "A generated chain (tones, channel, channel) whose functional signature channel_model|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "build",
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Signal Source Channel Model File Sink"
+ },
  "id": "gbf-test-83",
  "instruction": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 8.8 kHz complex tone with amplitude 0.8; then pass it through a Channel Model with no noise and a frequency offset of -1.5 kHz (freq_offset -1500/samp_rate); then pass it through a Channel Model with no noise and a frequency offset of -500 Hz (freq_offset -500/samp_rate). Write the result as complex samples to a File Sink whose file name is received.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 6.8 kHz (within 68 Hz); 100 % of its power within 50 Hz of 6.8 kHz (within a tenth of that share); an RMS level of 0.8 (within 5 %). The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L1",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_8800",
+   "block": "tone_1",
    "breaks": "the 8.8 kHz tone at 11 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "11000"
   },
   {
-   "block": "tone_8800",
+   "block": "tone_1",
    "breaks": "the 8.8 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -128,20 +132,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
     "group": "main",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "received.dat"
-    },
-    "via_ids": [
+    "ids": [
      "channels_channel_model"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    }
   ]
  },
@@ -156,9 +152,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 2088,
@@ -171,10 +171,10 @@
   "its strongest component at 6.8 kHz (within 68 Hz)",
   "100 % of its power within 50 Hz of 6.8 kHz (within a tenth of that share)",
   "an RMS level of 0.8 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; two Channel Models"
  ],
  "split": "test",
  "start_grc": null,
  "tier": "F",
- "version": 1
+ "version": 2
 }

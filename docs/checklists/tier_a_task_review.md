@@ -4,21 +4,25 @@ Implements eval plan §5.4 ("Two-person review"; "Wrong-end-state test"), with �
 tool calls, scripted user, end-state grading), §6 (task-level overlap with training sessions) and
 §5.3 (pruning). The approved plan, Phase 4, describes the runner and the gates.
 
-Two team members review every Tier-A task, test and dev, before it is used. Eval plan Table 7
-budgets about 70 person-hours for writing and reviewing all Tier-A tasks. There are 42: 30 test
-(three in each category) and 12 dev. A review takes longer than for Tier F, because you also read
-the golden tool-call sequence: plan on about 20 minutes per task per reviewer.
+Two review agents (`R1`, `R2`) review every Tier-A task, test and dev, before it is used, under the
+review protocol ([review_protocol.md](../guidelines/review_protocol.md)). There are 42: 30 test
+(three in each category) and 12 dev. Eval plan Table 7 budgets about 70 person-hours for writing and
+reviewing them; the protocol replaces those hours with declared agent runs (pre-registration §10).
 
 ## Before you start
 
-- **Never paste a test task into ChatGPT, Claude or any other model or online tool** (eval plan §6).
-- **Work alone, on your own copy of the sheet.** Do not discuss a task with the other reviewer until
-  you have both recorded a decision.
-- **Do not edit the task files.** Write the edits you want in the sheet.
+- **Declared runs only.** Test tasks go to no model outside the declared runs of the review protocol
+  and of the benchmark (eval plan §6).
+- **Work alone.** Each reviewer works from its own input copy and never opens the other reviewer's
+  output.
+- **Do not edit the task files.** Write the edits you want in your output. The coordinator applies
+  the decided edits and re-runs the gates.
+- **Run what you can.** You have the task folders, the grader and GNU Radio. Check a claim by running
+  it (`./gb tier-a gates`, `./gb ladder`, the grader on a flowgraph you build), and record the command
+  and its output as evidence.
 - **Who wrote the tasks.** Data Summary §11 D tells Qoherent that team members write the agent tasks.
-  In this build, Claude (Anthropic) drafted the specs (`provenance.drafted_by`). The team reviews,
-  edits and decides. This deviation is to be raised with Qoherent. Your review is what makes each
-  task a team decision, so be as strict as you would be with a stranger's task.
+  In this build, Claude (Anthropic) drafted the specs (`provenance.drafted_by`), and review agents
+  decide. This deviation is raised with Qoherent. Judge each task as strictly as a stranger's task.
 
 ## What a task is made of
 
@@ -226,10 +230,10 @@ same decision columns as the Tier-F sheet:
 | `status` | `built and gated`: the task is built and passes every gate |
 | `instruction`, `start_state`, `scripted_user`, `acceptance`, `golden_calls`, `gates`, `disjointness` | a short summary of the task (filled in when the sheet is made) |
 | `wrong_end_state_rejected_by` | the grader's reasons for rejecting the wrong end state, from the gates |
-| `build_notes` | for gba-test-11 to gba-test-30, which were built from written specs: the spec's notes on building the task and any decision it asks of the team, and where the built task differs from its spec, what differs and why. Check each difference: you approve the built task, not the spec |
+| `build_notes` | for gba-test-11 to gba-test-30, which were built from written specs: the spec's notes on building the task and any decision it asks of the review, and where the built task differs from its spec, what differs and why. Check each difference: you approve the built task, not the spec |
 | `reviewer_1_decision`, `reviewer_2_decision` | `approve`, `approve with edits` or `reject` |
 | `reviewer_1_edits`, `reviewer_2_edits` | the edits, one per line, or the reason for rejecting |
-| `final_decision` | the task owner when both decisions are the same; otherwise the Qoherent expert |
+| `final_decision` | the coordinator when both decisions are the same (other than `approve with edits`); otherwise the expert agent |
 
 Write edits the same way as for Tier F, one per line:
 
@@ -249,24 +253,35 @@ wrong_state: replace the empty graph with the graph changed but not saved -- a r
 For a rejection, start the cell with the reason: `hidden requirement`, `not solvable`,
 `overlaps training`, `trivial`, `too long`, `wrong grading`, `duplicate` or `other`. Then explain.
 
-A line that starts with `note:` is a record for the team, not an edit, as for Tier F (see
+A line that starts with `note:` is a record, not an edit, as for Tier F (see
 [tier_f_task_review.md](tier_f_task_review.md), "Notes"). For example: `note: alternative with a
 variable instead of a literal passes the acceptance checks`.
+
+**Output fields.** One JSON object per task, written to your output file as soon as the task is done:
+
+- `sheet`: `"tier_a"`;
+- `key`: `{"task_id": ...}`;
+- `value`: the decision;
+- `edits`: the edit lines;
+- `notes`: the `note:` lines;
+- `evidence`: the commands you ran with their printed output, and quoted lines of the task files.
 
 ## After both reviews
 
 The process is the same as for Tier F (see [tier_f_task_review.md](tier_f_task_review.md), "After
 both reviews"):
 
-1. Merge the two copies.
-2. If the decisions differ, the Qoherent expert decides (eval plan Table 1: "A Qoherent expert
-   decides every disagreement"). The reviewers do not settle it between themselves first; the
-   expert reads both edits cells.
-3. The task owner applies the edits and re-runs the Tier-A gates.
+1. The coordinator applies the decision rules of the review protocol.
+2. If the decisions differ, or both are `approve with edits`, the expert agent decides and merges
+   (eval plan Table 1, "A Qoherent expert decides every disagreement", with the expert agent in the
+   expert's place). The expert agent decides every disagreement. The reviewers do not settle it
+   between themselves first; the expert reads both edits cells.
+3. The coordinator applies the edits and re-runs the Tier-A gates. A task whose gates fail after the
+   edits goes back to the two reviewers once; after that, the expert decides.
 4. Record the result in `task.json` → `review`.
 5. Rejected tasks are removed and counted (eval plan §5.3).
 
-The Qoherent expert then reviews every Tier-A task for correctness and relevance (see
+The expert agent then reviews every Tier-A task for correctness and relevance (see
 [expert_review.md](expert_review.md)).
 
 ## One-page summary

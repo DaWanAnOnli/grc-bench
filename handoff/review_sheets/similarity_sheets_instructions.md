@@ -1,13 +1,15 @@
 # Similarity sheets: test clusters, twin thresholds and contamination
 
-Three sheets ask the team to judge pairs of texts that a similarity score linked. A score only finds
-candidates; a person decides what each pair is. This guide covers all three.
+Three sheets judge pairs of texts that a similarity score linked. A score only finds candidates; the
+review decides what each pair is. All three follow the review protocol
+([review_protocol.md](../../docs/guidelines/review_protocol.md)): two review agents (`R1`, `R2`) judge
+every row, each alone, and the expert agent decides every disagreement.
 
-| Sheet | Rows | Decision per | People | When | Time |
-|---|---|---|---|---|---|
-| `tier_k_test_clusters.csv` | 10 (5 clusters of 2 test questions) | cluster | one | before the freeze (13 Nov) | about 10 minutes |
-| `tier_k_twin_threshold_review.csv` | 235 pairs of training questions | pair | one | before the freeze | about 4 hours |
-| `contamination_tier_k_test.csv`, `contamination_tier_k_dev.csv`, `contamination_tier_f_test.csv`, `contamination_tier_f_dev.csv` | 188, 30, 17 and 6 pairs | pair | two (section C) | after the freeze | about 4 hours, plus about 1.5 hours for the second person |
+| Sheet | Rows | Decision per | Reviewers | When |
+|---|---|---|---|---|
+| `tier_k_test_clusters.csv` | 10 (5 clusters of 2 test questions) | cluster | two, every row | before the freeze (17 Nov) |
+| `tier_k_twin_threshold_review.csv` | 235 pairs of training questions | pair | two, every row | before the freeze |
+| `contamination_tier_k_test.csv`, `contamination_tier_k_dev.csv`, `contamination_tier_f_test.csv`, `contamination_tier_f_dev.csv` | 188, 30, 17 and 6 pairs | pair | two, every row (section C) | once the twin thresholds are final |
 
 The two Tier-A contamination sheets have no flagged pairs (a header row only), so there is nothing to
 do in them. The order matters: the twin review can move the lexical threshold, which is also the
@@ -16,19 +18,18 @@ judged.
 
 ## Rules for all three sheets
 
-- **No model sees these sheets.** Never paste anything from them into ChatGPT, Claude or any other
-  model or online tool (eval plan §6). The cluster sheet and the two test contamination sheets hold
-  test questions and tasks.
-- **Work alone on your own copy.** Copy the sheet to `<sheet name>_<your initials>.csv` and fill in
-  only the decision column, `reviewer` (your initials) and `notes`. Do not discuss pairs until every
-  copy is in.
+- **Declared runs only.** The cluster sheet and the two test contamination sheets hold test questions
+  and tasks. They go to no model outside the declared runs of the review protocol (eval plan §6).
+- **Work alone.** Each reviewer works from its own input copy and records only its decision, its
+  initials and its notes. Neither reviewer opens the other's output.
 - **Judge from the texts.** The score columns (`band`, `score`, `linked_now`, `linked_to (evidence)`,
   `signals`, `ngram_shared`, `tfidf`, `embed`) say why a pair is in the sheet, not what it is.
   Questions written from the same template often score high without being the same question.
 - **Write values exactly as shown** (lower case, the same spelling; table at the end), so the sheets
   can be read by code.
-- **Disagreements go to the Qoherent expert**, as on every other sheet. The coordinator writes the
-  final decisions into the sheets in `handoff/review_sheets/`.
+- **The expert agent decides every disagreement**, as on every other sheet, and every row either
+  reviewer marked `unsure`. The coordinator writes the final decisions into the sheets in
+  `handoff/review_sheets/`.
 
 ## A. Test clusters (`tier_k_test_clusters.csv`)
 
@@ -47,8 +48,8 @@ Fill in `team_decision (same family / split out)` for each cluster:
 
 Write the same value on both rows of a cluster, with a one-line reason in `notes`. When unsure, write
 `same family`: keeping two questions together only widens the error bars a little, while splitting
-a real family makes them too narrow. The coordinator removes the link of every `split out` cluster
-before the freeze, and its two questions then form clusters of their own.
+a real family makes them too narrow. The coordinator removes the link of every decided `split out`
+cluster before the freeze, and its two questions then form clusters of their own.
 
 ## B. Twin thresholds (`tier_k_twin_threshold_review.csv`)
 
@@ -57,8 +58,8 @@ validation question serves as a dev question only if no twin of it is left in tr
 (`reports/tier_k_dev_split.md`), so the twin groups decide the 107 dev questions. Pairs that share a
 word 8-gram are always twins. Other pairs are linked when their score reaches a threshold: 0.92 on
 the dataset's semantic similarity score, 0.55 on TF-IDF cosine. Claude set both thresholds by reading
-every pair in the score bands around them; this sheet is the team's check of that reading. Every
-question in the sheet is a training question.
+every pair in the score bands around them; this sheet is the review's independent check of that
+reading. Every question in the sheet is a training question.
 
 Each row is one pair: `source` (`semantic` or `lexical`, the score used), `band`, `score`,
 `linked_now` (whether the current threshold links the pair), the two ids, where each question came
@@ -70,24 +71,25 @@ Fill in `team_label (twin / not twin)` for every pair:
   question reworded, or the same ask with details that do not change the answer;
 - `not twin`: the questions share a topic or wording but ask different things, so an answer to one
   leaves the other largely unanswered;
-- `unsure`: only when you cannot decide; write why in `notes`. The Qoherent expert labels these
-  pairs.
+- `unsure`: only when you cannot decide; write why in `notes`. The expert agent labels these pairs.
+  When the evidence cannot settle a pair, the expert writes `twin`, which keeps the question out of
+  dev.
 
-Label every pair before you open `reports/tier_k_dev_split.md`, which shows Claude's counts per band,
-and ignore `linked_now` while you label.
+Label every pair without opening `reports/tier_k_dev_split.md` or `src/grcbench/splits/twins.py`,
+which show Claude's counts per band. Your input copy has no `linked_now` column.
 
-The coordinator then counts the twins in each band. A threshold is the lower edge of the lowest band
-in which at least half of the pairs are twins. If the team's labels give 0.92 and 0.55, nothing
-moves. If they give another threshold, the coordinator rebuilds the dev split with it and records
-the deviation in the pre-registration (§10).
+The coordinator then counts the decided twins in each band. A threshold is the lower edge of the
+lowest band in which at least half of the pairs are twins. If the decided labels give 0.92 and 0.55,
+nothing moves. If they give another threshold, the coordinator rebuilds the dev split with it and
+records the deviation in the pre-registration (§10).
 
 ## C. Contamination (`contamination_<tier>.csv`)
 
 The contamination audit compares every benchmark item with every training corpus: training
 questions, teacher answers, repaired answers, SFT sessions, task specs and agent traces. It flags a
 pair when the two share a word 8-gram, or their TF-IDF cosine is at least 0.55, or their embedding
-cosine is at least 0.88 (`reports/contamination.md`). Nothing is removed from any dataset. The team's
-decisions give each tier's confirmed contamination rate, which is reported next to its flagged rate
+cosine is at least 0.88 (`reports/contamination.md`). Nothing is removed from any dataset. The decided
+labels give each tier's confirmed contamination rate, which is reported next to its flagged rate
 (pre-registration §2).
 
 Each row is one item and one training document:
@@ -98,8 +100,8 @@ Each row is one item and one training document:
 - `item_text`: the first 300 characters of the item;
 - `training_text`: the part of the training document that matched, at most 300 characters.
 
-If the texts are cut off and you need more, ask the coordinator for the full item and training
-document.
+If the texts are cut off and you need more, read the full item in `items/` and the full training
+document in the training corpus the row names (read-only).
 
 Fill in `decision` for every pair:
 
@@ -113,21 +115,18 @@ Fill in `decision` for every pair:
 For every `contaminated` or `unsure`, write in `notes` what matches, for example "same question, same
 numbers" or "answer works out the same 48 kHz case".
 
-**Two people:**
+**Two reviewers on every row:**
 
-1. Reviewer 1 labels every row of the four sheets.
-2. The coordinator gives reviewer 2 a copy holding every row reviewer 1 marked `contaminated` or
-   `unsure`, plus every fifth row of each sheet (data rows 5, 10, 15, …). Reviewer 1's columns are
-   left empty in that copy, and reviewer 2 labels these rows alone.
-3. Where both agree, that is the decision. Where they disagree, or either wrote `unsure`, the
-   Qoherent expert decides. A row only reviewer 1 saw keeps reviewer 1's decision.
-4. The coordinator writes the final `decision`, both reviewers' initials in `reviewer` (separated by
-   `;`) and the notes into the four sheets in `handoff/review_sheets/`. `./gb contamination` keeps
-   these three columns on every re-run.
+1. Reviewer 1 and reviewer 2 each label every row of the four sheets, alone.
+2. Where both agree, that is the decision. Where they disagree, or either wrote `unsure`, the expert
+   agent decides. When the evidence cannot settle a pair, the expert writes `contaminated`.
+3. The coordinator writes the final `decision`, the initials in `reviewer` (separated by `;`, with
+   `EX` added where the expert decided) and the notes into the four sheets in `handoff/review_sheets/`.
+   `./gb contamination` keeps these three columns on every re-run.
 
 An item counts as contaminated when at least one of its pairs is finally `contaminated`. The
 confirmed rate of a tier is the share of its items that count as contaminated. The agreement of the
-two reviewers is reported on the every-fifth-row rows.
+two reviewers is reported on every row, and on the every-fifth rows (data rows 5, 10, 15, …) as well.
 
 A row whose `signals` reads `not flagged in this run` was judged in an earlier run and is no longer
 flagged. Leave it as it is.
@@ -139,4 +138,17 @@ flagged. Leave it as it is.
 | `tier_k_test_clusters` | `team_decision (same family / split out)` | `same family`, `split out` |
 | `tier_k_twin_threshold_review` | `team_label (twin / not twin)` | `twin`, `not twin`, `unsure` |
 | `contamination_<tier>` | `decision` | `contaminated`, `not contaminated`, `unsure` |
-| all three | `reviewer` | initials; in the final contamination sheets both reviewers' initials, separated by `;` |
+| all three | `reviewer` | the initials of those who decided, separated by `;` (`R1;R2`, or `R1;R2;EX` where the expert decided) |
+
+## Output fields
+
+One JSON object per row, written to your output file as soon as the row is done:
+
+- `sheet`: `"clusters"`, `"twins"` or `"contamination_<tier>"`;
+- `key`:
+  - `{"id": ...}` for a cluster row;
+  - `{"source": ..., "id_a": ..., "id_b": ...}` for a twin pair;
+  - `{"tier": ..., "item_id": ..., "corpus": ..., "doc_id": ...}` for a contamination pair;
+- `value`: one of the allowed values;
+- `notes`: your reason;
+- `evidence`: what matched, quoted from both texts.

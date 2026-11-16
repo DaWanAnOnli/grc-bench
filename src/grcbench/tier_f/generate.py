@@ -28,6 +28,21 @@ share its cell with other tasks of its split, up to CELL_CAP[level] tasks per ce
 cluster_id, which the clustered statistics use. Variants (further solutions) come from equivalences; mutations
 are kept only where re-running the model predicts that the oracle rejects them. Everything follows from SEED and the task id.
 
+The Tier-F review (reviews/tier_f.jsonl, the expert's generator notes) added, without changing any attempt's draw:
+tone sources named by position (tone_1, tone_2, ...) or by their waveform, not by their frequency; a tune's strobe
+sentence that describes the start graph; a modify task's tap named unambiguously when two stages share its label,
+and a path check from the tap through the new stage; p2p labels for the checks a structural repair's fault does not
+touch; a p2p check that the stated samp_rate stays in tune and wrong-value repair tasks; the task's own golden lookup
+(golden_lookup: the catalog labels of the blocks the edit adds, natural_lookup); one path check per repeated stage plus
+block_present checks with min k; 2*math.pi in the FM phrase and the Abs block in the rectify phrase; a tap at the tones
+step named 'the Add block', and a tap at the only source checked from the source behind the main output; a
+block_present check on a square, sawtooth or triangle source's waveform. A new search (generate) keeps a candidate
+only if it meets further rules (search_rule_misses): the Hilbert band fs/20 .. 0.45 fs in every attempt, at most five
+blocks at L1, no modify branch that repeats the main chain's next stage, no Conjugate right after a Conjugate, no
+quantizer whose input is already on its grid; and with --share-cells a candidate shares a cell only beside tasks of
+other families or edits, all written at a level that shares (_may_share). A reviewed task's recorded attempt still
+builds as it was.
+
     ./gb tier-f generate --ids gbf-test-21,gbf-test-22      write those tasks (task folders and build.py)
     ./gb tier-f generate --split test                        every new task of the split
     ./gb tier-f generate --plan                              print the id -> family / level plan
@@ -48,7 +63,8 @@ from typing import Any
 from ..common.canary import CANARY
 from ..common.paths import ITEMS
 from . import compose as C
-from . import edit
+from . import edit, golden
+from .graph_checks import NON_FUNCTIONAL
 
 SEED = "grc-bench-tier-f-generator-v1-2026-11-04"
 GENERATOR = ("grcbench.tier_f.generate", "1")
@@ -188,6 +204,7 @@ class Stage:
     kind = ""
     ids: list[str] = []
     terminal = False
+    present: list[list[str]] | None = None   # the blocks the stage builds, when `ids` lists several (else: ids, one block)
 
     def design(self, rng: random.Random, sig: Sig) -> dict | None:
         raise NotImplementedError
@@ -246,9 +263,12 @@ class Source(Stage):
         return Sig(p["kind"], sig.fs, tuple(Tone(f, a) for f, a in p["tones"]), noise=p.get("noise", 0.0))
 
     def build(self, g, src, p, sig):
+        # named by position (tone_1, tone_2, ...) or by the waveform, never by the frequency: a tune or a wrong-value
+        # repair moves a frequency, and a name holding the reference value would give the answer away (Tier-F review)
         wave = WAVES[p["wave"]][0] if p.get("wave") else "analog.GR_COS_WAVE"
-        names = [g.add(f"{p.get('wave') or 'tone'}_{int(abs(f))}", "analog_sig_source_x", type=p["kind"],
-                       samp_rate="samp_rate", waveform=wave, freq=fmt(f), amp=fmt(a), offset="0") for f, a in p["tones"]]
+        names = [g.add(p["wave"] if p.get("wave") else f"tone_{i}", "analog_sig_source_x", type=p["kind"],
+                       samp_rate="samp_rate", waveform=wave, freq=fmt(f), amp=fmt(a), offset="0")
+                 for i, (f, a) in enumerate(p["tones"], 1)]
         if p.get("noise"):
             names.append(g.add("noise", "analog_noise_source_x", type=p["kind"], noise_type="analog.GR_GAUSSIAN",
                                amp=fmt(p["noise"]), seed="0"))
@@ -542,7 +562,8 @@ class Rectify(Stage):
         return [name], name
 
     def phrase(self, p, sig):
-        return "full-wave rectify it, so that each output sample is the absolute value of the input sample"
+        # the path check requires blocks_abs_xx, so the phrase names it (Tier-F review)
+        return "full-wave rectify it with an Abs block, so that each output sample is the absolute value of the input sample"
 
     def mutations(self, p, names):
         return [{"op": "bypass", "block": names[0], "breaks": "not rectified", "_bypass": True}]
@@ -651,6 +672,7 @@ class Channel(Stage):
 
 class FmPair(Stage):
     kind, ids = "fm", ["analog_frequency_modulator_fc", "analog_quadrature_demod_cf"]
+    present = [["analog_frequency_modulator_fc"], ["analog_quadrature_demod_cf"]]
 
     def design(self, rng, sig):
         if sig.kind != "float" or len(sig.tones) != 1 or sig.dc or sig.level_only or sig.noise or sig.tones[0].a > 1:
@@ -674,9 +696,10 @@ class FmPair(Stage):
         return [mod, dem], dem
 
     def phrase(self, p, sig):
-        return (f"frequency-modulate it with a Frequency Mod block (sensitivity 2*pi*{fmt(p['dev'])}{per(p['rate'])}, so an "
-                f"input of 1.0 deviates by {hz(p['dev'])}) and demodulate it with a Quadrature Demod block whose gain "
-                f"turns {hz(p['scale'])} of deviation into an output of 1.0 (gain {p['rate']}/(2*pi*{fmt(p['scale'])}))")
+        # 2*math.pi as build() writes it: GRC 3.10 has no name pi, so an answer copying 2*pi would fail V3 (Tier-F review)
+        return (f"frequency-modulate it with a Frequency Mod block (sensitivity 2*math.pi*{fmt(p['dev'])}{per(p['rate'])}, "
+                f"so an input of 1.0 deviates by {hz(p['dev'])}) and demodulate it with a Quadrature Demod block whose gain "
+                f"turns {hz(p['scale'])} of deviation into an output of 1.0 (gain {p['rate']}/(2*math.pi*{fmt(p['scale'])}))")
 
     def tunables(self, p, names):
         return [{"block": names[1], "param": "gain", "text": f"{p['rate']}/(2*math.pi*{fmt(p['scale'] * 2)})",
@@ -1083,15 +1106,18 @@ def _clauses(chain: Chain, override: tuple[int, dict] | None = None) -> str:
     parts = []
     for i, st in enumerate(chain.steps):
         p = override[1] if override and override[0] == i else st.p
-        if i == 0 and chain.msg and not (override and override[0] == 0):
+        if i == 0 and chain.msg:
             p = chain.msg["p0"]                     # the source as built; the strobe retunes it
         parts.append(st.stage.phrase(p, st.sig_in))
     text = parts[0] + "".join(f"; then {x}" for x in parts[1:])
     if chain.msg:
         m = chain.msg
+        # a strobe tune overrides step 0 with the message it starts with (the tunable's p carries that frequency as
+        # the tone): the steps describe the start graph, never the message the answer must send (Tier-F review)
+        f_msg = override[1]["tones"][0][0] if override and override[0] == 0 else m["f_new"]
         text += (f". Throttle the first Signal Source's output to real time with a Throttle block, and connect a Message "
-                 f"Strobe that sends pmt.to_pmt({{'freq': {fmt(m['f_new'])}}}) every {m['period_ms']} ms to that "
-                 f"Signal Source's message input cmd, so that the {hz(m['f0'])} tone is retuned to {hz(m['f_new'])} "
+                 f"Strobe that sends pmt.to_pmt({{'freq': {fmt(f_msg)}}}) every {m['period_ms']} ms to that "
+                 f"Signal Source's message input cmd, so that the {hz(m['f0'])} tone is retuned to {hz(f_msg)} "
                  "while the flowgraph runs")
     return text
 
@@ -1118,13 +1144,193 @@ def _measured(sig: Sig, msg: dict | None) -> str:
 
 
 def _path_checks(chain: Chain, group: str, out_file: str, steps: list[Step] | None = None) -> list[dict]:
-    checks = []
-    for st in (steps if steps is not None else chain.steps[1:]):
-        if st.stage.kind == "tones":
-            continue
-        checks.append({"kind": "path", "from_ids": ["analog_sig_source_x"], "via_ids": st.ids,
-                       "to_ids": ["blocks_file_sink"], "to_params": {"file": out_file}, "group": group})
+    """A path from a Signal Source through each stage to the File Sink. A stage that k > 1 steps repeat (the same block
+    ids) gets one path check, and where its second step stands, one block_present check with min k per block the
+    stage builds, so a repeated stage is checked as often as it is stated (Tier-F review: two identical path checks
+    accept one stage). "_steps" (left out of the task) lists the chain steps a check stands for."""
+    seq = list(enumerate(chain.steps)) if steps is None else [(len(chain.steps) + n, st) for n, st in enumerate(steps)]
+    seq = [(j, st) for j, st in seq if st.stage.kind != "tones"]
+    checks, seen = [], {}
+    for j, st in seq:
+        key = tuple(st.ids)
+        seen.setdefault(key, []).append(j)
+        if len(seen[key]) == 1:
+            checks.append({"kind": "path", "from_ids": ["analog_sig_source_x"], "via_ids": st.ids,
+                           "to_ids": ["blocks_file_sink"], "to_params": {"file": out_file}, "group": group,
+                           "_steps": [j]})
+        elif len(seen[key]) == 2:
+            reps = [i for i, s in seq if tuple(s.ids) == key]
+            checks += [{"kind": "block_present", "ids": list(ids), "min": len(reps), "group": group, "_steps": reps,
+                        "_stage": st.stage.kind} for ids in (st.stage.present or [st.ids])]
     return checks
+
+
+PLURAL = {"filter": "filters", "shift": "Multiply blocks", "resample": "Rational Resamplers", "conjugate": "Conjugates",
+          "hilbert": "Hilbert blocks", "magnitude": "Complex To Mag blocks", "rectify": "Abs blocks",
+          "quantize": "Float To Short blocks", "agc": "AGC blocks", "channel": "Channel Models",
+          "fm": "Frequency Mod and {n} Quadrature Demod blocks", "db": "Log10 blocks", "phase": "Complex To Arg blocks",
+          "level_db": "Log10 blocks"}
+NUMBER = {2: "two", 3: "three", 4: "four"}
+ALL = {2: "both", 3: "all three", 4: "all four"}
+
+
+def _repeat_words(graph_checks: list[dict], family: str) -> str:
+    """The structure line's words for the block_present checks of repeated stages: '; two Conjugates', or in a
+    structural repair whose fault is not in that stage (p2p) '; both Channel Models are kept'."""
+    words, done = "", set()
+    for c in graph_checks:
+        kind = c.get("_stage")
+        if kind is None or kind in done:
+            continue
+        done.add(kind)
+        n = c["min"]
+        kept = family == "repair" and c["group"] == "p2p"
+        count = (ALL if kept else NUMBER).get(n, str(n))
+        words += f"; {count} {PLURAL.get(kind, kind + ' stages').format(n=count)}" + (" are kept" if kept else "")
+    return words
+
+
+def _public(graph_checks: list[dict]) -> list[dict]:
+    return [{k: v for k, v in c.items() if not k.startswith("_")} for c in graph_checks]
+
+
+ORDINAL = ("first", "second", "third", "fourth", "fifth")
+NOUN = {"agc": "AGC block"}                             # a stage's noun after "the first"; else LABEL without "the "
+
+
+def _title(st: Step) -> str | None:
+    """A stage's block title where stages of one kind differ in it (a High or Low Pass Filter)."""
+    if st.stage.kind == "filter":
+        return "Low Pass Filter" if st.p["ftype"] == "low_pass_filter" else "High Pass Filter"
+    return None
+
+
+def _tap_text(chain: Chain, k: int) -> str:
+    """The modify task's tap point in words. When the chain has two stages with the tap's label, the words name
+    the tap unambiguously (Tier-F review): by its block title if that differs, else by its position, its instance
+    name and what sets it apart (the mixer's oscillator, or the stage it feeds)."""
+    if k == 0:   # several sources (tones, or a tone and the noise) meet in the Add block (Tier-F review)
+        return "the Add block" if len(chain.steps[0].names) > 1 else "the Signal Source"
+    st = chain.steps[k]
+    label = LABEL.get(st.stage.kind, "that stage")
+    same = [j for j in range(1, len(chain.steps)) if LABEL.get(chain.steps[j].stage.kind) == label]
+    if len(same) < 2:
+        return label
+    titles = [_title(chain.steps[j]) for j in same]
+    if _title(st) and titles.count(_title(st)) == 1:
+        return f"the {_title(st)}"
+    noun = NOUN.get(st.stage.kind, label[len("the "):] if label.startswith("the ") else label)
+    if st.stage.kind == "shift":
+        where = f"the one fed by the {hz(st.p['lo'])} tone"
+    elif k + 1 < len(chain.steps):
+        where = f"the one before {LABEL.get(chain.steps[k + 1].stage.kind, 'the next stage')}"
+    else:
+        where = f"the one after {_tap_text(chain, k - 1) if k - 1 == 0 else LABEL.get(chain.steps[k - 1].stage.kind)}"
+    return f"the {ORDINAL[same.index(k)]} {noun} ({st.out}, {where})"
+
+
+def _tap_checks(chain: Chain, k: int, st: Step, file_b: str) -> list[dict]:
+    """A modify task's path from its tap point through the added stage to the second File Sink (Tier-F review: the
+    path from a Signal Source alone does not pin the tap). A tap at the only tone source starts at the Signal Source
+    that feeds the main output file, so a new Signal Source does not stand in for it."""
+    if k == 0 and len(chain.steps[0].names) == 1:
+        return [{"kind": "path", "from_ids": ["analog_sig_source_x"],
+                 "from_upstream_of": {"ids": ["blocks_file_sink"], "params": {"file": chain.out_file}},
+                 "via_ids": list(st.ids), "to_ids": ["blocks_file_sink"], "to_params": {"file": file_b}, "group": "f2p"}]
+    from_ids = ["blocks_add_xx"] if k == 0 else list(chain.steps[k].ids)
+    return [{"kind": "path", "from_ids": from_ids, "via_ids": list(st.ids), "to_ids": ["blocks_file_sink"],
+             "to_params": {"file": file_b}, "group": "f2p"}]
+
+
+def _holds(sig: Sig | None, chk: dict) -> bool:
+    """The model output passes the check at its stated tolerance."""
+    from .oracles import _compare
+    val = model_feature(sig, chk) if sig is not None else None
+    return val is not None and _compare(val, chk)
+
+
+def _repair_groups(chain: Chain, checks: list[dict], graph_checks: list[dict], fault: dict, start: dict
+                   ) -> tuple[list[dict], list[dict]]:
+    """A structural repair's p2p checks, as the hand-written repairs label the parts the fault does not touch (R8;
+    Tier-F review). A missing connection: the path checks that already pass on the start graph. A block id that
+    does not exist: the path checks of the other stages, and the signal checks the chain model predicts unchanged
+    with the faulted stage bypassed (only where a bypass keeps the signal's kind and rate). Every other check
+    stays f2p."""
+    checks, graph_checks = copy.deepcopy(checks), copy.deepcopy(graph_checks)
+    if fault["type"] == "missing_connection":
+        from .graph_checks import evaluate
+        for c, res in zip(graph_checks, evaluate(graph_checks, start)):
+            if res["passed"]:
+                c["group"] = "p2p"
+        return checks, graph_checks
+    i = next(j for j, s in enumerate(chain.steps) if fault["block"] in s.names)
+    for c in graph_checks:                        # a path or block_present check of stages the fault is not in
+        if i not in c.get("_steps", [i]):
+            c["group"] = "p2p"
+    st = chain.steps[i]
+    if (st.sig_in.kind, st.sig_in.fs, st.sig_in.level_only) == (st.sig.kind, st.sig.fs, st.sig.level_only):
+        pred = chain.rerun(i, None, bypass=True)
+        for c in checks:
+            if _holds(pred, c):
+                c["group"] = "p2p"
+    return checks, graph_checks
+
+
+def _rate_pin(chain: Chain) -> tuple[dict, str]:
+    """A tune or wrong-value repair keeps the stated sample rate (Tier-F review: same_blocks_as_start lets a variable's
+    value change, so a changed samp_rate could stand in for the fix)."""
+    fs = chain.graph.fs
+    return ({"kind": "block_present", "ids": ["variable"], "params": {"value": fmt(fs)}, "group": "p2p"},
+            f"the sample rate stays at {hz(fs)} (samp_rate {fmt(fs)})")
+
+
+def _hilbert_inputs(chain: Chain, extra: list[Step]) -> list[Sig]:
+    """The signals entering each Hilbert stage: as built and, for a retuned source, before the first message."""
+    out = [st.sig_in for st in chain.steps[1:] + extra if st.stage.kind == "hilbert"]
+    if chain.msg:
+        sig = chain.steps[0].stage.apply(chain.steps[0].sig_in, chain.msg["p0"])
+        for st in chain.steps[1:]:
+            if sig is None:
+                break
+            if st.stage.kind == "hilbert":
+                out.append(sig)
+            sig = st.stage.apply(sig, st.p)
+    return out
+
+
+def _rule_misses(chain: Chain, extra: list[Step], level: str, n_blocks: int,
+                 branch: tuple[int, Step] | None = None) -> list[str]:
+    """Rules every attempt of a new search must meet (Tier-F review). A reviewed task's recorded attempt still
+    builds as it was (build_task), so a rule never turns a reviewed task into another task."""
+    misses = []
+    if level == "L1" and n_blocks > 5:
+        misses.append(f"L1: {n_blocks} blocks besides samp_rate (L1 allows at most 5)")
+    for sig in _hilbert_inputs(chain, extra):
+        bad = [t.f for t in sig.tones if not sig.fs / 20 <= t.f <= 0.45 * sig.fs]
+        if bad:
+            misses.append(f"Hilbert: a {hz(bad[0])} tone outside fs/20 .. 0.45 fs ({hz(sig.fs / 20)} .. "
+                          f"{hz(0.45 * sig.fs)}), where 65 taps are not accurate")
+    pairs = list(zip(chain.steps, chain.steps[1:]))
+    if branch is not None:
+        k, st = branch
+        pairs.append((chain.steps[k], st))
+        nxt = chain.steps[k + 1] if k + 1 < len(chain.steps) else None
+        if nxt is not None and nxt.stage.kind == st.stage.kind and nxt.p == st.p:
+            misses.append(f"modify: the branch at step {k} repeats the main chain's next stage ({st.stage.kind}), so "
+                          "the second output copies the first")
+    if any(a.stage.kind == b.stage.kind == "conjugate" for a, b in pairs):
+        misses.append("a Conjugate right after a Conjugate: the pair cancels, so the output equals its input")
+    for st in chain.steps[1:] + extra:
+        grid = st.sig_in.int_scale
+        if st.stage.kind == "quantize" and grid and st.p["scale"] % grid == 0:
+            misses.append(f"a quantizer whose input is already on the grid of {fmt(1 / st.p['scale'])} (it changes "
+                          "nothing)")
+    return misses
+
+
+def search_rule_misses(cand: dict) -> list[str]:
+    """The rules a candidate misses; the search (generate) keeps only a candidate that misses none."""
+    return list(cand.get("rule_misses") or [])
 
 
 def _mutations(chain: Chain, checks: list[dict], point: str = "out") -> list[dict]:
@@ -1265,6 +1471,10 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
     chain.out_file = out_file
     ref = chain.graph.data()
     start, fault, extra_points, notes = None, None, [], []
+    value_block, branch_at = None, None
+    structure = "a path from a Signal Source through each stated stage to the File Sink"
+    extra_props: list[str] = []
+    extra_steps: list[Step] = []
     checks, props = oracle_checks(chain.sig, "out", "main" if family == "build" else "f2p", chain.msg)
     graph_checks = _path_checks(chain, "main" if family == "build" else "f2p", out_file)
     measured = _measured(chain.sig, chain.msg)
@@ -1308,6 +1518,7 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
                          "correct_id": b["id"], "description": f"block {b['name']} has the id {wrong}, which does not "
                                                                 "exist in GNU Radio"}
                 symptom = "GRC cannot load the flowgraph"
+            checks, graph_checks = _repair_groups(chain, checks, graph_checks, fault, start)
             instruction = (f"The open flowgraph is meant to do the following, {_steps(chain)}; and write the result "
                            f"as {kind_word} samples to a File Sink whose file name is {out_file}. {measured}, the "
                            "output should have " + "; ".join(props) + f". Instead, {symptom}. Find the fault and fix "
@@ -1324,6 +1535,7 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
             if pick is None:
                 return None
             i, t, pred = pick
+            value_block = t["block"]
             start = edit.set_param(ref, t["block"], t["param"], t["text"])
             if family == "parameter-tune":
                 instruction = (f"The open flowgraph was built with these steps, {_steps(chain, (i, t['p']))}; and "
@@ -1337,7 +1549,9 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
                                f"result as {kind_word} samples to a File Sink whose file name is {out_file}. "
                                f"{measured}, the output should have " + "; ".join(props) + f". Instead, "
                                f"{_summary(pred, chain.sig)}. Find the fault and fix it, keeping everything else as it is. {TAIL}")
-            graph_checks = copy.deepcopy(SAME_GRAPH)
+            pin, pin_text = _rate_pin(chain)
+            graph_checks = copy.deepcopy(SAME_GRAPH) + [pin]
+            structure, extra_props = "same blocks and connections as the start graph", [pin_text]
             variants = _variants_value(ref, t["block"], t["param"])
             notes.append(f"start: {t['what']} set to {t['text']}")
     else:                                                     # modify: a second output from a tap point
@@ -1367,6 +1581,7 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
         if branch is None:
             return None
         k, g2, st = branch
+        branch_at = (k, st)
         file_b = "second_" + OUT_FILE.get(st.stage.kind, "out.dat")
         sink_b = g2.add("out_b", "blocks_file_sink", type=st.sig.kind, file=file_b, append="False",
                         unbuffered="False", vlen="1")
@@ -1380,10 +1595,12 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
         checks_a, _ = oracle_checks(chain.sig, "out", "p2p", chain.msg)
         checks_b, props_b = oracle_checks(st.sig, "second", "f2p", chain.msg)
         checks = checks_a + checks_b
-        graph_checks = _path_checks(chain, "f2p", file_b, [st])
+        tap_text = _tap_text(chain, k)
+        graph_checks = _path_checks(chain, "f2p", file_b, [st]) + _tap_checks(chain, k, st, file_b)
+        if len(graph_checks) > 1:
+            structure += f", and from {tap_text} through the new stage to the File Sink of {file_b}"
+        extra_steps = [st]
         extra_points = [("second", file_b, st.sig)]
-        tap_text = "the sum of the tones" if k == 0 and len(chain.steps[0].names) > 1 else \
-            ("the Signal Source" if k == 0 else LABEL.get(chain.steps[k].stage.kind, "that stage"))
         instruction = (f"The open flowgraph was built with these steps, {_steps(chain)}; and its result is written "
                        f"as {kind_word} samples to a File Sink whose file name is {out_file}. Keep that output as it "
                        "is, and add a second one: take "
@@ -1394,6 +1611,13 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
         props = props + [f"{file_b}: " + "; ".join(props_b)]
         notes.append(f"second output tapped after step {k} ({chain.steps[k].stage.kind}) through {st.stage.kind}")
         chain_for_mut = Chain(g2, chain.steps[:k + 1] + [st], sink_b, file_b, level, chain.msg)
+    structure += _repeat_words(graph_checks, family)
+    wave = chain.steps[0].p.get("wave")
+    if wave and family in ("build", "modify"):    # the stated square, sawtooth or triangle wave (Tier-F review)
+        graph_checks = graph_checks + [{"kind": "block_present", "ids": ["analog_sig_source_x"],
+                                        "params": {"waveform": WAVES[wave][0]},
+                                        "group": "main" if family == "build" else "f2p"}]
+        structure += f"; a Signal Source with waveform {WAVES[wave][0]}"
     try:
         ref_c = compact(ref)
     except ValueError:
@@ -1426,12 +1650,9 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
         "family": family, "level": level, "instruction": instruction,
         "start_grc": "start.grc" if start is not None else None, "reference_grc": "reference.grc",
         "observation": _observation(points, chain.msg),
-        "oracle": {"checks": checks, "graph_checks": graph_checks},
+        "oracle": {"checks": checks, "graph_checks": _public(graph_checks)},
         "mutations": uniq,
-        "spec_properties": props + ["structure: " + ("same blocks and connections as the start graph"
-                                                     if graph_checks == SAME_GRAPH else
-                                                     "a path from a Signal Source through each stated stage to the "
-                                                     "File Sink")],
+        "spec_properties": props + ["structure: " + structure] + extra_props,
         "perturbation": {"perturbed": False, "changes": []},
         "disjointness": (f"A generated chain ({', '.join(s.stage.kind for s in chain.steps)}) whose functional "
                          f"signature {'|'.join(sig)} hashes to the {split} side and is reserved, so no training-side "
@@ -1444,6 +1665,9 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
     }
     if fault:
         record["fault"] = fault
+    lookup = natural_lookup(fault, ref, start, value_block)
+    if lookup:
+        record[golden.NATURAL_LOOKUP] = lookup
     files = {"reference.grc": ref_c}
     if start is not None:
         files["start.grc"] = compact(start) if fault is None or fault["type"] == "wrong_value" else start
@@ -1452,7 +1676,55 @@ def assemble(task_id: str, split: str, family: str, level: str, attempt: int) ->
             files[path] = compact(v)
         except ValueError:
             files[path] = v
-    return {"record": record, "files": files, "cell": "|".join(sig)}
+    return {"record": record, "files": files, "cell": "|".join(sig), "edit_key": edit_key(record, ref, start),
+            "rule_misses": _rule_misses(chain, extra_steps, level, len(ref_c["blocks"]) - 1, branch_at)}
+
+
+def natural_lookup(fault: dict | None, ref: dict, start: dict | None, value_block: str | None) -> dict | None:
+    """The task's own golden lookup (task.json golden_lookup, read by golden.lookup_args; Tier-F review): the
+    catalog labels of the blocks the edit adds (every block of a build, a modify task's new blocks, the block whose
+    id a nonexistent-block repair corrects), or for a value-only edit the label of the block whose parameter changes,
+    so the lookup reads like a user's search and does not paste the answer's block ids. None for a missing connection
+    (the edit adds no block): the lookup stays the reference's block ids."""
+    if fault and fault["type"] == "missing_connection":
+        return None
+    if fault and fault["type"] == "nonexistent_block":
+        ids = [fault["correct_id"]]
+    elif value_block is not None:
+        ids = [b["id"] for b in ref["blocks"] if b["name"] == value_block]
+    else:
+        old = {b["name"] for b in (start or {}).get("blocks") or []}
+        ids = [b["id"] for b in ref["blocks"] if b["name"] not in old and not b["id"].startswith(NON_FUNCTIONAL)]
+    labels: list[str] = []
+    for bid in ids:
+        label = golden.catalog_label(bid)
+        if label not in labels:
+            labels.append(label)
+    return {"query": " ".join(labels), "domain": "catalog"} if labels else None
+
+
+def edit_key(record: dict, ref: dict, start: dict | None) -> tuple:
+    """(family, the edit) of a task, for the shared-cell rule of generate (Tier-F review: tasks of one cell must not
+    repeat a family and edit with new numbers). Build: the stage list; modify: the tap and the added stage; a
+    structural repair: the fault type; a tune or wrong-value repair: the block and parameter that change."""
+    family = record.get("family")
+    notes = record.get("authoring_notes") or {}
+    fault = record.get("fault") or {}
+    if family == "build":
+        return family, tuple(notes.get("chain") or ())
+    if fault.get("type") in ("missing_connection", "nonexistent_block"):
+        return family, fault["type"]
+    if family == "modify":
+        return family, next((n for n in notes.get("notes") or [] if n.startswith("second output tapped")), "")
+    if fault.get("type") == "wrong_value":
+        return family, (fault.get("block"), fault.get("param"))
+    old = {b["name"]: b.get("parameters") or {} for b in (start or {}).get("blocks") or []}
+    for b in ref.get("blocks") or []:
+        p, q = b.get("parameters") or {}, old.get(b["name"], {})
+        for key in sorted(set(p) | set(q)):
+            if str(p.get(key)) != str(q.get(key)):
+                return family, (b["name"], key)
+    return family, None
 
 
 BUILD_PY = '''"""Authoring script for GRC-Bench Tier-F item {tid} (generated by grcbench.tier_f.generate, attempt {attempt}).
@@ -1513,12 +1785,42 @@ def cell_counts(exclude: set[str]) -> dict[str, int]:
     return counts
 
 
+def cell_tasks(exclude: set[str]) -> dict[str, list[tuple[str, tuple]]]:
+    """cell -> [(written level, edit key)] of the Tier-F tasks with that cell (tasks in `exclude` left out)."""
+    import json
+
+    import yaml
+    out: dict[str, list[tuple[str, tuple]]] = {}
+    for p in sorted(TF.glob("*/*/reference.grc")):
+        if p.parent.name in exclude or not (p.parent / "task.json").exists():
+            continue
+        try:
+            ref = yaml.safe_load(p.read_text(encoding="utf-8"))
+            rec = json.loads((p.parent / "task.json").read_text(encoding="utf-8"))
+            sp = p.parent / "start.grc"
+            start = yaml.safe_load(sp.read_text(encoding="utf-8")) if sp.exists() else None
+            out.setdefault("|".join(C.signature(ref)), []).append((rec.get("level"), edit_key(rec, ref, start)))
+        except Exception:                       # noqa: BLE001 - a graph the classifier cannot read
+            pass
+    return out
+
+
+def _may_share(cand: dict, counts: dict[str, int], tasks: dict[str, list[tuple[str, tuple]]]) -> bool:
+    """--share-cells (Tier-F review): a candidate may take a used cell only if its written level shares (CELL_CAP)
+    and the cell holds fewer than CELL_CAP of it, no task of the cell is written at a level that never shares (a
+    relabelled L2 task keeps its cell alone), and no task of the cell has the candidate's family and edit."""
+    level, others = cand["record"]["level"], tasks.get(cand["cell"], [])
+    return level in CELL_CAP and counts.get(cand["cell"], 0) < CELL_CAP[level] \
+        and all(lv in CELL_CAP for lv, _ in others) and cand.get("edit_key") not in {k for _, k in others}
+
+
 def generate(ids: list[str], first_attempt: int = 0, share: bool = False) -> list[str]:
     """Search each id's first attempt with a new cell of the right split (or, with `share`, a cell of its split
-    used by fewer than CELL_CAP[level] tasks); write the task and its build.py."""
+    that _may_share allows); write the task and its build.py."""
     done = []
     taken = used_cells(exclude=set(ids))
     counts = cell_counts(exclude=set(ids))
+    tasks = cell_tasks(exclude=set(ids))
     for tid in ids:
         split = tid.split("-")[1]
         family, level = plan(split)[tid]
@@ -1531,10 +1833,10 @@ def generate(ids: list[str], first_attempt: int = 0, share: bool = False) -> lis
             except (ValueError, ZeroDivisionError, KeyError, IndexError, StopIteration) as exc:   # a candidate that breaks
                 print(f"{tid} attempt {attempt}: skipped ({type(exc).__name__}: {exc})", file=sys.stderr)
                 continue
-            if cand is None:
+            if cand is None or search_rule_misses(cand):
                 continue
             sharing = shares and attempt >= SHARE_FROM
-            if cand["cell"] in taken and not (sharing and counts.get(cand["cell"], 0) < CELL_CAP[level]):
+            if cand["cell"] in taken and not (sharing and _may_share(cand, counts, tasks)):
                 continue
             d = TF / split / tid
             errors = write(d, cand)
@@ -1545,6 +1847,7 @@ def generate(ids: list[str], first_attempt: int = 0, share: bool = False) -> lis
                                         newline="\n")
             taken[cand["cell"]] = tid
             counts[cand["cell"]] = counts.get(cand["cell"], 0) + 1
+            tasks.setdefault(cand["cell"], []).append((cand["record"]["level"], cand.get("edit_key")))
             done.append(tid)
             print(f"{tid}: {family} {level} attempt {attempt}: {cand['cell']}")
             break

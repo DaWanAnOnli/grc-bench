@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_7100
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '7100', amp: '0.5',
     offset: '0'}

@@ -378,6 +378,19 @@ def test_review_sheet_keeps_team_decisions_across_reruns(tmp_path: Path):
     assert again[1]["signals"] == audit.NOT_FLAGGED
 
 
+def test_the_confirmed_rate_counts_items_with_a_pair_the_review_found_contaminated(tmp_path: Path):
+    def rec(item, doc, final, by="R1;R2"):
+        return {"sheet": "contamination_tier_k_test", "key": ["tier_k_test", item, "train_questions", doc],
+                "final": final, "decided_by": by}
+    recs = [rec("q1", "t1", "contaminated"), rec("q1", "t2", "not contaminated"),
+            rec("q2", "t3", "not contaminated", "EX"), rec("q3", "t4", "contaminated", "EX (audit)")]
+    (tmp_path / "contamination_tier_k_test.jsonl").write_text("".join(json.dumps(r) + "\n" for r in recs),
+                                                              encoding="utf-8")
+    c = audit.confirmed("tier_k_test", n_items=10, reviews_dir=tmp_path)
+    assert c == {"pairs": 4, "pairs_contaminated": 2, "items_reviewed": 3, "items_contaminated": 2, "rate": 0.2}
+    assert audit.confirmed("tier_f_dev", n_items=5, reviews_dir=tmp_path) is None
+
+
 def test_cli_handles_absent_tiers_and_rejects_unknown_names(tmp_path: Path, monkeypatch, capsys):
     monkeypatch.setattr(corpora, "ITEMS", tmp_path / "items")                 # no Tier-F/A items
     for name, value in (("OUT", tmp_path / "out"), ("SUMMARY", tmp_path / "contamination.md"),

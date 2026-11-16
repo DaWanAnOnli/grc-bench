@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx low_pass_filter blocks_file_sink blocks_complex_to_arg",
+  "query": "Complex to Arg File Sink",
   "domain": "catalog",
   "k": 10
  },

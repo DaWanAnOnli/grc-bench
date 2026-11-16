@@ -25,7 +25,8 @@ question (the 1,853 frozen questions) names the same block and asks about its ou
 
 Settings and inputs come from SETTINGS, drawn with a seeded generator per (seed, block, variant), so
 the output is deterministic for a seed. Claude (Anthropic) wrote the settings table and the question
-templates; the team reviews the wording of each template (handoff/review_sheets/tier_k_block_questions.csv);
+templates; two review agents review the wording of each question (handoff/review_sheets/tier_k_block_questions.csv;
+the decisions, BLOCK_NOTES and EXACT_COPY come from reviews/block_questions.jsonl);
 the answers come from GNU Radio 3.10.12. Scoring: the rule cascade (numbers), no judge rubric.
 
 Reference set and fresh sets. The published 100 questions are the reference set, drawn from
@@ -104,6 +105,16 @@ WORKERS = 8
 RUN_ITEMS = 200_000             # tap capacity per output port; every input here is far shorter
 FLOAT_TOL = {"tolerance": 0.01, "abs_tolerance": 0.005}
 INT_TOL = {"tolerance": 1e-9, "abs_tolerance": 0.01}
+# Wording and keys decided by the review protocol (reviews/block_questions.jsonl, tier_k_block_questions_instructions.md):
+# a sentence a block's questions state after the setting, and the blocks whose every output item is an exact
+# copy of an input item, so a neighbouring item of the same input must not score (exact tolerance).
+BLOCK_NOTES = {
+    "blocks_blockinterleaver_xx": (
+        "In interleave mode, output item i of each block of len(indices) items is input item indices[i] of "
+        "that block, positions counted from 0; deinterleave mode applies the inverse permutation."),
+    "blocks_float_to_int": "The block multiplies each input item by Scale and rounds the product to the nearest integer.",
+}
+EXACT_COPY = {"blocks_patterned_interleaver"}
 INT_TYPES = ("int", "short", "byte")
 STD_PARAMS = {"id", "alias", "comment", "affinity", "minoutbuf", "maxoutbuf"}
 KIND_WORDS = {"output_value": ("output value", "output item", "output sample", "what value", "outputs"),
@@ -379,6 +390,8 @@ def _c2real(r):
 def _float_to_int(r):
     scale = r.choice([1, 10, 100])
     x = _vals(r, 5, [2.71, -2.71, 0.26, -1.04, 3.14, 7.49, -0.91, 1.4, -2.6, 0.49, 12.34, -8.76])
+    # no scaled value lies halfway between two integers, where the rounding rule would matter (review edit)
+    assert all(abs(abs(v * scale) % 1 - 0.5) > 1e-6 for v in x), "float_to_int: a halfway product"
     k = _pick_k(r, 5)
     return {"params": {"scale": str(scale)}, "inputs": [x], "port": 0, "k": k, "expect": round(x[k - 1] * scale)}
 
@@ -826,8 +839,10 @@ def question_text(cls, block_id: str, kind: str, spec: dict, ins, outs) -> str:
     head = (f"In GNU Radio 3.10, take the {cls.label} block ({_code(block_id)}) set to {setting}"
             + (", with its other parameters at their defaults." if others else ".")) if setting else \
         f"In GNU Radio 3.10, take the {cls.label} block ({_code(block_id)}) with its default settings."
+    if block_id in BLOCK_NOTES:
+        head = f"{head} {BLOCK_NOTES[block_id]}"
     port = spec["port"]
-    on_port = f" on its output port {port}" if len(outs) > 1 else ""
+    on_port = f" on its output port {port} (ports counted from 0)" if len(outs) > 1 else ""
     if kind == "output_count":
         dt, vl = outs[port]
         what = f"vectors of {vl} values" if vl > 1 else f"{dt} items"
@@ -955,7 +970,7 @@ def _evaluate(c: dict) -> dict:
         return {**c, "status": "too few output items", "detail": f"{len(runs[0][0])} items"}
     integer = _is_int(kind, out_dtype)
     answer = float(round(got)) if integer else float(f"{got:.6g}")
-    tol = _tol(kind, out_dtype, answer)
+    tol = dict(INT_TOL) if c["block"] in EXACT_COPY else _tol(kind, out_dtype, answer)
     if not _agrees(got, expect, tol):
         return {**c, "status": "run and model disagree", "detail": f"GNU Radio {got:g}, model {expect:g}"}
     return {**c, "status": "ok", "answer": answer, "integer": integer, "tolerance": tol, "ins": ins, "outs": outs}
@@ -1065,7 +1080,40 @@ def _provenance_version(doc: dict) -> str:
             else f"{VERSION} ({doc['seed']})")
 
 
+_REVIEW_STATUS = {"approve": "approved", "approve with edits": "approved-with-edits", "reject": "rejected"}
+
+
+def template_edited(block_id: str, question: str) -> bool:
+    """Whether a template edit decided by the review reached this question (a stated port base, a block
+    note, or an exact-copy key)."""
+    return "(ports counted from 0)" in question or block_id in BLOCK_NOTES or block_id in EXACT_COPY
+
+
+def review_status(rec: dict | None, template_edited: bool = False) -> dict:
+    """An item's `review` field from its decided record (reviews/block_questions.jsonl). A question approved
+    as written that a template edit then reached is `approved-with-edits` too."""
+    if rec is None:
+        return {"status": "pending-team-review", "reviewers": [], "notes": ""}
+    by = rec["decided_by"]
+    how = f"decided by {by}" + (f" ({rec['route']})" if by == "EX" else "")
+    final = rec["final"]
+    if final == "approve with edits":
+        how += "; edits applied in the template"
+    elif final == "approve" and template_edited:
+        final, how = "approve with edits", how + "; a template edit decided for other questions applies"
+    return {"status": _REVIEW_STATUS[final], "reviewers": ["R1", "R2"] + (["EX"] if by.startswith("EX") else []),
+            "notes": how}
+
+
+def review_of(qid: str, item: dict | None = None) -> dict:
+    from grcbench.review.records import decided
+    edited = bool(item) and template_edited(item["source"]["block_id"], item["question"])
+    return review_status(decided("block_questions").get((qid,)), edited)
+
+
 def records(doc: dict) -> tuple[list[dict], list[dict]]:
+    from grcbench.review.records import decided
+    reviewed = decided("block_questions")
     items, keys = [], []
     for q in doc["questions"]:
         qid = _qid(doc["seed"], q["block"], q["variant"])
@@ -1076,7 +1124,8 @@ def records(doc: dict) -> tuple[list[dict], list[dict]]:
                 "provenance": {"drafted_by": "script (grcbench.tier_k.blockgen); settings and question templates by "
                                              "Claude (Anthropic); answers from GNU Radio runs",
                                "generator": GENERATOR, "generator_version": _provenance_version(doc)},
-                "review": {"status": "pending-team-review", "reviewers": [], "notes": ""},
+                "review": review_status(None if doc["fresh"] else reviewed.get((qid,)),
+                                        template_edited(q["block"], q["question"])),
                 "question": q["question"], "task_type": "gnuradio_usage", "difficulty": q["difficulty"],
                 "item_kind": "block_question", "block_question_kind": q["kind"]}
         errors = validate(item)
@@ -1106,17 +1155,24 @@ def sheet(items: list[dict], keys: list[dict]) -> str:
     for it, k in zip(items, keys):
         w.writerow([it["id"], k["kind"], k["block_id"], it["question"], f"{k['answer']:g}", k["evidence"],
                     "", "", "", "", ""])
-    return buf.getvalue()
+    from grcbench.review.fill import filled_text
+    return filled_text("block_questions", buf.getvalue())
 
 
 def report(doc: dict, items: list[dict]) -> str:
     kinds = Counter(i["block_question_kind"] for i in items)
     blocks = Counter(i["source"]["block_id"] for i in items)
     reasons = Counter(d["reason"] for d in doc["dropped"])
+    review = Counter(i["review"]["status"] for i in items)
+    status = ("wording reviewed under the review protocol (two review agents, each solving every question blind "
+              "in GNU Radio; the expert agent on disagreement): "
+              + ", ".join(f"{n} {s}" for s, n in sorted(review.items()))
+              + " (`reviews/block_questions.jsonl`); the expert review of eval plan §5.3 follows"
+              if "pending-team-review" not in review else
+              "wording review under the review protocol pending (`handoff/review_sheets/tier_k_block_questions.csv`)")
     L = ["# Tier K: GNU Radio behaviour questions", "",
          f"Generated by `./gb blockq` ({GENERATOR}, version {VERSION}, reference seed `{doc['seed']}`). Status: "
-         "pending team review of the wording of each question template "
-         "(`handoff/review_sheets/tier_k_block_questions.csv`) and the Qoherent expert review.", "",
+         f"{status}.", "",
          f"**The reference set: {len(items)} test questions about {len(blocks)} GNU Radio blocks**, at most "
          f"{MAX_PER_BLOCK} per block. Each asks for one number that comes from what the block does on a stated input: "
          "the k-th output item, or how many items it produces. The answer key is GNU Radio's own output: the "

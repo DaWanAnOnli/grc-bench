@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x channels_channel_model analog_pll_refout_cc blocks_file_sink",
+  "query": "phase locked loop that outputs a reference carrier",
   "domain": "catalog",
   "k": 8
  },

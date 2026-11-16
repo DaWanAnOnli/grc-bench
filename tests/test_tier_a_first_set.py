@@ -55,7 +55,7 @@ def test_built_task_passed_its_gates_and_is_well_formed(task_dir: Path):
     golden = json.loads((task_dir / "golden_calls.json").read_text(encoding="utf-8"))
     assert 8 <= len(golden["calls"]) <= 20 and golden["final_text"]
     assert task["provenance"]["drafted_by"] == "Claude (Anthropic)"
-    assert task["review"]["status"] == "pending-team-review"
+    assert task["review"] == first_set.review_of(task["id"])           # the review protocol's decision
     assert task["canary"] == CANARY
     seen = [task["instruction"], json.dumps(task["scripted_user"])]
     seen += [p.read_text(encoding="utf-8") for p in (task_dir / "start").rglob("*") if p.is_file()]
@@ -63,6 +63,48 @@ def test_built_task_passed_its_gates_and_is_well_formed(task_dir: Path):
     ref = task["source"].get("ref", "")
     if ref.startswith("gbf-"):                      # start graphs come from the same split's Tier-F graphs
         assert ref.startswith(f"gbf-{task['split']}-")
+
+
+def test_decided_review_and_patches_reach_the_task_record(tmp_path, monkeypatch):
+    """reviews/tier_a.jsonl sets the status; reviews/tier_a_patches.json carries the decided edits, which the
+    generator applies when it writes task.json (file "task.json") or the spec's other files (file "spec")."""
+    from grcbench.review import records, sheets
+    out = lambda v: {"value": v, "edits": [], "notes": ""}
+    recs = records.build(sheets.SHEETS["tier_a"], {("gba-dev-01",): out("approve with edits")},
+                         {("gba-dev-01",): out("approve")}, {("gba-dev-01",): out("approve with edits")})
+    records.write_records(tmp_path / "tier_a.jsonl", recs)
+    (tmp_path / "tier_a_patches.json").write_text(json.dumps([
+        {"item": "gba-dev-01", "path": ["instruction"], "op": "replace_text", "old": "Save", "new": "Please save",
+         "edit": "instruction: ..."}]), encoding="utf-8")
+    monkeypatch.setattr(first_set, "REVIEWS", tmp_path)
+    assert first_set.review_of("gba-dev-01") == {"status": "approved-with-edits", "reviewers": ["R1", "R2", "EX"],
+                                                 "notes": "decided by EX (disagreement); decided edits applied"}
+    assert first_set.review_of("gba-dev-02")["status"] == "pending-team-review"
+    spec = next(m() for m in first_set.DEV_TASKS if m()["id"] == "gba-dev-01")
+    rec = first_set.record(spec, "dev")
+    assert rec["review"]["status"] == "approved-with-edits" and rec["version"] == 2   # changed tasks: new version
+    assert rec["instruction"] == spec["instruction"].replace("Save", "Please save", 1)
+    assert first_set.record(next(m() for m in first_set.DEV_TASKS if m()["id"] == "gba-dev-02"), "dev")["version"] == 1
+
+
+def test_file_sink_names_are_matched_by_base_name():
+    """Review decision (gba-dev-01 and 14 more): every File Sink "file" constraint in blocks_present and
+    connections is a base-name regex, so ./x.dat or an absolute path ending in x.dat also passes."""
+    acc = {"blocks_present": [{"id": "blocks_file_sink", "params": {"file": "beat.dat", "type": "float"}},
+                              {"id": "analog_sig_source_x", "params": {"freq": 100}}],
+           "connections": [{"src": {"id": "x"}, "dst": {"id": "blocks_file_sink", "params": {"file": "data/a.dat"}}}]}
+    out = first_set.file_names_by_base_name(acc)
+    assert out["blocks_present"][0]["params"] == {"file": {"regex": r"(^|/)beat\.dat$"}, "type": "float"}
+    assert out["blocks_present"][1] == acc["blocks_present"][1]
+    assert out["connections"][0]["dst"]["params"]["file"] == {"regex": r"(^|/)data/a\.dat$"}
+    import re
+    rx = out["blocks_present"][0]["params"]["file"]["regex"]
+    assert all(re.search(rx, v) for v in ("beat.dat", "./beat.dat", "/home/u/proj/beat.dat"))
+    assert not re.search(rx, "upbeat.dat")
+    for d in task_dirs():                                     # every built task follows the rule
+        acc = json.loads((d / "task.json").read_text(encoding="utf-8"))["acceptance"]
+        for spec in acc.get("blocks_present") or []:
+            assert not isinstance((spec.get("params") or {}).get("file"), str), d.name
 
 
 def test_wrong_end_states_are_rejected_by_a_check_not_by_a_crash():

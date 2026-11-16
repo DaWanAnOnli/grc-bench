@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_1500
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '1500', amp: '0.8'}
 - name: lo
@@ -32,7 +32,7 @@ blocks:
   id: blocks_file_sink
   parameters: {type: complex, file: second_shifted.dat}
 connections:
-- [tone_1500, '0', mixer, '0']
+- [tone_1, '0', mixer, '0']
 - [lo, '0', mixer, '1']
 - [mixer, '0', conj, '0']
 - [conj, '0', resampler, '0']

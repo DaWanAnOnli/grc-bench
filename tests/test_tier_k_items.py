@@ -51,10 +51,15 @@ def test_counts_and_ids_match_the_manifests(built):
 
 
 def test_every_record_validates_and_carries_the_canary(built):
+    versions = items.question_versions()
     for rec in built.test + built.dev:
         assert validate(rec) == [], rec["id"]
-        assert rec["canary"] == CANARY and rec["tier"] == "K" and rec["version"] == 1
-        assert rec["review"] == {"status": "not-required", "notes": items.REVIEW_NOTES[rec["split"]]}
+        assert rec["canary"] == CANARY and rec["tier"] == "K" and rec["version"] == (2 if rec["id"] in versions else 1)
+        notes = items.REVIEW_NOTES[rec["split"]]
+        if rec["id"] in versions:
+            v = versions[rec["id"]]
+            notes += f"; version 2 decided by {v['decided_by']}: {v['reason']}"
+        assert rec["review"] == {"status": "not-required", "notes": notes}
         assert rec["item_kind"] == rec["source"]["kind"] == items.KIND[rec["split"]]
         assert rec["license"].startswith("licence: as in GRC_dataset_20261007 (Qoherent); to be confirmed before release.")
         assert ("source-lane" in rec["license"]) == (rec["origin"] == "source")
@@ -71,10 +76,15 @@ def test_source_points_at_the_hashed_dataset_file(built):
 
 def test_question_fields_are_copied_unchanged(built, frozen_records):
     labels = {r["id"]: r for r in read_jsonl(SPLITS / "task_type_labels.jsonl")}
+    versions = items.question_versions()
     for rec in built.test + built.dev:
         src = frozen_records[rec["id"]]
-        for f in ("question", "difficulty", "origin", "primary_topic"):
+        for f in ("difficulty", "origin", "primary_topic"):
             assert rec[f] == src[f], (rec["id"], f)
+        if rec["id"] in versions:                         # a new version the review decided; the original is kept
+            assert rec["question"] == versions[rec["id"]]["question"] and rec["original_question"] == src["question"]
+        else:
+            assert rec["question"] == src["question"] and "original_question" not in rec
         assert rec["task_type_raw"] == src["task_type"] == labels[rec["id"]]["raw"]
         assert rec["task_type"] == labels[rec["id"]]["clean"]
         assert rec["task_type_labeller"] == labels[rec["id"]]["labeller"]
@@ -171,13 +181,48 @@ def test_test_clusters_are_components_of_the_twin_evidence(built):
         else:
             assert cid == items.TEST_CLUSTER_PREFIX + min(members).removeprefix("q_")
     cluster = {r["id"]: r["cluster_id"] for r in built.test}
+    split = built.split_ids                     # the review's `split out` clusters lose their link
     for (a, b), via in built.links.items():
-        assert cluster[a] == cluster[b] and via
-    # every test<->test 8-gram pair (template family) is in one cluster
+        assert via
+        assert (cluster[a] != cluster[b]) if (a in split and b in split) else (cluster[a] == cluster[b])
+    # every test<->test 8-gram pair (template family) is in one cluster, unless the review split it out
     for a, b in twins.ngram_pairs(read_jsonl(FROZEN / "eval_questions.jsonl")):
-        assert cluster[a] == cluster[b] == built.ngram_only[a] == built.ngram_only[b]
-    assert sum(len(m) > 1 for m in by_cluster.values()) == 5
-    assert len({c for c in built.ngram_only.values() if c.startswith(items.TEST_CLUSTER_PREFIX)}) == 3
+        if not (a in split and b in split):
+            assert cluster[a] == cluster[b] == built.ngram_only[a] == built.ngram_only[b]
+    n_split = len({built.original[i] for i in split})
+    assert sum(len(m) > 1 for m in by_cluster.values()) == 5 - n_split
+    assert len({c for c in built.original.values() if c.startswith(items.TEST_CLUSTER_PREFIX)}) == 5
+
+
+def test_split_out_clusters_come_from_the_decided_review(tmp_path):
+    from grcbench.review import records, sheets
+    out = {"value": "split out", "edits": [], "notes": ""}
+    same = {"value": "same family", "edits": [], "notes": ""}
+    recs = records.build(sheets.SHEETS["clusters"], {("q_a",): out, ("q_b",): out, ("q_c",): same},
+                         {("q_a",): out, ("q_b",): out, ("q_c",): same}, {})
+    records.write_records(tmp_path / "clusters.jsonl", recs)
+    assert items.split_out_ids(reviews_dir=tmp_path) == {"q_a", "q_b"}
+    assert items.split_out_ids(reviews_dir=tmp_path / "none") == set()
+
+
+def test_a_decided_question_version_keeps_the_original_and_says_why(tmp_path):
+    import json
+    (tmp_path / "tier_k_question_versions.json").write_text(json.dumps([
+        {"id": "q_x", "question": "What does set_samp_rate() do?", "reason": "the method is set_samp_rate()",
+         "decided_by": "EX (expert review)"}]), encoding="utf-8")
+    v = items.question_versions(reviews_dir=tmp_path)
+    src = {"id": "q_x", "question": "What does set_sample_rate() do?"}
+    rec = items.apply_version(dict(src, version=1, review={"status": "not-required", "notes": "frozen"}), v)
+    assert rec["question"] == "What does set_samp_rate() do?" and rec["original_question"] == src["question"]
+    assert rec["version"] == 2
+    lic = items.apply_version(dict(src, version=1, license=items.LICENSE["blind"],
+                                   review={"status": "not-required", "notes": "frozen"}), v)["license"]
+    assert "copied unchanged" not in lic and "then edited as version 2 (see review.notes)" in lic
+    assert rec["review"]["notes"] == ("frozen; version 2 decided by EX (expert review): the method is "
+                                      "set_samp_rate()")
+    other = {"id": "q_y", "question": "Q?", "version": 1, "review": {"status": "not-required", "notes": "frozen"}}
+    assert items.apply_version(dict(other), v) == other
+    assert items.question_versions(reviews_dir=tmp_path / "none") == {}
 
 
 def test_components_on_toy_pairs():
@@ -187,7 +232,7 @@ def test_components_on_toy_pairs():
 
 def test_review_sheet_lists_every_multi_member_cluster(built):
     rows = list(csv.DictReader(io.StringIO(items.sheet(built))))
-    multi = sorted(r["id"] for r in built.test if r["cluster_id"].startswith(items.TEST_CLUSTER_PREFIX))
+    multi = sorted(i for i, c in built.original.items() if c.startswith(items.TEST_CLUSTER_PREFIX))
     assert sorted(r["id"] for r in rows) == multi and len(multi) == 10
     assert all(r["linked_to (evidence)"] for r in rows)
 

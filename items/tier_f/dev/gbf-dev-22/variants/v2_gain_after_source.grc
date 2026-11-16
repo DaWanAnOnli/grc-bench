@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_4300
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '4300'}
 - name: noise
@@ -34,6 +34,6 @@ connections:
 - [channel, '0', out, '0']
 - [sum_of_tones, '0', conj, '0']
 - [conj, '0', out_b, '0']
-- [tone_4300, '0', gain, '0']
+- [tone_1, '0', gain, '0']
 - [gain, '0', sum_of_tones, '0']
 metadata: {file_format: 1}

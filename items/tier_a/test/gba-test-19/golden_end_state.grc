@@ -57,7 +57,29 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 928
+        - 1160
+        - 212.0
+        state: enabled
+-   name: blocks_throttle2_0
+    id: blocks_throttle2
+    parameters:
+        affinity: ''
+        alias: ''
+        comment: ''
+        ignoretag: 'True'
+        limit: auto
+        maximum: '0.1'
+        maxoutbuf: '0'
+        minoutbuf: '0'
+        samples_per_second: samp_rate
+        type: float
+        vlen: '1'
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate:
+        - 232
         - 212.0
         state: enabled
 -   name: decisions_sink
@@ -76,7 +98,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 1392
+        - 1624
         - 212.0
         state: enabled
 -   name: minus_one
@@ -95,7 +117,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 1160
+        - 1392
         - 212.0
         state: enabled
 -   name: negate
@@ -114,7 +136,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 232
+        - 464
         - 212.0
         state: enabled
 -   name: pack
@@ -135,7 +157,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 696
+        - 928
         - 212.0
         state: enabled
 -   name: slicer
@@ -151,7 +173,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 464
+        - 696
         - 212.0
         state: enabled
 -   name: soft
@@ -193,7 +215,7 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 928
+        - 1160
         - 412.0
         state: enabled
 -   name: to_float
@@ -211,10 +233,14 @@ blocks:
         bus_source: false
         bus_structure: null
         coordinate:
-        - 696
+        - 928
         - 412.0
         state: enabled
 connections:
+-   - blocks_throttle2_0
+    - '0'
+    - negate
+    - '0'
 -   - minus_one
     - '0'
     - decisions_sink
@@ -237,7 +263,7 @@ connections:
     - '0'
 -   - soft
     - '0'
-    - negate
+    - blocks_throttle2_0
     - '0'
 -   - times_two
     - '0'

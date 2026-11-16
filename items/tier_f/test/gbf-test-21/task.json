@@ -15,8 +15,8 @@
  "disjointness": "A generated chain (tones, shift, agc, shift) whose functional signature agc|message_source|mix|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "repair",
  "fault": {
-  "connection": "tone_3600:0->throttle:0",
-  "description": "the connection tone_3600 -> throttle is missing, so GRC reports an unconnected port and the flowgraph does not run",
+  "connection": "tone_1:0->throttle:0",
+  "description": "the connection tone_1 -> throttle is missing, so GRC reports an unconnected port and the flowgraph does not run",
   "expected_rung": "V3",
   "type": "missing_connection"
  },
@@ -136,7 +136,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -152,7 +152,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -167,20 +167,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
-    "group": "f2p",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "shifted.dat"
-    },
-    "via_ids": [
+    "group": "p2p",
+    "ids": [
      "blocks_multiply_xx"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    }
   ]
  },
@@ -195,9 +187,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 11,
@@ -210,7 +205,7 @@
   "its strongest component at 1.3 kHz (within 13 Hz)",
   "100 % of its power within 50 Hz of 1.3 kHz (within a tenth of that share)",
   "an RMS level of 2 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; both Multiply blocks are kept"
  ],
  "split": "test",
  "start_grc": "start.grc",

@@ -12,34 +12,38 @@
  "cluster_id": "chain:combine|tone",
  "disjointness": "A generated chain (tones, conjugate) whose functional signature combine|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "build",
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Signal Source Add Complex Conjugate File Sink"
+ },
  "id": "gbf-test-75",
  "instruction": "In this flowgraph, at a sample rate of 32 kHz, use Signal Sources to make a 2.4 kHz complex tone with amplitude 0.25 and a 6.3 kHz complex tone with amplitude 1, and add them; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency. Write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at -6.3 kHz (within 63 Hz); 94 % of its power within 50 Hz of -6.3 kHz (within a tenth of that share); 6 % of its power within 50 Hz of -2.4 kHz (within a tenth of that share); an RMS level of 1.031 (within 5 %). The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L1",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_2400",
+   "block": "tone_1",
    "breaks": "the 2.4 kHz tone at 3 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "3000"
   },
   {
-   "block": "tone_2400",
+   "block": "tone_1",
    "breaks": "the 2.4 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "0.375"
   },
   {
-   "block": "tone_6300",
+   "block": "tone_2",
    "breaks": "the 6.3 kHz tone at 7.875 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "7875"
   },
   {
-   "block": "tone_6300",
+   "block": "tone_2",
    "breaks": "the 6.3 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -158,9 +162,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "rejected"
  },
  "source": {
   "attempt": 2009,

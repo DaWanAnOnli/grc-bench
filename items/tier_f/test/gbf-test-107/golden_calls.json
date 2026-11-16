@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x rational_resampler_xxx blocks_float_to_short blocks_short_to_float blocks_file_sink",
+  "query": "convert short integers back to float",
   "domain": "catalog",
   "k": 10
  },

@@ -1,0 +1,35 @@
+{
+ "A": {
+  "accepted": 35,
+  "accepted_kept": 35,
+  "accepted_no_edit": 35,
+  "holds": false,
+  "items": 42,
+  "kept": 35,
+  "share": 0.8333,
+  "share_kept": 1.0,
+  "unsure": 0
+ },
+ "F": {
+  "accepted": 172,
+  "accepted_kept": 172,
+  "accepted_no_edit": 172,
+  "holds": false,
+  "items": 195,
+  "kept": 172,
+  "share": 0.8821,
+  "share_kept": 1.0,
+  "unsure": 0
+ },
+ "K": {
+  "accepted": 155,
+  "accepted_kept": 155,
+  "accepted_no_edit": 154,
+  "holds": true,
+  "items": 160,
+  "kept": 158,
+  "share": 0.9688,
+  "share_kept": 0.981,
+  "unsure": 0
+ }
+}

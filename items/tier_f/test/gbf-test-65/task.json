@@ -22,13 +22,17 @@
   "type": "nonexistent_block",
   "wrong_id": "rational_resampler_xx"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Rational Resampler"
+ },
  "id": "gbf-test-65",
- "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 1.6 kHz cosine with amplitude 0.8; then change its sample rate from 32 kHz to 48 kHz with a Rational Resampler (interpolation 3, decimation 2); then frequency-modulate it with a Frequency Mod block (sensitivity 2*pi*1000/(samp_rate*3/2), so an input of 1.0 deviates by 1 kHz) and demodulate it with a Quadrature Demod block whose gain turns 500 Hz of deviation into an output of 1.0 (gain samp_rate*3/2/(2*pi*500)); then change its sample rate from 48 kHz to 24 kHz with a Rational Resampler (interpolation 1, decimation 2). Throttle the first Signal Source's output to real time with a Throttle block, and connect a Message Strobe that sends pmt.to_pmt({'freq': 2600}) every 200 ms to that Signal Source's message input cmd, so that the 1.6 kHz tone is retuned to 2.6 kHz while the flowgraph runs; and write the result as float samples to a File Sink whose file name is resampled.dat. Measured over 16,384 samples after the first 44,768, the output should have its strongest component at 2.6 kHz (within 26 Hz); 100 % of its power within 50 Hz of 2.6 kHz (within a tenth of that share); an RMS level of 1.131 (within 5 %). Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
+ "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 1.6 kHz cosine with amplitude 0.8; then change its sample rate from 32 kHz to 48 kHz with a Rational Resampler (interpolation 3, decimation 2); then frequency-modulate it with a Frequency Mod block (sensitivity 2*math.pi*1000/(samp_rate*3/2), so an input of 1.0 deviates by 1 kHz) and demodulate it with a Quadrature Demod block whose gain turns 500 Hz of deviation into an output of 1.0 (gain samp_rate*3/2/(2*math.pi*500)); then change its sample rate from 48 kHz to 24 kHz with a Rational Resampler (interpolation 1, decimation 2). Throttle the first Signal Source's output to real time with a Throttle block, and connect a Message Strobe that sends pmt.to_pmt({'freq': 2600}) every 200 ms to that Signal Source's message input cmd, so that the 1.6 kHz tone is retuned to 2.6 kHz while the flowgraph runs; and write the result as float samples to a File Sink whose file name is resampled.dat. Measured over 16,384 samples after the first 44,768, the output should have its strongest component at 2.6 kHz (within 26 Hz); 100 % of its power within 50 Hz of 2.6 kHz (within a tenth of that share); an RMS level of 1.131 (within 5 %). Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L3",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_1600",
+   "block": "tone_1",
    "breaks": "the 2.6 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -138,7 +142,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -154,7 +158,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -168,20 +172,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
     "group": "f2p",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "resampled.dat"
-    },
-    "via_ids": [
+    "ids": [
      "rational_resampler_xxx"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    }
   ]
  },
@@ -196,9 +192,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 8,
@@ -211,10 +211,10 @@
   "its strongest component at 2.6 kHz (within 26 Hz)",
   "100 % of its power within 50 Hz of 2.6 kHz (within a tenth of that share)",
   "an RMS level of 1.131 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; two Rational Resamplers"
  ],
  "split": "test",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

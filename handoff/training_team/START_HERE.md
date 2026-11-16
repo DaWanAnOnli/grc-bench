@@ -1,8 +1,9 @@
 # For the training team: what GRC-Bench needs you to keep out of training
 
 From the GRC-Bench evaluation team, 22 Oct 2026. Status: draft for team review; not yet sent.
-Claude (Anthropic) wrote the tooling and these files. Claude never judges, repairs or generates
-training data.
+Claude (Anthropic) wrote the tooling and these files. Claude never repairs, generates or changes
+training data. Its review agents judge pairs of training questions (the twin thresholds) and check a
+sample of training labels; that changes no training row.
 
 Every rule below protects the benchmark from training data that overlaps with it. Each file in this
 folder covers one kind of data. Start with the table, then read the file for the data you work on.

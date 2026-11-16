@@ -2108,9 +2108,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Re-themed 18 Oct (fix plan G6): the earlier two-stage decimator bench hashed to train under signature v2. Composed L2 item: a deviation from 'L2 from converted examples' (approved plan Phase 3) and from eval plan 4.3's source list, recorded for the team (fix_plan team_decisions). Level L2 under R7: 6 functional blocks with rate changes and symbol mapping. Oracle limits: the sample rate is checked as a graph fact (a variable with value 48000), because no output sample depends on samp_rate; the Throttle's own rate parameter is not checked. Accepted alternatives (variants): LSB-first unpacking of bit-reversed bytes, and nibble chunks with dimension 2; both change parameter values only and send the same samples.",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2. Re-themed 18 Oct (fix plan G6): the earlier two-stage decimator bench hashed to train under signature v2. Composed L2 item: a deviation from 'L2 from converted examples' (approved plan Phase 3) and from eval plan 4.3's source list, recorded for the team (fix_plan team_decisions). Level L2 under R7: 6 functional blocks with rate changes and symbol mapping. Oracle limits: the sample rate is checked as a graph fact (a variable with value 48000), because no output sample depends on samp_rate; the Throttle's own rate parameter is not checked. Accepted alternatives (variants): LSB-first unpacking of bit-reversed bytes, and nibble chunks with dimension 2; both change parameter values only and send the same samples.",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "kind": "composed_chain",

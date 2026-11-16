@@ -7,8 +7,8 @@ The documents are prose, so these tests check what can go stale or leak:
   * the documented columns and codes agree with the code that writes or reads them (the Tier-F
     review sheet in tier_f/cli.py, the judge's verdict labels, the §8.1 pass thresholds, GRC-Agent's
     22 tools in the SFT release) and with the GNU Radio 3.10 catalog;
-  * the rubric guide's worked examples use dev questions only and contain placeholders only (Claude
-    never drafts rubric prose, eval plan Table 5);
+  * the rubric guide's worked examples use dev questions only and contain placeholders only (they
+    show the format; the review protocol's writer agent writes the rubrics);
   * no document or template quotes a Tier-K or Tier-F test item or carries the canary.
 """
 
@@ -39,8 +39,12 @@ DOC_FILES = [
     GUIDELINES / "rubric_writing.md",
     GUIDELINES / "judge_calibration.md",
     GUIDELINES / "error_analysis.md",
+    GUIDELINES / "review_protocol.md",
 ]
-ALL_MD = DOC_FILES + [TEMPLATES / "README.md", HANDOFF / "review_sheets" / "similarity_sheets_instructions.md"]
+ALL_MD = DOC_FILES + [TEMPLATES / "README.md"] + [
+    HANDOFF / "review_sheets" / name for name in (
+        "similarity_sheets_instructions.md", "task_type_instructions.md", "tier_k_calc_instructions.md",
+        "tier_k_block_questions_instructions.md")]
 
 TEMPLATE_COLUMNS = {
     "judge_calibration.csv": [
@@ -339,10 +343,14 @@ def test_rubric_guide_states_both_decibel_bands():
 
 
 def test_rubric_guide_states_the_role_table_rules():
-    doc = _text(GUIDELINES / "rubric_writing.md")
-    assert "Claude does not draft rubric prose" in doc
-    assert "pending blind team recomputation" in doc
-    assert "recomputes each answer blind" in doc
+    """Table 5's rule, the review protocol's departure from it, and where the deviation is recorded."""
+    flat = " ".join(_text(GUIDELINES / "rubric_writing.md").split())
+    assert "Claude does not draft rubric prose" in flat
+    assert "The review protocol departs from this: the writer agent is Claude." in flat
+    assert "Pre-registration §10 records the deviation" in flat
+    assert "Anthropic models are not scored on Tier K" in flat
+    assert "pending blind team recomputation" in flat
+    assert "two recomputer agents recompute each answer blind" in flat
 
 
 def _test_item_texts() -> list[str]:
@@ -428,17 +436,20 @@ def test_tier_f_v1_failures_have_codes_and_are_not_no_output():
 
 
 def test_expert_review_plan_covers_every_task_and_states_its_total():
-    plan = _eval_plan()
-    dev_f = int(re.search(r"dev split \(200 questions, (\d+) flowgraph tasks", plan).group(1))
-    expert = int(re.search(r"Expert review by Qoherent \| Qoherent engineer\(s\) \| ≈ (\d+)", plan).group(1))
+    """§5.3: every GNU Radio question and every Tier-F and Tier-A task, test and dev; counts from the items."""
     section = _section(_text(CHECKLISTS / "expert_review.md"), "## What is in scope")
-    hours = math.fsum(h for _, h in _hours_rows(section))
-    total = int(re.search(r"\| \*\*Total\*\* \| \| \| \*\*~(\d+) h\*\* \|", section).group(1))
-    assert round(hours) == total
-    first_set_dev = int(re.search(r"Tier-F first set \(\d+ test, (\d+) dev\)", section).group(1))
-    assert f"| Remaining Tier-F dev tasks (after scaling to {dev_f}) | {dev_f - first_set_dev} |" in section
-    flat = " ".join(section.split())
-    assert f"about {total - expert} hours more than the ≈ {expert} hours of Table 7" in flat
+    counts = {split: {tier: len(list((ITEMS / tier / split).glob("*/task.json"))) for tier in ("tier_f", "tier_a")}
+              for split in ("test", "dev")}
+    nf = counts["test"]["tier_f"] + counts["dev"]["tier_f"]
+    na = counts["test"]["tier_a"] + counts["dev"]["tier_a"]
+    assert (f"| Tier-F tasks ({counts['test']['tier_f']} test, {counts['dev']['tier_f']} dev) | {nf} |"
+            in section)
+    assert f"| Tier-A tasks ({counts['test']['tier_a']} test, {counts['dev']['tier_a']} dev) | {na} |" in section
+    n_block = len(read_jsonl(ITEMS / "tier_k" / "test" / "block_questions.jsonl"))
+    assert f"| GNU Radio block questions (script-generated, test) | {n_block} |" in section
+    rows = [n for _, n in _hours_rows(section)]
+    total = int(re.search(r"\| \*\*Total\*\* \| \*\*(\d+)\*\* \|", section).group(1))
+    assert sum(rows) == total
 
 
 def test_rubric_guide_counts_the_calculation_keys_proposed_tolerances():
@@ -675,7 +686,7 @@ def test_rubric_writer_is_never_a_checker_or_the_blind_recomputer():
     """F3: three different people per rubric, recorded on the sheet; the hours are reconciled."""
     flat = " ".join(_text(GUIDELINES / "rubric_writing.md").split())
     assert "the writer is never checker 1 or checker 2 of the same rubric" in flat
-    assert "the person who recomputes a calculation answer blind is not that rubric's writer" in flat
+    assert "the agent that recomputes a calculation answer blind is not that rubric's writer" in flat
     assert "Neither of them wrote it." in flat
     cols = TEMPLATE_COLUMNS["rubric_sheet.csv"]
     assert {"writer", "checker_1_initials", "checker_2_initials", "calc_status"} <= set(cols)
@@ -688,11 +699,7 @@ def test_rubric_writer_is_never_a_checker_or_the_blind_recomputer():
     per_check = budget_h * 60 / budget_n / 2                   # minutes per rubric per checker
     assert f"about {per_check:.1f} minutes per rubric" in flat
     assert f"rubrics for {n} questions ({n_test} test, {n_dev} dev)" in flat
-    assert f"| Writing {n} rubrics, at about 10 minutes each | not budgeted | ≈ {round(n * 10 / 60)} h |" in flat
-    assert (f"| Checking {n} rubrics, two checkers at Table 7's rate | ≈ {budget_h:g} h (for {budget_n}) "
-            f"| ≈ {round(n * 2 * per_check / 60)} h |") in flat
-    assert (f"about {round(n_test * 10 / 60)} hours to write and "
-            f"{round(n_test * 2 * per_check / 60)} hours to check") in flat
+    assert "The review protocol does this work in declared agent runs instead" in flat
 
 
 def test_tier_f_checklist_lists_every_graph_check_kind():
@@ -713,8 +720,7 @@ def test_tier_f_reviews_record_the_edit_format_check_as_notes():
     header = _tier_f_sheet_header()
     assert "reviewer_1_notes" not in header or "`reviewer_1_notes`" in flat
     assert "as a `note: batch` line in your edits cell" in flat
-    assert ("A line that starts with `note:` is a record for the team, not an edit. The task owner "
-            "does not apply it.") in flat
+    assert "A line that starts with `note:` is a record, not an edit. The coordinator does not apply it." in flat
     assert "write `note: inspect result not checked` in your edits cell" in flat
     assert "`note:`" in _text(CHECKLISTS / "tier_a_task_review.md")
     assert "`note:` lines are not edits." in " ".join(_text(TEMPLATES / "README.md").split())
@@ -751,39 +757,31 @@ DISCUSSION_FIRST = ("still disagree", "cannot agree", "discussion cannot settle"
 
 @pytest.mark.parametrize("path", [CHECKLISTS / "tier_f_task_review.md", CHECKLISTS / "tier_a_task_review.md",
                                   CHECKLISTS / "expert_review.md", GUIDELINES / "rubric_writing.md",
-                                  GUIDELINES / "error_analysis.md", TEMPLATES / "README.md"],
+                                  GUIDELINES / "error_analysis.md", GUIDELINES / "review_protocol.md",
+                                  TEMPLATES / "README.md"],
                          ids=lambda p: p.name)
 def test_one_disagreement_policy_the_expert_decides_every_disagreement(path):
-    """F8: Table 1 applied literally in every document."""
+    """F8: Table 1 applied literally in every document, with the expert agent in the expert's place."""
     flat = " ".join(_text(path).split())
-    rule = "A Qoherent expert decides every disagreement"
-    assert rule in flat
-    assert rule in _eval_plan()
+    table_1 = "A Qoherent expert decides every disagreement"
+    assert table_1 in flat and table_1 in _eval_plan()
+    assert "the expert agent decides every disagreement" in flat.lower()
     for phrase in DISCUSSION_FIRST:
         assert phrase not in flat.lower(), f"{path.name}: discussion-first wording {phrase!r}"
 
 
 def test_calibration_hours_are_reconciled_with_table_7():
-    """F9: the calibration's own estimate is set against Table 7 and recorded as a deviation."""
+    """F9: Table 7's hours are stated, and the agent runs that replace them are a recorded deviation."""
     m = re.search(r"Judge calibration \(150 answers\) and second check \(50\) \| 2 team members \+ 1 "
                   r"Qoherent expert \| ≈ (\d+)", _eval_plan())
     budget = float(m.group(1))
-    section = _section(_text(GUIDELINES / "judge_calibration.md"), "## Hours")
-    steps = _hours_rows(section)
-    assert len(steps) == 5, steps
-    total = math.fsum(h for _, h in steps)
-    assert f"| **Total** | | **{total:g}** |" in section
-    flat = " ".join(section.split())
-    assert f"about {total - budget:g} hours more than Table 7" in flat
-    checked = 0
-    for label, hours in steps:
-        m = re.search(r"(\d+) (?:dev )?answers.* at about (\d+) minutes", label)
-        if m:
-            practice = 0.5 if "30 minutes of discussion" in label else 0.0
-            assert 3 * (int(m.group(1)) * int(m.group(2)) / 60 + practice) == pytest.approx(hours), label
-            checked += 1
-    assert checked == 3
-    assert "this is a third team member" in flat
+    doc = _text(GUIDELINES / "judge_calibration.md")
+    flat = " ".join(_section(doc, "## Agent runs instead of hours").split())
+    assert f"Eval plan Table 7 budgets ≈ {budget:g} person-hours" in flat
+    assert "Pre-registration §10 records the change" in flat
+    roles = _section(doc, "## Roles")
+    assert "The adjudicator is never one of the three annotators." in " ".join(roles.split())
+    assert "It is not evidence that the judge agrees with people" in " ".join(doc.split())
 
 
 def test_error_analysis_tier_k_exclusion_is_a_proposal():

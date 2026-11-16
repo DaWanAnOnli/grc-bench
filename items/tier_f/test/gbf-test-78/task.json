@@ -15,12 +15,16 @@
  "disjointness": "A generated chain (tones, hilbert) whose functional signature combine|hilbert|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "repair",
  "fault": {
-  "block": "tone_6200",
+  "block": "tone_1",
   "description": "the frequency of the 6.2 kHz tone is 8100",
   "expected_rung": "V5",
   "param": "freq",
   "type": "wrong_value",
   "wrong_value": "8100"
+ },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Signal Source"
  },
  "id": "gbf-test-78",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use Signal Sources to make a 6.2 kHz cosine with amplitude 1 and a 8.1 kHz cosine with amplitude 0.5, and add them; then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; and write the result as complex samples to a File Sink whose file name is analytic.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 6.2 kHz (within 62 Hz); 80 % of its power within 50 Hz of 6.2 kHz (within a tenth of that share); 20 % of its power within 50 Hz of 8.1 kHz (within a tenth of that share); an RMS level of 1.118 (within 5 %). Instead, its output holds components at 8.1 kHz. Find the fault and fix it, keeping everything else as it is. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
@@ -28,28 +32,28 @@
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_6200",
+   "block": "tone_1",
    "breaks": "the 6.2 kHz tone at 7.75 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "7750"
   },
   {
-   "block": "tone_6200",
+   "block": "tone_1",
    "breaks": "the 6.2 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "1.5"
   },
   {
-   "block": "tone_8100",
+   "block": "tone_2",
    "breaks": "the 8.1 kHz tone at 10.125 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "10125"
   },
   {
-   "block": "tone_8100",
+   "block": "tone_2",
    "breaks": "the 8.1 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -143,6 +147,16 @@
     "group": "p2p",
     "kind": "same_connections_as_start",
     "mode": "isomorphic"
+   },
+   {
+    "group": "p2p",
+    "ids": [
+     "variable"
+    ],
+    "kind": "block_present",
+    "params": {
+     "value": "32000"
+    }
    }
   ]
  },
@@ -157,9 +171,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "rejected"
  },
  "source": {
   "attempt": 2042,
@@ -173,7 +190,8 @@
   "80 % of its power within 50 Hz of 6.2 kHz (within a tenth of that share)",
   "20 % of its power within 50 Hz of 8.1 kHz (within a tenth of that share)",
   "an RMS level of 1.118 (within 5 %)",
-  "structure: same blocks and connections as the start graph"
+  "structure: same blocks and connections as the start graph",
+  "the sample rate stays at 32 kHz (samp_rate 32000)"
  ],
  "split": "test",
  "start_grc": "start.grc",

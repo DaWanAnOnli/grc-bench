@@ -2854,9 +2854,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Re-themed 18 Oct (fix plan G6): the earlier anti-aliasing decimation demo hashed to train under signature v2. Composed L2 item: a deviation from 'L2 from converted examples' (approved plan Phase 3) and from eval plan 4.3's source list, recorded for the team (fix_plan team_decisions). Oracle limits: (1) the symbol sequence is checked exactly on symbols.dat; if.dat is checked by a correlation >= 0.8 with the reference waveform, which tolerates any sensible pulse shape but cannot see a single wrong symbol, so an answer that feeds the IF path from a second, mistyped Vector Source would pass. (2) The level is a range (0.7-1.2) because the RMS of a correct unity-DC-gain design depends on its pulse shape (0.73-1.08 measured). (3) The sample rate is checked through the signals (the IF frequency and the symbol length assume 32 kHz), not as the samp_rate variable. Signatures (v2): reference and variants v1, v2, v4 data_source|filter|mix|resample (test); the RRC variant v3 data_source|mix|pulse_shaping|resample (test); a Constellation Modulator design would be data_source|linear_mod|mix|pulse_shaping|resample (train) and belongs on the reserved list.",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement). Re-themed 18 Oct (fix plan G6): the earlier anti-aliasing decimation demo hashed to train under signature v2. Composed L2 item: a deviation from 'L2 from converted examples' (approved plan Phase 3) and from eval plan 4.3's source list, recorded for the team (fix_plan team_decisions). Oracle limits: (1) the symbol sequence is checked exactly on symbols.dat; if.dat is checked by a correlation >= 0.8 with the reference waveform, which tolerates any sensible pulse shape but cannot see a single wrong symbol, so an answer that feeds the IF path from a second, mistyped Vector Source would pass. (2) The level is a range (0.7-1.2) because the RMS of a correct unity-DC-gain design depends on its pulse shape (0.73-1.08 measured). (3) The sample rate is checked through the signals (the IF frequency and the symbol length assume 32 kHz), not as the samp_rate variable. Signatures (v2): reference and variants v1, v2, v4 data_source|filter|mix|resample (test); the RRC variant v3 data_source|mix|pulse_shaping|resample (test); a Constellation Modulator design would be data_source|linear_mod|mix|pulse_shaping|resample (train) and belongs on the reserved list.",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved"
  },
  "source": {
   "kind": "composed_chain",

@@ -30,8 +30,7 @@
    "cases": [
     {
      "reasons": [
-      "files[0]: recovered.dat does not exist",
-      "answer[0]: rms of the recovered audio: expected value not derivable: 'recovered.dat does not exist in the project folder'"
+      "answer[0]: rms of the recovered audio: expects 1.76777"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc + wrong_end_state.json"
@@ -40,7 +39,7 @@
    "passed": true
   }
  },
- "golden_end_state_sha256": "7f578e8f540017608a47cb76aca2ddbda034e6f4a3d8931169e2e77260c25535",
+ "golden_end_state_sha256": "b7007247622386a56431d9c5c35b7a4253d68ca7ef69771bb11f6228503c82f5",
  "passed": true,
  "task": "gba-test-27"
 }

@@ -101,22 +101,25 @@ def test_each_function_on_its_own_question_returns_the_stored_value(qid, built, 
     ans = calc.REGISTRY[qid].fn()                                           # the question's own numbers
     assert calc.answer_value(ans) == stored[qid]["value"]
     q = next(q for q in built.questions if q["id"] == qid)
-    assert calc.record(q, calc.REGISTRY[qid]) == stored[qid]
+    assert calc.apply_review([calc.record(q, calc.REGISTRY[qid])], calc.decided_calc())[0] == stored[qid]
     assert stored[qid]["question_sha256"] == sha256_text(q["question"])
 
 
 def test_records_carry_the_required_fields_and_status(built):
-    """methodology-F7: one status for every record (WS spec); the reference's route is its own field."""
+    """methodology-F7: one status for every record (WS spec); the reference's route is its own field.
+    A question the review protocol has decided carries the decided status instead."""
+    decided = calc.decided_calc()
     for r in built.records:
         assert all(k in r for k in REQUIRED), r["question_id"]
-        assert r["status"] == "pending blind team recomputation"
+        rec = decided.get((r["question_id"],))
+        assert r["status"] == (calc.review_status(rec) if rec else "pending blind team recomputation")
         assert r["reference_route"] == calc.ROUTES[r["specification"]]
         assert r["computed_by"] == "script drafted by Claude (Anthropic)"
         assert r["canary"] == CANARY and r["kind"] in calc.KINDS and r["specification"] in calc.SPECIFICATIONS
         assert r["formula"] and r["source"] and r["assumptions"] and r["tolerance_note"]
         assert r["function"] == f"grcbench.tier_k.calc.{r['question_id']}"
         assert "inputs" not in r
-    assert "Table-5 drafting model" in calc.ROUTES["team reference"]
+    assert "rubric writer agent" in calc.ROUTES["team reference"]
 
 
 def test_record_text_fields_come_from_the_function_docstring(built):
@@ -236,7 +239,7 @@ def test_team_reference_items_carry_no_script_answer(built):
         assert r["kind"] in calc.TEAM_KINDS and r["value"] is None and r["labels"] == []
         assert r["tolerance"] is None and r["tolerance_db"] is None and r["unit"] == ""
         assert r["numeric_proposal"] is None and not r["equivalents"] and not r["readings"]
-        assert r["formula"].startswith("none: ") and "reference is written by the team" in r["formula"]
+        assert r["formula"].startswith("none: ") and "reference is written in the rubric" in r["formula"]
         assert r["source"].startswith("none: ")
         assert r["assumptions"] == ["none (no value is computed)"]
         assert r["not_computed"] == ["the whole question (team reference)"]
@@ -535,10 +538,42 @@ def test_key_sheet_lists_every_answer(built):
     assert [b["question_id"] for b in body] == [r["question_id"] for r in built.records]
     for b, r in zip(body, built.records):
         assert b["value"] == calc._fmt(r["value"]) and b["specification"] == r["specification"]
-        assert b["status"] == r["status"] == calc.STATUS and b["computed_by"] == calc.COMPUTED_BY
+        assert b["status"] == r["status"] and b["computed_by"] == calc.COMPUTED_BY
         assert b["reference_route"] == r["reference_route"]
         if r["specification"] == "team reference":
             assert b["value"] == "" and b["formula"].startswith("none: ") and b["source"].startswith("none: ")
+
+
+def test_review_decisions_set_the_status_and_the_confirmed_value(tmp_path):
+    """The review protocol's decided records (reviews/calc.jsonl) set each answer's status; an answer the
+    expert agent replaced carries the confirmed value; the blind sheet shows the decided recomputations."""
+    from grcbench.review import records, sheets
+    fresh = calc.build(reviews_dir=tmp_path / "none")
+    assert all(r["status"] == calc.STATUS and r["confirmed"] is None for r in fresh.records)
+    det = next(r for r in fresh.records if r["specification"] == "determined" and not isinstance(r["value"], list))
+    und = next(r for r in fresh.records if r["specification"] == "underspecified")
+    out = lambda v, **kw: {"value": v, "unit": kw.get("unit", ""), "edits": [], "notes": kw.get("notes", "n")}
+    r1 = {(det["question_id"],): out(f"{det['value']}", unit=det["unit"]), (und["question_id"],): out("20", unit="MHz")}
+    r2 = {(det["question_id"],): out(f"{det['value']}", unit=det["unit"]), (und["question_id"],): out("20", unit="MHz")}
+    ex = {(und["question_id"],): {**out("disagrees", notes="the question fixes it"),
+                                  "confirmed_value": "20", "confirmed_unit": "MHz"}}
+    from grcbench.review import coordinate
+    keys = {r["question_id"]: r for r in fresh.records}
+    recs = records.build(sheets.SHEETS["calc"], r1, r2, ex, router=coordinate.calc_router(keys))
+    records.write_records(tmp_path / "rev" / "calc.jsonl", recs)
+
+    b = calc.build(reviews_dir=tmp_path / "rev")
+    got = {r["question_id"]: r for r in b.records}
+    assert got[det["question_id"]]["status"] == "confirmed by blind recomputation (R1;R2)"
+    assert got[det["question_id"]]["confirmed"] == {"value": det["value"], "unit": det["unit"]}
+    assert got[und["question_id"]]["status"].startswith("decided by the expert agent")
+    assert got[und["question_id"]]["confirmed"] == {"value": [20.0], "unit": ["MHz"]}
+    blind = calc.read_sheet(b.outputs()[calc.OUT_BLIND])
+    row = next(r for r in blind[1:] if r[0] == det["question_id"])
+    assert row[2] == "R1;R2" and row[3] != ""
+    assert calc.read_sheet(b.outputs()[calc.OUT_KEY])[1:] and all(
+        r[0] != und["question_id"] or "expert" in r[calc.KEY_COLUMNS.index("status")]
+        for r in calc.read_sheet(b.outputs()[calc.OUT_KEY])[1:])
 
 
 def test_a_filled_in_blind_sheet_is_kept_and_passes_check(tmp_path, capsys):
@@ -573,14 +608,18 @@ def test_default_output_names_no_question(tmp_path, capsys):
     assert not re.search(r"q_[0-9a-f]{16}", out)
 
 
-def test_instructions_send_every_flag_and_disagreement_to_the_qoherent_expert(built):
+def test_instructions_send_every_flag_and_disagreement_to_the_expert_agent(built):
+    """Two blind recomputer agents; the expert agent decides every other case (review protocol)."""
     text = calc.instructions(len(built.questions))
     flat = " ".join(text.split())
-    assert "The Qoherent expert decides every disagreement" in flat and "who decided" in flat
+    assert "two recomputer agents (`R1`, `R2`) each recompute every answer alone" in flat
+    assert "the expert agent decides every disagreement" in flat
+    assert "decides every other case, including whether a question is underspecified" in flat
     assert "An underspecified question is rewritten, or removed and counted (eval plan §5.2, §5.3)" in flat
     assert "assumption-dependent" not in text and "kept" not in text            # methodology-F1: no third route
-    assert "do not guess: write `underspecified:`" in flat
-    assert "./gb calc" not in text and "_<your initials>.csv" in text
+    assert "do not guess. Write `underspecified:`" in flat
+    assert "./gb calc" not in text and "input copy" in text
+    assert "Compute with your own code and run it" in flat
     assert not re.search(r"q_[0-9a-f]{16}", text)
 
 
@@ -594,8 +633,8 @@ def test_blind_pass_keeps_every_file_with_script_answers_closed(built):
     assert Path(__file__).relative_to(REPO).as_posix().startswith("tests/")
     assert Path(calc.__file__).relative_to(REPO).as_posix().startswith("src/grcbench/tier_k/")
     guide = " ".join((REPO / "docs" / "guidelines" / "rubric_writing.md").read_text(encoding="utf-8").split())
-    rule = guide[guide.index("Do not look at the key"):]
-    rule = rule[:rule.index("before you have your own answer")]
+    rule = guide[guide.index("Neither looks at the key"):]
+    rule = rule[:rule.index("(they hold the script's answers)")]
     for path in ("items/tier_k/test/calc_answers.jsonl", "src/grcbench/tier_k/", "tests/"):
         assert path in rule, path
     assert "assumption-dependent" not in guide
@@ -608,7 +647,7 @@ def test_two_runs_are_byte_identical_and_match_the_repository(runs):
     for rel in OUTPUTS:
         assert (a / rel).read_bytes() == (b / rel).read_bytes(), rel
         repo = (REPO / rel).read_bytes()
-        if rel == calc.OUT_BLIND and calc.annotated(repo.decode("utf-8")):   # filled in by a team member
+        if rel == calc.OUT_BLIND and calc.annotated(repo.decode("utf-8")):   # filled in by the review
             assert calc.same_questions(repo.decode("utf-8"), (a / rel).read_bytes().decode("utf-8"))
             continue
         assert (a / rel).read_bytes() == repo, f"{rel} is stale: run ./gb calc"

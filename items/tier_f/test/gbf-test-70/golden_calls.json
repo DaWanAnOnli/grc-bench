@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x analog_frequency_modulator_fc analog_quadrature_demod_cf hilbert_fc blocks_multiply_xx blocks_file_sink",
+  "query": "Quadrature Demod",
   "domain": "catalog",
   "k": 12
  },

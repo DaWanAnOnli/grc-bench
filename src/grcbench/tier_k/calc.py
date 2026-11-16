@@ -5,17 +5,19 @@ question whose correct answer depends on assumptions the question does not state
 removed and counted (§5.3)". Eval plan §4.2 "Scoring" and proposal §5.1: calculation items get tiered
 relative-error credit, and a wrong unit or order of magnitude scores zero (tier_k/rules.py applies it).
 
-Role table (eval plan §5.1, Table 5; decision of 14 Oct). Claude may compute calculation answers by
-script; every record is "pending blind team recomputation", and a team member recomputes each answer
-without seeing the script's. That exception covers only values computed from numbers the question
-states. Claude drafts no reference answer and no rubric prose:
+Roles (eval plan §5.1, Table 5; decision of 14 Oct; docs/guidelines/review_protocol.md). Claude computes
+calculation answers by script; every record is "pending blind team recomputation" until two recomputer
+agents have recomputed each answer without seeing the script's, and the expert agent decides where they
+differ. The script computes only values from numbers the question states; the reference answer and the
+rubric prose are the rubric writer agent's:
   - a question labelled `calculation` whose answer is an expression or an example (no number to
-    compute from) gets no script value: its record is a `team reference`, and its function computes
-    nothing and holds no answer content (no formula, no source, no check of a candidate answer);
+    compute from) gets no script value: its record is a `team reference` (the rubric writer's), and its
+    function computes nothing and holds no answer content (no formula, no source, no check of a
+    candidate answer);
   - the parts of a question that ask for an explanation are listed under `not_computed`;
   - tolerance notes say what a tolerance admits, never which answers are wrong or earn partial
-    credit (the rubric's errors are the team's);
-  - `numeric_proposal` is only a proposal: the team writes the rubric's `numeric` and
+    credit (the rubric's errors are the rubric writer's);
+  - `numeric_proposal` is only a proposal: the rubric writer writes the rubric's `numeric` and
     `numeric_tolerance` from the confirmed value (docs/guidelines/rubric_writing.md).
 
 Which questions. The 25 frozen test questions whose clean task type is `calculation`
@@ -36,7 +38,7 @@ copies (a line that opens with another "Name:" is refused):
   Missing:       "- " items, only when the question does not state everything a unique answer needs
   Source:        a trusted source: a textbook, a standard, PySDR or the GNU Radio documentation
   Tolerance:     the relative tolerance and what it admits
-  Not computed:  "- " items: sub-questions that ask for prose (left to the team's rubric)
+  Not computed:  "- " items: sub-questions that ask for prose (left to the rubric)
 
 Specification (one rule for every number a question asks for; `specification` in the record). Eval plan
 §5.2: "A question whose correct answer depends on assumptions the question does not state is rewritten,
@@ -49,12 +51,12 @@ or removed and counted (§5.3)". So a number is either determined or not:
   underspecified  the question leaves a choice open that a rival convention in a trusted source fills
                   with a value outside the tolerance, or omits a quantity the value needs: the number has
                   no value (null), Missing names each unstated assumption, the values under the named
-                  options are listed under `readings` (never as the answer), and the team rewrites or
-                  removes the question (§5.2, §5.3);
+                  options are listed under `readings` (never as the answer), and the question is
+                  rewritten, or removed and counted (§5.2, §5.3);
   team reference  no number to compute from (see the role table above).
 The record is `underspecified` exactly when a part has no value, and a part with a value lists no
 reading outside its tolerance (the build enforces both). The blind recomputation checks the readings:
-a team member who finds a convention the script missed marks the question underspecified too.
+a recomputer who finds a convention the script missed marks the question underspecified too.
 
 Tolerance (one rule). 1 % relative, or 0.1 dB for a decibel value: the scorer's defaults
 (tier_k/rules.py), which admit the exact value rounded to three significant figures (0.1 dB) and
@@ -121,11 +123,11 @@ STATUS = "pending blind team recomputation"
 COMPUTED_BY = "script drafted by Claude (Anthropic)"
 # where each specification class's reference comes from (`reference_route` in the record)
 ROUTES = {
-    "determined": "script value, confirmed by the blind team recomputation (eval plan §5.2)",
-    "underspecified": "none until the team rewrites the question, or removes and counts it (eval plan "
-                      "§5.2, §5.3); the readings are not answers",
-    "team reference": "rubric reference by the Table-5 drafting model (eval plan §5.2) or by the team (a "
-                      "deviation to record, docs/guidelines/rubric_writing.md); no script value",
+    "determined": "script value, confirmed by the blind recomputation (eval plan §5.2)",
+    "underspecified": "none: the question is rewritten, or removed and counted (eval plan §5.2, §5.3); "
+                      "the readings are not answers",
+    "team reference": "rubric reference by the rubric writer agent, checked by two checker agents "
+                      "(docs/guidelines/review_protocol.md); no script value",
 }
 
 ITEMS_TEST = REPO / "items" / "tier_k" / "test" / "frozen_questions.jsonl"
@@ -151,7 +153,7 @@ MAX_WIDENED_DB = 0.41           # ... or 0.41 dB (10 % in power)
 
 KINDS = ("numeric", "vector", "symbolic", "example")
 VALUE_KINDS = ("numeric", "vector")         # the script computes a value from the question's numbers
-TEAM_KINDS = ("symbolic", "example")        # no number to compute from: the team writes the reference
+TEAM_KINDS = ("symbolic", "example")        # no number to compute from: the rubric writer writes it
 SPECIFICATIONS = ("determined", "underspecified", "team reference")
 SECTIONS = ("Formula", "Assumptions", "Missing", "Source", "Tolerance", "Not computed")
 LIST_SECTIONS = ("Assumptions", "Missing", "Not computed")
@@ -267,7 +269,7 @@ def q_41dd72957bec640b(m: int = 16, snr_db: float = 20.0) -> Answer:
         evaluated with the standard approximation exp(-x²/2) / (x sqrt(2π)) (+4.6 % at E_s/N_0 = 20 dB) and
         rounding to three significant figures.
     Not computed:
-      - "What assumptions are you making?" (prose, for the team's rubric)
+      - "What assumptions are you making?" (prose, for the rubric)
     """
     def ser(es_n0: float, q: Callable[[float], float] = _q) -> float:
         p = 2 * (1 - 1 / math.sqrt(m)) * q(math.sqrt(3 * es_n0 / (m - 1)))
@@ -290,7 +292,7 @@ def q_1fe7817ee6a8873f() -> Answer:
     """Distribution and statistical properties of Z = X + jY, with X and Y independent N(0, σ²).
 
     Formula: none: the question asks for a distribution and its properties, not a value computed from
-        numbers it states; the reference is written by the team (eval plan §5.2, Table 5).
+        numbers it states; the reference is written in the rubric (docs/guidelines/rubric_writing.md).
     Assumptions:
       - none (no value is computed)
     Source: none: the reference's writer names its source (docs/guidelines/rubric_writing.md).
@@ -314,7 +316,7 @@ def q_5ed3c28aa3901b62(exponent_bits: int = 8) -> Answer:
         computer scientist should know about floating-point arithmetic", ACM Computing Surveys 23(1), 1991.
     Tolerance: 1 % relative: the value is exact; admits rounding to three significant figures (1.18e-38).
     Not computed:
-      - "explain its significance for DSP" (prose, for the team's rubric)
+      - "explain its significance for DSP" (prose, for the rubric)
     """
     bias = 2 ** (exponent_bits - 1) - 1
     value = 2.0 ** (1 - bias)
@@ -342,7 +344,7 @@ def q_bc3fb92ae337a426(channels: int = 2, sample_rate_hz: float = 96_000.0, bits
         the value written with JEDEC binary prefixes read as decimal ones (750 KB/s, -2.3 %; 0.732 MB/s,
         -4.6 %) and rounding to three significant figures.
     Not computed:
-      - "Discuss system design impact" (prose, for the team's rubric)
+      - "Discuss system design impact" (prose, for the rubric)
     """
     bits_per_s = channels * sample_rate_hz * bits_per_sample
     _check(bits_per_s / 8 == 768_000 and bits_per_s / 8 / 1024 == 750, "audio: 768 kB/s = 750 KiB/s")
@@ -358,7 +360,7 @@ def q_66b264c8786f2018() -> Answer:
     """Fourier transform Y(ω) of the time-shifted signal y(t) = x(t - t0).
 
     Formula: none: the question asks for an expression, not a value computed from numbers it states; the
-        reference is written by the team (eval plan §5.2, Table 5).
+        reference is written in the rubric (docs/guidelines/rubric_writing.md).
     Assumptions:
       - none (no value is computed)
     Source: none: the reference's writer names its source (docs/guidelines/rubric_writing.md).
@@ -374,7 +376,7 @@ def q_f7bced7a5d660e9d() -> Answer:
     """Frequency response of the 3-point moving-average filter.
 
     Formula: none: the question asks for a function of frequency, not a value computed from numbers it
-        states; the reference is written by the team (eval plan §5.2, Table 5).
+        states; the reference is written in the rubric (docs/guidelines/rubric_writing.md).
     Assumptions:
       - none (no value is computed)
     Source: none: the reference's writer names its source (docs/guidelines/rubric_writing.md).
@@ -390,7 +392,7 @@ def q_a598b884fbd1d1f6() -> Answer:
     """Mapping bits to QPSK symbols, with an example mapping for 2 bits per symbol.
 
     Formula: none: the question asks for a method and an example, not a value computed from numbers it
-        states; the reference is written by the team (eval plan §5.2, Table 5).
+        states; the reference is written in the rubric (docs/guidelines/rubric_writing.md).
     Assumptions:
       - none (no value is computed)
     Source: none: the reference's writer names its source (docs/guidelines/rubric_writing.md).
@@ -445,7 +447,7 @@ def q_c955829cc73f83d0(x: tuple[int, ...] = (1, 0, 0, 0)) -> Answer:
     Tolerance: none: the value is undetermined (see Missing). Once the normalisation is fixed, 1 % relative
         per element: every element is exact.
     Not computed:
-      - "What does the result represent?" (prose, for the team's rubric)
+      - "What does the result represent?" (prose, for the rubric)
     """
     n = len(x)
     xs = np.asarray(x, dtype=float)
@@ -466,7 +468,7 @@ def q_75980861b0e8d95d() -> Answer:
     """Computational complexity of the Cooley-Tukey FFT of an N-point signal.
 
     Formula: none: the question asks for an order of growth in N, not a value computed from numbers it
-        states; the reference is written by the team (eval plan §5.2, Table 5).
+        states; the reference is written in the rubric (docs/guidelines/rubric_writing.md).
     Assumptions:
       - none (no value is computed)
     Source: none: the reference's writer names its source (docs/guidelines/rubric_writing.md).
@@ -844,7 +846,7 @@ def q_25f9f7406f3df97e(file_bytes: float = 1e9, bytes_per_item: int = 8, rate_sp
         (raw items, no header); IEC 80000-13 (G = 10^9, Gi = 2^30).
     Tolerance: 8 % relative: admits 1 GB read as 1 GiB (+7.4 %) and rounding to three significant figures.
     Not computed:
-      - "What GNU Radio mechanism ensures the flowgraph runs as fast as possible?" (prose, for the team's rubric)
+      - "What GNU Radio mechanism ensures the flowgraph runs as fast as possible?" (prose, for the rubric)
     """
     samples = file_bytes / bytes_per_item
     t = samples / rate_sps
@@ -1013,7 +1015,7 @@ def withheld(ans: Answer, spec: str) -> str | None:
     if spec == "team reference":
         return "team reference: no script value"
     if spec == "underspecified":
-        return "underspecified: no value until the team rewrites the question"
+        return "underspecified: no value; the question is rewritten, or removed and counted"
     if ans.kind != "numeric":
         return f"a {ans.kind} answer has no scalar reference form"
     reasons = [f"{p.label}: {p.withhold}" for p in ans.parts if p.withhold]
@@ -1080,9 +1082,67 @@ def record(q: dict[str, Any], calc_: Calc) -> dict[str, Any]:
         "stated_inputs": stated_inputs,
         "assumed_constants": assumed_constants,
         "status": STATUS,
+        "confirmed": None,
         "computed_by": COMPUTED_BY,
         "canary": CANARY,
     }
+
+
+# ---------------------------------------------------------------- the review's decisions ---------
+
+def decided_calc(reviews_dir: Path | None = None) -> dict:
+    """The review protocol's decided records of the blind recomputation (reviews/calc.jsonl), by (id,)."""
+    from grcbench.review.records import decided
+    return decided("calc", reviews_dir=reviews_dir)
+
+
+_REVIEW_OUTCOME = {
+    "agrees": "the script's value stands",
+    "disagrees": "the expert agent's confirmed value replaces the script's",
+    "underspecified": "underspecified: rewrite, or remove and count (eval plan §5.2, §5.3)",
+    "no value": "no script value (the rubric writer writes the reference)",
+}
+
+
+def review_status(rec: dict[str, Any]) -> str:
+    """The status of an answer once the review protocol has decided it (docs/guidelines/review_protocol.md)."""
+    final, by = rec["final"], rec["decided_by"]
+    if not by.startswith("EX"):
+        return {"agrees": "confirmed by blind recomputation (R1;R2)",
+                "underspecified": "underspecified by both blind recomputations (R1;R2): rewrite, or remove "
+                                  "and count (eval plan §5.2, §5.3)",
+                "no value": "no script value, as both blind recomputations found (R1;R2)"}[final]
+    return f"decided by the expert agent{' (audit)' if by == 'EX (audit)' else ''}: {_REVIEW_OUTCOME[final]}"
+
+
+def _number(text: str) -> float | str:
+    try:
+        return float(text)
+    except ValueError:
+        return text
+
+
+def confirmed(r: dict[str, Any], rec: dict[str, Any]) -> dict[str, Any] | None:
+    """The confirmed reference value: the script's where it stands, the expert's where it replaces it."""
+    if rec["final"] == "agrees":
+        return {"value": r["value"], "unit": r["unit"]}
+    if rec["final"] == "disagrees":
+        ex = rec.get("ex") or rec.get("audit") or {}
+        values = [_number(v.strip()) for v in str(ex.get("confirmed_value", "")).split(";")]
+        units = [u.strip() for u in str(ex.get("confirmed_unit", "")).split(";")]
+        if not ex.get("confirmed_value") or len(units) not in (1, len(values)):
+            raise ValueError(f"{r['question_id']}: the expert replaced the script's value but gave no "
+                             "confirmed_value/confirmed_unit")
+        return {"value": values, "unit": units * len(values) if len(units) == 1 else units}
+    return None
+
+
+def apply_review(records_: list[dict[str, Any]], decided: dict) -> list[dict[str, Any]]:
+    out = []
+    for r in records_:
+        rec = decided.get((r["question_id"],))
+        out.append(r if rec is None else {**r, "status": review_status(rec), "confirmed": confirmed(r, rec)})
+    return out
 
 
 # ---------------------------------------------------------------- inputs -------------------------
@@ -1189,43 +1249,64 @@ def key_sheet(questions: list[dict[str, Any]], records: list[dict[str, Any]]) ->
 def instructions(n: int) -> str:
     return f"""# Tier-K calculation answers: blind recomputation
 
-Eval plan §5.2: calculation answers are computed by a script from the question's numbers, and a team
-member recomputes each one **without seeing the script's answer**. The script was drafted by Claude
-(Anthropic), so every answer is "{STATUS}" (role table, Table 5).
-The script gives a value only where it computes one from numbers the question states. A question
-whose answer is an expression or an example has no script value: its reference is written
-separately (`reference_route` in the key).
+Eval plan §5.2: calculation answers are computed by a script from the question's numbers, and each
+answer is recomputed **without seeing the script's answer**. Under the review protocol
+([review_protocol.md](../../docs/guidelines/review_protocol.md)), two recomputer agents (`R1`, `R2`) each
+recompute every answer alone, and the expert agent decides every disagreement. The script was drafted
+by Claude (Anthropic), so every answer is "{STATUS}" until both recomputations
+agree with it, or the expert has decided. The script gives a value only where it computes one from
+numbers the question states. A question whose answer is an expression or an example has no script
+value: its reference is written by the rubric writer (`reference_route` in the key).
 
-1. Copy `tier_k_calc_blind_recompute.csv` ({n} questions) to
-   `tier_k_calc_blind_recompute_<your initials>.csv` and fill in your copy only: the original is a
-   generated template. Until you have finished, do **not** open `tier_k_calc_key.csv`,
-   `items/tier_k/test/calc_answers.jsonl`, or any file under `src/grcbench/tier_k/` or `tests/`:
-   they hold the script's answers.
-2. For each question, fill in `annotator` (your name), `value` and `unit`. Use only the numbers the
-   question states plus standard constants. If the question asks for several numbers, give them in
-   the question's order, separated by `;` (same for `unit`). If the answer is an expression or an
-   example rather than a number, write it in `notes` and leave `value` empty. Leave out the
-   explanations the question asks for: those go into the rubric, which is written separately.
-3. In `notes`, write any assumption you had to make and the source you checked (textbook, standard,
-   PySDR or the GNU Radio documentation). If the question does not state everything needed for a
-   unique answer, do not guess: write `underspecified:`, the missing assumption and the answer under
-   each option, and leave `value` empty. This includes a term with two definitions in use (in a
-   textbook, a standard, PySDR or the GNU Radio documentation) that give different answers.
-4. Then open `tier_k_calc_key.csv` and compare. A value agrees when it lies within the key's relative
-   `tolerance` (decibel values: within `tolerance_db` dB). The `specification` column says how the
-   script classed the question:
+1. Work from your input copy of `tier_k_calc_blind_recompute.csv` ({n} questions). Until every one of
+   your values is recorded, do **not** open `tier_k_calc_key.csv`, `items/tier_k/test/calc_answers.jsonl`,
+   or any file under `src/grcbench/tier_k/` or `tests/`: they hold the script's answers.
+2. For each question, record `value` and `unit`. Use only the numbers the question states plus
+   standard constants. **Compute with your own code and run it**; the code and its printed output are
+   your evidence.
+   - If the question asks for several numbers, give them in the question's order, separated by `;`
+     (same for `unit`).
+   - If the answer is an expression or an example rather than a number, write it in `notes` and leave
+     `value` empty.
+   - Leave out the explanations the question asks for. Those go into the rubric, which is written
+     separately.
+3. In `notes`, write any assumption you had to make and the source you checked: a textbook, a
+   standard, PySDR or the GNU Radio documentation.
+   - If the question does not state everything needed for a unique answer, do not guess. Write
+     `underspecified:`, the missing assumption and the answer under each option, and leave `value`
+     empty.
+   - This includes a term with two definitions in use (in a textbook, a standard, PySDR or the GNU
+     Radio documentation) that give different answers.
+4. **Comparison.** The coordinator scores each value against the key with the rule cascade
+   (`./gb review`). A value agrees when it gets full credit against the key's relative `tolerance`
+   (decibel values: within `tolerance_db` dB). The `specification` column says how the script classed
+   the question:
    - `determined`: one value;
-   - `underspecified`: no value; `missing_assumptions` names what the question leaves open, and the
+   - `underspecified`: no value. `missing_assumptions` names what the question leaves open, and the
      values under each named option are under `readings` (they are not answers);
    - `team reference`: no script value (the answer is not a number computed from the question).
-   The `tolerance_note` says only what the tolerance admits. The errors that make an answer wrong
-   belong to the rubric, which the team writes.
-5. The Qoherent expert decides every disagreement between the script and a recomputation, including
-   one about whether a question is underspecified. An underspecified question is rewritten, or
-   removed and counted (eval plan §5.2, §5.3). Record in your copy's `notes` who decided and what.
-6. The team then writes the rubric's `numeric` and `numeric_tolerance` from the confirmed value
-   (`docs/guidelines/rubric_writing.md`). The script's `numeric_proposal` in `calc_answers.jsonl` is
-   only a starting point.
+
+   An answer is confirmed when both recomputations reach what the key says: the same value, or both
+   `underspecified`, or both no value for a `team reference` question.
+5. **The expert agent** decides every other case, including whether a question is underspecified.
+   - It reads both recomputations and the key, and re-derives the answer with its own code.
+   - Its decision says whether the key's value stands, which value replaces it, or that the question
+     is underspecified.
+   - An underspecified question is rewritten, or removed and counted (eval plan §5.2, §5.3).
+6. The rubric writer then writes the rubric's `numeric` and `numeric_tolerance` from the confirmed
+   value (`docs/guidelines/rubric_writing.md`). The script's `numeric_proposal` in `calc_answers.jsonl`
+   is only a starting point.
+
+## Output fields
+
+One JSON object per question, written to your output file as soon as the question is done:
+
+- `sheet`: `"calc"`;
+- `key`: `{{"question_id": ...}}`;
+- `value`: the number(s), `;`-separated, or `""`;
+- `unit`: the unit(s), `;`-separated;
+- `notes`: the assumptions, an `underspecified:` line, or the expression;
+- `evidence`: your code and what it printed.
 """
 
 
@@ -1233,17 +1314,22 @@ separately (`reference_route` in the key).
 class Build:
     questions: list[dict[str, Any]]
     records: list[dict[str, Any]] = field(default_factory=list)
+    reviews_dir: Path | None = None
 
     def outputs(self) -> dict[Path, str]:
-        """Every output, as the exact text written (UTF-8; the CSVs start with a byte-order mark)."""
+        """Every output, as the exact text written (UTF-8; the CSVs start with a byte-order mark). The blind
+        sheet shows the review protocol's decided recomputations once they exist."""
+        from grcbench.review.fill import filled_text
         jsonl = "".join(json.dumps(r, sort_keys=True, ensure_ascii=False) + "\n" for r in self.records)
-        return {OUT_ANSWERS: jsonl, OUT_BLIND: blind_sheet(self.questions),
+        return {OUT_ANSWERS: jsonl,
+                OUT_BLIND: filled_text("calc", blind_sheet(self.questions), reviews_dir=self.reviews_dir),
                 OUT_KEY: key_sheet(self.questions, self.records), OUT_INSTRUCTIONS: instructions(len(self.questions))}
 
 
-def build() -> Build:
+def build(reviews_dir: Path | None = None) -> Build:
     questions = load_questions()
-    return Build(questions, [record(q, REGISTRY[q["id"]]) for q in questions])
+    recs = apply_review([record(q, REGISTRY[q["id"]]) for q in questions], decided_calc(reviews_dir))
+    return Build(questions, recs, reviews_dir)
 
 
 def _read(path: Path) -> str | None:

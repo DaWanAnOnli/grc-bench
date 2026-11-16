@@ -16,12 +16,16 @@
  "disjointness": "A generated chain (tones, conjugate, conjugate) whose functional signature tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "repair",
  "fault": {
-  "block": "tone_8500",
+  "block": "tone_1",
   "description": "the frequency of the 8.5 kHz tone is 11000",
   "expected_rung": "V5",
   "param": "freq",
   "type": "wrong_value",
   "wrong_value": "11000"
+ },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Signal Source"
  },
  "id": "gbf-test-63",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 8.5 kHz complex tone with amplitude 0.8; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; and write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 8.5 kHz (within 85 Hz); 100 % of its power within 50 Hz of 8.5 kHz (within a tenth of that share); an RMS level of 0.8 (within 5 %). Instead, its output holds components at 11 kHz. Find the fault and fix it, keeping everything else as it is. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
@@ -29,14 +33,14 @@
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_8500",
+   "block": "tone_1",
    "breaks": "the 8.5 kHz tone at 10.625 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "10625"
   },
   {
-   "block": "tone_8500",
+   "block": "tone_1",
    "breaks": "the 8.5 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -126,6 +130,16 @@
     "group": "p2p",
     "kind": "same_connections_as_start",
     "mode": "isomorphic"
+   },
+   {
+    "group": "p2p",
+    "ids": [
+     "variable"
+    ],
+    "kind": "block_present",
+    "params": {
+     "value": "32000"
+    }
    }
   ]
  },
@@ -140,9 +154,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 2067,
@@ -155,10 +173,11 @@
   "its strongest component at 8.5 kHz (within 85 Hz)",
   "100 % of its power within 50 Hz of 8.5 kHz (within a tenth of that share)",
   "an RMS level of 0.8 (within 5 %)",
-  "structure: same blocks and connections as the start graph"
+  "structure: same blocks and connections as the start graph",
+  "the sample rate stays at 32 kHz (samp_rate 32000)"
  ],
  "split": "test",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

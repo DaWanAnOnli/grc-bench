@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_3600
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '3600', amp: '0.6',
     offset: '0', showports: 'True'}
@@ -40,7 +40,7 @@ connections:
 - [mixer, '0', agc, '0']
 - [agc, '0', mixer_2, '0']
 - [lo_2, '0', mixer_2, '1']
-- [retune, strobe, tone_3600, cmd]
+- [retune, strobe, tone_1, cmd]
 - [throttle, '0', mixer, '0']
 - [mixer_2, '0', out, '0']
 metadata: {file_format: 1}

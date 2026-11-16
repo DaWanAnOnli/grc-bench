@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x analog_noise_source_x blocks_add_xx blocks_conjugate_cc blocks_file_sink",
+  "query": "Complex Conjugate File Sink",
   "domain": "catalog",
   "k": 10
  },

@@ -5,21 +5,28 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
 
 ## Before G2 (Fri 30 Oct)
 
-1. **Assign the team reviews.** Each sheet below needs two people working alone, then one agreed
-   decision. Fill in a copy of a sheet, never the generated file.
+1. **The reviews follow the review protocol** (`docs/guidelines/review_protocol.md`). Claude review
+   agents fill in every sheet below:
+   - two independent reviewers per sheet (a writer and two checkers per rubric);
+   - the expert agent for every disagreement;
+   - decision rules in code (`./gb review`);
+   - at most 30 declared agent runs before the freeze (`reviews/review_log.jsonl`).
+
+   The decided records are in `reviews/`, and the summary is `reports/review_summary.md`.
 
    | Sheet (`handoff/review_sheets/`) | Rows | Guide |
    |---|---|---|
-   | `tier_f_first_set.csv` | 195 tasks (30 drafted by hand, 165 generated) | `docs/checklists/tier_f_task_review.md` (about 10 minutes per task per reviewer, so about 33 hours each for all 195) |
-   | `tier_a_first_set.csv` | 42 tasks | `docs/checklists/tier_a_task_review.md` (about 20 minutes per task per reviewer) |
-   | `tier_k_block_questions.csv` | 100 questions | wording review of the GNU Radio behaviour questions: is everything the answer depends on stated? (`docs/guidelines/rubric_writing.md`) |
-   | `rubric_sheet_test.csv`, `rubric_sheet_dev.csv` | 185 + 107 | `docs/guidelines/rubric_writing.md` (rubric prose and its two checks; Claude does not draft rubric prose) |
+   | `tier_f_first_set.csv` | 195 tasks (30 drafted by hand, 165 generated) | `docs/checklists/tier_f_task_review.md` |
+   | `tier_a_first_set.csv` | 42 tasks | `docs/checklists/tier_a_task_review.md` |
+   | `tier_k_block_questions.csv` | 100 questions | `tier_k_block_questions_instructions.md` (wording review, each question solved blind with GNU Radio) |
+   | `rubric_sheet_test.csv`, `rubric_sheet_dev.csv` | 185 + 107 | `docs/guidelines/rubric_writing.md` (a writer agent and two checker agents) |
    | `task_type_ambiguous_test.csv` | 11 questions | `task_type_instructions.md` (two labels each; κ is reported) |
    | `task_type_spotcheck_train.csv` | 170 rows | `task_type_instructions.md` (10 % spot check) |
    | `tier_k_calc_blind_recompute.csv` | 25 answers | `tier_k_calc_instructions.md` (recompute without looking at the key) |
-   | `tier_k_twin_threshold_review.csv` | 235 pairs | the dev-split twin thresholds |
-   | `tier_k_test_clusters.csv` | 10 clusters | confirm each Tier-K test cluster or split it out (`reports/tier_k_items.md`) |
-   | `contamination_tier_k_test.csv`, `contamination_tier_k_dev.csv`, `contamination_tier_f_test.csv`, `contamination_tier_f_dev.csv` | 188 + 30 + 17 + 6 flagged pairs (the Tier-A sheets have none) | `reports/contamination.md` |
+   | `tier_k_twin_threshold_review.csv` | 235 pairs | `similarity_sheets_instructions.md`, section B (the dev-split twin thresholds) |
+   | `tier_k_test_clusters.csv` | 10 rows | `similarity_sheets_instructions.md`, section A |
+   | `contamination_tier_k_test.csv`, `contamination_tier_k_dev.csv`, `contamination_tier_f_test.csv`, `contamination_tier_f_dev.csv` | 188 + 30 + 17 + 6 flagged pairs (the Tier-A sheets have none) | `similarity_sheets_instructions.md`, section C |
+   | `expert_review.csv` | 397 items | `docs/checklists/expert_review.md` (the expert agent; H1b) |
 
 2. **Make the team decisions** listed in `reports/tier_f_first_set.md` §6 (set level: 8 points; task
    level: 8 tasks) and in `reports/scoring_reviews/round2_status.md` (the open findings, before the
@@ -29,9 +36,9 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
    label merges, the open scoring findings, the four Nanbeige comparison arms, ...). After the
    decisions: set `status: declared` in `run_list.yaml` (until then the harness refuses every test
    run), run `./gb prereg`, make the first commit (item 9) and upload to a new OSF project.
-4. **Send the Qoherent request** (`handoff/qoherent/request_draft.md`): the expert's name and hours,
-   acceptance of the Claude-drafting change to Data Summary §11 D, the task descriptions of the new
-   traces, and the SFT-release question.
+4. **Send the Qoherent request** (`handoff/qoherent/request_draft.md`): acceptance of the
+   Claude-drafting change to Data Summary §11 D and of the review protocol, the task descriptions of
+   the new traces, and the SFT-release question.
 5. **Send the compute request** (`benchmark and evaluation/Compute_Budget_Note_GPU_Hours.docx`) if it
    has not gone out yet. Model runs stay blocked until there is approval of the CAD 504, MiniMax and
    DeepSeek access, and Qoherent GPU access.

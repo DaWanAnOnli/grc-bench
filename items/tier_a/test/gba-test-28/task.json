@@ -14,6 +14,9 @@
       "param": "freq"
      }
     }
+   ],
+   "forbid": [
+    "(?i)(?<!never )(?<!not )\\b(?:settles|settled|sits|locks|locked|converges|converged)\\s+(?:at|to|on|near)\\s+(?:about\\s+|around\\s+|roughly\\s+)?(?:its\\s+|the\\s+)?(?:4000\\s*Hz|4,000\\s*Hz|4(?:\\.0)?\\s*kHz)"
    ]
   },
   "files": [
@@ -40,9 +43,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 1,
@@ -58,5 +65,5 @@
   "active_graph": "pll_carrier_recovery.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

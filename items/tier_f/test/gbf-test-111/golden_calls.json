@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_multiply_xx channels_channel_model analog_agc_xx blocks_conjugate_cc blocks_file_sink",
+  "query": "Complex Conjugate",
   "domain": "catalog",
   "k": 12
  },

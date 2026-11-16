@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_5700
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '5700', amp: '0.6', showports: 'True'}
 - name: lo
@@ -28,8 +28,8 @@ blocks:
 connections:
 - [lo, '0', mixer, '1']
 - [mixer, '0', magnitude, '0']
-- [retune, strobe, tone_5700, cmd]
-- [tone_5700, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', mixer, '0']
 - [magnitude, '0', out, '0']
 metadata: {file_format: 1}

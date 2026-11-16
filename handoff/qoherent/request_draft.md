@@ -3,19 +3,29 @@
 Draft, 22 Oct 2026. Not sent. Joel edits and sends it, or raises the points at the next client
 meeting. Claude (Anthropic) drafted it.
 
-## 1. Expert time
+## 1. How the benchmark is reviewed
 
-GRC-Bench needs a GNU Radio expert from Qoherent for two jobs before the benchmark is frozen at G3
-(Fri 13 Nov):
+The evaluation plan asked for a Qoherent expert to:
 
-- **Expert review of the benchmark tasks: about 30 hours.** The expert checks that the Tier-F
-  flowgraph tasks and the Tier-A agent tasks are realistic, fair and correctly checked. The
-  checklist is `docs/checklists/expert_review.md`. The first set is 30 Tier-F tasks
-  (`reports/tier_f_first_set.md`), followed by the Tier-A tasks.
-- **One annotator for the judge calibration.** Three people label the same 150 Tier-K answers
-  (`docs/guidelines/judge_calibration.md`), and one of the three should be the Qoherent expert.
+- review every GNU Radio question and every Tier-F and Tier-A task (about 30 hours);
+- decide every disagreement between reviewers;
+- label answers for the judge calibration.
 
-Could you name the person and say how many hours per week they can give from now until 13 Nov?
+GRC-Bench does these reviews with Claude review agents instead (`docs/guidelines/review_protocol.md`):
+
+- **Two reviewers.** Two independent review agents check every item, each alone.
+- **An expert agent.** It decides every disagreement, audits a sample of the agreements, and does
+  the expert review of every GNU Radio question and every Tier-F and Tier-A task
+  (`docs/checklists/expert_review.md`).
+- **Evidence.** Every factual claim is checked by a quoted source or by running GNU Radio.
+- **Logging.** Every agent run is declared and logged.
+
+So no expert time is needed before the freeze (Fri 13 Nov). The pre-registration states the limits
+openly. The expert-acceptance figure (H1b) is the agent's, not a GNU Radio engineer's. If a Qoherent
+engineer later wants to look at a sample of items, the sheet and checklist are ready, and we would
+report that review next to the agent's.
+
+We would like Qoherent to accept this change.
 
 ## 2. What Claude drafted (a change to Data Summary §11 D)
 
@@ -29,10 +39,12 @@ Data Summary §11 D says the team writes the agent tasks with no AI involved. In
 How this is kept fair:
 
 - Every drafted item records `provenance.drafted_by: "Claude (Anthropic)"`.
-- Nothing is used until two team members approve it. The expert review in point 1 comes on top.
+- Nothing is used until the review of point 1 approves it: two independent review agents, and the
+  expert agent for every disagreement.
 - Every item passes the automatic quality gates.
 - Anthropic models are not on the evaluated panel.
-- Claude does not draft rubric text, judge answers, or repair or generate training data.
+- Claude writes the Tier-K rubrics under the same review. It never judges model answers in a scored
+  run, and never repairs or generates training data.
 
 We would like Qoherent to accept this change. It will be declared in the role table of the
 pre-registration (G2, Fri 30 Oct).

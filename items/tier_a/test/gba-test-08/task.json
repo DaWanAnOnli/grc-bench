@@ -30,7 +30,7 @@
   20
  ],
  "id": "gba-test-08",
- "instruction": "Create a folder named backup in the project folder and put a copy of the open flowgraph file in it, named spec_an_copy.grc. Then write a text file blocks.txt in the project folder that lists the block id (the block type, such as blocks_throttle2) of every block in the flowgraph except variables and imports: one per line, in alphabetical order, each id once. Do not change the flowgraph.",
+ "instruction": "Create a folder named backup in the project folder and put a copy of the open flowgraph file in it, named spec_an_copy.grc. Then write a text file blocks.txt in the project folder that lists the block id (the block type, such as blocks_throttle2) of every block in the flowgraph except the Options block, variables and imports: one per line, in alphabetical order, each id once. Do not change the flowgraph.",
  "license": "GPL-3.0-or-later (derived from GNU Radio 3.10.12 example channels/demo_spec_an.grc)",
  "provenance": {
   "drafted_by": "Claude (Anthropic)",
@@ -38,9 +38,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 1,
@@ -56,5 +60,5 @@
   "active_graph": "spec_an.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

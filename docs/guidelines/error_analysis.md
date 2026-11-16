@@ -1,16 +1,18 @@
 # Error analysis: labelling failures with a fixed list of error types
 
 Implements eval plan §9 ("Error analysis. Two annotators label failures with a set list of error
-types ... We report their agreement (κ)"), with §8.2 (Table 7: about 17 person-hours, two team
-members), §4.3 (the validity ladder V1–V5) and the 16 Oct decision in
+types ... We report their agreement (κ)"), with §8.2 (Table 7: about 17 person-hours, two
+annotators), §4.3 (the validity ladder V1–V5) and the 16 Oct decision in
 [the approved plan](../implementation_plan.md) (Tier F as "one lookup + one edit" in GRC-Agent's
 harness).
 
 ## What this is for
 
-Scores say how often a model fails. Error labels say **why**. Two team members label the same
-failures independently, using the fixed list of error types below. We report how often each type
-occurs, per tier and per configuration, and how well the two annotators agree (Cohen's κ).
+Scores say how often a model fails. Error labels say **why**. Two annotator agents label the same
+failures independently, using the fixed list of error types below, under the review protocol
+([review_protocol.md](review_protocol.md)). We report how often each type occurs, per tier and per
+configuration, and how well the two annotators agree (Cohen's κ). The two annotators are two runs of
+one model, so their κ measures that model's consistency, not agreement between people.
 
 The labels describe model failures. A failure caused by a broken item is not a model error. Flag
 it (`item_defect_suspected`) and it goes to the item review instead.
@@ -44,9 +46,10 @@ it (`item_defect_suspected`) and it goes to the item review instead.
   opaque `failure_id`, and only the coordinator holds the key
   ([`blinding_key.csv`](../../handoff/review_sheets/templates/blinding_key.csv)).
 
-**Time.** Eval plan Table 7 gives about 17 person-hours for two annotators, so about 8.5 hours
-each. Most Tier-F failures take 1–2 minutes, because the ladder already says where they failed. A
-Tier-A run takes about 5 minutes. The sample above is derived from these rates:
+**Time.** The sample size comes from eval plan Table 7, which gives about 17 person-hours for two
+annotators, so about 8.5 hours each. Most Tier-F failures take a person 1–2 minutes, because the
+ladder already says where they failed. A Tier-A run takes about 5 minutes. The sample above is
+derived from these rates, and the annotator agents label the same sample:
 
 | Step, per annotator | Hours |
 |---|---|
@@ -56,16 +59,10 @@ Tier-A run takes about 5 minutes. The sample above is derived from these rates:
 | Disagreements: if about a quarter of the 162 differ, re-reading about 40 and writing your reason for the expert, at 2 minutes | 1.5 |
 | **Total** | **8.5** |
 
-Two annotators: about 17 person-hours, as in Table 7. Two kinds of time are not in that line. The
-coordinator records both, and reports them as a deviation in the 7 December report:
-
-- the coordinator's preparation (sample, sheet, `auto_facts`). The coordinator holds the blinding
-  key, so does not label;
-- the Qoherent expert's decisions on the disagreements ("Procedure", step 5).
-
-If the practice round shows that labelling is slower, the coordinator shrinks both tiers in
-proportion before labelling starts, and records the new counts. A larger sample than this exceeds
-Table 7. Record it as a deviation in the 7 December report (eval plan §9, "Pre-registration").
+Two annotators: about 17 person-hours, as in Table 7. The review protocol does this work in declared
+agent runs instead (pre-registration §10). The coordinator holds the blinding key, so does not label.
+A larger sample than this one is recorded as a deviation in the 7 December report (eval plan §9,
+"Pre-registration").
 
 ## What you see for each failure
 
@@ -407,30 +404,30 @@ These codes are not error types of eval plan §9.
 | `no_output` | the model produced nothing to grade: the answer is empty or was cut off at the length cap; Tier F: no `change_graph` call was made within the 3 turns; Tier A: the agent never changed or saved anything relevant. A rejected or refused `change_graph` call is **not** `no_output` (see "Tier-F errors" above). For Tier A, still label `process` |
 | `none` (Tier F only) | the first failed rung is V1 and the content of the edit is right, so the only fault is the malformed call. `process` is then `malformed_call` |
 | `item_defect_suspected` | you believe the item is wrong, not the model. Examples: the oracle rejects a correct answer; a requirement is hidden (for example an unstated run length); the instruction is ambiguous. Explain in `evidence`. The failure goes to the item review (eval plan §5.3) and is excluded from the error counts until it is resolved |
-| `other` | nothing on the list fits; describe it in `evidence`. If many failures end up as `other`, the team discusses adding a type before the labels are final |
+| `other` | nothing on the list fits; describe it in `evidence`. If many failures end up as `other`, the expert agent proposes a new type, and the pre-registration records it before the labels are final |
 
 ## Procedure
 
 1. **Prepare.** The coordinator draws the sample, removes configuration names, fills in
-   `auto_facts`, and gives each annotator their own copy of
+   `auto_facts`, and gives each annotator agent its own input copy of
    [`error_analysis.csv`](../../handoff/review_sheets/templates/error_analysis.csv).
-2. **Practice.** Both annotators label the same 10 **dev** failures, then compare and discuss.
-   Practice labels are not counted.
-3. **Label alone.** Each annotator fills in only their own columns (`_1` or `_2`) and does not
-   discuss failures until both copies are in.
+2. **Format check.** The coordinator checks each annotator's first rows, on 10 **dev** failures,
+   against the allowed codes. These rows are not counted.
+3. **Label alone.** Each annotator fills in only its own columns (`_1` or `_2`) and never opens the
+   other annotator's output. Each gives the reason for its codes in its `evidence` cell.
 4. **Agreement.** Agreement is computed on these **independent** labels, before the expert
    decides anything:
    - Cohen's κ for `primary`, overall and per tier;
    - Cohen's κ for `process` (per tier) and for `lookup` (Tier F);
    - the percentage agreement, next to each κ.
 5. **Resolve.** Where both annotators gave the same codes, those are the final codes
-   (`resolved_by` = `annotators`). Every row where they differ goes to a Qoherent expert, who
-   decides (eval plan Table 1: "A Qoherent expert decides every disagreement"):
-   - the annotators do not settle it between themselves first;
-   - each annotator re-reads the failure and adds a one-line reason to their `evidence` cell. If
-     you see that you simply mistyped a code, say so there; the expert still decides;
+   (`resolved_by` = `annotators`). Every row where they differ goes to the expert agent, which
+   decides (eval plan Table 1, "A Qoherent expert decides every disagreement", with the expert agent
+   in the expert's place). The expert agent decides every disagreement:
+   - the annotators do not settle it between themselves first; each annotator's `evidence` cell
+     gives its reason;
    - the expert writes the final codes in `final_primary`, `final_process` and `final_lookup`,
-     and their initials in `resolved_by`;
+     and `EX` in `resolved_by`;
    - the coordinator counts how many rows the expert decided.
 6. **Report:**
    - the counts of each final code, per tier and per configuration, with the κ values. `no_output`,
@@ -451,8 +448,8 @@ failure:
 | `trace_ref` | coordinator | where the output, trace and ladder result are |
 | `primary_1`, `secondary_1`, `process_1`, `lookup_1`, `evidence_1` | annotator 1 | codes and evidence |
 | `primary_2`, `secondary_2`, `process_2`, `lookup_2`, `evidence_2` | annotator 2 | codes and evidence |
-| `final_primary`, `final_process`, `final_lookup` | coordinator (same codes) or the expert (different codes) | the final codes |
-| `resolved_by` | coordinator or the expert | `annotators` (both gave the same codes), or the expert's initials |
+| `final_primary`, `final_process`, `final_lookup` | coordinator (same codes) or the expert agent (different codes) | the final codes |
+| `resolved_by` | coordinator or the expert agent | `annotators` (both gave the same codes), or `EX` |
 | `note` | anyone | anything else |
 
 ## All codes at a glance

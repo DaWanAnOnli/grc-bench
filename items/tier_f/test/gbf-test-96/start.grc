@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_6400
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '6400', amp: '0.8', showports: 'True'}
 - name: noise
@@ -40,8 +40,8 @@ connections:
 - [channel, '0', conj, '0']
 - [conj, '0', mixer, '0']
 - [lo, '0', mixer, '1']
-- [retune, strobe, tone_6400, cmd]
-- [tone_6400, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', sum_of_tones, '0']
 - [mixer, '0', out, '0']
 metadata: {file_format: 1}

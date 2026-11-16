@@ -30,7 +30,7 @@
    "cases": [
     {
      "reasons": [
-      "files[1]: mux.json: regex '\\\\\"num_inputs\\\\\"\\\\s*:\\\\s*3\\\\b' does not match; regex '\\\\\"lengths\\\\\"\\\\s*:\\\\s*\\\\[\\\\s*2\\\\s*,\\\\s*4\\\\s*,\\\\s*3\\\\s*\\\\]' does not match"
+      "files[1]: mux.json: regex '\\\\\"num_inputs\\\\\"\\\\s*:\\\\s*3\\\\b' does not match; regex '\"lengths\"\\\\s*:\\\\s*\\\\[\\\\s*2(\\\\.0+)?\\\\s*,\\\\s*4(\\\\.0+)?\\\\s*,\\\\s*3(\\\\.0+)?\\\\s*\\\\]' does not match"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc + wrong_end_state.json"
@@ -39,7 +39,7 @@
    "passed": true
   }
  },
- "golden_end_state_sha256": "fc7598306f790106a54cf354b314b18fba294baebf59da057971ccbe7f14364c",
+ "golden_end_state_sha256": "6f740c8b8aea1b2ab1d1a17469b28c38ec2e76f98025e5171d005aa487cb0973",
  "passed": true,
  "task": "gba-dev-10"
 }

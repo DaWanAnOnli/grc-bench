@@ -622,6 +622,8 @@ def run_tier_f_samples(task_dirs: list[Path | str], model_factory: ModelSpec | s
                        on_result: Callable[[Any], None] | None = None) -> list[Any]:
     """`samples` Tier-F samples of every task, with one guard and one run-log entry for the batch."""
     tasks = [load_tier_f_task(d) for d in task_dirs]
+    from ..review.items import refuse_rejected
+    refuse_rejected(tasks)                                            # rejected tasks are not run (eval plan §5.3)
     if not tasks:
         return []
     spec_model = as_spec(model_factory)

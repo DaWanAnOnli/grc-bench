@@ -24,34 +24,38 @@
   "type": "wrong_value",
   "wrong_value": "500/(samp_rate*2/1)"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Channel Model"
+ },
  "id": "gbf-test-74",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 48 kHz: use Signal Sources to make a 11.3 kHz cosine with amplitude 0.6 and a 3.1 kHz cosine with amplitude 0.8, and add them; then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; then change its sample rate from 48 kHz to 96 kHz with a Rational Resampler (interpolation 2, decimation 1); then pass it through a Channel Model with no noise and a frequency offset of -500 Hz (freq_offset -500/(samp_rate*2/1)); and write the result as complex samples to a File Sink whose file name is received.dat. Measured over 16,384 samples after the first 4,096, the output should have 64 % of its power within 50 Hz of 2.6 kHz (within a tenth of that share); 36 % of its power within 50 Hz of 10.8 kHz (within a tenth of that share); an RMS level of 1 (within 5 %). Instead, its output holds components at 3.6 kHz and 11.8 kHz. Find the fault and fix it, keeping everything else as it is. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_11300",
+   "block": "tone_1",
    "breaks": "the 11.3 kHz tone at 14.125 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "14125"
   },
   {
-   "block": "tone_11300",
+   "block": "tone_1",
    "breaks": "the 11.3 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "0.9"
   },
   {
-   "block": "tone_3100",
+   "block": "tone_2",
    "breaks": "the 3.1 kHz tone at 3.875 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "3875"
   },
   {
-   "block": "tone_3100",
+   "block": "tone_2",
    "breaks": "the 3.1 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -149,6 +153,16 @@
     "group": "p2p",
     "kind": "same_connections_as_start",
     "mode": "isomorphic"
+   },
+   {
+    "group": "p2p",
+    "ids": [
+     "variable"
+    ],
+    "kind": "block_present",
+    "params": {
+     "value": "48000"
+    }
    }
   ]
  },
@@ -163,9 +177,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 14,
@@ -178,7 +195,8 @@
   "64 % of its power within 50 Hz of 2.6 kHz (within a tenth of that share)",
   "36 % of its power within 50 Hz of 10.8 kHz (within a tenth of that share)",
   "an RMS level of 1 (within 5 %)",
-  "structure: same blocks and connections as the start graph"
+  "structure: same blocks and connections as the start graph",
+  "the sample rate stays at 48 kHz (samp_rate 48000)"
  ],
  "split": "test",
  "start_grc": "start.grc",

@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_1200
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '1200', amp: '0.25', showports: 'True'}
 - name: resampler
@@ -35,8 +35,8 @@ connections:
 - [resampler, '0', conj, '0']
 - [conj, '0', mixer, '0']
 - [lo, '0', mixer, '1']
-- [retune, strobe, tone_1200, cmd]
-- [tone_1200, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', resampler, '0']
 - [mixer, '0', rate_limit, '0']
 - [rate_limit, '0', out, '0']

@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_noise_source_x analog_sig_source_x band_pass_filter blocks_add_xx blocks_multiply_const_vxx blocks_throttle2 channels_quantizer blocks_file_sink",
+  "query": "quantizer that rounds float samples to a number of bits",
   "domain": "catalog",
   "k": 16
  },

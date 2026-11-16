@@ -4,10 +4,10 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_11600
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '11600'}
-- name: tone_4400
+- name: tone_2
   id: analog_sig_source_x
   parameters: {type: float, freq: '4.400000e+03', amp: '0.5'}
 - name: sum_of_tones
@@ -20,8 +20,8 @@ blocks:
   id: blocks_file_sink
   parameters: {type: complex, file: analytic.dat}
 connections:
-- [tone_11600, '0', sum_of_tones, '0']
-- [tone_4400, '0', sum_of_tones, '1']
+- [tone_1, '0', sum_of_tones, '0']
+- [tone_2, '0', sum_of_tones, '1']
 - [sum_of_tones, '0', hilbert, '0']
 - [hilbert, '0', out, '0']
 metadata: {file_format: 1}

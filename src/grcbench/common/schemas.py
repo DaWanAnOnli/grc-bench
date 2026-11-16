@@ -6,7 +6,8 @@ Every item carries the fields the evaluation plan needs for release and analysis
   source      where the item comes from (frozen question, block catalog, GNU Radio example, ...)
   cluster_id  items that are not independent share a cluster (eval plan §9: clustered intervals)
   provenance  who or what drafted the item (eval plan §5.1 role table; Claude-drafted items say so)
-  review      team review status (the team reviews, edits and decides on every drafted item)
+  review      review status (the review agents review, edit and decide on every drafted item;
+              docs/guidelines/review_protocol.md)
 """
 
 from __future__ import annotations

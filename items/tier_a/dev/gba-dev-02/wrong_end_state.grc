@@ -52,6 +52,22 @@ blocks:
     bus_source: false
     bus_structure: null
     state: enabled
+- name: dc_block
+  id: dc_blocker_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    length: '64'
+    long_form: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: ff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
 - name: noise
   id: analog_noise_source_x
   parameters:
@@ -122,9 +138,10 @@ blocks:
     state: enabled
 
 connections:
+- [dc_block, '0', clean, '0']
+- [noise, '0', dc_block, '0']
 - [noise, '0', offset, '0']
 - [offset, '0', thr, '0']
-- [thr, '0', clean, '0']
 - [thr, '0', raw, '0']
 
 metadata:

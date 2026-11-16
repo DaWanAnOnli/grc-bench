@@ -25,20 +25,24 @@
   "type": "wrong_value",
   "wrong_value": "2000/samp_rate"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Channel Model"
+ },
  "id": "gbf-test-147",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 4.6 kHz cosine with amplitude 0.25; then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; then shift it down by 5.25 kHz: multiply it with a complex -5.25 kHz tone of amplitude 1 from another Signal Source; then pass it through a Channel Model with no noise and a frequency offset of -2 kHz (freq_offset -2000/samp_rate); then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; and write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 2.65 kHz (within 26.5 Hz); 100 % of its power within 50 Hz of 2.65 kHz (within a tenth of that share); an RMS level of 0.25 (within 5 %). Instead, its output holds components at -1.35 kHz. Find the fault and fix it, keeping everything else as it is. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_4600",
+   "block": "tone_1",
    "breaks": "the 4.6 kHz tone at 5.75 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "5750"
   },
   {
-   "block": "tone_4600",
+   "block": "tone_1",
    "breaks": "the 4.6 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -144,6 +148,16 @@
     "group": "p2p",
     "kind": "same_connections_as_start",
     "mode": "isomorphic"
+   },
+   {
+    "group": "p2p",
+    "ids": [
+     "variable"
+    ],
+    "kind": "block_present",
+    "params": {
+     "value": "32000"
+    }
    }
   ]
  },
@@ -158,9 +172,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 371,
@@ -173,7 +190,8 @@
   "its strongest component at 2.65 kHz (within 26.5 Hz)",
   "100 % of its power within 50 Hz of 2.65 kHz (within a tenth of that share)",
   "an RMS level of 0.25 (within 5 %)",
-  "structure: same blocks and connections as the start graph"
+  "structure: same blocks and connections as the start graph",
+  "the sample rate stays at 32 kHz (samp_rate 32000)"
  ],
  "split": "test",
  "start_grc": "start.grc",

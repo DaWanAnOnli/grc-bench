@@ -4660,9 +4660,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Known oracle limits: (1) the stated cutoff ranges are accepted within tolerance (the stopband share is relative to each output's own power, so the wide high-pass tolerates a -6 dB point 25 Hz above the channel edge and the low-pass one 100 Hz below it). (2) Renaming a non-variable block (e.g. a FIR filter) is neither forbidden by the instruction nor checked; variables must keep their names (value_only). (3) 'Keep producing samples until stopped' is checked only by V4 liveness (266240 items per observation point). (4) 'The same samples as now' on rrc.dat is checked with a numerical tolerance (signed zero-lag correlation >= 0.99999 against the start graph's samples 4096-8191, RMS within 1 %), which relies on the Fast Noise Source with seed 0 being deterministic in GNU Radio 3.10.12 (build.py asserts two runs are identical). Licence: derived from the GNU Radio 3.10.12 example filter/filter_taps.grc (GNU Radio project, GPL-3.0-or-later); the item keeps that attribution (licence decision is the team's).",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2. Known oracle limits: (1) the stated cutoff ranges are accepted within tolerance (the stopband share is relative to each output's own power, so the wide high-pass tolerates a -6 dB point 25 Hz above the channel edge and the low-pass one 100 Hz below it). (2) Renaming a non-variable block (e.g. a FIR filter) is neither forbidden by the instruction nor checked; variables must keep their names (value_only). (3) 'Keep producing samples until stopped' is checked only by V4 liveness (266240 items per observation point). (4) 'The same samples as now' on rrc.dat is checked with a numerical tolerance (signed zero-lag correlation >= 0.99999 against the start graph's samples 4096-8191, RMS within 1 %), which relies on the Fast Noise Source with seed 0 being deterministic in GNU Radio 3.10.12 (build.py asserts two runs are identical). Licence: derived from the GNU Radio 3.10.12 example filter/filter_taps.grc (GNU Radio project, GPL-3.0-or-later); the item keeps that attribution (licence decision is the team's).",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "kind": "gnuradio_example",

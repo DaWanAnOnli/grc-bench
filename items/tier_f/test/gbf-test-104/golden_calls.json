@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_conjugate_cc channels_channel_model analog_agc_xx blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "query": "AGC",
   "domain": "catalog",
   "k": 14
  },

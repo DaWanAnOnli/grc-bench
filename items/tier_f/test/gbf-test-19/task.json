@@ -4713,9 +4713,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Known oracle limits: (1) the bit-rate/sign check (signed corr_ref of freq_trace.dat) compares with the trace the Random Source must produce when the harness seeds numpy with 0 before the flowgraph is built; it relies on the stated 'keep the random byte source' and would fail a correct answer only if a block that draws from numpy's global random state were constructed before the Random Source (no block of this graph does). (2) samp_rate = 48000 is checked as a graph fact (a variable with value 48000); the Throttle's own rate parameter is not checked. (3) The HW Impairments 'Frequency Offset' does not move the signal, so a changed freq_offset value is invisible (it changes nothing observable). Attribution: derived from the GNU Radio 3.10.12 example channels/demo_gmsk.grc (author field 'mettus'; GNU Radio is GPL-3.0-or-later); the conversion and number changes are listed in perturbation.changes. The licence decision for seed-derived items is the team's.",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2. Known oracle limits: (1) the bit-rate/sign check (signed corr_ref of freq_trace.dat) compares with the trace the Random Source must produce when the harness seeds numpy with 0 before the flowgraph is built; it relies on the stated 'keep the random byte source' and would fail a correct answer only if a block that draws from numpy's global random state were constructed before the Random Source (no block of this graph does). (2) samp_rate = 48000 is checked as a graph fact (a variable with value 48000); the Throttle's own rate parameter is not checked. (3) The HW Impairments 'Frequency Offset' does not move the signal, so a changed freq_offset value is invisible (it changes nothing observable). Attribution: derived from the GNU Radio 3.10.12 example channels/demo_gmsk.grc (author field 'mettus'; GNU Radio is GPL-3.0-or-later); the conversion and number changes are listed in perturbation.changes. The licence decision for seed-derived items is the team's.",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "derivation": "Qt constellation sink -> File Sink gmsk_iq.dat (complex); Qt time sink -> File Sink freq_trace.dat (float); the seven Qt range widgets (beta, freq_offset, i_ofs, magbal, phase_noise_mag, phasebal, q_ofs) became plain variables with their widget values; the unused variable const_size dropped.",

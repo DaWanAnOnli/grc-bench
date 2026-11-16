@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_multiply_xx analog_agc_xx blocks_file_sink",
+  "query": "Signal Source Multiply AGC File Sink",
   "domain": "catalog",
   "k": 8
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_4700",
+    "instance_name": "tone_1",
     "params": {
      "type": "complex",
      "freq": "4700",
@@ -51,7 +51,7 @@
    }
   ],
   "add_connections": [
-   "tone_4700:0->mixer:0",
+   "tone_1:0->mixer:0",
    "lo:0->mixer:1",
    "mixer:0->agc:0",
    "agc:0->out:0"

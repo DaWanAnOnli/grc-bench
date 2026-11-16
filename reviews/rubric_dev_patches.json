@@ -1,0 +1,53 @@
+[
+ {
+  "item": "q_8c9b8bb7a2fa6c35",
+  "path": [
+   "required_points",
+   0,
+   "text"
+  ],
+  "op": "set",
+  "value": "States that generating writes a Python file named after the Options block's ID (ID + .py) in the same directory as the .grc file; when a flowgraph whose ID is still default is saved as tutorial.grc, GRC sets the ID to tutorial, so the file is tutorial.py (a flowgraph with another ID gives <ID>.py).",
+  "edit": "P1: GRC 3.10.12's Save As sets an Options ID still at default to the file name, so the file is tutorial.py (a28)"
+ },
+ {
+  "item": "q_8a85a884de1f5695",
+  "path": [
+   "required_points",
+   0,
+   "text"
+  ],
+  "op": "set",
+  "value": "Uses a high-pass filter whose gain at 0 Hz is essentially zero: either the High Pass Filter block (firdes.high_pass taps) with the sample rate, a cutoff above 0 Hz but well below the lowest wanted frequency, a transition width and a window, or the DC Blocker block (moving-average high-pass, with its length setting the notch width).",
+  "edit": "P1: also accept the DC Blocker block, a high-pass filter made for removing DC (a28)"
+ },
+ {
+  "item": "q_8a85a884de1f5695",
+  "path": [
+   "required_points",
+   2,
+   "text"
+  ],
+  "op": "set",
+  "value": "States the cost of a very low cutoff (a narrow notch around DC): with the High Pass Filter block, the narrow transition band needs many FIR taps (roughly sample rate / transition width), adding delay and CPU load; with the DC Blocker, a longer delay line narrows the notch but adds group delay (2D-2 samples in the long form, D-1 in the short form). Naming a cheaper alternative (the DC Blocker block or a single-pole IIR running average) is not required for this point.",
+  "edit": "P3: the DC Blocker's own trade-off earns P3 too, now that P1 accepts it (a28 re-check)"
+ },
+ {
+  "item": "q_8c9b8bb7a2fa6c35",
+  "path": [
+   "sources"
+  ],
+  "op": "append",
+  "value": "/usr/lib/python3/dist-packages/gnuradio/grc/gui/Application.py :: \"if flow_graph.options_block.params['id'].get_value() == Constants.DEFAULT_FLOW_GRAPH_ID:\"",
+  "edit": "sources: GRC's Save As code, which sets an ID still at default to the file name (a28 re-check)"
+ },
+ {
+  "item": "q_8c9b8bb7a2fa6c35",
+  "path": [
+   "sources"
+  ],
+  "op": "append",
+  "value": "/usr/lib/python3/dist-packages/gnuradio/grc/gui/Application.py :: \"flow_graph.options_block.params['id'].set_value(file_name)\"",
+  "edit": "sources: the same Save As code, second line"
+ }
+]

@@ -26,7 +26,7 @@
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_6800",
+   "block": "tone_1",
    "breaks": "the 4.8 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -151,20 +151,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
-    "group": "f2p",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "received.dat"
-    },
-    "via_ids": [
+    "group": "p2p",
+    "ids": [
      "channels_channel_model"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    }
   ]
  },
@@ -179,9 +171,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 20,
@@ -194,7 +189,7 @@
   "its strongest component at 3.3 kHz (within 33 Hz)",
   "100 % of its power within 50 Hz of 3.3 kHz (within a tenth of that share)",
   "an RMS level of 0.25 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; both Channel Models are kept"
  ],
  "split": "test",
  "start_grc": "start.grc",

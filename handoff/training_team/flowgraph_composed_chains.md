@@ -63,5 +63,5 @@ turns a non-train graph into a train graph. If a graph is not allowed, change wh
   `compose.CLASS_MAP_ADDED`).
 * Anything generated under the withdrawn v1 rule (seed `grc-bench-l1-signatures-v1-2026-10-14`) must
   be re-checked with v2.
-* Claude (Anthropic) wrote this rule and its tooling for team review. Claude never judges, repairs or
-  generates training data.
+* Claude (Anthropic) wrote this rule and its tooling. Claude never repairs, generates or changes
+  training data.

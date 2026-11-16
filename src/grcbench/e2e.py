@@ -116,8 +116,9 @@ def _tier_k(base_url: str, model: str, out: Path, n: int, limit: int | None, sam
 def _tier_f(base_url: str, model: str, out: Path, *, limit: int | None = None) -> dict[str, Any]:
     from grcbench.tier_a import models
     from grcbench.tier_a.tier_f_mode import run_tier_f_samples
+    from grcbench.review.items import active_dirs
     from grcbench.tier_f.taskio import task_dirs as f_task_dirs
-    tasks = f_task_dirs("dev")[:limit]
+    tasks = active_dirs(f_task_dirs("dev"))[:limit]                 # the review's rejected tasks are not run
     results = run_tier_f_samples(tasks, models.openai_compatible(base_url, model), config_id=CONFIG_ID,
                                  reason=REASON, samples=1, run_root=out)
     grades = [(r.tier_f or {}).get("grade") or {} for r in results]
@@ -128,8 +129,9 @@ def _tier_f(base_url: str, model: str, out: Path, *, limit: int | None = None) -
 def _tier_a(base_url: str, model: str, out: Path, k: int, *, limit: int | None = None) -> dict[str, Any]:
     from grcbench.tier_a import models
     from grcbench.tier_a.runner import run_tasks
+    from grcbench.review.items import active_dirs
     from grcbench.tier_a.task import task_dirs as a_task_dirs
-    tasks = a_task_dirs("dev")[:limit]
+    tasks = active_dirs(a_task_dirs("dev"))[:limit]                 # the review's rejected tasks are not run
     results = run_tasks(tasks, models.openai_compatible(base_url, model), config_id=CONFIG_ID, reason=REASON,
                         samples=k, run_root=out, grade_episodes=True)
     return {"tasks": len(tasks), "episodes": len(results),

@@ -38,7 +38,7 @@ route_answer(item, text, reasoning=None):
      contamination signal); a truncated answer, or one empty after reasoning removal: 0 (rules P6),
      before the reference decides anything;
   2. the rubric: the item's approved rubric, else for a GNU Radio behaviour question the numbers-only
-     key_rubric of its execution-derived key. A calculation key is a proposal until the team confirms
+     key_rubric of its execution-derived key. A calculation key is a proposal until the review confirms
      it in the approved rubric, so it is never used here. Without a rubric: no_reference. An approved
      rubric that the rules or the judge template cannot read is an error, never a silent fallback;
   3. judge_prompt.route on the rule cascade's result: "rules" scores by judge_prompt.explain_score
@@ -68,7 +68,7 @@ from grcbench.runlog.log import RunRefused
 from grcbench.tier_k import answer_prompt, rules
 from grcbench.tier_k import judge_prompt as jp
 
-__all__ = ["RunRefused", "chat", "load_split", "reference_for", "rubric_for", "route_answer", "run", "score",
+__all__ = ["RunRefused", "chat", "load_split", "reference_for", "removed", "rubric_for", "route_answer", "run", "score",
            "with_rubric_file"]
 
 ITEMS_K = ITEMS / "tier_k"
@@ -110,13 +110,35 @@ def chat(base_url: str, model: str, messages: list[dict[str, str]], *, max_token
             "seconds": round(time.monotonic() - t0, 3)}
 
 
+def _rubrics(split: str) -> dict[str, dict[str, Any]]:
+    path = ITEMS_K / split / "rubrics.jsonl"
+    return {r["question_id"]: r for r in read_jsonl(path)} if path.exists() else {}
+
+
+def removed(split: str) -> list[dict[str, str]]:
+    """The split's questions that the review rejected, in file order, with the review's reason: a question
+    whose rubric is rejected (underspecified, or rejected), or one whose own review status is rejected
+    (a GNU Radio block question). They are not in load_split: a run never asks them (eval plan §5.3)."""
+    rubrics = _rubrics(split)
+    out = []
+    for name in SPLIT_FILES[split]:
+        for row in read_jsonl(ITEMS_K / split / name):
+            for review in ((rubrics.get(row["id"]) or {}).get("review") or {}, row.get("review") or {}):
+                if review.get("status") == "rejected":
+                    out.append({"question_id": row["id"], "notes": review.get("notes", "")})
+                    break
+    return out
+
+
 def load_split(split: str) -> list[dict[str, Any]]:
     """The split's Tier-K questions in file order, each with "rubric" (its record in rubrics.jsonl, or
-    None) and "key" (its block-question answer key, or None)."""
+    None) and "key" (its block-question answer key, or None). A question whose rubric the review rejected
+    is not in the split (removed)."""
     if split not in SPLIT_FILES:
         raise ValueError(f"split must be one of {sorted(SPLIT_FILES)}")
     folder = ITEMS_K / split
-    rubrics = {r["question_id"]: r for r in read_jsonl(folder / "rubrics.jsonl")} if (folder / "rubrics.jsonl").exists() else {}
+    rubrics = _rubrics(split)
+    gone = {r["question_id"] for r in removed(split)}
     keys: dict[str, Any] = {}
     for name in KEY_FILES:
         if (folder / name).exists():
@@ -124,7 +146,8 @@ def load_split(split: str) -> list[dict[str, Any]]:
     items = []
     for name in SPLIT_FILES[split]:
         for row in read_jsonl(folder / name):
-            items.append({**row, "rubric": rubrics.get(row["id"]), "key": keys.get(row["id"])})
+            if row["id"] not in gone:
+                items.append({**row, "rubric": rubrics.get(row["id"]), "key": keys.get(row["id"])})
     return items
 
 

@@ -700,7 +700,7 @@ CHECKS: list[Check] = [
     ("Scott's pi, alpha (2 coders)", "§8.1 agreement", _c_scott_alpha_binary),
     ("Krippendorff's alpha", "§8.1 agreement", _c_kripp),
     ("kappa CI, pass rule, gap", "§8.1 agreement", _c_kappa_ci_gap),
-    ("judge calibration (3 humans)", "§8.1 agreement", _c_calibration),
+    ("judge calibration (3 annotators)", "§8.1 agreement", _c_calibration),
     ("score bands, presence rows", "§8.1 agreement", _c_bands_presence),
     ("per-task-type breakdown", "§8.1, §4.2", _c_by_group),
     ("PROPOSALS registry", "§9 pre-registration", _c_proposals),

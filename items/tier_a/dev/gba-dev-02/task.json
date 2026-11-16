@@ -83,6 +83,23 @@
       "via_ids": [
        "dc_blocker_xx"
       ]
+     },
+     {
+      "from_ids": [
+       "blocks_add_const_vxx",
+       "blocks_add_xx"
+      ],
+      "group": "main",
+      "kind": "path",
+      "to_ids": [
+       "blocks_file_sink"
+      ],
+      "to_params": {
+       "file": "clean.dat"
+      },
+      "via_ids": [
+       "dc_blocker_xx"
+      ]
      }
     ]
    },
@@ -106,9 +123,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (audit); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -132,5 +153,5 @@
   "active_graph": null
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

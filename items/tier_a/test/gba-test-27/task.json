@@ -17,6 +17,13 @@
   },
   "files": [
    {
+    "oracle": {
+     "dtype": "float32",
+     "feature": "rms",
+     "max": 1.82,
+     "min": 1.71,
+     "skip": 800
+    },
     "path": "recovered.dat"
    }
   ],
@@ -39,9 +46,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 1,
@@ -57,5 +68,5 @@
   "active_graph": "nbfm_loopback.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

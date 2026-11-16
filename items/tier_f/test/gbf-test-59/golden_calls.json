@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x hilbert_fc rational_resampler_xxx channels_channel_model analog_agc_xx blocks_file_sink",
+  "query": "AGC",
   "domain": "catalog",
   "k": 12
  },

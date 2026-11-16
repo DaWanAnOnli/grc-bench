@@ -7,7 +7,9 @@
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "unwrapped.dat"
+     "file": {
+      "regex": "(^|/)unwrapped\\.dat$"
+     }
     }
    }
   ],
@@ -37,9 +39,9 @@
      }
     ],
     "run": {
-     "min_items": 8000,
-     "n_items": 8000,
-     "timeout_s": 10.0
+     "min_items": 40000,
+     "n_items": 40000,
+     "timeout_s": 15.0
     }
    },
    "oracle": {
@@ -1675,16 +1677,16 @@
       "expect": 0.0,
       "feature": "min",
       "group": "f2p",
-      "n": 8000,
+      "n": 40000,
       "point": "unwrapped",
       "skip": 0,
       "tol": 0.01
      },
      {
-      "expect": 31.412,
+      "expect": 157.076,
       "feature": "max",
       "group": "f2p",
-      "n": 8000,
+      "n": 40000,
       "point": "unwrapped",
       "skip": 0,
       "tol": 0.05
@@ -1726,9 +1728,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -1753,5 +1759,5 @@
   "active_graph": "phase_comparator.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

@@ -15,20 +15,24 @@
  "cluster_id": "chain:envelope|filter|fm_demod|fm_mod|resample|tone",
  "disjointness": "A generated chain (tones, fm, resample, fm, rectify) whose functional signature envelope|filter|fm_demod|fm_mod|resample|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "build",
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Signal Source Frequency Mod Quadrature Demod Rational Resampler Abs File Sink"
+ },
  "id": "gbf-test-60",
- "instruction": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 4.6 kHz cosine with amplitude 0.25; then frequency-modulate it with a Frequency Mod block (sensitivity 2*pi*1500/samp_rate, so an input of 1.0 deviates by 1.5 kHz) and demodulate it with a Quadrature Demod block whose gain turns 1.5 kHz of deviation into an output of 1.0 (gain samp_rate/(2*pi*1500)); then change its sample rate from 48 kHz to 96 kHz with a Rational Resampler (interpolation 2, decimation 1); then frequency-modulate it with a Frequency Mod block (sensitivity 2*pi*1500/(samp_rate*2/1), so an input of 1.0 deviates by 1.5 kHz) and demodulate it with a Quadrature Demod block whose gain turns 750 Hz of deviation into an output of 1.0 (gain samp_rate*2/1/(2*pi*750)); then full-wave rectify it, so that each output sample is the absolute value of the input sample. Write the result as float samples to a File Sink whose file name is rectified.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 9.2 kHz (within 92 Hz); 95 % of its AC power within 50 Hz of 9.2 kHz (within a tenth of that share); an RMS level of 0.354 (within 5 %); an average of 0.318 (within 0.03). The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
+ "instruction": "In this flowgraph, at a sample rate of 48 kHz, use a Signal Source to make a 4.6 kHz cosine with amplitude 0.25; then frequency-modulate it with a Frequency Mod block (sensitivity 2*math.pi*1500/samp_rate, so an input of 1.0 deviates by 1.5 kHz) and demodulate it with a Quadrature Demod block whose gain turns 1.5 kHz of deviation into an output of 1.0 (gain samp_rate/(2*math.pi*1500)); then change its sample rate from 48 kHz to 96 kHz with a Rational Resampler (interpolation 2, decimation 1); then frequency-modulate it with a Frequency Mod block (sensitivity 2*math.pi*1500/(samp_rate*2/1), so an input of 1.0 deviates by 1.5 kHz) and demodulate it with a Quadrature Demod block whose gain turns 750 Hz of deviation into an output of 1.0 (gain samp_rate*2/1/(2*math.pi*750)); then full-wave rectify it with an Abs block, so that each output sample is the absolute value of the input sample. Write the result as float samples to a File Sink whose file name is rectified.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 9.2 kHz (within 92 Hz); 95 % of its AC power within 50 Hz of 9.2 kHz (within a tenth of that share); an RMS level of 0.354 (within 5 %); an average of 0.318 (within 0.03). The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_4600",
+   "block": "tone_1",
    "breaks": "the 4.6 kHz tone at 5.75 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "5750"
   },
   {
-   "block": "tone_4600",
+   "block": "tone_1",
    "breaks": "the 4.6 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -182,21 +186,20 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
     "group": "main",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
+    "ids": [
+     "analog_frequency_modulator_fc"
     ],
-    "to_params": {
-     "file": "rectified.dat"
-    },
-    "via_ids": [
-     "analog_frequency_modulator_fc",
+    "kind": "block_present",
+    "min": 2
+   },
+   {
+    "group": "main",
+    "ids": [
      "analog_quadrature_demod_cf"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    },
    {
     "from_ids": [
@@ -227,9 +230,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 41,
@@ -243,10 +250,10 @@
   "95 % of its AC power within 50 Hz of 9.2 kHz (within a tenth of that share)",
   "an RMS level of 0.354 (within 5 %)",
   "an average of 0.318 (within 0.03)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; two Frequency Mod and two Quadrature Demod blocks"
  ],
  "split": "test",
  "start_grc": null,
  "tier": "F",
- "version": 1
+ "version": 2
 }

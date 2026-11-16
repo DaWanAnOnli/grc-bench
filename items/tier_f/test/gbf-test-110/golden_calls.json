@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x rational_resampler_xxx blocks_conjugate_cc blocks_multiply_xx blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "query": "Signal Source Rational Resampler Complex Conjugate Multiply Message Strobe Throttle File Sink",
   "domain": "catalog",
   "k": 14
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_1200",
+    "instance_name": "tone_1",
     "params": {
      "type": "complex",
      "freq": "1200",
@@ -75,8 +75,8 @@
    "resampler:0->conj:0",
    "conj:0->mixer:0",
    "lo:0->mixer:1",
-   "retune:strobe->tone_1200:cmd",
-   "tone_1200:0->throttle:0",
+   "retune:strobe->tone_1:cmd",
+   "tone_1:0->throttle:0",
    "throttle:0->resampler:0",
    "mixer:0->out:0"
   ]

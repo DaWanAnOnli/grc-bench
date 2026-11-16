@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x low_pass_filter blocks_float_to_short blocks_short_to_float blocks_file_sink",
+  "query": "Signal Source Low Pass Filter Float To Short Short To Float File Sink",
   "domain": "catalog",
   "k": 10
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "square_600",
+    "instance_name": "square",
     "params": {
      "type": "float",
      "waveform": "analog.GR_SQR_WAVE",
@@ -50,7 +50,7 @@
    }
   ],
   "add_connections": [
-   "square_600:0->lpf:0",
+   "square:0->lpf:0",
    "lpf:0->to_short:0",
    "to_short:0->to_float:0",
    "to_float:0->out:0"

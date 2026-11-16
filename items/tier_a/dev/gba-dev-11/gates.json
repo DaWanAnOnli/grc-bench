@@ -30,7 +30,6 @@
    "cases": [
     {
      "reasons": [
-      "files[0]: limited.dat does not exist",
       "answer[0]: positive clip level: expects 0.784"
      ],
      "rejected": true,

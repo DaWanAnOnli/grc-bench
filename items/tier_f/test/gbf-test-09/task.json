@@ -11,6 +11,11 @@
   "type": "type_mismatch",
   "wrong_id": "blocks_short_to_float"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "k": 8,
+  "query": "convert byte (char) samples to float"
+ },
  "id": "gbf-test-09",
  "instruction": "This flowgraph should mark the peaks of a sawtooth wave. Its Signal Source generates a 600 Hz sawtooth as float samples at a sample rate of 48 kHz, with amplitude 1.5 and offset 0.25: every period ramps up from 0.25 to about 1.75 and then drops back, so the wave's average level is about 1.0. The Peak Detector2 block should flag the top of every ramp (the last sample before the drop), giving exactly one detected peak per sawtooth period. Its peak indicator must be written to the File Sink with file name peaks.dat and item type float, as 1.0 at each detected peak and 0.0 at every other sample. Its second (debug) output, the detector's running average of the input, must be written to the File Sink with file name average.dat and item type float; from 0.1 s after the start it should stay within 5 % of the sawtooth's average level of 1.0, between 0.95 and 1.05.\n\nAt the moment GNU Radio Companion refuses to generate the flowgraph: validation reports a connection whose source and sink IO types and IO sizes do not match. Please repair the flowgraph so that it validates, runs and behaves as described. Keep the sawtooth source and both output files as they are. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples. The peaks are judged from 10 ms after the start: every flag must sit exactly on a ramp top, with no extra or missing flags; the sawtooth's bottom and top must stay within 0.075 (5 % of its 1.5 swing).",
  "level": "L1",
@@ -15757,9 +15762,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Revised 18 Oct after review round 1 (see reports/tier_f_reviews/round1/gbf-test-09.resolution.json). The 'keep the Peak Detector2 settings' clause was removed: settings the oracle cannot see do not change the behaviour, and the behaviour they set is checked (exact flag count and positions, the 0.95-1.05 band of the running average); alpha 0.001 (the example's value) or threshold factors 0.05-0.65 still pass because the outputs stay within the stated behaviour. Flag positions are compared sample by sample over the whole 192-period window (15360 samples). Known oracle limits: (1) a deliberate cheat that writes peaks.dat from a Vector Source pattern while the detector still feeds average.dat would pass (the path graph check only requires the detector between the sawtooth and some File Sink); (2) the 'saw' point is an edge point on the block named analog_sig_source_x_0, so renaming the Signal Source fails V5. Licence: derived from the GNU Radio 3.10.12 example blocks/peak_detector2.grc (GPL-3.0-or-later, GNU Radio project); the licence decision is the team's.",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied. Revised 18 Oct after review round 1 (see reports/tier_f_reviews/round1/gbf-test-09.resolution.json). The 'keep the Peak Detector2 settings' clause was removed: settings the oracle cannot see do not change the behaviour, and the behaviour they set is checked (exact flag count and positions, the 0.95-1.05 band of the running average); alpha 0.001 (the example's value) or threshold factors 0.05-0.65 still pass because the outputs stay within the stated behaviour. Flag positions are compared sample by sample over the whole 192-period window (15360 samples). Known oracle limits: (1) a deliberate cheat that writes peaks.dat from a Vector Source pattern while the detector still feeds average.dat would pass (the path graph check only requires the detector between the sawtooth and some File Sink); (2) the 'saw' point is an edge point on the block named analog_sig_source_x_0, so renaming the Signal Source fails V5. Licence: derived from the GNU Radio 3.10.12 example blocks/peak_detector2.grc (GPL-3.0-or-later, GNU Radio project); the licence decision is the team's.",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "derivation": "Qt time sink (3 inputs) replaced by two File Sinks: peaks.dat (Char To Float output) and average.dat (Peak Detector2 debug output); the input display, the Throttle and the example's three disabled File Sinks dropped; the offset Qt range widget became a plain variable; GUI options stripped.",

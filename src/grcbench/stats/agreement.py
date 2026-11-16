@@ -27,7 +27,8 @@ analysis ... We report their agreement (κ)".
     by_group(groups, fn, *columns, min_items)            per-task-type breakdown of any of these
 
 The judge is calibrated against THREE annotators (§8.1: "150 answers labelled by three annotators,
-one of them a Qoherent expert"), but Cohen's κ compares two raters. The reduction is the one in
+one of them a Qoherent expert"; under the review protocol, three annotator agents, the third in the
+expert's role: docs/guidelines/judge_calibration.md), but Cohen's κ compares two raters. The reduction is the one in
 docs/guidelines/judge_calibration.md ("Adjudication"): the human reference of a rubric line is the
 label all three gave, or else the adjudicator's label. §8.1 does not say what κ is computed on, so
 the guideline's proposal for G2 ("Analysis and pass rule"; PROPOSAL judge-gate in stats.proposals)

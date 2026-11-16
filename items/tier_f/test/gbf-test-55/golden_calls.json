@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx rational_resampler_xxx hilbert_fc low_pass_filter blocks_file_sink blocks_float_to_short blocks_short_to_float",
+  "query": "Float To Short Short To Float File Sink",
   "domain": "catalog",
   "k": 16
  },

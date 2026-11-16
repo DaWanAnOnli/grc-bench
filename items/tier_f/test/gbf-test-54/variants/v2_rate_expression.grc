@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: 48e3}
-- name: tone_8400
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '8400', showports: 'True'}
 - name: conj
@@ -24,8 +24,8 @@ blocks:
   parameters: {type: complex, file: received.dat}
 connections:
 - [conj, '0', channel, '0']
-- [retune, strobe, tone_8400, cmd]
-- [tone_8400, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', conj, '0']
 - [channel, '0', out, '0']
 metadata: {file_format: 1}

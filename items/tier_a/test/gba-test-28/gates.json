@@ -30,8 +30,8 @@
    "cases": [
     {
      "reasons": [
-      "files[0]: carrier.dat does not exist",
-      "answer[0]: settled PLL frequency: expects 2400"
+      "answer[0]: settled PLL frequency: expects 2400",
+      "answer.forbid[0]: forbidden claim: 'settles at 4000 Hz'"
      ],
      "rejected": true,
      "source": "wrong_end_state.grc + wrong_end_state.json"
@@ -40,7 +40,7 @@
    "passed": true
   }
  },
- "golden_end_state_sha256": "5d48250f715bfca656bad3d48e3ff3d9c641f00ecedea485f44195f6307b3db9",
+ "golden_end_state_sha256": "d33192adcec2f068ab6327d0439e0cba948a42a7ccc127994419a2ccde87dcfd",
  "passed": true,
  "task": "gba-test-28"
 }

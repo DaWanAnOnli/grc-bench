@@ -40,14 +40,6 @@
     }
    }
   ],
-  "update_params": [
-   {
-    "instance_name": "samp_rate",
-    "params": {
-     "value": "48000"
-    }
-   }
-  ],
   "add_connections": [
    "src:0->gain:0",
    "gain:0->offset:0",

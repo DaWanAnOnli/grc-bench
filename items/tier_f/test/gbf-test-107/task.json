@@ -22,20 +22,25 @@
   "type": "nonexistent_block",
   "wrong_id": "blocks_short_to_float_x"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "k": 10,
+  "query": "convert short integers back to float"
+ },
  "id": "gbf-test-107",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 2.6 kHz cosine with amplitude 1; then change its sample rate from 32 kHz to 16 kHz with a Rational Resampler (interpolation 1, decimation 2); then change its sample rate from 16 kHz to 32 kHz with a Rational Resampler (interpolation 2, decimation 1); then round it to steps of 0.001: convert it to short integers with a Float To Short block (scale 1000) and back with a Short To Float block (scale 1000); and write the result as float samples to a File Sink whose file name is quantized.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 2.6 kHz (within 26 Hz); 100 % of its power within 50 Hz of 2.6 kHz (within a tenth of that share); an RMS level of 0.707 (within 5 %); every sample a whole multiple of 0.001. Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_2600",
+   "block": "tone_1",
    "breaks": "the 2.6 kHz tone at 3.25 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "3250"
   },
   {
-   "block": "tone_2600",
+   "block": "tone_1",
    "breaks": "the 2.6 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -96,7 +101,7 @@
     "expect": 2600,
     "feature": "peak_freq",
     "fs": 32000.0,
-    "group": "f2p",
+    "group": "p2p",
     "n": 16384,
     "point": "out",
     "skip": 4096,
@@ -105,7 +110,7 @@
    {
     "feature": "band_fraction",
     "fs": 32000.0,
-    "group": "f2p",
+    "group": "p2p",
     "hi": 2650.0,
     "lo": 2550.0,
     "max": 1.0,
@@ -119,7 +124,7 @@
    {
     "expect": 0.7071,
     "feature": "rms",
-    "group": "f2p",
+    "group": "p2p",
     "n": 16384,
     "point": "out",
     "rel_tol": 0.05,
@@ -140,7 +145,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -153,20 +158,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
-    "group": "f2p",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "quantized.dat"
-    },
-    "via_ids": [
+    "group": "p2p",
+    "ids": [
      "rational_resampler_xxx"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    },
    {
     "from_ids": [
@@ -197,9 +194,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 111,
@@ -213,10 +214,10 @@
   "100 % of its power within 50 Hz of 2.6 kHz (within a tenth of that share)",
   "an RMS level of 0.707 (within 5 %)",
   "every sample a whole multiple of 0.001",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; both Rational Resamplers are kept"
  ],
  "split": "test",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

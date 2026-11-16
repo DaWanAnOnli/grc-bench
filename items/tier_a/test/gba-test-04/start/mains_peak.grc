@@ -36,6 +36,25 @@ blocks:
     bus_source: false
     bus_structure: null
     state: enabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
 - name: envelope
   id: blocks_vector_source_x
   parameters:
@@ -124,8 +143,9 @@ blocks:
     state: enabled
 
 connections:
+- [blocks_throttle2_0, '0', rectifier, '0']
 - [envelope, '0', level, '1']
-- [level, '0', rectifier, '0']
+- [level, '0', blocks_throttle2_0, '0']
 - [mains, '0', level, '0']
 - [rectifier, '0', out, '0']
 

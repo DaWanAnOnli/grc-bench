@@ -4,8 +4,23 @@
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "neighbour.dat",
+     "file": {
+      "regex": "(^|/)neighbour\\.dat$"
+     },
      "type": "complex"
+    }
+   },
+   {
+    "ids": [
+     "low_pass_filter",
+     "freq_xlating_fir_filter_xxx",
+     "fir_filter_xxx",
+     "rational_resampler_xxx",
+     "pfb_decimator_ccf"
+    ],
+    "min": 2,
+    "params": {
+     "decim": 8
     }
    }
   ],
@@ -222,9 +237,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -249,5 +268,5 @@
   "active_graph": "cw_beacon_rx.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

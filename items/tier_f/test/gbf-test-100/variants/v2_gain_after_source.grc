@@ -4,10 +4,10 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_900
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '900'}
-- name: tone_6500
+- name: tone_2
   id: analog_sig_source_x
   parameters: {type: complex, freq: '6500', amp: '0.4'}
 - name: sum_of_tones
@@ -29,11 +29,11 @@ blocks:
   id: blocks_multiply_const_vxx
   parameters: {type: complex, const: '0.25'}
 connections:
-- [tone_6500, '0', sum_of_tones, '1']
+- [tone_2, '0', sum_of_tones, '1']
 - [sum_of_tones, '0', lpf, '0']
 - [lpf, '0', out, '0']
 - [lpf, '0', phase, '0']
 - [phase, '0', out_b, '0']
-- [tone_900, '0', gain, '0']
+- [tone_1, '0', gain, '0']
 - [gain, '0', sum_of_tones, '0']
 metadata: {file_format: 1}

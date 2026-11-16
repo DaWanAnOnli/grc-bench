@@ -48,8 +48,8 @@ Rubric record (the contract for the rubric templates; eval plan §5.2)
                         when `numeric` is given (the two checkers verify the tolerance in words; the
                         code reads it from `numeric`). Without `numeric` it applies to numbers the
                         points state, and the template adds error DU
-  review.status         "approved" or "approved-with-edits" (two team members check every rubric; a
-                        Qoherent expert settles disagreements); anything else is refused
+  review.status         "approved" or "approved-with-edits" (two checker agents check every rubric; the
+                        expert agent decides disagreements); anything else is refused
   Ids match ID_PATTERN and are unique; DU and N1, N2, ... are reserved. Blank prose (a template the
   team has not filled in yet) is refused. Claude writes this template, never the rubric prose
   (Table 5).
@@ -679,8 +679,8 @@ def numeric_reference(rubric: Mapping[str, Any] | Rubric) -> Any:
 
 
 def check_reviewed(rubric: Mapping[str, Any] | Rubric, *, allow_placeholder: bool = False) -> None:
-    """Only rubrics the team has approved go to the judge (eval plan §5.2: two team members check
-    every rubric; a Qoherent expert settles disagreements), and the numbers-only rubrics key_rubric
+    """Only rubrics the review approved go to the judge (docs/guidelines/review_protocol.md: two checker
+    agents check every rubric; the expert agent decides disagreements), and the numbers-only rubrics key_rubric
     builds from an execution-derived key (no prose, so nothing for a reviewer to check). A placeholder
     passes only with allow_placeholder (a dev-split rubric file given on the command line)."""
     if not isinstance(rubric, Mapping):

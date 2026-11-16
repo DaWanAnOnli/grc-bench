@@ -31,7 +31,6 @@
    "cases": [
     {
      "reasons": [
-      "files[0]: bandnoise.dat does not exist",
       "answer[0]: lower band edge: expects 6000",
       "answer[1]: upper band edge: expects 9000"
      ],

@@ -1,10 +1,10 @@
 # Label-sheet templates
 
-Empty CSV sheets (a header row only) for the team's labelling and review work. Each one belongs to a
-guide in `docs/`. **Never fill in a template itself.** Copy it, or let the coordinator generate a
-filled-in copy, and give each person their own copy. All files are UTF-8 CSV and open in Excel or
-LibreOffice. In a cell that holds several lines, start a new line with Alt+Enter (Excel) or
-Ctrl+Enter (LibreOffice).
+Empty CSV sheets (a header row only) for the labelling and review work of the review protocol
+([review_protocol.md](../../../docs/guidelines/review_protocol.md)). Each one belongs to a guide in
+`docs/`. **Never fill in a template itself.** The coordinator generates a copy with the rows filled in,
+and gives each review agent its own input copy. All files are UTF-8 CSV. A cell that holds several
+lines has one item per line.
 
 | Template | Guide | One row per |
 |---|---|---|
@@ -45,26 +45,27 @@ Write values exactly as shown (lower case, the same spelling), so the sheets can
 | | `reason_code` | `wrong_answer`, `ambiguous_wording`, `broken_oracle`, `not_relevant`, `outdated`, `other` (several separated by `;`) |
 | `tier_a_task_review` (and the Tier-F sheet) | `reviewer_*_decision`, `final_decision` | `approve`, `approve with edits`, `reject` |
 | `rubric_sheet` | `checker_*_verdict`, `final_decision` | `approve`, `approve with edits`, `reject`, `underspecified` |
-| | `writer`, `checker_*_initials` | initials; three different people for each rubric |
+| | `writer`, `checker_*_initials` | `W`, `C1`, `C2`: three different agent runs for each rubric |
 
 ## Rules for every sheet
 
-- **No model sees these sheets.** Never paste test questions, answers or tasks from them into
-  ChatGPT, Claude or any other model or online tool (eval plan §6).
-- **People work alone first.** Each person fills in only their own columns, on their own copy, and
-  does not discuss items until everyone's copy is in. Agreement is computed on these independent
-  labels.
+- **Declared runs only.** Test questions, answers and tasks go to no model outside the declared,
+  logged runs of the review protocol and of the benchmark (eval plan §6). Every review agent run is
+  declared in `reviews/review_log.jsonl`.
+- **Each reviewer works alone.** Each review agent fills in only its own columns, from its own input
+  copy, and never opens the other reviewer's output. Agreement is computed on these independent labels.
 - **The coordinator keeps the key.** The `blinding_key` file stays with the coordinator. Annotators
   never see model names.
-- **Disagreements go to the Qoherent expert.** A Qoherent expert decides every disagreement (eval
-  plan Table 1). The people who disagree do not settle it between themselves first: each note gives
-  its writer's reason, and the expert reads them all. The sheet records the decision:
+- **The expert agent decides every disagreement.** It takes the place of the Qoherent expert of eval
+  plan Table 1 ("A Qoherent expert decides every disagreement"). The reviewers who disagree do not
+  settle it between themselves first: each note gives its writer's reason, and the expert reads them
+  all. The sheet records the decision:
   - `decided_by` in the rubric sheet;
   - `resolved_by` in the error analysis;
   - `adjudication_note` in the calibration;
-  - a `note: decided by` line in the task sheets.
+  - a `note: decided by EX` line in the task sheets.
 
   The coordinator counts these decisions.
 - **`note:` lines are not edits.** In the Tier-F and Tier-A edits cells, a line starting with
-  `note:` is a record for the team (for example the `change_graph` batch you would submit). Task
-  owners do not apply it.
+  `note:` is a record (for example the `change_graph` batch you would submit). The coordinator does
+  not apply it.

@@ -1,4 +1,4 @@
-"""`./gb placeholder-rubrics`: stand-in rubrics for testing the Tier-K pipeline before the team's rubrics exist.
+"""`./gb placeholder-rubrics`: stand-in rubrics for testing the Tier-K pipeline, apart from the reviewed rubrics.
 
     ./gb placeholder-rubrics [--out FILE]
     ./gb tier-k score DIR --rubrics FILE        # then ./gb tier-k judge DIR ...
@@ -6,14 +6,14 @@
 One record per dev question, in the rubric format of judge_prompt, built by copying: its one required
 point P1 is the training release's reference answer to that question (splits.release,
 evaluation/questions_validation.jsonl), word for word; no disqualifying errors, no numeric reference,
-review status judge_prompt.PLACEHOLDER_REVIEW. No rubric text is written here (Table 5: Claude drafts no
-rubric prose), and the reference answers are a model's (reference_model), not checked by the team.
+review status judge_prompt.PLACEHOLDER_REVIEW. No rubric text is written here, and the reference answers
+are a model's (reference_model), not checked by the review.
 
 So a placeholder score says only that the pipeline ran: answer, route, judge request, verdict, score.
 It is not a GRC-Bench result. The judge accepts a placeholder only from a file given to
 `./gb tier-k score --rubrics` on the dev split (run.with_rubric_file); a placeholder pasted into the
-repository's rubrics.jsonl is refused like any unapproved rubric. When the team's rubrics are approved
-in items/tier_k/dev/rubrics.jsonl, score without --rubrics; the answers stay as they are.
+repository's rubrics.jsonl is refused like any unapproved rubric. The reviewed rubrics are in
+items/tier_k/dev/rubrics.jsonl: score without --rubrics to use them; the answers stay as they are.
 
 The file goes outside the repository (default $GRC_BENCH_WORK/rubrics/dev_placeholder.jsonl). Dev
 questions whose text differs from the release's are skipped and listed.

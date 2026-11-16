@@ -7,6 +7,19 @@
      "cutoff_freq": 4000,
      "width": 1000
     }
+   },
+   {
+    "id": "analog_sig_source_x",
+    "params": {
+     "amp": 0.8,
+     "freq": 10700
+    }
+   },
+   {
+    "id": "analog_sig_source_x",
+    "params": {
+     "freq": 8700
+    }
    }
   ],
   "ladder": {
@@ -66,14 +79,30 @@
     ],
     "graph_checks": [
      {
+      "from_ids": [
+       "analog_sig_source_x"
+      ],
       "group": "main",
-      "kind": "same_blocks_as_start",
-      "variables": "value_only"
+      "kind": "path",
+      "to_ids": [
+       "blocks_file_sink"
+      ],
+      "via_ids": [
+       "blocks_multiply_xx"
+      ]
      },
      {
+      "from_ids": [
+       "blocks_multiply_xx"
+      ],
       "group": "main",
-      "kind": "same_connections_as_start",
-      "mode": "isomorphic"
+      "kind": "path",
+      "to_ids": [
+       "blocks_file_sink"
+      ],
+      "via_ids": [
+       "low_pass_filter"
+      ]
      }
     ]
    },
@@ -97,9 +126,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -124,5 +157,5 @@
   "active_graph": "downconverter.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

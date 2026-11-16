@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x hilbert_fc blocks_conjugate_cc blocks_file_sink analog_agc_xx",
+  "query": "AGC File Sink",
   "domain": "catalog",
   "k": 10
  },

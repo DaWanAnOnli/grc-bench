@@ -1217,9 +1217,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "Re-themed 18 Oct (fix plan G5): the old item (low-pass a square wave into a sine) hashed to train under signature v2 and nearly duplicated gbf-test-01; its round-1 findings are moot. Modify L1 (5 functional blocks, one rate; R7). Known oracle limits: (1) alignment and 'unchanged' are checked with tolerances (correlation >= 0.9999, levels within 1 %, zeros within 1e-6), not bit-exact, so an FFT-based delay passes; a deliberate change below these tolerances would too. (2) A copy of the Signal Source plus a delay on the ref.dat branch writes the same samples and passes (behaviourally identical). Alternative-structure link: the pure-delay FIR / FFT variants have signature filter|tone, the cell of gbf-test-10 (same split, different function).",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2. Re-themed 18 Oct (fix plan G5): the old item (low-pass a square wave into a sine) hashed to train under signature v2 and nearly duplicated gbf-test-01; its round-1 findings are moot. Modify L1 (5 functional blocks, one rate; R7). Known oracle limits: (1) alignment and 'unchanged' are checked with tolerances (correlation >= 0.9999, levels within 1 %, zeros within 1e-6), not bit-exact, so an FFT-based delay passes; a deliberate change below these tolerances would too. (2) A copy of the Signal Source plus a delay on the ref.dat branch writes the same samples and passes (behaviourally identical). Alternative-structure link: the pure-delay FIR / FFT variants have signature filter|tone, the cell of gbf-test-10 (same split, different function).",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "kind": "composed_chain",

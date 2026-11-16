@@ -4,13 +4,13 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_1200
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '1200'}
-- name: tone_4100
+- name: tone_2
   id: analog_sig_source_x
   parameters: {type: complex, freq: '4100', amp: '0.6'}
-- name: tone_7300
+- name: tone_3
   id: analog_sig_source_x
   parameters: {type: complex, freq: '7300', amp: '0.4'}
 - name: noise
@@ -41,8 +41,8 @@ blocks:
   id: blocks_multiply_const_vxx
   parameters: {type: complex, const: '0.5'}
 connections:
-- [tone_4100, '0', sum_of_tones, '1']
-- [tone_7300, '0', sum_of_tones, '2']
+- [tone_2, '0', sum_of_tones, '1']
+- [tone_3, '0', sum_of_tones, '2']
 - [noise, '0', sum_of_tones, '3']
 - [sum_of_tones, '0', conj, '0']
 - [conj, '0', mixer, '0']
@@ -50,6 +50,6 @@ connections:
 - [mixer, '0', channel, '0']
 - [channel, '0', channel_2, '0']
 - [channel_2, '0', out, '0']
-- [tone_1200, '0', gain, '0']
+- [tone_1, '0', gain, '0']
 - [gain, '0', sum_of_tones, '0']
 metadata: {file_format: 1}

@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x hilbert_fc channels_channel_model blocks_file_sink",
+  "query": "Channel Model File Sink",
   "domain": "catalog",
   "k": 8
  },

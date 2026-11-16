@@ -23,48 +23,52 @@
   "type": "nonexistent_block",
   "wrong_id": "channels_channel_model_x"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Channel Model"
+ },
  "id": "gbf-test-122",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use Signal Sources to make a 1.2 kHz complex tone with amplitude 0.5, a 4.1 kHz complex tone with amplitude 0.6 and a 7.3 kHz complex tone with amplitude 0.4, and add them together with complex Gaussian noise of amplitude 0.2 from a Noise Source (seed 0); then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; then shift it up by 5.25 kHz: multiply it with a complex 5.25 kHz tone of amplitude 1 from another Signal Source; then pass it through a Channel Model with no noise and a frequency offset of -2 kHz (freq_offset -2000/samp_rate); then pass it through a Channel Model with no noise and a frequency offset of 3 kHz (freq_offset 3000/samp_rate); and write the result as complex samples to a File Sink whose file name is received.dat. Measured over 16,384 samples after the first 4,096, the output should have 20 % of its power within 50 Hz of -1.05 kHz (within a tenth of that share); 44 % of its power within 50 Hz of 2.15 kHz (within a tenth of that share); 31 % of its power within 50 Hz of 5.05 kHz (within a tenth of that share); an RMS level of 0.9 (within 5 %). Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_1200",
+   "block": "tone_1",
    "breaks": "the 1.2 kHz tone at 1.5 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "1500"
   },
   {
-   "block": "tone_1200",
+   "block": "tone_1",
    "breaks": "the 1.2 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "0.75"
   },
   {
-   "block": "tone_4100",
+   "block": "tone_2",
    "breaks": "the 4.1 kHz tone at 5.125 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "5125"
   },
   {
-   "block": "tone_4100",
+   "block": "tone_2",
    "breaks": "the 4.1 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "0.9"
   },
   {
-   "block": "tone_7300",
+   "block": "tone_3",
    "breaks": "the 7.3 kHz tone at 9.125 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "9125"
   },
   {
-   "block": "tone_7300",
+   "block": "tone_3",
    "breaks": "the 7.3 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -178,7 +182,7 @@
    {
     "expect": 0.9,
     "feature": "rms",
-    "group": "f2p",
+    "group": "p2p",
     "n": 16384,
     "point": "out",
     "rel_tol": 0.05,
@@ -190,7 +194,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -206,7 +210,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -235,20 +239,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
     "group": "f2p",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "received.dat"
-    },
-    "via_ids": [
+    "ids": [
      "channels_channel_model"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    }
   ]
  },
@@ -263,9 +259,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 414,
@@ -279,7 +278,7 @@
   "44 % of its power within 50 Hz of 2.15 kHz (within a tenth of that share)",
   "31 % of its power within 50 Hz of 5.05 kHz (within a tenth of that share)",
   "an RMS level of 0.9 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; two Channel Models"
  ],
  "split": "test",
  "start_grc": "start.grc",

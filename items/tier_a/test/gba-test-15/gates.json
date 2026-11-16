@@ -38,7 +38,7 @@
    "passed": true
   }
  },
- "golden_end_state_sha256": "fa349b822b5d9ebd22655ddef496b3713a1474ccba68302785fc59f9f770c054",
+ "golden_end_state_sha256": "217fad31e7ff3c9cdb23854b8d712ed8324c94517fa3a0ea8844e69e19234a7a",
  "passed": true,
  "task": "gba-test-15"
 }

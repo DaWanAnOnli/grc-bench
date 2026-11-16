@@ -16,7 +16,14 @@ from grcbench.common.io import read_jsonl
 from grcbench.common.paths import ITEMS
 from grcbench.tier_k import answer_prompt, run
 
-N_DEV = len(read_jsonl(ITEMS / "tier_k" / "dev" / "questions.jsonl"))
+N_DEV = len(run.load_split("dev"))               # the dev questions a run asks: the review's removals left out
+
+
+def test_a_run_asks_every_dev_question_but_the_ones_the_review_removed():
+    file_ids = [r["id"] for r in read_jsonl(ITEMS / "tier_k" / "dev" / "questions.jsonl")]
+    removed = [r["question_id"] for r in run.removed("dev")]
+    assert [i["id"] for i in run.load_split("dev")] == [i for i in file_ids if i not in removed]
+    assert all(r["notes"] for r in run.removed("dev"))
 
 
 class _Stub:

@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx blocks_multiply_xx low_pass_filter blocks_conjugate_cc blocks_file_sink",
+  "query": "Low Pass Filter",
   "domain": "catalog",
   "k": 12
  },

@@ -14,6 +14,10 @@
     "params": {
      "const": 2.5
     }
+   },
+   {
+    "id": "analog_sig_source_x",
+    "max": 1
    }
   ],
   "ladder": {
@@ -67,13 +71,6 @@
       "skip": 1024,
       "tol": 10
      }
-    ],
-    "graph_checks": [
-     {
-      "group": "p2p",
-      "kind": "same_blocks_as_start",
-      "variables": "value_only"
-     }
     ]
    },
    "rung": "V5"
@@ -96,9 +93,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -123,5 +124,5 @@
   "active_graph": "clean_tone.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

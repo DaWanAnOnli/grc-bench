@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x hilbert_fc blocks_multiply_xx blocks_file_sink blocks_complex_to_mag",
+  "query": "Complex to Mag File Sink",
   "domain": "catalog",
   "k": 10
  },

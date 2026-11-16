@@ -27,7 +27,7 @@
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_3700",
+   "block": "tone_1",
    "breaks": "the 3.7 kHz tone at 4.625 kHz",
    "op": "set_param",
    "param": "freq",
@@ -168,20 +168,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
-    "group": "f2p",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "mirrored.dat"
-    },
-    "via_ids": [
+    "group": "p2p",
+    "ids": [
      "blocks_conjugate_cc"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    }
   ]
  },
@@ -196,9 +188,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 20,
@@ -211,7 +206,7 @@
   "its strongest component at 3.7 kHz (within 37 Hz)",
   "100 % of its power within 50 Hz of 3.7 kHz (within a tenth of that share)",
   "an RMS level of 0.5 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; both Conjugates are kept"
  ],
  "split": "test",
  "start_grc": "start.grc",

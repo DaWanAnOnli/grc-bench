@@ -107,8 +107,8 @@ as one script) with `python make_notebook.py`; edit it there, then rebuild the p
 
 ## Placeholder rubrics
 
-The team's dev rubrics are not written yet. `colab/dev_placeholder.jsonl` gives each dev question one required
-point: the training release's reference answer, copied word for word (`./gb placeholder-rubrics`). With it, an
+`colab/dev_placeholder.jsonl` is a pipeline test apart from the reviewed dev rubrics: it gives each dev question
+one required point: the training release's reference answer, copied word for word (`./gb placeholder-rubrics`). With it, an
 answer goes through the whole route (rules, judge request, verdict, score), but the score says nothing about the
-model. Once the team's rubrics are approved in `items/tier_k/dev/rubrics.jsonl`, score the same answers without
+model. The reviewed rubrics are in `items/tier_k/dev/rubrics.jsonl`: to score with them, score the same answers without
 the file: `./gb tier-k score DIR`.

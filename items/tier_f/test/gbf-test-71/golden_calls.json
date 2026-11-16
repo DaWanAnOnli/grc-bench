@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx hilbert_fc blocks_file_sink",
+  "query": "Hilbert",
   "domain": "catalog",
   "k": 8
  },

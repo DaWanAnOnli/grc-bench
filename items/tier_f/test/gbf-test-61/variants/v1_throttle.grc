@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_8900
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '8900', amp: '0.25', showports: 'True'}
 - name: hilbert
@@ -36,11 +36,11 @@ blocks:
   parameters: {type: float, limit: auto}
 connections:
 - [hilbert, '0', agc, '0']
-- [retune, strobe, tone_8900, cmd]
-- [tone_8900, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', hilbert, '0']
 - [agc, '0', out, '0']
-- [tone_8900, '0', fm_mod, '0']
+- [tone_1, '0', fm_mod, '0']
 - [fm_mod, '0', fm_demod, '0']
 - [fm_demod, '0', rate_limit, '0']
 - [rate_limit, '0', out_b, '0']

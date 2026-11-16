@@ -4,7 +4,9 @@
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "phase.dat"
+     "file": {
+      "regex": "(^|/)phase\\.dat$"
+     }
     }
    }
   ],
@@ -84,6 +86,30 @@
       "rel_tol": 0.03,
       "skip": 0
      }
+    ],
+    "graph_checks": [
+     {
+      "from_ids": [
+       "analog_noise_source_x",
+       "analog_fastnoise_source_x"
+      ],
+      "from_upstream_of": {
+       "ids": [
+        "blocks_file_sink"
+       ],
+       "params": {
+        "file": "envelope.dat"
+       }
+      },
+      "group": "f2p",
+      "kind": "path",
+      "to_ids": [
+       "blocks_file_sink"
+      ],
+      "to_params": {
+       "file": "phase.dat"
+      }
+     }
     ]
    },
    "rung": "V5"
@@ -106,9 +132,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -132,5 +162,5 @@
   "active_graph": "rayleigh_phase.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

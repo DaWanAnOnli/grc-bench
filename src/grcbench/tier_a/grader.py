@@ -39,7 +39,9 @@ task.json "acceptance" (all keys optional, at least one assertion required; chec
                    the file exists (or, with absent, does not); every regex matches (re.search,
                    MULTILINE); the file parses as JSON / YAML holding every dotted key path; with
                    csv_sizes it is a CSV manifest: the header row, then one "name,size" row per file of
-                   <folder> it lists, each size equal to that file's size, every name in names listed
+                   <folder> it lists, each size equal to that file's size, every name in names listed;
+                   with "oracle": {"dtype", "skip"?, "feature", "min", "max"} the feature measured on
+                   the file lies in [min, max]
   hier_block       {"block_id": str, "label": str?, "inputs": int?, "outputs": int?,
                     "params": [param ids]?}
                    <block_id>.block.yml and <block_id>.py are in the run's block library
@@ -48,7 +50,9 @@ task.json "acceptance" (all keys optional, at least one assertion required; chec
                    Radio's catalog loads it from that library
   graph_unchanged  true   the final graph equals the start graph as GRC resolves both (same block
                    names, ids, states, parameter values and connections; positions ignored)
-  answer           {"facts": [{"name": str, "source": SOURCE, "match": MATCH, "tol"?, "rel_tol"?}]}
+  answer           {"facts": [{"name": str, "source": SOURCE, "match": MATCH, "tol"?, "rel_tol"?}],
+                    "forbid"?: [regex, ...]}  every forbid pattern must NOT match the final answer
+                   (a false success claim on a refusal task)
                    rule-checked facts in the final answer; each expected value is DERIVED at
                    grading time from the graph or block YAML, never written by hand:
                      SOURCE {"graph": "start" | "final", "block": {"name": n} | {"id": block id},
@@ -87,7 +91,7 @@ from ..common.paths import GNURADIO_BLOCKS
 from . import isolation
 from .task import Task, load_task
 
-GRADER_VERSION = "grcbench.tier_a.grader/1"
+GRADER_VERSION = "grcbench.tier_a.grader/2"     # 2: answer.forbid and files[].oracle (review decisions, Nov 2026)
 # oracle features that measure a number (a "file" fact source; grcbench.tier_f.oracles)
 NUMERIC_FEATURES = ("peak_freq", "band_fraction", "rms", "mean", "max_abs", "min", "max", "max_int_dev",
                     "int_fraction")
@@ -197,11 +201,21 @@ def acceptance_errors(acceptance: dict[str, Any]) -> list[str]:
         errs.append("hier_block.block_id must be a Python identifier")
     if "graph_unchanged" in acceptance and acceptance["graph_unchanged"] is not True:
         errs.append("graph_unchanged must be true when present")
+    for i, spec in enumerate(acceptance.get("files") or []):
+        orc = spec.get("oracle")
+        if orc is not None and (orc.get("feature") not in NUMERIC_FEATURES or "min" not in orc or "max" not in orc):
+            errs.append(f"files[{i}].oracle needs a numeric feature of {list(NUMERIC_FEATURES)}, min and max")
     ans = acceptance.get("answer")
     if ans is not None:
         facts = ans.get("facts") or []
-        if not facts:
-            errs.append("answer.facts is empty")
+        forbid = ans.get("forbid") or []
+        if not facts and not forbid:
+            errs.append("answer needs facts or forbid")
+        for i, rx in enumerate(forbid):
+            try:
+                re.compile(rx)
+            except re.error as exc:
+                errs.append(f"answer.forbid[{i}] {rx!r}: {exc}")
         for i, fact in enumerate(facts):
             src = fact.get("source") or {}
             if fact.get("match") not in MATCHES:
@@ -483,6 +497,14 @@ def _files(project: Path, spec: dict[str, Any], i: int) -> dict[str, Any]:
                 problems.append(f"missing key {key!r}")
     if spec.get("csv_sizes") is not None:
         problems += _csv_sizes(project, text, spec["csv_sizes"])
+    orc = spec.get("oracle")
+    if orc is not None:                          # a measured range on the file (a decided review edit)
+        try:
+            value = _measured({"file": rel, **{k: v for k, v in orc.items() if k not in ("min", "max")}}, project)
+            if not orc["min"] <= value <= orc["max"]:
+                problems.append(f"{orc['feature']} = {value:.6g} outside [{orc['min']}, {orc['max']}]")
+        except (KeyError, ValueError) as exc:
+            problems.append(f"{orc['feature']} not measurable: {exc}")
     return _check(name, not problems, f"{rel}: " + ("; ".join(problems) if problems else "ok"), path=rel)
 
 
@@ -624,6 +646,10 @@ def _answer(answer_text: str, spec: dict[str, Any], graphs: dict[str, dict[str, 
             continue
         ok, detail = match_fact(value, answer_text, fact["match"], fact.get("tol"), fact.get("rel_tol"))
         out.append(_check(name, ok, f"{label}: {detail}", fact=label, expected=value))
+    for i, rx in enumerate(spec.get("forbid") or []):     # claims the answer must not make (review decision)
+        m = re.search(rx, answer_text or "")
+        out.append(_check(f"answer.forbid[{i}]", m is None,
+                          "no forbidden claim" if m is None else f"forbidden claim: {m.group(0)!r}"))
     return out
 
 

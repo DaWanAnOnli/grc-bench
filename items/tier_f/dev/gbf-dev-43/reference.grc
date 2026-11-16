@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_13000
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '13000', amp: '0.5'}
 - name: hilbert
@@ -23,7 +23,7 @@ blocks:
   id: blocks_file_sink
   parameters: {type: complex, file: second_levelled.dat}
 connections:
-- [tone_13000, '0', hilbert, '0']
+- [tone_1, '0', hilbert, '0']
 - [hilbert, '0', conj, '0']
 - [conj, '0', out, '0']
 - [conj, '0', agc, '0']

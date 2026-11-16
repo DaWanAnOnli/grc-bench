@@ -29,7 +29,8 @@ graph of a passing golden replay, whose functional signature is reserved from tr
 (tier_f.compose.audit_items).
 
 wrong_end_state.json (optional): {"final_text": str (default: the golden final text),
-"files": {"<path in project>": "content"}, "library": {"<file name>": "content"}} added to the
+"files": {"<path in project>": "content"}, "files_b64": {"<path in project>": "<base64 bytes>"},
+"library": {"<file name>": "content"}} added to the
 synthetic end state built from the start files plus wrong_end_state.grc as the final graph.
 
 The Tier-F setting's gate (`tier_f_gates`, build plan Decision 16 Oct "Solvability becomes golden
@@ -149,7 +150,8 @@ def replay(task: Task | Path | str, spec: models.ModelSpec, run_root: Path, *, s
 
 
 def synthetic_end_state(task: Task, run_dir: Path, graph: Path | None, *, final_text: str,
-                        files: dict[str, str] | None = None, library: dict[str, str] | None = None) -> EndState:
+                        files: dict[str, str] | None = None, library: dict[str, str] | None = None,
+                        files_b64: dict[str, str] | None = None) -> EndState:
     """An end state built on disk without an episode: the task's start files in project/, `graph`
     as the final graph (replacing the active start graph, or project/flowgraph.grc for an untitled
     start), extra project files and library files."""
@@ -176,6 +178,13 @@ def synthetic_end_state(task: Task, run_dir: Path, graph: Path | None, *, final_
             raise ValueError(f"synthetic file {rel!r} is outside the project folder")
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(text, encoding="utf-8")
+    for rel, b64 in sorted((files_b64 or {}).items()):     # binary files (e.g. a recording), base64
+        import base64
+        dest = lay.project / rel
+        if not isolation.is_inside(dest, lay.project):
+            raise ValueError(f"synthetic file {rel!r} is outside the project folder")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(base64.b64decode(b64))
     for name, text in sorted((library or {}).items()):
         (lay.hier_dir / Path(name).name).write_text(text, encoding="utf-8")
     return EndState(project=lay.project, status="completed", end_reason="synthetic",
@@ -188,7 +197,7 @@ def wrong_end_states(task: Task, run_root: Path, golden: dict[str, Any] | None =
     """Grade the task's deliberately wrong end state(s); each must be rejected."""
     golden = golden or load_golden(task.task_dir)
     extra = read_json(task.task_dir / WRONG_JSON) if (task.task_dir / WRONG_JSON).is_file() else {}
-    unknown = set(extra) - {"final_text", "files", "library", "graph"}
+    unknown = set(extra) - {"final_text", "files", "files_b64", "library", "graph"}
     if unknown:
         raise GoldenError(f"{WRONG_JSON}: unknown keys {sorted(unknown)}")
     wrong_grc = task.task_dir / WRONG_GRC
@@ -196,7 +205,8 @@ def wrong_end_states(task: Task, run_root: Path, golden: dict[str, Any] | None =
         return []
     end = synthetic_end_state(task, run_root / "wrong_end_state", wrong_grc,
                               final_text=extra.get("final_text", golden["final_text"]),
-                              files=extra.get("files"), library=extra.get("library"))
+                              files=extra.get("files"), library=extra.get("library"),
+                              files_b64=extra.get("files_b64"))
     g = grade(task, end, ladder_check=ladder_check)
     return [{"source": WRONG_GRC + (f" + {WRONG_JSON}" if extra else ""), "rejected": not g["passed"],
              "reasons": g["reasons"]}]

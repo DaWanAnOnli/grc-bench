@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_6000
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '6000', amp: '0.8'}
 - name: fm_mod
@@ -32,7 +32,7 @@ blocks:
   id: blocks_throttle2
   parameters: {type: complex, limit: auto}
 connections:
-- [tone_6000, '0', fm_mod, '0']
+- [tone_1, '0', fm_mod, '0']
 - [fm_mod, '0', fm_demod, '0']
 - [fm_demod, '0', hilbert, '0']
 - [hilbert, '0', conj, '0']

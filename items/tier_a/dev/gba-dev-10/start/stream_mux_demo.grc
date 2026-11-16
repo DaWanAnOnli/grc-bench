@@ -1,10 +1,10 @@
 options:
   parameters:
     alias: ''
-    author: null
+    author: David Pi
     catch_exceptions: 'True'
     comment: ''
-    copyright: null
+    copyright: GNU GPL 3.0+
     description: null
     gen_linking: dynamic
     generate_options: no_gui

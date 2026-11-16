@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx channels_channel_model low_pass_filter blocks_multiply_xx blocks_file_sink",
+  "query": "Signal Source Multiply File Sink",
   "domain": "catalog",
   "k": 12
  },

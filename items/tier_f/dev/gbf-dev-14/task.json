@@ -21,34 +21,39 @@
   "type": "nonexistent_block",
   "wrong_id": "channels_channel_model_x"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "k": 10,
+  "query": "channel model block with a frequency offset"
+ },
  "id": "gbf-dev-14",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 48 kHz: use Signal Sources to make a -1.4 kHz complex tone with amplitude 0.4 and a 3.2 kHz complex tone with amplitude 0.4, and add them; then pass it through a Channel Model with no noise and a frequency offset of -750 Hz (freq_offset -750/samp_rate); then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; and write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 16,384 samples after the first 4,096, the output should have 50 % of its power within 50 Hz of -2.45 kHz (within a tenth of that share); 50 % of its power within 50 Hz of 2.15 kHz (within a tenth of that share); an RMS level of 0.566 (within 5 %). Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_1400",
+   "block": "tone_1",
    "breaks": "the -1.4 kHz tone at -1.75 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "-1750"
   },
   {
-   "block": "tone_1400",
+   "block": "tone_1",
    "breaks": "the -1.4 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "0.6"
   },
   {
-   "block": "tone_3200",
+   "block": "tone_2",
    "breaks": "the 3.2 kHz tone at 4 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "4000"
   },
   {
-   "block": "tone_3200",
+   "block": "tone_2",
    "breaks": "the 3.2 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -127,7 +132,7 @@
    {
     "expect": 0.5657,
     "feature": "rms",
-    "group": "f2p",
+    "group": "p2p",
     "n": 16384,
     "point": "out",
     "rel_tol": 0.05,
@@ -155,7 +160,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -180,9 +185,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 3,
@@ -200,5 +209,5 @@
  "split": "dev",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

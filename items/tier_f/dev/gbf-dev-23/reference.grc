@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_5200
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '-5200', amp: '0.6'}
 - name: lo
@@ -20,7 +20,7 @@ blocks:
   id: blocks_file_sink
   parameters: {type: complex, file: levelled.dat}
 connections:
-- [tone_5200, '0', mixer, '0']
+- [tone_1, '0', mixer, '0']
 - [lo, '0', mixer, '1']
 - [mixer, '0', agc, '0']
 - [agc, '0', out, '0']

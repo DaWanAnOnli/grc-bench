@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_5400
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '5.400000e+03', amp: '0.5'}
 - name: channel
@@ -17,7 +17,7 @@ blocks:
   id: blocks_file_sink
   parameters: {type: complex, file: received.dat}
 connections:
-- [tone_5400, '0', channel, '0']
+- [tone_1, '0', channel, '0']
 - [channel, '0', channel_2, '0']
 - [channel_2, '0', out, '0']
 metadata: {file_format: 1}

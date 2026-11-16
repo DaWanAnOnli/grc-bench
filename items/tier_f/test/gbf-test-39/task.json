@@ -14,8 +14,8 @@
  "disjointness": "A generated chain (tones, channel, channel) whose functional signature channel_model|combine|message_source|noise|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "repair",
  "fault": {
-  "connection": "tone_5400:0->throttle:0",
-  "description": "the connection tone_5400 -> throttle is missing, so GRC reports an unconnected port and the flowgraph does not run",
+  "connection": "tone_1:0->throttle:0",
+  "description": "the connection tone_1 -> throttle is missing, so GRC reports an unconnected port and the flowgraph does not run",
   "expected_rung": "V3",
   "type": "missing_connection"
  },
@@ -25,7 +25,7 @@
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_5400",
+   "block": "tone_1",
    "breaks": "the 7.6 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -134,20 +134,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
-    "group": "f2p",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "received.dat"
-    },
-    "via_ids": [
+    "group": "p2p",
+    "ids": [
      "channels_channel_model"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    }
   ]
  },
@@ -162,9 +154,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 428,
@@ -177,10 +173,10 @@
   "its strongest component at 8.85 kHz (within 88.5 Hz)",
   "100 % of its power within 50 Hz of 8.85 kHz (within a tenth of that share)",
   "an RMS level of 0.802 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; both Channel Models are kept"
  ],
  "split": "test",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

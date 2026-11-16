@@ -117,16 +117,54 @@ def test_label_file(built, questions):
     assert Counter(r["split"] for r in rows) == {"eval": 185, "train": 1668}
     source = {r["id"]: r["task_type"] for r in eval_rows + train_rows}
     split_of = {r["id"]: "eval" for r in eval_rows} | {r["id"]: "train" for r in train_rows}
+    reviewed = {k[0] for k in tt.reviewed_test_labels()}
     for r in rows:
         assert set(r) == {"id", "split", "raw", "clean", "method", "reason", "labeller"}
         assert r["raw"] == source[r["id"]], "raw labels are kept unchanged"
         assert r["split"] == split_of[r["id"]]
-        assert r["clean"] in tt.CANONICAL and r["reason"]
+        assert r["clean"] in tt.CANONICAL and r["reason"] and "\n" not in r["reason"]
         if r["method"] == "rule":
             assert r["clean"] == tt.RULE_MAP[r["raw"]] and r["labeller"] == tt.LABELLER_RULE
+        elif r["method"] == "reviewed":
+            assert r["id"] in reviewed and r["split"] == "eval" and r["labeller"] == tt.LABELLER_REVIEW
         else:
-            assert r["method"] == "classified" and r["raw"] in tt.AMBIGUOUS
+            assert r["method"] == "classified" and r["raw"] in tt.AMBIGUOUS and r["id"] not in reviewed
             assert r["labeller"] == "Claude (Anthropic)"
+
+
+def test_review_decisions_set_the_ambiguous_test_labels_only(tmp_path):
+    """The decided task_type_test labels replace Claude's on the test items; the agreement key keeps
+    Claude's; training labels stay as they are (the spot-check measures them); both sheets are filled."""
+    from grcbench.review import records, sheets
+    fresh = tt.build(tmp_path / "fresh", reviews_dir=tmp_path / "none")
+    _, test_rows = _read_csv(fresh["paths"]["test_sheet"])
+    _, train_rows = _read_csv(fresh["paths"]["train_sheet"])
+    claude = {r["id"]: r["clean"] for r in fresh["labels"]}
+    tid = test_rows[0]["id"]
+    other = next(t for t in tt.CANONICAL if t != claude[tid])
+    out = lambda v: {"value": v, "edits": [], "notes": "reason"}
+    rev = tmp_path / "reviews"
+    test_recs = records.build(sheets.SHEETS["task_type_test"], {(tid,): out(claude[tid])}, {(tid,): out(other)},
+                              {(tid,): out(other)})
+    records.write_records(rev / "task_type_test.jsonl", test_recs)
+    nid = train_rows[0]["id"]
+    train_recs = records.build(sheets.SHEETS["task_type_train"], {(nid,): out(other)}, {(nid,): out(other)}, {})
+    records.write_records(rev / "task_type_train.jsonl", train_recs)
+
+    res = tt.build(tmp_path / "out", reviews_dir=rev)
+    labels = {r["id"]: r for r in res["labels"]}
+    assert labels[tid]["clean"] == other and labels[tid]["method"] == "reviewed"
+    assert labels[tid]["labeller"] == tt.LABELLER_REVIEW and claude[tid] in labels[tid]["reason"]
+    assert labels[nid]["clean"] == claude[nid], "training labels are not changed by the spot-check"
+    assert sum(r["clean"] != claude[r["id"]] for r in res["labels"]) == 1
+    key = read_json(res["paths"]["key"])["ambiguous_test"]
+    assert next(k for k in key["rows"] if k["id"] == tid)["claude_label"] == claude[tid]
+    _, sheet = _read_csv(res["paths"]["test_sheet"])
+    row = next(r for r in sheet if r["id"] == tid)
+    assert (row["annotator_1"], row["annotator_2"]) == (claude[tid], other)
+    _, tsheet = _read_csv(res["paths"]["train_sheet"])
+    assert next(r for r in tsheet if r["id"] == nid)["reviewer_label"] == other
+    assert [r["id"] for r in sheet] == [r["id"] for r in test_rows], "the sheet rows do not move"
 
 
 def test_test_counts_and_small_groups(built):
@@ -141,17 +179,23 @@ def test_blind_test_sheet(built):
     columns, rows = _read_csv(out / tt.TEST_SHEET_REL)
     assert columns == ["id", "question", "raw_label", "annotator_1", "annotator_2", "notes"]
     labels = {r["id"]: r for r in read_jsonl(out / tt.LABELS_REL)}
-    expected = {i for i, r in labels.items() if r["split"] == "eval" and r["method"] == "classified"}
+    expected = {i for i, r in labels.items() if r["split"] == "eval" and r["raw"] in tt.AMBIGUOUS}
     assert {r["id"] for r in rows} == expected and len(rows) == 11
+    decided = tt.reviewed_test_labels()
     for r in rows:
-        assert r["annotator_1"] == r["annotator_2"] == r["notes"] == ""
+        if (r["id"],) in decided:          # filled from the decided record: the two annotators' labels
+            rec = decided[(r["id"],)]
+            assert (r["annotator_1"], r["annotator_2"]) == (rec["r1"]["value"], rec["r2"]["value"])
+        else:
+            assert r["annotator_1"] == r["annotator_2"] == r["notes"] == ""
+            assert not ({r["raw_label"], r["notes"]} & set(tt.CANONICAL)), "Claude's label must not show"
         assert r["raw_label"] == labels[r["id"]]["raw"] and r["raw_label"] in tt.AMBIGUOUS
-        assert not ({r["raw_label"], r["notes"]} & set(tt.CANONICAL)), "Claude's label must not show"
     key = read_json(out / tt.KEY_REL)["ambiguous_test"]
     assert [k["id"] for k in key["rows"]] == [r["id"] for r in rows]
     assert [k["row"] for k in key["rows"]] == list(range(1, 12))
+    claude = tt.load_decisions()["decisions"]
     for k in key["rows"]:
-        assert k["claude_label"] == labels[k["id"]]["clean"]
+        assert k["claude_label"] == claude[k["id"]]["clean"]
     # rows are shuffled by the seeded hash, not grouped by raw label or id
     assert [r["id"] for r in rows] == sorted(expected, key=lambda i: tt.rank_key(tt.ORDER_SEED, i))
 
@@ -173,11 +217,12 @@ def test_spotcheck_sheet(built):
     for raw, n in sizes.items():
         quota = n_total * n / len(train)
         assert max(1, math.floor(quota)) <= picked[raw] <= max(1, math.ceil(quota))
+    decided = tt.reviewed_train_labels()
     for r in rows:
         lab = labels[r["id"]]
         assert lab["split"] == "train"
         assert r["method"] == lab["method"] and r["claude_or_rule_label"] == lab["clean"]
-        assert r["reviewer_label"] == ""
+        assert r["reviewer_label"] == (decided[(r["id"],)]["final"] if (r["id"],) in decided else "")
     assert {r["method"] for r in rows} == {"rule", "classified"}
     again, _ = tt.spotcheck_sample(train)
     assert [r["id"] for r in again] == [r["id"] for r in rows]
@@ -197,7 +242,10 @@ def test_report_content(built):
         assert f"### `{g}`" in text and "Merged into" in text
     assert "factual recall and reasoning" in text.lower()
     assert "return your labels before reading this report" in text
-    for line in ("design + gnuradio_usage: 50 test items", "recall: 30 test items", "reasoning: 155 test items",
+    n = res["test_counts"]                       # after the review's decided labels
+    for line in (f"design + gnuradio_usage: {n['design'] + n['gnuradio_usage']} test items",
+                 f"recall: {n['factual']} test items",
+                 f"reasoning: {sum(n[t] for t in tt.FAMILIES['reasoning'])} test items",
                  "GNU Radio behaviour: 100 test items"):
         assert line in text, line
 
@@ -330,8 +378,9 @@ def test_agreement_flags_bad_entries(tmp_path):
     assert res["pairs"]["annotator_1 vs annotator_2"]["n"] == 0
 
 
-def test_blank_sheets_give_empty_stats(built, tmp_path):
-    out, _ = built
+def test_blank_sheets_give_empty_stats(tmp_path):
+    out = tmp_path / "blank"
+    tt.build(out, reviews_dir=tmp_path / "no_reviews")          # sheets as generated, before any review
     key = read_json(out / tt.KEY_REL)
     res = agreement.ambiguous_test_agreement([out / tt.TEST_SHEET_REL], key)
     assert res["labelled"] == {"annotator_1": 0, "annotator_2": 0}

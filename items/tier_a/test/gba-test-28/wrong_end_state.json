@@ -1,3 +1,6 @@
 {
+ "files": {
+  "carrier.dat": "x"
+ },
  "final_text": "I ran the flowgraph and analysed carrier.dat: the PLL's output settles at 4000 Hz. The flowgraph is unchanged."
 }

@@ -13,20 +13,24 @@
  "cluster_id": "chain:filter|harmonic_wave|quantize",
  "disjointness": "A generated chain (tones, filter, quantize) whose functional signature filter|harmonic_wave|quantize hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "build",
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Signal Source Low Pass Filter Float To Short Short To Float File Sink"
+ },
  "id": "gbf-test-31",
  "instruction": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 450 Hz square wave that switches between 0 and 2; then low-pass filter it with a Low Pass Filter (cutoff 900 Hz, transition width 200 Hz), so that only the tones below 900 Hz remain; then round it to steps of 0.001: convert it to short integers with a Float To Short block (scale 1000) and back with a Short To Float block (scale 1000). Write the result as float samples to a File Sink whose file name is quantized.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 450 Hz (within 5.9 Hz); 100 % of its AC power within 50 Hz of 450 Hz (within a tenth of that share); an RMS level of 1.346 (within 5 %); an average of 1 (within 0.03); every sample a whole multiple of 0.001. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L1",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "square_450",
+   "block": "square",
    "breaks": "the 450 Hz tone at 562.5 Hz",
    "op": "set_param",
    "param": "freq",
    "value": "562.5"
   },
   {
-   "block": "square_450",
+   "block": "square",
    "breaks": "the 450 Hz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -160,6 +164,16 @@
     "via_ids": [
      "blocks_float_to_short"
     ]
+   },
+   {
+    "group": "main",
+    "ids": [
+     "analog_sig_source_x"
+    ],
+    "kind": "block_present",
+    "params": {
+     "waveform": "analog.GR_SQR_WAVE"
+    }
    }
   ]
  },
@@ -174,9 +188,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 462,
@@ -191,7 +208,7 @@
   "an RMS level of 1.346 (within 5 %)",
   "an average of 1 (within 0.03)",
   "every sample a whole multiple of 0.001",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; a Signal Source with waveform analog.GR_SQR_WAVE"
  ],
  "split": "test",
  "start_grc": null,

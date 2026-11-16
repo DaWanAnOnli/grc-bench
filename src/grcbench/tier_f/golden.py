@@ -11,9 +11,13 @@ A Tier-F sample is answered inside GRC-Agent's harness as "one lookup + one edit
 
 `derive_golden_calls(task_dir)` derives both from the task's files alone, deterministically:
 
-  query_knowledge  a catalog search naming the reference's non-trivial blocks (every block id other
-                   than options / variables / imports / notes / parameters, in the reference's
-                   order, without repeats); k = min(20, max(5, 2 x their number)).
+  query_knowledge  the task's own natural lookup when task.json gives one (`golden_lookup`: {"query":
+                   ..., "domain": ..., "k": ...}; domain and k default as below), so that a lookup
+                   does not paste the answer of a build or repair task into the query (Tier-F
+                   review; the generator writes the catalog labels of the blocks the edit adds,
+                   generate.natural_lookup); otherwise a catalog search naming the reference's non-trivial blocks
+                   (every block id other than options / variables / imports / notes / parameters, in
+                   the reference's order, without repeats); k = min(20, max(5, 2 x their number)).
   change_graph     the edit turning the start graph (start.grc, or the empty build start graph of
                    tier_f_mode.start_graph_text) into reference.grc, in GRC-Agent's change_graph
                    schema (agent.py change_graph_func; empty operation lists are left out), blocks
@@ -48,6 +52,7 @@ import json
 import shutil
 import sys
 import uuid
+from functools import lru_cache
 from itertools import permutations
 from pathlib import Path
 from typing import Any
@@ -59,6 +64,7 @@ from ..common.paths import GNURADIO_BLOCKS, WORK
 from .graph_checks import NON_FUNCTIONAL
 
 GOLDEN_FILE = "golden_calls.json"
+NATURAL_LOOKUP = "golden_lookup"          # task.json: the task's own query_knowledge arguments
 LOOKUP, EDIT = "query_knowledge", "change_graph"
 EDIT_OPS = ("remove_connections", "remove_blocks", "add_blocks", "update_params", "update_states",
             "add_connections")
@@ -108,14 +114,48 @@ def catalog_default(block_id: str, param: str, blocks_dir: Path = GNURADIO_BLOCK
     return None
 
 
-def lookup_args(reference: dict[str, Any]) -> dict[str, Any]:
-    """The golden query_knowledge arguments (module docstring)."""
+@lru_cache(maxsize=4)
+def _labels(blocks_dir: str) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for path in sorted(Path(blocks_dir).glob("*.block.yml")):
+        bid = label = None
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if line.startswith("id:"):
+                bid = line[3:].strip().strip("'\"")
+            elif line.startswith("label:"):
+                label = line[6:].strip().strip("'\"")
+            if bid and label:
+                out.setdefault(bid, label)
+                break
+    return out
+
+
+def catalog_label(block_id: str, blocks_dir: Path = GNURADIO_BLOCKS) -> str:
+    """A block's catalog label, the label: field of the YAML file that declares its id (e.g. 'Hilbert' for
+    hilbert_fc, whose file is filter_hilbert_fc.block.yml); the id itself when the catalog does not hold it."""
+    return _labels(str(blocks_dir)).get(block_id, block_id)
+
+
+def lookup_args(reference: dict[str, Any], natural: Any = None) -> dict[str, Any]:
+    """The golden query_knowledge arguments (module docstring): the task's natural lookup (task.json
+    `golden_lookup`) if given, else a search for the reference's block ids."""
     ids: list[str] = []
     for b in reference.get("blocks") or []:
         bid = _text(b.get("id"))
         if bid and not bid.startswith(NON_FUNCTIONAL) and bid not in ids:
             ids.append(bid)
-    return {"query": " ".join(ids), "domain": "catalog", "k": min(20, max(5, 2 * len(ids)))}
+    derived = {"query": " ".join(ids), "domain": "catalog", "k": min(20, max(5, 2 * len(ids)))}
+    if natural is None:
+        return derived
+    ok = isinstance(natural, dict) and not set(natural) - {"query", "domain", "k"} \
+        and isinstance(natural.get("query"), str) and bool(natural["query"].strip()) \
+        and isinstance(natural.get("domain", "catalog"), str) \
+        and type(natural.get("k", 5)) is int and 1 <= natural.get("k", 5) <= 50
+    if not ok:
+        raise GoldenCallsError(f"{NATURAL_LOOKUP} must be {{'query': text, 'domain': text, 'k': 1..50}}, "
+                               f"got {natural!r}")
+    return {"query": natural["query"], "domain": natural.get("domain", derived["domain"]),
+            "k": natural.get("k", derived["k"])}
 
 
 def edit_args(start: dict[str, Any], reference: dict[str, Any], *, reason: str = REASON) -> dict[str, Any]:
@@ -181,8 +221,8 @@ def task_graphs(task_dir: Path | str) -> tuple[dict[str, Any], str, dict[str, An
 
 def derive_golden_calls(task_dir: Path | str) -> dict[str, Any]:
     """{"query_knowledge": args, "change_graph": args} for the task (module docstring)."""
-    _, _, start, reference = task_graphs(task_dir)
-    return {LOOKUP: lookup_args(reference), EDIT: edit_args(start, reference)}
+    task, _, start, reference = task_graphs(task_dir)
+    return {LOOKUP: lookup_args(reference, task.get(NATURAL_LOOKUP)), EDIT: edit_args(start, reference)}
 
 
 def load_golden_calls(task_dir: Path | str) -> dict[str, Any]:

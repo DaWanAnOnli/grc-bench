@@ -14,18 +14,26 @@
     "dst": {
      "id": "blocks_file_sink",
      "params": {
-      "file": "tx.dat"
+      "file": {
+       "regex": "(^|/)tx\\.dat$"
+      }
      }
     },
     "src": {
-     "id": "analog_sig_source_x"
+     "ids": [
+      "analog_sig_source_x",
+      "blocks_throttle2",
+      "blocks_throttle"
+     ]
     }
    },
    {
     "dst": {
      "id": "blocks_file_sink",
      "params": {
-      "file": "rx.dat"
+      "file": {
+       "regex": "(^|/)rx\\.dat$"
+      }
      }
     },
     "src": {
@@ -124,9 +132,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -151,5 +163,5 @@
   "active_graph": "channel_test.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

@@ -128,4 +128,5 @@ def test_the_placeholder_file_covers_the_dev_split(tmp_path):
     items = krun.load_split("dev")
     with_file = krun.with_rubric_file(items, out, "dev")
     assert all(krun.rubric_for(i) is not None for i in with_file)
-    assert len(read_jsonl(out)) == len(items)
+    placed = {r["question_id"] for r in read_jsonl(out)}
+    assert placed == {i["id"] for i in items if "original_question" not in i}   # a new version is not the release's text

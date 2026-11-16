@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: square_850
+- name: square
   id: analog_sig_source_x
   parameters: {type: float, waveform: analog.GR_SQR_WAVE, freq: '850', amp: '2'}
 - name: lpf
@@ -23,7 +23,7 @@ blocks:
   id: blocks_throttle2
   parameters: {type: float, limit: auto}
 connections:
-- [square_850, '0', lpf, '0']
+- [square, '0', lpf, '0']
 - [lpf, '0', to_short, '0']
 - [to_short, '0', to_float, '0']
 - [to_float, '0', rate_limit, '0']

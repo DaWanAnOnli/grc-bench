@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_5100
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '5100', amp: '0.8',
     offset: '0'}
@@ -29,7 +29,7 @@ blocks:
   id: blocks_file_sink
   parameters: {type: complex, file: mirrored.dat, append: 'False', unbuffered: 'False', vlen: '1'}
 connections:
-- [tone_5100, '0', mixer, '0']
+- [tone_1, '0', mixer, '0']
 - [lo, '0', mixer, '1']
 - [mixer, '0', channel, '0']
 - [channel, '0', agc, '0']

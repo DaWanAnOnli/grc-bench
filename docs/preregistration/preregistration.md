@@ -2,7 +2,7 @@
 
 **Status: draft for the team's sign-off at gate G2 (Friday 30 October 2026).** After sign-off it is
 published on the Open Science Framework (OSF), before any fine-tuned model is run on the test split.
-It is amended once, at the freeze (gate G3, Friday 13 November 2026). Any later deviation is reported
+It is amended once, at the freeze on Tuesday 17 November 2026 (§10). Any later deviation is reported
 in the 7 December report.
 
 - **Team:** JJJP, University of Toronto MScAC: Joel Rompis (evaluation lead), Jiuyue Cai, Patricio
@@ -32,10 +32,10 @@ before this document is published.
 GRC-Bench measures how well a language model develops GNU Radio flowgraphs with GRC-Agent, the
 assistant inside GNU Radio Companion. It has four tiers.
 
-| Tier | What it measures | Dev split (for every choice) | Test split v1.0 (frozen 13 Nov) | Built by G2 |
+| Tier | What it measures | Dev split (for every choice) | Test split v1.0 (frozen 17 Nov) | Built by G2 |
 |---|---|---|---|---|
-| K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 107 questions: the training team's validation questions that have no twin left in training and are not close to a test question | 285: the 185 frozen questions and 100 GNU Radio behaviour questions, each answered by running GNU Radio (the public reference set; any seed draws a fresh set of the same composition) | all 285 test questions and the dev questions; rubric templates (prose written by the team) |
-| F: flowgraphs | Making a correct flowgraph edit for a stated goal: one documentation lookup and one edit inside GRC-Agent, judged by running the result | 45 tasks | 150 tasks (60 L1, 60 L2, 30 L3) | a first set of 30 (20 test, 10 dev), all gates passed, pending team review |
+| K: knowledge | Knowledge of RF, signal processing and GNU Radio, shown in written answers to questions | 107 questions: the training team's validation questions that have no twin left in training and are not close to a test question | 285: the 185 frozen questions and 100 GNU Radio behaviour questions, each answered by running GNU Radio (the public reference set; any seed draws a fresh set of the same composition) | all 285 test questions and the dev questions; rubric templates (the prose is written and checked by the review agents, §10) |
+| F: flowgraphs | Making a correct flowgraph edit for a stated goal: one documentation lookup and one edit inside GRC-Agent, judged by running the result | 45 tasks | 150 tasks (60 L1, 60 L2, 30 L3) | a first set of 30 (20 test, 10 dev), all gates passed, then reviewed with the rest (§10) |
 | A: agent | Completing a realistic multi-step task with GRC-Agent's tools (8–20 tool calls), judged by the end state | 12 tasks | 30 tasks | 10 test and 12 dev tasks built, all gates passed; 20 test tasks drafted as specifications |
 | E: speed and memory | Prompt and generation speed, time to first token and peak memory on the target hardware | — | — | the llama-bench protocol, tested on a small model |
 
@@ -56,7 +56,7 @@ assistant inside GNU Radio Companion. It has four tiers.
 
 **Contamination controls** (eval plan §6).
 - Every benchmark item is compared with the training data by 8-word overlap, TF-IDF similarity and
-  embedding similarity. The rate is reported for each tier, and flagged pairs are judged by the team.
+  embedding similarity. The rate is reported for each tier, and flagged pairs are judged by the review agents.
 - Tier-K items with a near-twin in the training questions are reported separately from clean items.
 - The functional signatures of every test and dev flowgraph are reserved: the training team removes
   any training flowgraph with a reserved signature.
@@ -84,8 +84,8 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 
 | Hypothesis | Statement | Decided by |
 |---|---|---|
-| **H1a** reliability | Model rankings are stable, the judge agrees with people, and reference solutions are reproducible. | Per tier, all four parts must hold. (1) Kendall's τ between the rankings of two independent bootstrap resamples is at least 0.8 in at least 95 % of 1,000 pairs (`H1a-decision`). (2) The split-half τ, samples {1, 2} against {3, 4}, is at least 0.8. (3) The judge passes both calibration gates (§5.1, `judge-gate`). (4) Every remaining Tier-F and Tier-A reference passes 10 of 10 harness runs. |
-| **H1b** validity | GRC-Bench measures GNU Radio development skill, not general ability. | The Qoherent expert accepts at least 90 % of the reviewed items of each tier as correct and relevant. The correlations of each tier with published BFCL and MMLU-Pro engineering scores across the panel are reported with intervals and described, not tested (eval plan §9). |
+| **H1a** reliability | Model rankings are stable, the judge agrees with the reference labelling, and reference solutions are reproducible. | Per tier, all four parts must hold. (1) Kendall's τ between the rankings of two independent bootstrap resamples is at least 0.8 in at least 95 % of 1,000 pairs (`H1a-decision`). (2) The split-half τ, samples {1, 2} against {3, 4}, is at least 0.8. (3) The judge passes both calibration gates (§5.1, `judge-gate`). (4) Every remaining Tier-F and Tier-A reference passes 10 of 10 harness runs. |
+| **H1b** validity | GRC-Bench measures GNU Radio development skill, not general ability. | The expert agent of the review protocol accepts at least 90 % of the reviewed items of each tier as correct and relevant (first pass; an item marked `unsure` counts as not accepted). This measures the expert agent's acceptance, not a GNU Radio engineer's (§10). The correlations of each tier with published BFCL and MMLU-Pro engineering scores across the panel are reported with intervals and described, not tested (eval plan §9). |
 | **H1c** separation | Running the outputs separates models better than asking questions: Tier-F scores spread more widely, and more model pairs differ significantly, than Tier-K scores. | Tier K is subsampled to Tier F's 150 items. H1c holds if the 95 % bootstrap intervals of both SD(F) − SD(K₁₅₀) and sig_pairs(F) − sig_pairs(K₁₅₀) lie above 0, with the same test on both tiers (`H1c-test`, `H1c-mixed-n`, `H1c-decision`). |
 | **H2a** recipe | Mixed SFT (knowledge, trajectories and replay) beats single-source SFT on every tier. | On the test split, Tiers K and F: the best S1 checkpoint against each single-source comparison arm of the same model, with the primary paired test of each tier, Holm-corrected in the RQ2 family. H2a holds for a tier if every comparison favours the mixed recipe at the corrected 5 % level. Tier A is compared on the dev split only, because the arms are not run on Tier A of the test split (Table 6). |
 | **H2b** preference stage | Defect-aware preference optimisation lowers the hallucinated-block rate by at least 30 % relative to SFT alone. | Tier F: the hallucinated-block rate of S1 + DPO and of S1 + DPOP against the best S1 checkpoint. H2b holds for a method if the relative reduction is at least 30 % and the paired test of the per-task rates is significant after Holm correction in the RQ2 family. |
@@ -95,10 +95,14 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 
 ## 4. Item quality before the freeze
 
-- **Two-person review.** Two team members review every Tier-K rubric, Tier-F task, Tier-A task and
-  generated block question with the checklists in `docs/checklists/`. A Qoherent expert decides every
-  disagreement.
-- **Expert review.** A Qoherent expert reviews every GNU Radio question and every Tier-F and Tier-A
+- **Two-reviewer review** (the review protocol, `docs/guidelines/review_protocol.md`). Two Claude
+  review agents (`claude-opus-5-5`), each in its own context and blind to the other, review every Tier-F
+  task, Tier-A task and generated block question, and every sheet of `handoff/review_sheets/`, with the
+  checklists and guides of `docs/`. A writer agent writes every Tier-K rubric, and two checker agents
+  check it. The expert agent decides every disagreement and audits a seeded 10 % sample of each
+  sheet's agreements. The decision rules are code (`src/grcbench/review/decide.py`). Every factual
+  claim is checked by a quote or a run, and every agent run is declared in `reviews/review_log.jsonl`.
+- **Expert review.** The expert agent reviews every GNU Radio question and every Tier-F and Tier-A
   task for correctness and relevance (`docs/checklists/expert_review.md`).
 - **Automated gates.** Every Tier-F and Tier-A reference passes 10 of 10 harness runs. Every Tier-F
   oracle rejects at least 90 % of the mutants that break the specification. Every Tier-A grader
@@ -111,9 +115,9 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   Tier K; the judge's family and the family that drafts rubrics are not scored on Tier K; a teacher's
   Tier-K score is also reported without the questions its family wrote. Claude (Anthropic) drafted the
   Tier-F and Tier-A tasks, their reference solutions and oracles, and the settings and wording of the
-  GNU Radio behaviour questions, whose answers come from GNU Radio runs; the team reviews and decides
-  every item. Claude does not draft rubric prose. Anthropic models are not
-  on the panel.
+  GNU Radio behaviour questions, whose answers come from GNU Radio runs. Claude review agents review
+  and decide every item, and a Claude writer agent writes the Tier-K rubrics (§10). Anthropic models
+  are not on the panel.
 
 ## 5. Scoring and metrics
 
@@ -171,13 +175,13 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   cannot read goes to the judge with a numbers-only rubric built from its key. The prompt version
   and its hash are fixed in Appendix B; any change needs a new version.
 - **Judge calibration** (eval plan §8.1; `docs/guidelines/judge_calibration.md`). Before the judge
-  grades any test answer, it is compared with human labels on 150 answers labelled by three annotators,
-  one of them a Qoherent expert. The judge passes only if both gates hold: Cohen's κ on the per-point
+  grades any test answer, it is compared with a reference labelling of 150 answers by three annotator
+  agents, adjudicated by the expert agent (§10). The judge passes only if both gates hold: Cohen's κ on the per-point
   credits is at least 0.7 with the lower end of its 95 % interval at least 0.6, and the linear-weighted
-  κ on the answers' score bands meets the same thresholds. Scott's π and the mean judge–human gap are
-  reported, for each task type too. If MiniMax-M3 fails, Kimi K2.6 is calibrated with the same prompt,
-  and both results are reported. In week 8, 50 more answers from the final models are labelled and the
-  judge–human gap is reported for each model.
+  κ on the answers' score bands meets the same thresholds. Scott's π and the mean judge–reference gap
+  are reported, for each task type too. If MiniMax-M3 fails, Kimi K2.6 is calibrated with the same
+  prompt, and both results are reported. In week 8, 50 more answers from the final models are labelled
+  and the judge–reference gap is reported for each model.
 - **Every answer is scored automatically** (§8, decision 7); no answer is scored by a person. If the
   judge returns no valid verdict in 3 attempts, the fallback judge (Kimi K2.6) is asked once; if it
   also fails, the answer scores 0. A request that fails (an HTTP error or a timeout) is sent again; it
@@ -339,7 +343,7 @@ are open; each states what has to be decided and the option this draft proposes.
 3. **H4a and H4b.** H4a as proposed (`H4a-decision`). H4b is decided at each of 4K, 16K, 32K and 64K
    tokens of context, and the result is stated as a range (`H4b-context`, §3).
 4. **The small `gnuradio_usage` group** (11 frozen test items) is reported with `design`: one group,
-   design + gnuradio_usage, of 50 frozen test items (`reports/labels.md`).
+   design + gnuradio_usage, of 49 frozen test items (`reports/labels.md`).
 5. **Recall and reasoning,** on the 185 frozen questions: recall is `factual` (30 items); reasoning is
    `reasoning`, `calculation`, `diagnosis`, `design` and `gnuradio_usage` (155 items). The 100 GNU
    Radio behaviour questions are a group of their own.
@@ -367,10 +371,10 @@ MiniMax-M3 and produces the record that the judge runner (`./gb tier-k judge`) r
 grades a test answer; and dev-split rubrics with graded numbers, so that the rule cascade's deferral
 rate on dev answers (round-2 finding F5) can be measured.
 
-## 9. Fixed at the freeze (13 November)
+## 9. Fixed at the freeze (17 November)
 
-- The v1.0 items of every tier, after the team and expert reviews and pruning, with the number of
-  removed items and the reasons.
+- The v1.0 items of every tier, after the two-reviewer and expert reviews and pruning, with the number
+  of removed items and the reasons (`reports/review_summary.md`).
 - The panel's members, entered in their declared slots of `run_list.yaml`.
 - The MDEs recomputed for the final item counts.
 - One amendment of this document, if needed. Every later deviation is reported in the 7 December
@@ -384,8 +388,8 @@ rate on dev answers (round-2 finding F5) can be measured.
   GRC-Agent never lets a model write a `.grc` file; the evaluation plan's Tier-F text is to be updated.
 - **Who drafted the tasks.** Data Summary §11 names other authors for three kinds of item. Tier-F
   instructions (§11 A, DeepSeek-V4.1-Flash) and Tier-A tasks (§11 D, team members with no AI
-  involved) were drafted by Claude, and the team reviews and decides every one; this is raised with
-  Qoherent. The 100 GNU Radio test questions (§11 C, an AI model) are generated by a script, with
+  involved) were drafted by Claude, and Claude review agents review and decide every one; this is
+  raised with Qoherent. The 100 GNU Radio test questions (§11 C, an AI model) are generated by a script, with
   answers from GNU Radio runs.
 - **GNU Radio questions answered by execution.** Eval plan §4.2 reads the answers of the generated
   GNU Radio questions from the block catalog. The agent traces used for training show those catalog
@@ -420,6 +424,66 @@ rate on dev answers (round-2 finding F5) can be measured.
   sets only after the team's decision on them.
 - **The language-model paraphrase detector** of the contamination audit waits for API access; the
   8-word, TF-IDF and embedding checks run now.
+- **Review by agents** (`docs/guidelines/review_protocol.md`). Eval plan §5.2–§5.4, §8.1 and Tables
+  1, 5 and 7 give the reviews to team members and a Qoherent expert. Here Claude agents do all of
+  them:
+  - two independent review agents per sheet;
+  - a writer agent and two checker agents per rubric;
+  - an expert agent that decides every disagreement, audits the agreements and does the expert review
+    of §5.3.
+
+  The parts of the plan this changes:
+  - **Table 5.** Claude drafts the Tier-K rubrics, although Claude labelled part of Qoherent's data and
+    Table 5 keeps every such family from drafting references. Rubrics written by Claude may favour
+    answers that read like Claude's, and so the models trained on those labels. Every rubric point
+    therefore rests on a quoted source or an executed check, and every rubric is checked for word
+    8-grams shared with the question's teacher answers. Anthropic models are not scored.
+  - **Table 1 and §5.3 (H1b).** The expert is an agent. H1b reports the expert agent's acceptance,
+    which is not evidence of a GNU Radio engineer's acceptance.
+  - **§8.1 (H1a, part 3).** The judge is calibrated against agent labels. Its κ measures agreement
+    with Claude's labels, not with people's.
+  - **Agreement statistics.** The two reviewers are two runs of one model. Their κ measures that
+    model's consistency and overstates the agreement two people would reach.
+  - **Blinding.** Blinding is by what each agent's brief allows it to open, not by file permissions.
+  - **Table 7.** The person-hours of the reviews, the rubrics, the calibration and the error analysis
+    become declared agent runs (at most 30 for the reviews before the freeze).
+  - **Similarity sheets.** Both reviewers label every contamination pair, not reviewer 2 on a sample,
+    and the agreement is reported on every pair and on the every-fifth sample.
+- **The freeze date.** The approved plans freeze benchmark v1.0 at gate G3 on Friday 13 November. The
+  review by agents (above) needs until Tuesday 17 November, so the freeze is then. Gate G4
+  (27 November) and the 7 December report keep their dates.
+- **Items the review removed or rewrote** (eval plan §5.3: removed and counted). The test split of
+  §2 is counted before the review. A removed item keeps its record, with the reason, and no run uses
+  it (`reports/review_summary.md` lists each one).
+  - **Tier K.** 8 of the 185 frozen test questions are removed as underspecified (4 `calculation`,
+    2 `reasoning`, 2 `gnuradio_usage`), so 277 test questions are scored: 177 frozen and 100 GNU Radio
+    behaviour questions. The reported groups of decisions 4 and 5 keep their rule with these counts:
+    recall 30, reasoning 147, design + gnuradio_usage 47, all at least 20. 3 of the 107 dev questions
+    are removed, so 104 remain; the anchor subset keeps its 60 questions and the CI subset 19 of its 20.
+  - **Questions that name an API GNU Radio 3.10 does not have.** Dev question `q_26bef0bdbcea7324`
+    gets a version 2 with the real method name, and the original text is kept. Frozen test questions
+    are never changed in place, so test question `q_ba378ee64a7cddef` stays as written. Its rubric
+    grades it as a premise-correction item: a point for spotting the name, an error for accepting it.
+  - **Tier F.** 23 of the 195 tasks are rejected: 22 duplicates (tasks of one shared cell that make the
+    same edit) and `gbf-test-22`, whose requested change has no effect on its output. So 129 test and
+    43 dev tasks remain. The test levels are L1 25, L2 74 and L3 30, not the planned 60, 60 and 30:
+    18 modify tasks with more than 5 blocks are relabelled L2 (eval plan §4.3: L1 has at most 5
+    blocks), and all 23 rejected tasks are L1. Results are reported per level with these counts.
+  - **Tier A.** 7 of the 42 tasks are rejected (5 test, 2 dev): all 4 knowledge tasks and 3 of the 4
+    save_block tasks, because a competent agent finishes them in 1 to 3 tool calls, below the
+    8-call floor of eval plan §4.4. So 25 test and 10 dev tasks remain. The test split has no
+    knowledge task and one save_block task, so Tier-A results are reported for the categories that
+    remain.
+  - **Sizes stated elsewhere in this document.** They are the sizes before the review. The analyses use
+    the items that remain: H1c subsamples Tier K to Tier F's 129 test tasks, and the minimum detectable
+    effects of §7 are computed at 277 (K), 129 (F) and 25 (A) items.
+- **How H1b counts the items the review removed.** The expert review covers every item in scope, the
+  ones the two-reviewer review removed included, and H1b's share counts all of them. This rule was
+  fixed, in the expert-review scope and the agents' briefs, before any expert verdict existed. The
+  expert accepted no removed item: in Tier F every removed task is a duplicate or does nothing, and in
+  Tier A every removed task is below the 8-call floor. So under this rule H1b cannot hold for Tier F
+  (at most 172 of 195) or Tier A (at most 35 of 42). Beside the test, `reports/review_summary.md`
+  gives the share over the items the review kept, as a description, not a test.
 
 ## Appendix A: analysis proposals
 
@@ -522,7 +586,7 @@ Proposals for G2 (deviation = changes a stated definition; extension = decides a
 ### judge-gate (extension): What the judge's kappa is computed on
 
 - Stated: eval plan §8.1: the judge passes if Cohen's kappa >= 0.7 and the lower end of its 95% interval >= 0.6.
-- Proposal: docs/guidelines/judge_calibration.md: the rule is applied twice and the judge passes only if both hold: (1) unweighted kappa on the credits of every P and N row, judge vs the adjudicated human reference (unanimous label, else the adjudicator's), whole answers resampled; (2) linear-weighted kappa on the answers' score bands 0 | (0, 0.5) | [0.5, 1) | 1, each answer one item. Stricter than §8.1 read alone.
+- Proposal: docs/guidelines/judge_calibration.md: the rule is applied twice and the judge passes only if both hold: (1) unweighted kappa on the credits of every P and N row, judge vs the adjudicated reference labelling (unanimous label, else the adjudicator's), whole answers resampled; (2) linear-weighted kappa on the answers' score bands 0 | (0, 0.5) | [0.5, 1) | 1, each answer one item. Stricter than §8.1 read alone.
 - Code: agreement.judge_calibration, agreement.score_band, agreement.human_reference
 - Evidence: a judge that wrongly zeroes answers through D, DU or H flags fails gate 2 even when the point credits agree (tests/test_stats.py).
 

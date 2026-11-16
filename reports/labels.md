@@ -8,9 +8,10 @@ Implements eval plan §4.2 (Labels) and proposal §4.2 (Label normalization). Ge
 
 - 1,853 questions (185 test, 1,668 train) carry 23 raw `task_type` spellings. They are mapped to the 6 canonical types of `00_dataset_spec/task_types.json`.
 - **Rule map:** 16 unambiguous spellings (the 6 canonical names plus 10 variants such as `debugging`, `system_design`, `factual knowledge`) cover 1,719 rows.
-- **Classified one by one:** 134 rows (11 test, 123 train) use one of 7 ambiguous spellings (`ask_for_info`, `asking for missing information`, `compare`, `compare/choose`, `compare_choose`, `conceptual`, `information_gathering`). Claude (Anthropic) read each question and chose a type against the task_types.json definitions, with a one-line reason. The decisions are data in `src/grcbench/labels/ambiguous_decisions.json`. This is labelling, not reference drafting (eval plan Table 5: Claude never drafts references).
+- **Classified one by one:** 134 rows (11 test, 123 train) use one of 7 ambiguous spellings (`ask_for_info`, `asking for missing information`, `compare`, `compare/choose`, `compare_choose`, `conceptual`, `information_gathering`). Claude (Anthropic) read each question and chose a type against the task_types.json definitions, with a one-line reason. The decisions are data in `src/grcbench/labels/ambiguous_decisions.json`; the test ones are then labelled blind by two annotator agents (Review sheets, below).
 - **Small test groups:** `gnuradio_usage` (11) below 20 items. Each is reported merged with its neighbour, as decided at sign-off (pre-registration §8, decision 4).
-- **Team review:** all 11 ambiguous test items go to two team members for blind double labelling, and a seeded 10% sample of training rows (170 rows, every raw spelling included) is spot-checked. The sheets are in `handoff/review_sheets/`, and the instructions are in `task_type_instructions.md`.
+- **Review:** under the review protocol (`docs/guidelines/review_protocol.md`), all 11 ambiguous test items go to two annotator agents for blind double labelling, with the expert agent deciding every disagreement, and a seeded 10% sample of training rows (170 rows, every raw spelling included) is spot-checked by two reviewer agents. The sheets are in `handoff/review_sheets/`, and the instructions are in `task_type_instructions.md`.
+- **Decided:** the 11 ambiguous test items carry the review's decided labels (`method` = `reviewed`); 1 differs from Claude's label (`q_8777df476f7a0889` design → reasoning). Training labels are not changed by the spot-check, which measures how often they are right.
 
 ## Inputs
 
@@ -21,7 +22,7 @@ Implements eval plan §4.2 (Labels) and proposal §4.2 (Label normalization). Ge
 | `data/GRC_dataset_20261007/dataset/04_eval_frozen/train_questions.jsonl` | `7e3df67853dd23dd010e5218fb946898ea4e263f8a8136f5cca67e5cc261e799` |
 | `data/GRC_dataset_20261007/dataset/04_eval_frozen/eval_manifest.json` | `eca148a98c5c24a6ea22f787a5fa52a74138a1b77ba799358480c61616f7459b` |
 | `grc-bench/src/grcbench/labels/ambiguous_decisions.json` | `ef919015e7780ff9a2d1a0c19060575908934af6523739312132571d74953ffa` |
-| `grc-bench/items/tier_k/test/block_questions.jsonl` | `220a7ddb1cc237e4260662276c209ea458f97c07ebf67148d6bc2d8f8ee1f55a` |
+| `grc-bench/items/tier_k/test/block_questions.jsonl` | `760864e782abef3d904af52f990817ee24d8c53a92e1cdcdb53151ad808c9eb8` |
 
 ## Decision rules for the ambiguous rows
 
@@ -61,8 +62,9 @@ Rules are applied to the main capability the question tests (task_types.json rul
 | `calculation` | `calculations` | rule | 2 | 19 | 21 |
 | `calculation` | `compare/choose` | classified | 0 | 1 | 1 |
 | `design` | `compare` | classified | 0 | 2 | 2 |
-| `design` | `compare/choose` | classified | 1 | 7 | 8 |
-| `design` | `compare_choose` | classified | 2 | 11 | 13 |
+| `design` | `compare/choose` | classified | 0 | 7 | 7 |
+| `design` | `compare_choose` | reviewed | 2 | 0 | 2 |
+| `design` | `compare_choose` | classified | 0 | 11 | 11 |
 | `design` | `design` | rule | 27 | 234 | 261 |
 | `design` | `system design` | rule | 4 | 39 | 43 |
 | `design` | `system_design` | rule | 5 | 40 | 45 |
@@ -74,19 +76,22 @@ Rules are applied to the main capability the question tests (task_types.json rul
 | `diagnosis` | `diagnosis_from_symptoms` | rule | 1 | 9 | 10 |
 | `diagnosis` | `information_gathering` | classified | 0 | 2 | 2 |
 | `factual` | `compare` | classified | 0 | 1 | 1 |
-| `factual` | `conceptual` | classified | 6 | 55 | 61 |
+| `factual` | `conceptual` | reviewed | 6 | 0 | 6 |
+| `factual` | `conceptual` | classified | 0 | 55 | 55 |
 | `factual` | `factual` | rule | 17 | 154 | 171 |
 | `factual` | `factual knowledge` | rule | 4 | 38 | 42 |
 | `factual` | `factual_knowledge` | rule | 3 | 24 | 27 |
 | `gnuradio_usage` | `GNU Radio usage` | rule | 0 | 6 | 6 |
 | `gnuradio_usage` | `compare/choose` | classified | 0 | 2 | 2 |
 | `gnuradio_usage` | `compare_choose` | classified | 0 | 5 | 5 |
-| `gnuradio_usage` | `conceptual` | classified | 1 | 14 | 15 |
+| `gnuradio_usage` | `conceptual` | reviewed | 1 | 0 | 1 |
+| `gnuradio_usage` | `conceptual` | classified | 0 | 14 | 14 |
 | `gnuradio_usage` | `gnu_radio_usage` | rule | 0 | 6 | 6 |
 | `gnuradio_usage` | `gnuradio_usage` | rule | 10 | 71 | 81 |
 | `gnuradio_usage` | `information_gathering` | classified | 0 | 1 | 1 |
 | `reasoning` | `compare` | classified | 0 | 4 | 4 |
-| `reasoning` | `compare/choose` | classified | 1 | 10 | 11 |
+| `reasoning` | `compare/choose` | reviewed | 2 | 0 | 2 |
+| `reasoning` | `compare/choose` | classified | 0 | 10 | 10 |
 | `reasoning` | `compare_choose` | classified | 0 | 2 | 2 |
 | `reasoning` | `reasoning` | rule | 59 | 533 | 592 |
 | **total** |  |  | 185 | 1668 | 1853 |
@@ -96,25 +101,25 @@ Rules are applied to the main capability the question tests (task_types.json rul
 | type | target share (task_types.json) | test (eval) | train | all | share of all |
 |---|---|---|---|---|---|
 | `calculation` | 15% | 25 | 228 | 253 | 13.7% |
-| `design` | 15% | 39 | 333 | 372 | 20.1% |
+| `design` | 15% | 38 | 333 | 371 | 20.0% |
 | `diagnosis` | 20% | 20 | 181 | 201 | 10.8% |
 | `factual` | 15% | 30 | 272 | 302 | 16.3% |
 | `gnuradio_usage` | 10% | 11 | 105 | 116 | 6.3% |
-| `reasoning` | 25% | 60 | 549 | 609 | 32.9% |
+| `reasoning` | 25% | 61 | 549 | 610 | 32.9% |
 | **total** |  | 185 | 1668 | 1853 | 100% |
 
 ## The 185 test questions by clean type
 
-Eval plan §4.2: results are reported by cleaned label only, and no group with fewer than 20 items is reported. The 11 classified test items can still move when the team's double labels come back, so the last column gives each group's possible range (all of them moving in or out).
+Eval plan §4.2: results are reported by cleaned label only, and no group with fewer than 20 items is reported. The 11 ambiguous test items carry their decided labels.
 
-| type | rule-mapped | classified | total | status (< 20) | range after team labels |
+| type | rule-mapped | classified | total | status (< 20) | range before the review's labels |
 |---|---|---|---|---|---|
 | `calculation` | 25 | 0 | 25 | ok | 25–36 |
-| `design` | 36 | 3 | 39 | ok | 36–47 |
+| `design` | 36 | 2 | 38 | ok | 36–47 |
 | `diagnosis` | 20 | 0 | 20 | at the threshold | 20–31 |
 | `factual` | 24 | 6 | 30 | ok | 24–35 |
 | `gnuradio_usage` | 10 | 1 | 11 | below 20: merge needed | 10–21 |
-| `reasoning` | 59 | 1 | 60 | ok | 59–70 |
+| `reasoning` | 59 | 2 | 61 | ok | 59–70 |
 | **total** | 174 | 11 | 185 |  |  |
 
 `diagnosis` has exactly 20 test items, so it can be reported. None of its items is among the classified ones, so team relabelling can only add to it.
@@ -125,7 +130,7 @@ Eval plan §4.2: smaller groups are merged with their nearest neighbour, and the
 
 ### `gnuradio_usage`: 11 test items
 
-- **Merged into `design`:** results report one group "design + gnuradio_usage" (50 test items). Reason: both are about building and configuring a system: choosing blocks, parameters and methods. Most of the test items read 'how would you implement / configure X'.
+- **Merged into `design`:** results report one group "design + gnuradio_usage" (49 test items). Reason: both are about building and configuring a system: choosing blocks, parameters and methods. Most of the test items read 'how would you implement / configure X'.
 - **Lexical check (agrees):** on the training questions only, the TF-IDF centroid of `gnuradio_usage` is closest to `design` (cosine 0.671). `design` 0.671, `reasoning` 0.593, `factual` 0.580, `diagnosis` 0.572, `calculation` 0.368.
 - The 100 GNU Radio behaviour questions are reported as their own group (`gnuradio_behaviour`, decision 5), not as `gnuradio_usage`.
 - Several of the frozen `gnuradio_usage` test items are not about GNU Radio itself (USRP VM setup, Python implementations, Phaser). They were labelled that way by the generator, and the rule map keeps that label.
@@ -147,20 +152,20 @@ Proposal §5.1 and eval plan §4.2 report factual recall and reasoning separatel
 
 - recall: 30 test items (`factual`).
 - reasoning: 155 test items (`reasoning`, `calculation`, `diagnosis`, `design`, `gnuradio_usage`).
-- design + gnuradio_usage: 50 test items, the merged task-type group (decision 4), inside the reasoning family.
+- design + gnuradio_usage: 49 test items, the merged task-type group (decision 4), inside the reasoning family.
 - GNU Radio behaviour: 100 test items (`gnuradio_behaviour`), in neither family: their answers come from running GNU Radio on a stated input.
 - The recall group is much smaller than the reasoning group (30 vs 155 frozen items), so its intervals are wider. Print the MDE beside it (eval plan §9).
 
-## Team review
+## Review sheets
 
-- `handoff/review_sheets/task_type_ambiguous_test.csv`: all 11 ambiguous test items, for blind double labelling by two team members (columns `annotator_1`, `annotator_2`). Claude's label is not shown. Row order is shuffled with seed `grc-bench-labels-blind-order-v1-2026-10-14`.
+- `handoff/review_sheets/task_type_ambiguous_test.csv`: all 11 ambiguous test items, for blind double labelling by two annotator agents (columns `annotator_1`, `annotator_2`). Claude's label is not shown. Row order is shuffled with seed `grc-bench-labels-blind-order-v1-2026-10-14`.
 - `handoff/review_sheets/task_type_spotcheck_train.csv`: 170 training rows: 10% of 1,668 (167) allocated across raw spellings by largest remainder, plus one row for each of the 3 spellings that would otherwise get none, so every spelling is checked. Seed `grc-bench-labels-spotcheck-v1-2026-10-14`. Of these, 15 were classified by Claude and 155 came from the rule map (the `method` column says which).
 - `splits/task_type_review_key.json` maps every sheet row to Claude's or the rule's label.
-- When the sheets come back: `./gb labels agreement --test <copy_1.csv> <copy_2.csv> --train <spotcheck.csv>` reports Cohen's κ (annotator 1 vs 2, each vs Claude) and spot-check agreement in `reports/labels_agreement.md`. With only 11 items, κ has a wide interval. Report it, but settle disagreements by discussion.
+- `./gb labels agreement --test <copy_1.csv> <copy_2.csv> --train <spotcheck.csv>` reports Cohen's κ (annotator 1 vs 2, each vs Claude) and spot-check agreement in `reports/labels_agreement.md`. With only 11 items, κ has a wide interval; the expert agent decides every disagreement (`reports/review_summary.md`).
 
 ## Notes and deviations
 
 - The plan counts "14 unambiguous spellings". The data has 16 unambiguous spellings (including the 6 canonical names) and 7 ambiguous ones, 23 in all. The ambiguous rows number 134, as planned.
 - Proposal §4.2 describes an embedding-plus-LLM classifier. Only 7 spellings are ambiguous, so a rule map plus a reasoned reading of each of the 134 questions replaces it. Every decision has a reason, and none uses embeddings. Topic normalization (930 to 14 topics) is the data team's work and is not done here.
-- Rule-mapped labels are taken as given and not re-judged. Some raw `factual` items are about GNU Radio (e.g. 'What is throttling in GNU Radio?'), and some raw `gnuradio_usage` items are not about GNU Radio. The spot-check sheet lets the team flag such cases.
+- Rule-mapped labels are taken as given and not re-judged. Some raw `factual` items are about GNU Radio (e.g. 'What is throttling in GNU Radio?'), and some raw `gnuradio_usage` items are not about GNU Radio. The spot-check sheet lets the reviewer agents flag such cases.
 - Claude read the 11 ambiguous test questions from the files in order to label them. No test question was sent to any other model.

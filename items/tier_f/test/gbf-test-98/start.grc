@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_7300
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '7300', amp: '0.4', showports: 'True'}
 - name: channel
@@ -24,8 +24,8 @@ blocks:
   parameters: {type: complex, file: mirrored.dat}
 connections:
 - [channel, '0', conj, '0']
-- [retune, strobe, tone_7300, cmd]
-- [tone_7300, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', channel, '0']
 - [conj, '0', out, '0']
 metadata: {file_format: 1}

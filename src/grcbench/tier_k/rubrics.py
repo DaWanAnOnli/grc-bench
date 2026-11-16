@@ -4,7 +4,7 @@ One template per question: the 185 frozen test questions and the dev questions. 
 rubric record of docs/guidelines/rubric_writing.md with every prose field empty:
 
   question_id, split, task_type, question_sha256 (of the question text the rubric is for)
-  required_points []          the team writes them ("P1 (w=2): ..." lines on the sheet)
+  required_points []          the writer agent writes them ("P1 (w=2): ..." lines on the sheet)
   disqualifying_errors []
   numeric null                the rule cascade's reference, filled after the blind recomputation
   numeric_tolerance null
@@ -13,9 +13,10 @@ rubric record of docs/guidelines/rubric_writing.md with every prose field empty:
   review                      {"status": "pending-team-review", "reviewers": [], "notes": ""}
   canary
 
-Claude (Anthropic) wrote this template and the code; Claude never writes rubric prose (Table 5), so
-every prose field stays empty until the team fills it. judge_prompt.normalize_rubric refuses blank
-prose and judge_prompt refuses every review status but approved, so an unfilled template can never
+Claude (Anthropic) wrote this template and the code. The rubric prose is written, checked and decided
+by the review agents (docs/guidelines/review_protocol.md), and `./gb review rubrics` writes the decided
+rubrics over these templates. judge_prompt.normalize_rubric refuses blank prose and judge_prompt
+refuses every review status but approved and approved-with-edits, so an unfilled template can never
 reach the judge. The ~100 block questions have no rubric: the rule cascade scores them
 (tier_k/blockgen.py).
 
@@ -24,7 +25,7 @@ Outputs (`--out` root, default the repository):
   handoff/review_sheets/rubric_sheet_test.csv, rubric_sheet_dev.csv   one row per question, with the
                          columns of handoff/review_sheets/templates/rubric_sheet.csv
 
-The command refuses to overwrite a template file or sheet that already holds team content (any
+The command refuses to overwrite a template file or sheet that already holds review content (any
 prose, a numeric reference, a review status other than pending, or a filled sheet cell); --force
 overrides that.
 """
@@ -79,8 +80,8 @@ def sheet(split: str, questions: list[dict]) -> str:
     return buf.getvalue()
 
 
-def _team_content(rel: str, root: Path) -> list[str]:
-    """What the team already filled in at root/rel (empty list: safe to write)."""
+def _review_content(rel: str, root: Path) -> list[str]:
+    """What the review already filled in at root/rel (empty list: safe to write)."""
     path = root / rel
     if not path.exists():
         return []
@@ -114,14 +115,14 @@ def outputs() -> dict[str, str]:
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="gb rubrics", description=__doc__.splitlines()[0])
     ap.add_argument("--out", type=Path, default=REPO, help="root folder for the outputs (default: the repo)")
-    ap.add_argument("--force", action="store_true", help="overwrite files that already hold team content")
+    ap.add_argument("--force", action="store_true", help="overwrite files that already hold review content")
     args = ap.parse_args(argv)
     files = outputs()
-    filled = {rel: ids for rel in files if (ids := _team_content(rel, args.out))}
+    filled = {rel: ids for rel in files if (ids := _review_content(rel, args.out))}
     if filled and not args.force:
         for rel, ids in filled.items():
-            print(f"not written: {rel} holds team content ({len(ids)} rows, e.g. {ids[:3]})")
-        print("nothing written; the team's rubrics are kept (use --force only to discard them)")
+            print(f"not written: {rel} holds review content ({len(ids)} rows, e.g. {ids[:3]})")
+        print("nothing written; the reviewed rubrics are kept (use --force only to discard them)")
         return 1
     for rel, text in files.items():
         write_text(args.out / rel, text)

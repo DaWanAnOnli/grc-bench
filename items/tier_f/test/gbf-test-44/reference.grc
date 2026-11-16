@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_6500
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '6500', amp: '0.6'}
 - name: noise
@@ -26,7 +26,7 @@ blocks:
   id: blocks_file_sink
   parameters: {type: complex, file: second_mirrored.dat}
 connections:
-- [tone_6500, '0', sum_of_tones, '0']
+- [tone_1, '0', sum_of_tones, '0']
 - [noise, '0', sum_of_tones, '1']
 - [sum_of_tones, '0', conj, '0']
 - [conj, '0', out, '0']

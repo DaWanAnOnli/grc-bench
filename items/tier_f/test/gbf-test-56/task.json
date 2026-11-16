@@ -22,20 +22,24 @@
   "type": "nonexistent_block",
   "wrong_id": "blocks_multiply_x"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Multiply"
+ },
  "id": "gbf-test-56",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 4.4 kHz cosine with amplitude 0.4; then change its sample rate from 32 kHz to 16 kHz with a Rational Resampler (interpolation 1, decimation 2); then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; then shift it up by 2 kHz: multiply it with a complex 2 kHz tone of amplitude 1 from another Signal Source; and write the result as complex samples to a File Sink whose file name is shifted.dat. Measured over 8,192 samples after the first 4,096, the output should have its strongest component at 6.4 kHz (within 64 Hz); 100 % of its power within 50 Hz of 6.4 kHz (within a tenth of that share); an RMS level of 0.4 (within 5 %). Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_4400",
+   "block": "tone_1",
    "breaks": "the 4.4 kHz tone at 5.5 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "5500"
   },
   {
-   "block": "tone_4400",
+   "block": "tone_1",
    "breaks": "the 4.4 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -112,7 +116,7 @@
    {
     "expect": 0.4,
     "feature": "rms",
-    "group": "f2p",
+    "group": "p2p",
     "n": 8192,
     "point": "out",
     "rel_tol": 0.05,
@@ -124,7 +128,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -140,7 +144,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -181,9 +185,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 42,
@@ -201,5 +209,5 @@
  "split": "test",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

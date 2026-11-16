@@ -5,16 +5,19 @@ One schema-valid record (grcbench.common.schemas, tier K) per question, built on
   items/tier_k/test/frozen_questions.jsonl   the 185 frozen test questions (04_eval_frozen), manifest order
   items/tier_k/dev/questions.jsonl           the dev questions (splits/tier_k_dev.json), dev_ids order
   reports/tier_k_items.md                    counts, cluster rule, near-twin reporting split, writers
-  handoff/review_sheets/tier_k_test_clusters.csv   multi-member test clusters for the team to confirm
+  handoff/review_sheets/tier_k_test_clusters.csv   multi-member test clusters, for the review agents to confirm
 
 Fields beyond the shared ones (id, tier, split, version, canary, license, source, cluster_id,
 provenance, review):
 
-  question, difficulty, origin, primary_topic   copied unchanged from the frozen dataset files
+  question, difficulty, origin, primary_topic   copied unchanged from the frozen dataset files; where the review
+                       decided a new version (reviews/tier_k_question_versions.json), `question` is its text,
+                       `original_question` the dataset's, and `version` 2
   task_type            clean label from splits/task_type_labels.jsonl (eval plan §4.2 "Labels")
   task_type_raw        the raw dataset spelling, never overwritten
-  task_type_labeller   who mapped it: the rule map, or Claude (Anthropic) for the 134 ambiguous rows
-                       (test ones pending blind double labelling by the team)
+  task_type_labeller   who mapped it: the rule map, Claude (Anthropic) for the ambiguous dev rows, or
+                       the review protocol (blind double labelling by two annotator agents) for the
+                       ambiguous test rows
   item_kind            frozen_question (test) | bank_question (dev)
   near_twin_in_train   eval plan §6 reporting split: the question shares a word 8-gram (tokenizer of
                        splits/twins.py) with a training question. Test: against the 1,668 frozen training
@@ -34,7 +37,7 @@ cluster_id (eval plan §9, clustered intervals):
         >= lexical_threshold (pairs the semantic file did not score) and KEEP_BOTH decisions. A
         connected component of two or more test questions gets "tc_" + the hex part of its smallest
         id; every other test question is a singleton with its own id. The 8-gram-only clustering is
-        reported beside it; the team confirms the clusters with the review sheet.
+        reported beside it; two review agents confirm the clusters with the review sheet.
 
 provenance (eval plan §5.1, Table 5: who wrote the questions):
   drafted_by           the question-writing model, readable name plus where it is recorded: source lane
@@ -306,6 +309,34 @@ def record(r: Mapping[str, Any], split: str, *, label: Mapping[str, Any], cluste
     return rec
 
 
+def question_versions(reviews_dir: Path | None = None) -> dict[str, dict[str, Any]]:
+    """New question versions the review decided (reviews/tier_k_question_versions.json: id, question,
+    reason, decided_by), by question id. The rubric guide: a rewritten question becomes a new version, and
+    the original is kept."""
+    import json
+
+    from grcbench.common.paths import REPO
+    path = Path(reviews_dir or REPO / "reviews") / "tier_k_question_versions.json"
+    return {v["id"]: v for v in json.loads(path.read_text(encoding="utf-8"))} if path.exists() else {}
+
+
+def apply_version(rec: dict[str, Any], versions: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    """The record with its decided new version: the new text, version 2, the original text kept."""
+    v = versions.get(rec["id"])
+    if v is None:
+        return rec
+    rec["original_question"], rec["question"] = rec["question"], v["question"]
+    rec["version"] = max(2, int(rec.get("version") or 1))
+    if "license" in rec:
+        rec["license"] = rec["license"].replace(
+            "Question copied unchanged from the GRC_dataset_20261007 release by Qoherent",
+            "Question copied from the GRC_dataset_20261007 release by Qoherent, then edited as version 2 (see "
+            "review.notes)")
+    rec["review"] = {**rec["review"], "notes": f"{rec['review']['notes']}; version 2 decided by {v['decided_by']}: "
+                                               f"{v['reason']}"}
+    return rec
+
+
 @dataclass
 class Build:
     test: list[dict[str, Any]]
@@ -315,6 +346,14 @@ class Build:
     dev_ngram: dict[str, list[str]]
     dev_other: dict[str, list[str]]
     inputs: Inputs
+    original: dict[str, str] = None           # test id -> cluster id before the review's decisions
+    split_ids: frozenset = frozenset()        # test ids whose cluster the review decided `split out`
+
+
+def split_out_ids(reviews_dir: Path | None = None) -> set[str]:
+    """Test ids whose cluster the review protocol decided `split out` (reviews/clusters.jsonl)."""
+    from grcbench.review.records import decided
+    return {k[0] for k, r in decided("clusters", reviews_dir=reviews_dir).items() if r["final"] == "split out"}
 
 
 def build() -> Build:
@@ -326,8 +365,11 @@ def build() -> Build:
 
     test_ids = [r["id"] for r in inp.test]
     links = pair_links(inp, g["semantic_threshold"], g["lexical_threshold"])
-    clusters = components(test_ids, list(links))
-    ngram_only = components(test_ids, [p for p, v in links.items() if any(x.startswith("8gram") for x in v)])
+    original = components(test_ids, list(links))
+    split = split_out_ids()                   # a `split out` cluster's questions form clusters of their own
+    kept = {p: v for p, v in links.items() if not (p[0] in split and p[1] in split)}
+    clusters = components(test_ids, list(kept))
+    ngram_only = components(test_ids, [p for p, v in kept.items() if any(x.startswith("8gram") for x in v)])
     near = near_twins_of_test(inp)
     neighbours = invert(d["test_neighbours"]["by_training_id"])
     test = [record(r, "test", label=inp.labels[r["id"]], cluster_id=clusters[r["id"]], near=near.get(r["id"], []),
@@ -343,11 +385,14 @@ def build() -> Build:
                   subsets=[s for s, ids in (("anchor", anchor), ("ci", ci)) if i in ids])
            for i in d["dev_ids"]]
 
+    versions = question_versions()
+    test = [apply_version(r, versions) for r in test]
+    dev = [apply_version(r, versions) for r in dev]
     errors = [f"{rec['id']}: {e}" for rec in test + dev for e in validate(rec)]
     if errors:
         raise SystemExit("tier-k-items: schema errors:\n  " + "\n  ".join(errors[:20]))
     return Build(test=test, dev=dev, links=links, ngram_only=ngram_only, dev_ngram=dev_ngram,
-                 dev_other=dev_other, inputs=inp)
+                 dev_other=dev_other, inputs=inp, original=original, split_ids=frozenset(split))
 
 
 # ---------------------------------------------------------------- report and sheet ---------------
@@ -403,8 +448,9 @@ def report(b: Build, file_hashes: Mapping[str, str]) -> str:
     return f"""# Tier-K item records (eval plan §4.1, §4.2, §5.1, §6, §9)
 
 Generated by `./gb tier-k-items` (`src/grcbench/tier_k/items.py`, GRC-Bench item version {VERSION}); do not
-edit by hand. Status: draft for team review. The questions are the dataset's own; Claude (Anthropic) wrote
-only this tooling and the labels it reuses (`splits/task_type_labels.jsonl`). Nothing was sent to any model.
+edit by hand. The questions are the dataset's own; Claude (Anthropic) wrote only this tooling and the labels
+it reuses (`splits/task_type_labels.jsonl`). The review agents (docs/guidelines/review_protocol.md) decided
+the test clusters and the ambiguous test labels; no question text was sent to a model being evaluated.
 
 ## Files
 
@@ -429,9 +475,10 @@ Inputs (paths under `project/data/` or the repository):
   `generator_version` is the first 16 hex digits of the SHA-256 of `questions_canonical.jsonl`.
 - `review`: `not-required` for the question text (frozen dataset question); rubrics are reviewed separately.
 - `task_type` is the clean label, `task_type_raw` the dataset spelling, `task_type_labeller` who mapped it
-  (`splits/task_type_labels.jsonl`). {sum(1 for r in t if 'Claude' in r['task_type_labeller'])} test and
-  {sum(1 for r in v if 'Claude' in r['task_type_labeller'])} dev labels come from Claude's reading of an ambiguous
-  spelling; the test ones await the team's blind double labelling (`reports/labels.md`).
+  (`splits/task_type_labels.jsonl`). {sum(1 for r in t if r['task_type_labeller'].startswith('review protocol'))} test
+  labels of an ambiguous spelling are the review protocol's (blind double labelling by two annotator agents, the
+  expert agent on a disagreement; `reports/labels.md`), and {sum(1 for r in v if 'Claude' in r['task_type_labeller'])}
+  dev labels come from Claude's reading of an ambiguous spelling.
 - `near_twin_in_train`, `near_twin_train_ids`, `train_neighbour_ids`: see the reporting split below.
 - `license`: the dataset README states no licence for question records, so every record says
   "licence: as in GRC_dataset_20261007 (Qoherent); to be confirmed before release", plus a note on the
@@ -456,7 +503,9 @@ multi-member clusters; {len(only_other)} pairs are linked only by the other evid
 
 {_table(['test id', 'test id', 'evidence', 'cluster_id'], pair_rows)}
 
-The team confirms or splits these clusters in `{OUT_SHEET.as_posix()}`. A shared 8-gram can be a generic
+Two review agents confirm or split these clusters in `{OUT_SHEET.as_posix()}`, and the expert agent decides a
+disagreement. The `cluster_id` column above is the decided cluster: the review split {len(b.split_ids)} questions
+out of their clusters, and those form clusters of their own. A shared 8-gram can be a generic
 phrase ("gnu radio what is the role of the"); keeping such a pair in one cluster only widens the interval
 slightly, so the rule is applied as written.
 
@@ -503,20 +552,19 @@ Gemma 4); the question records do not state exact model versions.
 
 {_count_table(by_split, lambda r: r['origin'], 'origin')}
 
-## Open points for the team
+## Open points
 
-- Confirm the test clusters (review sheet), in particular the generic-phrase 8-gram pair and the pairs
-  linked only by lexical or keep_both evidence.
 - Confirm the licence of the question records with Qoherent before release (source-lane questions were
   generated from references that include CC BY-SA and CC BY-NC-SA 4.0 material).
-- The clean task types of the ambiguous test items change only after the team's double labelling; re-run
-  `./gb labels` and then `./gb tier-k-items`.
 """
 
 
 def sheet(b: Build) -> str:
-    """One row per test question in a multi-member cluster, with its links and the team's columns."""
+    """One row per test question in a multi-member cluster (before the review's decisions), with its
+    links and the review's columns, filled from reviews/clusters.jsonl once the sheet is decided."""
+    from grcbench.review.fill import filled_text
     by_id = {r["id"]: r for r in b.test}
+    original = b.original or {r["id"]: r["cluster_id"] for r in b.test}
     linked: dict[str, list[str]] = defaultdict(list)
     for (a, c), via in b.links.items():
         linked[a].append(f"{c}: {'; '.join(via)}")
@@ -525,12 +573,12 @@ def sheet(b: Build) -> str:
     w = csv.writer(buf, lineterminator="\n")
     w.writerow(["cluster_id", "id", "linked_to (evidence)", "origin", "task_type", "question",
                 "team_decision (same family / split out)", "reviewer", "notes"])
-    rows = sorted((r for r in b.test if r["cluster_id"].startswith(TEST_CLUSTER_PREFIX)),
-                  key=lambda r: (r["cluster_id"], r["id"]))
+    rows = sorted((r for r in b.test if original[r["id"]].startswith(TEST_CLUSTER_PREFIX)),
+                  key=lambda r: (original[r["id"]], r["id"]))
     for r in rows:
-        w.writerow([r["cluster_id"], r["id"], " | ".join(sorted(linked[r["id"]])), r["origin"], r["task_type"],
+        w.writerow([original[r["id"]], r["id"], " | ".join(sorted(linked[r["id"]])), r["origin"], r["task_type"],
                     by_id[r["id"]]["question"], "", "", ""])
-    return buf.getvalue()
+    return filled_text("clusters", buf.getvalue())
 
 
 # ---------------------------------------------------------------- main ---------------------------

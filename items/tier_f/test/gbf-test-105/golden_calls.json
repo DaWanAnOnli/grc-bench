@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x hilbert_fc blocks_conjugate_cc channels_channel_model blocks_message_strobe blocks_throttle2 blocks_file_sink",
+  "query": "Message Strobe",
   "domain": "catalog",
   "k": 14
  },

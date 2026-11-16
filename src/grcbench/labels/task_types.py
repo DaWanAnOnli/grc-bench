@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import io
 import math
 import re
 from collections import Counter, defaultdict
@@ -87,6 +88,7 @@ AMBIGUOUS = ("ask_for_info", "asking for missing information", "compare", "compa
 
 LABELLER_CLAUDE = "Claude (Anthropic)"
 LABELLER_RULE = "rule map (grcbench.labels.task_types)"
+LABELLER_REVIEW = "review protocol: Claude (Anthropic) annotator agents A1, A2; the expert agent on disagreement"
 MIN_GROUP = 20                      # eval plan §4.2: no group with fewer than 20 items is reported
 SPOTCHECK_FRACTION = 0.10           # proposal §4.2: 10% human spot-check
 SPOTCHECK_SEED = "grc-bench-labels-spotcheck-v1-2026-10-14"
@@ -320,14 +322,15 @@ def render_instructions(spec: dict[str, Any], n_test: int, n_train: int) -> str:
     rules = "\n".join(f"- {r}" for r in spec["classification_rules"])
     return f"""# Task-type review sheets: instructions
 
-Two sheets, both UTF-8 CSV (open in Excel or LibreOffice). Background and counts: `reports/labels.md`,
-but **annotators of the test sheet must not open that report, `splits/task_type_labels.jsonl`,
-`splits/task_type_review_key.json` or `src/grcbench/labels/ambiguous_decisions.json` until their
-labels are returned**: those files show Claude's labels.
+Two sheets, both UTF-8 CSV, filled in under the review protocol
+([review_protocol.md](../../docs/guidelines/review_protocol.md)): two review agents, each alone, and
+the expert agent for every disagreement. Background and counts: `reports/labels.md`. The annotators of
+the test sheet do not open that report, `splits/task_type_labels.jsonl`, `splits/task_type_review_key.json`
+or `src/grcbench/labels/ambiguous_decisions.json` until their labels are recorded: those files show
+Claude's earlier labels.
 
-The test sheet holds frozen test questions. Keep it inside the team, and never paste its questions
-into ChatGPT, Claude or any other model or online tool (frozen-split rule: eval questions are never
-sent to any model).
+The test sheet holds frozen test questions. They go to no model outside the declared runs of the
+review protocol and of the benchmark (eval plan §6).
 
 ## Allowed labels (from `00_dataset_spec/task_types.json`)
 
@@ -341,23 +344,37 @@ Write exactly one of the six labels above in each label cell (lower case, as spe
 
 ## Sheet 1: `task_type_ambiguous_test.csv` ({n_test} test questions, blind double labelling)
 
-1. Two team members label independently. Each works on **their own copy** of the sheet and fills in only
-   their own column (`annotator_1` or `annotator_2`). Do not discuss items until both are done.
+1. Two annotator agents (`A1`, `A2`) label independently, each from its own input copy.
 2. Read the question and pick the one type that best represents the main capability needed to answer it.
    `raw_label` is the question generator's own spelling, which is ambiguous by construction.
-3. Use `notes` for doubts. Return both copies; agreement (Cohen's κ, each annotator against the other and
-   against Claude) is computed with
-   `./gb labels agreement --test <copy_1.csv> <copy_2.csv>`.
-4. Disagreements are settled by discussion and the agreed label goes into the G2 pre-registration.
+3. Give the reason for every label in `notes`, in a sentence.
+4. Agreement (Cohen's κ, each annotator against the other and against Claude's earlier label) is computed
+   with `./gb labels agreement --test <copy_1.csv> <copy_2.csv>`.
+5. The expert agent decides every disagreement. The decided label goes into the pre-registration.
 
 ## Sheet 2: `task_type_spotcheck_train.csv` ({n_train} training questions, spot-check)
 
 A seeded 10% sample of training rows, stratified by raw spelling, with at least one row for every
-spelling. `method` says whether the label came
-from the rule map (`rule`) or from Claude's reading of the question (`classified`). This check is not
-blind: read the question and the proposed label, then write the label you think is right in
-`reviewer_label` (the same label if you agree). Agreement is computed with
-`./gb labels agreement --train <sheet.csv>`.
+spelling. `method` says whether the label came from the rule map (`rule`) or from Claude's reading of
+the question (`classified`). This check is not blind:
+
+1. Read the question and the proposed label.
+2. Write the label you think is right as your value, the same label if you agree.
+3. Give a one-line reason whenever you differ from the proposed label.
+
+Two reviewer agents (`R1`, `R2`) each check every row. The expert agent decides where they differ.
+The decided label goes in `reviewer_label`. Agreement is computed with
+`./gb labels agreement --train <sheet.csv>`. The training data itself is not changed: the spot-check
+measures how often the proposed labels are right.
+
+## Output fields
+
+One JSON object per row, written to your output file as soon as the row is done:
+
+- `sheet`: `"task_type_test"` or `"task_type_train"`;
+- `key`: `{{"id": ...}}`;
+- `value`: one of the six labels;
+- `notes`: your reason.
 """
 
 
@@ -365,8 +382,9 @@ def render_report(ctx: dict[str, Any]) -> str:
     spec, labels = ctx["spec"], ctx["labels"]
     by_split = {s: [r for r in labels if r["split"] == s] for s in ("eval", "train")}
     n_eval, n_train, n_all = len(by_split["eval"]), len(by_split["train"]), len(labels)
-    classified = [r for r in labels if r["method"] == "classified"]
+    classified = [r for r in labels if r["method"] in ("classified", "reviewed")]
     amb_eval = [r for r in classified if r["split"] == "eval"]
+    reviewed = [r for r in labels if r["method"] == "reviewed"]
     out: list[str] = []
     add = out.append
 
@@ -390,8 +408,8 @@ def render_report(ctx: dict[str, Any]) -> str:
         f"{len(classified) - len(amb_eval)} train) use one of {len(AMBIGUOUS)} ambiguous spellings "
         f"({', '.join(f'`{a}`' for a in AMBIGUOUS)}). Claude (Anthropic) read each question and chose a "
         "type against the task_types.json definitions, with a one-line reason. The decisions are data "
-        "in `src/grcbench/labels/ambiguous_decisions.json`. This is labelling, not reference drafting "
-        "(eval plan Table 5: Claude never drafts references).")
+        "in `src/grcbench/labels/ambiguous_decisions.json`; the test ones are then labelled blind by two "
+        "annotator agents (Review sheets, below).")
     small = ctx["small_groups"]
     if small:
         names = ", ".join(f"`{g}` ({ctx['test_counts'][g]})" for g in small)
@@ -401,10 +419,19 @@ def render_report(ctx: dict[str, Any]) -> str:
                "decision 4)." if not undecided else
                "Merge proposals are below, **for team decision; to be fixed in the G2 pre-registration "
                "before any test run**."))
-    add(f"- **Team review:** all {len(amb_eval)} ambiguous test items go to two team members for blind "
-        f"double labelling, and a seeded {int(SPOTCHECK_FRACTION * 100)}% sample of training rows "
-        f"({len(ctx['spot_rows'])} rows, every raw spelling included) is spot-checked. The sheets are in "
-        "`handoff/review_sheets/`, and the instructions are in `task_type_instructions.md`.")
+    add(f"- **Review:** under the review protocol (`docs/guidelines/review_protocol.md`), all {len(amb_eval)} "
+        "ambiguous test items go to two annotator agents for blind double labelling, with the expert agent "
+        f"deciding every disagreement, and a seeded {int(SPOTCHECK_FRACTION * 100)}% sample of training rows "
+        f"({len(ctx['spot_rows'])} rows, every raw spelling included) is spot-checked by two reviewer agents. "
+        "The sheets are in `handoff/review_sheets/`, and the instructions are in `task_type_instructions.md`.")
+    if reviewed:
+        claude = ctx["claude_labels"]
+        moved = ["`{}` {} → {}".format(r["id"], claude[r["id"]], r["clean"])
+                 for r in reviewed if r["clean"] != claude[r["id"]]]
+        add(f"- **Decided:** the {len(reviewed)} ambiguous test items carry the review's decided labels "
+            f"(`method` = `reviewed`); {len(moved)} {'differs' if len(moved) == 1 else 'differ'} from Claude's "
+            f"label ({', '.join(moved) or 'none'}). "
+            "Training labels are not changed by the spot-check, which measures how often they are right.")
     add("")
 
     add("## Inputs")
@@ -453,9 +480,11 @@ def render_report(ctx: dict[str, Any]) -> str:
     add(f"## The {n_eval} test questions by clean type")
     add("")
     add(f"Eval plan §4.2: results are reported by cleaned label only, and no group with fewer than "
-        f"{MIN_GROUP} items is reported. The {len(amb_eval)} classified test items can still move when the "
-        "team's double labels come back, so the last column gives each group's possible range "
-        "(all of them moving in or out).")
+        f"{MIN_GROUP} items is reported. "
+        + (f"The {len(amb_eval)} ambiguous test items carry their decided labels."
+           if reviewed and len(reviewed) == len(amb_eval) else
+           f"The {len(amb_eval)} classified test items can still move until the review's double labels are "
+           "decided, so the last column gives each group's possible range (all of them moving in or out)."))
     add("")
     rows = []
     for t in CANONICAL:
@@ -468,7 +497,7 @@ def render_report(ctx: dict[str, Any]) -> str:
                      f"{n_rule_t}–{n_rule_t + len(amb_eval)}"])
     rows.append(["**total**", n_eval - len(amb_eval), len(amb_eval), n_eval, "", ""])
     add(_table(["type", "rule-mapped", "classified", "total", f"status (< {MIN_GROUP})",
-                "range after team labels"], rows))
+                "range before the review's labels"], rows))
     add("")
     for t in CANONICAL:
         if cnt["eval"][t] == MIN_GROUP:
@@ -538,10 +567,10 @@ def render_report(ctx: dict[str, Any]) -> str:
         f"{fam['reasoning']} frozen items), so its intervals are wider. Print the MDE beside it (eval plan §9).")
     add("")
 
-    add("## Team review")
+    add("## Review sheets")
     add("")
     add(f"- `handoff/review_sheets/task_type_ambiguous_test.csv`: all {len(amb_eval)} ambiguous test items, "
-        "for blind double labelling by two team members (columns `annotator_1`, `annotator_2`). Claude's "
+        "for blind double labelling by two annotator agents (columns `annotator_1`, `annotator_2`). Claude's "
         f"label is not shown. Row order is shuffled with seed `{ORDER_SEED}`.")
     n_prop = int(math.floor(SPOTCHECK_FRACTION * n_train + 0.5))
     add(f"- `handoff/review_sheets/task_type_spotcheck_train.csv`: {len(ctx['spot_rows'])} training rows: "
@@ -552,10 +581,10 @@ def render_report(ctx: dict[str, Any]) -> str:
         f"{sum(1 for r in ctx['spot_rows'] if r['method'] == 'rule')} came from the rule map (the "
         "`method` column says which).")
     add("- `splits/task_type_review_key.json` maps every sheet row to Claude's or the rule's label.")
-    add("- When the sheets come back: `./gb labels agreement --test <copy_1.csv> <copy_2.csv> --train "
-        "<spotcheck.csv>` reports Cohen's κ (annotator 1 vs 2, each vs Claude) and spot-check agreement in "
-        f"`reports/labels_agreement.md`. With only {len(amb_eval)} items, κ has a wide interval. Report "
-        "it, but settle disagreements by discussion.")
+    add("- `./gb labels agreement --test <copy_1.csv> <copy_2.csv> --train <spotcheck.csv>` reports "
+        "Cohen's κ (annotator 1 vs 2, each vs Claude) and spot-check agreement in "
+        f"`reports/labels_agreement.md`. With only {len(amb_eval)} items, κ has a wide interval; the expert "
+        "agent decides every disagreement (`reports/review_summary.md`).")
     add("")
 
     add("## Notes and deviations")
@@ -569,7 +598,7 @@ def render_report(ctx: dict[str, Any]) -> str:
         "and is not done here.")
     add("- Rule-mapped labels are taken as given and not re-judged. Some raw `factual` items are about "
         "GNU Radio (e.g. 'What is throttling in GNU Radio?'), and some raw `gnuradio_usage` items are not "
-        "about GNU Radio. The spot-check sheet lets the team flag such cases.")
+        "about GNU Radio. The spot-check sheet lets the reviewer agents flag such cases.")
     add("- Claude read the 11 ambiguous test questions from the files in order to label them. No test "
         "question was sent to any other model.")
     add("")
@@ -587,12 +616,53 @@ def _rel(path: Path) -> str:
         return path.as_posix()
 
 
-def build(out: Path = REPO) -> dict[str, Any]:
-    """Compute every label output and write it under `out` (the repository by default)."""
+def reviewed_test_labels(reviews_dir: Path | None = None) -> dict:
+    """The decided records of the blind double labelling (reviews/task_type_test.jsonl), by (id,)."""
+    from grcbench.review.records import decided
+    return decided("task_type_test", reviews_dir=reviews_dir)
+
+
+def reviewed_train_labels(reviews_dir: Path | None = None) -> dict:
+    """The decided records of the training spot-check (reviews/task_type_train.jsonl), by (id,)."""
+    from grcbench.review.records import decided
+    return decided("task_type_train", reviews_dir=reviews_dir)
+
+
+def apply_review(labels: list[dict[str, str]], decided: dict) -> list[dict[str, str]]:
+    """The ambiguous test items take the review's decided label (method `reviewed`); nothing else moves."""
+    out = []
+    for r in labels:
+        rec = decided.get((r["id"],))
+        if rec is None:
+            out.append(r)
+            continue
+        if r["split"] != "eval" or r["method"] != "classified":
+            raise ValueError(f"{r['id']}: a decided test label for a row that is not an ambiguous test item")
+        out.append({**r, "clean": rec["final"], "method": "reviewed", "labeller": LABELLER_REVIEW,
+                    "reason": f"review protocol, decided by {rec['decided_by']}: {rec['final']}; "
+                              f"Claude's label was {r['clean']} ({r['reason']})"})
+    return out
+
+
+def _csv_text(columns: list[str], rows: list[dict[str, str]]) -> str:
+    """The text write_csv writes: a byte-order mark, then the rows with LF line ends."""
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=columns, lineterminator="\n")
+    writer.writeheader()
+    for row in rows:
+        writer.writerow({c: row.get(c, "") for c in columns})
+    return "﻿" + buf.getvalue()
+
+
+def build(out: Path = REPO, reviews_dir: Path | None = None) -> dict[str, Any]:
+    """Compute every label output and write it under `out` (the repository by default). The review's
+    decided records (`reviews_dir`, default reviews/) set the ambiguous test labels and fill the sheets."""
+    from grcbench.review.fill import filled_text
     spec = load_spec()
     eval_rows, train_rows = load_questions()
     decisions_doc = load_decisions()
     labels = label_rows(eval_rows, train_rows, decisions_doc["decisions"])
+    claude_labels = {r["id"]: r["clean"] for r in labels}
     questions = {r["id"]: r["question"] for r in eval_rows + train_rows}
 
     # Blind double-labelling sheet: every ambiguous test item, shuffled, without Claude's label.
@@ -622,6 +692,7 @@ def build(out: Path = REPO) -> dict[str, Any]:
         },
     }
 
+    labels = apply_review(labels, reviewed_test_labels(reviews_dir))      # after the sheets and the key
     test_counts = Counter(r["clean"] for r in labels if r["split"] == "eval")
     small = [t for t in CANONICAL if test_counts[t] < MIN_GROUP]
     similarity = lexical_similarity((r["clean"], questions[r["id"]]) for r in labels if r["split"] == "train")
@@ -635,7 +706,7 @@ def build(out: Path = REPO) -> dict[str, Any]:
     inputs.append((_rel(block_file), sha256_file(block_file)))
     ctx = {"spec": spec, "labels": labels, "decisions_doc": decisions_doc, "spot_rows": spot_rows,
            "test_counts": test_counts, "small_groups": small, "similarity": similarity,
-           "families": families, "inputs": inputs}
+           "families": families, "inputs": inputs, "claude_labels": claude_labels}
 
     paths = {name: out / rel for name, rel in (
         ("labels", LABELS_REL), ("key", KEY_REL), ("report", REPORT_REL), ("test_sheet", TEST_SHEET_REL),
@@ -643,8 +714,10 @@ def build(out: Path = REPO) -> dict[str, Any]:
     write_jsonl(paths["labels"], labels)
     write_json(paths["key"], key)
     write_text(paths["report"], render_report(ctx))
-    write_csv(paths["test_sheet"], TEST_SHEET_COLUMNS, test_sheet)
-    write_csv(paths["train_sheet"], TRAIN_SHEET_COLUMNS, train_sheet)
+    write_text(paths["test_sheet"], filled_text("task_type_test", _csv_text(TEST_SHEET_COLUMNS, test_sheet),
+                                                reviews_dir=reviews_dir))
+    write_text(paths["train_sheet"], filled_text("task_type_train", _csv_text(TRAIN_SHEET_COLUMNS, train_sheet),
+                                                 reviews_dir=reviews_dir))
     write_text(paths["instructions"], render_instructions(spec, len(test_sheet), len(train_sheet)))
     return {"paths": paths, "labels": labels, "test_counts": dict(test_counts), "small_groups": small,
             "n_classified": sum(1 for r in labels if r["method"] == "classified"),

@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_10600
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '10600', amp: '0.6'}
 - name: to_short
@@ -17,7 +17,7 @@ blocks:
   id: blocks_file_sink
   parameters: {type: float, file: quantized.dat}
 connections:
-- [tone_10600, '0', to_short, '0']
+- [tone_1, '0', to_short, '0']
 - [to_short, '0', to_float, '0']
 - [to_float, '0', out, '0']
 metadata: {file_format: 1}

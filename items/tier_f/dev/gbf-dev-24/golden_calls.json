@@ -7,7 +7,7 @@
  "change_graph": {
   "reason": "Edit the flowgraph as the instruction asks.",
   "add_connections": [
-   "tone_7100:0->agc:0"
+   "tone_1:0->agc:0"
   ]
  }
 }

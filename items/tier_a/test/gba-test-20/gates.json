@@ -6,7 +6,8 @@
    "passed": true,
    "reasons": [
     "ladder: fails at V5: observation 'neighbour': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'neighbour.dat', 'type': 'complex'}}; neighbour band_fraction = observation missing; neighbour rms = observation missing",
-    "blocks_present[0]: 0 matching block(s) []; candidates: [\"blocks_file_sink_0 (enabled): file='channel.dat'\", \"blocks_file_sink_1 (enabled): file='audio.dat'; type='float'\"]"
+    "blocks_present[0]: 0 matching block(s) []; candidates: [\"blocks_file_sink_0 (enabled): file='channel.dat'\", \"blocks_file_sink_1 (enabled): file='audio.dat'; type='float'\"]",
+    "blocks_present[1]: 1 matching block(s) ['low_pass_filter_0']; candidates: ['low_pass_filter_0 (enabled): state']"
    ],
    "status": "completed"
   },
@@ -39,7 +40,7 @@
    "passed": true
   }
  },
- "golden_end_state_sha256": "488a4b2edcb4ace16c12169403611c652ee03f22021f4498c44d6632dcec5963",
+ "golden_end_state_sha256": "8d57dbbd67a392824405fab6753d7ada558184d651c3e8a32080d0fe246e4be2",
  "passed": true,
  "task": "gba-test-20"
 }

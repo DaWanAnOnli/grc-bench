@@ -122,9 +122,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (audit); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -148,5 +152,5 @@
   "active_graph": "ssb_transmitter.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_1500
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '1500', amp: '0.6', showports: 'True'}
 - name: resampler
@@ -24,8 +24,8 @@ blocks:
   parameters: {type: float, file: rectified.dat}
 connections:
 - [resampler, '0', rectifier, '0']
-- [retune, strobe, tone_1500, cmd]
-- [tone_1500, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', resampler, '0']
 - [rectifier, '0', out, '0']
 metadata: {file_format: 1}

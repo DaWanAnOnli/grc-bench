@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx low_pass_filter blocks_conjugate_cc blocks_file_sink",
+  "query": "Signal Source Add Low Pass Filter Complex Conjugate File Sink",
   "domain": "catalog",
   "k": 10
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_7300",
+    "instance_name": "tone_1",
     "params": {
      "type": "complex",
      "freq": "-7300"
@@ -17,7 +17,7 @@
    },
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_6100",
+    "instance_name": "tone_2",
     "params": {
      "type": "complex",
      "freq": "6100",
@@ -26,7 +26,7 @@
    },
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_800",
+    "instance_name": "tone_3",
     "params": {
      "type": "complex",
      "freq": "800",
@@ -64,9 +64,9 @@
    }
   ],
   "add_connections": [
-   "tone_7300:0->sum_of_tones:0",
-   "tone_6100:0->sum_of_tones:1",
-   "tone_800:0->sum_of_tones:2",
+   "tone_1:0->sum_of_tones:0",
+   "tone_2:0->sum_of_tones:1",
+   "tone_3:0->sum_of_tones:2",
    "sum_of_tones:0->lpf:0",
    "lpf:0->conj:0",
    "conj:0->out:0"

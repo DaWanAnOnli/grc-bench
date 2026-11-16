@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: 32e3}
-- name: tone_8300
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '8300', amp: '0.5', showports: 'True'}
 - name: fm_mod
@@ -32,8 +32,8 @@ connections:
 - [fm_mod, '0', fm_demod, '0']
 - [fm_demod, '0', hilbert, '0']
 - [hilbert, '0', conj, '0']
-- [retune, strobe, tone_8300, cmd]
-- [tone_8300, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', fm_mod, '0']
 - [conj, '0', out, '0']
 metadata: {file_format: 1}

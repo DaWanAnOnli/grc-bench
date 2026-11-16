@@ -4,31 +4,41 @@
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "data/tx_signal.dat"
+     "file": {
+      "regex": "(^|/)data/tx_signal\\.dat$"
+     }
     }
    },
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "data/rx_symbols.dat"
+     "file": {
+      "regex": "(^|/)data/rx_symbols\\.dat$"
+     }
     }
    },
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "data/timing_error.dat"
+     "file": {
+      "regex": "(^|/)data/timing_error\\.dat$"
+     }
     }
    },
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "data/timing_rate.dat"
+     "file": {
+      "regex": "(^|/)data/timing_rate\\.dat$"
+     }
     }
    },
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "data/timing_phase.dat"
+     "file": {
+      "regex": "(^|/)data/timing_phase\\.dat$"
+     }
     }
    }
   ],
@@ -100,9 +110,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -127,5 +141,5 @@
   "active_graph": "pam_timing.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

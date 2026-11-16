@@ -27,28 +27,28 @@
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_7200",
+   "block": "tone_1",
    "breaks": "the -7.2 kHz tone at -9 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "-9000"
   },
   {
-   "block": "tone_7200",
+   "block": "tone_1",
    "breaks": "the -7.2 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "1.5"
   },
   {
-   "block": "tone_9300",
+   "block": "tone_2",
    "breaks": "the -9.3 kHz tone at -11.625 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "-11625"
   },
   {
-   "block": "tone_9300",
+   "block": "tone_2",
    "breaks": "the -9.3 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -191,26 +191,18 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
-    "group": "f2p",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "shifted.dat"
-    },
-    "via_ids": [
+    "group": "p2p",
+    "ids": [
      "channels_channel_model"
-    ]
+    ],
+    "kind": "block_present",
+    "min": 2
    },
    {
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -235,9 +227,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 20,
@@ -250,10 +246,10 @@
   "39 % of its power within 50 Hz of 5.45 kHz (within a tenth of that share)",
   "61 % of its power within 50 Hz of 7.55 kHz (within a tenth of that share)",
   "an RMS level of 1.281 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; both Channel Models are kept"
  ],
  "split": "dev",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

@@ -36,6 +36,25 @@ blocks:
     bus_source: false
     bus_structure: null
     state: enabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
 - name: carrier
   id: analog_sig_source_x
   parameters:
@@ -126,7 +145,8 @@ blocks:
     state: enabled
 
 connections:
-- [carrier, '0', channel, '0']
+- [blocks_throttle2_0, '0', channel, '0']
+- [carrier, '0', blocks_throttle2_0, '0']
 - [channel, '0', pll, '0']
 - [channel, '0', received_sink, '0']
 - [pll, '0', carrier_sink, '0']

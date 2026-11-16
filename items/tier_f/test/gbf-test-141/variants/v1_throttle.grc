@@ -4,13 +4,13 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_4700
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '4700', amp: '0.6'}
-- name: tone_2600
+- name: tone_2
   id: analog_sig_source_x
   parameters: {type: float, freq: '2600'}
-- name: tone_6700
+- name: tone_3
   id: analog_sig_source_x
   parameters: {type: float, freq: '6700'}
 - name: sum_of_tones
@@ -44,9 +44,9 @@ blocks:
   id: blocks_throttle2
   parameters: {type: float, limit: auto}
 connections:
-- [tone_4700, '0', sum_of_tones, '0']
-- [tone_2600, '0', sum_of_tones, '1']
-- [tone_6700, '0', sum_of_tones, '2']
+- [tone_1, '0', sum_of_tones, '0']
+- [tone_2, '0', sum_of_tones, '1']
+- [tone_3, '0', sum_of_tones, '2']
 - [sum_of_tones, '0', hpf, '0']
 - [hpf, '0', hilbert, '0']
 - [hilbert, '0', conj, '0']

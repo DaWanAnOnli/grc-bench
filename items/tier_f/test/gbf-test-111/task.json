@@ -23,13 +23,17 @@
   "type": "nonexistent_block",
   "wrong_id": "blocks_conjugate_cc_x"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Complex Conjugate"
+ },
  "id": "gbf-test-111",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use a Signal Source to make a 5.1 kHz complex tone with amplitude 0.8; then shift it up by 2.25 kHz: multiply it with a complex 2.25 kHz tone of amplitude 1 from another Signal Source; then pass it through a Channel Model with no noise and a frequency offset of -1 kHz (freq_offset -1000/samp_rate); then bring it to a magnitude of 1 with an AGC block (rate 0.01, reference 1); then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; and write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at -6.35 kHz (within 63.5 Hz); 100 % of its power within 50 Hz of -6.35 kHz (within a tenth of that share); an RMS level of 1 (within 5 %). Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_5100",
+   "block": "tone_1",
    "breaks": "the 5.1 kHz tone at 6.375 kHz",
    "op": "set_param",
    "param": "freq",
@@ -125,7 +129,7 @@
    {
     "expect": 1.0,
     "feature": "rms",
-    "group": "f2p",
+    "group": "p2p",
     "n": 16384,
     "point": "out",
     "rel_tol": 0.05,
@@ -137,7 +141,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -153,7 +157,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -169,7 +173,7 @@
     "from_ids": [
      "analog_sig_source_x"
     ],
-    "group": "f2p",
+    "group": "p2p",
     "kind": "path",
     "to_ids": [
      "blocks_file_sink"
@@ -212,9 +216,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 2,

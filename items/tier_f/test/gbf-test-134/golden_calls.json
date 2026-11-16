@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x blocks_add_xx low_pass_filter blocks_multiply_xx analog_agc_xx rational_resampler_xxx blocks_file_sink",
+  "query": "Signal Source Add Low Pass Filter Multiply AGC Rational Resampler File Sink",
   "domain": "catalog",
   "k": 14
  },
@@ -9,7 +9,7 @@
   "add_blocks": [
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_3200",
+    "instance_name": "tone_1",
     "params": {
      "type": "complex",
      "freq": "-3200",
@@ -18,7 +18,7 @@
    },
    {
     "block_id": "analog_sig_source_x",
-    "instance_name": "tone_6800",
+    "instance_name": "tone_2",
     "params": {
      "type": "complex",
      "freq": "6800",
@@ -84,8 +84,8 @@
    }
   ],
   "add_connections": [
-   "tone_3200:0->sum_of_tones:0",
-   "tone_6800:0->sum_of_tones:1",
+   "tone_1:0->sum_of_tones:0",
+   "tone_2:0->sum_of_tones:1",
    "sum_of_tones:0->lpf:0",
    "lpf:0->mixer:0",
    "lo:0->mixer:1",

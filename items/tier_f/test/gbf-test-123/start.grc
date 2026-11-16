@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_9100
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, samp_rate: samp_rate, waveform: analog.GR_COS_WAVE, freq: '9100', amp: '0.5',
     offset: '0', showports: 'True'}
@@ -26,7 +26,7 @@ blocks:
   parameters: {type: complex, file: mirrored.dat, append: 'False', unbuffered: 'False', vlen: '1'}
 connections:
 - [resampler, '0', conj, '0']
-- [retune, strobe, tone_9100, cmd]
-- [tone_9100, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [conj, '0', out, '0']
 metadata: {file_format: 1}

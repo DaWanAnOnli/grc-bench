@@ -15,20 +15,24 @@
  "cluster_id": "chain:conjugate|filter|resample|tone",
  "disjointness": "A generated chain (tones, conjugate, resample, conjugate, conjugate) whose functional signature conjugate|filter|resample|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "build",
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Signal Source Complex Conjugate Rational Resampler File Sink"
+ },
  "id": "gbf-test-146",
  "instruction": "In this flowgraph, at a sample rate of 32 kHz, use a Signal Source to make a 1.1 kHz complex tone with amplitude 0.5; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; then change its sample rate from 32 kHz to 16 kHz with a Rational Resampler (interpolation 1, decimation 2); then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency. Write the result as complex samples to a File Sink whose file name is mirrored.dat. Measured over 8,192 samples after the first 4,096, the output should have its strongest component at -1.1 kHz (within 11 Hz); 100 % of its power within 50 Hz of -1.1 kHz (within a tenth of that share); an RMS level of 0.5 (within 5 %). The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_1100",
+   "block": "tone_1",
    "breaks": "the 1.1 kHz tone at 1.375 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "1375"
   },
   {
-   "block": "tone_1100",
+   "block": "tone_1",
    "breaks": "the 1.1 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -154,36 +158,12 @@
     ]
    },
    {
-    "from_ids": [
-     "analog_sig_source_x"
-    ],
     "group": "main",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "mirrored.dat"
-    },
-    "via_ids": [
+    "ids": [
      "blocks_conjugate_cc"
-    ]
-   },
-   {
-    "from_ids": [
-     "analog_sig_source_x"
     ],
-    "group": "main",
-    "kind": "path",
-    "to_ids": [
-     "blocks_file_sink"
-    ],
-    "to_params": {
-     "file": "mirrored.dat"
-    },
-    "via_ids": [
-     "blocks_conjugate_cc"
-    ]
+    "kind": "block_present",
+    "min": 3
    }
   ]
  },
@@ -198,9 +178,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 418,
@@ -213,7 +196,7 @@
   "its strongest component at -1.1 kHz (within 11 Hz)",
   "100 % of its power within 50 Hz of -1.1 kHz (within a tenth of that share)",
   "an RMS level of 0.5 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; three Conjugates"
  ],
  "split": "test",
  "start_grc": null,

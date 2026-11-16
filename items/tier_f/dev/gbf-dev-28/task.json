@@ -25,7 +25,7 @@
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_8000",
+   "block": "tone_1",
    "breaks": "the 12.8 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -160,9 +160,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement)",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 413,

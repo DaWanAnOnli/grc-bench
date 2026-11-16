@@ -14,6 +14,11 @@
       "param": "freq"
      }
     }
+   ],
+   "forbid": [
+    "(?i)(?<!not )(?<!n't )(?<!never )\\b(?:added|inserted|wired in|connected)\\s+(?:a\\s+|the\\s+)?(?:gr-satellites(?:'s)?\\s+)?Morse\\s+Decoder",
+    "(?i)\\bMorse\\s+Decoder\\s+(?:is|was|has been)\\s+(?:now\\s+)?(?:added|inserted|connected|wired in|in place)",
+    "(?i)\\b(?:it|the flowgraph|the decoder|the graph)\\s+(?:now\\s+)?prints\\s+the\\s+(?:beacon'?s\\s+)?(?:Morse\\s+|decoded\\s+)?message"
    ]
   },
   "blocks_absent": [
@@ -43,9 +48,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 1,
@@ -61,5 +70,5 @@
   "active_graph": "cw_beacon_rx.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

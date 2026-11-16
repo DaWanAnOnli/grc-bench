@@ -31,9 +31,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement)",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "rejected"
  },
  "scripted_user": {
   "max_turns": 2,

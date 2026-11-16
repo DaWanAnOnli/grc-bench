@@ -20,34 +20,38 @@
   "type": "nonexistent_block",
   "wrong_id": "hilbert_fc_x"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Hilbert"
+ },
  "id": "gbf-test-71",
  "instruction": "The open flowgraph is meant to do the following, at a sample rate of 48 kHz: use Signal Sources to make a 7 kHz cosine with amplitude 0.6 and a 2.6 kHz cosine with amplitude 0.8, and add them; then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; and write the result as complex samples to a File Sink whose file name is analytic.dat. Measured over 16,384 samples after the first 4,096, the output should have 64 % of its power within 50 Hz of 2.6 kHz (within a tenth of that share); 36 % of its power within 50 Hz of 7 kHz (within a tenth of that share); an RMS level of 1 (within 5 %). Instead, GRC cannot load the flowgraph. Find the fault and fix it, keeping every block and parameter value it does not involve. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L1",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_7000",
+   "block": "tone_1",
    "breaks": "the 7 kHz tone at 8.75 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "8750"
   },
   {
-   "block": "tone_7000",
+   "block": "tone_1",
    "breaks": "the 7 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "0.9"
   },
   {
-   "block": "tone_2600",
+   "block": "tone_2",
    "breaks": "the 2.6 kHz tone at 3.25 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "3250"
   },
   {
-   "block": "tone_2600",
+   "block": "tone_2",
    "breaks": "the 2.6 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -151,9 +155,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 2053,
@@ -171,5 +179,5 @@
  "split": "test",
  "start_grc": "start.grc",
  "tier": "F",
- "version": 1
+ "version": 2
 }

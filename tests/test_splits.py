@@ -121,6 +121,31 @@ def test_band_reading_matches_current_data(evidence):
             assert row["pairs_now"] == row["pairs"], (kind, row)
 
 
+def test_decided_twin_labels_are_counted_per_band_and_give_a_threshold(evidence):
+    """The review protocol's decided labels (reviews/twins.jsonl) are counted in the same bands, and the
+    threshold rule is applied to them (similarity_sheets_instructions.md, section B)."""
+    for kind, low in (("semantic", 0.91), ("lexical", 0.50)):
+        rows = twins.band_counts(evidence, kind)
+        assert all(r["decided_twins"] is None for r in rows) or twins.decided_twin_labels()
+        pairs = twins.band_pairs(evidence, kind)
+        every = {(kind, a, b): "twin" for band in pairs for a, b in band}
+        counted = twins.band_counts(evidence, kind, decided=every)
+        assert [r["decided_twins"] for r in counted] == [r["pairs_now"] for r in counted]
+        assert twins.decided_threshold(counted) == low
+        none = twins.band_counts(evidence, kind, decided={k: "not twin" for k in every})
+        assert twins.decided_threshold(none) is None
+        with pytest.raises(ValueError, match="no decision"):
+            twins.band_counts(evidence, kind, decided={k: v for k, v in list(every.items())[1:]})
+
+
+def test_the_thresholds_in_use_are_the_ones_the_decided_labels_give(evidence):
+    decided = twins.decided_twin_labels()
+    if not decided:
+        pytest.skip("the twin sheet has no decided records yet")
+    for kind, used in (("semantic", twins.SEMANTIC_THRESHOLD), ("lexical", twins.LEXICAL_THRESHOLD)):
+        assert twins.decided_threshold(twins.band_counts(evidence, kind, decided=decided)) == used, kind
+
+
 def test_keep_both_decisions_found(evidence):
     files = {s["file"].split("/")[-1] for s in evidence.keep_both_summary}
     assert files == {"blind_semantic_dedupe_decisions.jsonl", "cross_bank_semantic_dedupe_decisions.jsonl",

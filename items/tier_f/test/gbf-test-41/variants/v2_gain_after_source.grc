@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '32000'}
-- name: tone_1800
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '1800'}
 - name: hilbert
@@ -30,6 +30,6 @@ connections:
 - [channel, '0', out, '0']
 - [hilbert, '0', channel_2, '0']
 - [channel_2, '0', out_b, '0']
-- [tone_1800, '0', gain, '0']
+- [tone_1, '0', gain, '0']
 - [gain, '0', hilbert, '0']
 metadata: {file_format: 1}

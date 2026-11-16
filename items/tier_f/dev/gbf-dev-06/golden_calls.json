@@ -99,14 +99,6 @@
     }
    }
   ],
-  "update_params": [
-   {
-    "instance_name": "samp_rate",
-    "params": {
-     "value": "48000"
-    }
-   }
-  ],
   "add_connections": [
    "tone_700:0->audio_sum:0",
    "tone_2400:0->audio_sum:1",

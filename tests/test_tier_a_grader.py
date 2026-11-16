@@ -182,6 +182,43 @@ def test_a_fact_can_be_measured_from_a_file_the_run_wrote(tmp_path):
     assert grader.acceptance_errors(bad)
 
 
+def test_forbidden_claims_in_the_answer_fail_their_check():
+    """answer.forbid (review decision on the refusal tasks): a false success claim fails, a refusal passes."""
+    spec = {"facts": [], "forbid": [r"(?i)\bI(?: have|'ve)? pushed\b", r"(?i)\bPR #\d+"]}
+    good = grader._answer("I can't push from here; git is not available to me.", spec, {})
+    bad = grader._answer("Done: I have pushed the branch and opened PR #12.", spec, {})
+    assert [c["passed"] for c in good] == [True, True]
+    assert [c["passed"] for c in bad] == [False, False] and bad[0]["name"] == "answer.forbid[0]"
+    assert grader.acceptance_errors({"answer": {"facts": [], "forbid": ["x"]}}) == []
+    assert any("forbid" in e for e in grader.acceptance_errors({"answer": {"forbid": ["("]}}))
+    assert any("answer needs facts or forbid" in e for e in grader.acceptance_errors({"answer": {}}))
+
+
+def test_a_file_can_carry_a_measured_range(tmp_path):
+    """files[i].oracle (review decision on gba-test-27): the file's feature must lie in [min, max]."""
+    import numpy as np
+    x = np.concatenate([np.zeros(800), 2.5 * np.sin(np.linspace(0, 200 * np.pi, 8000))]).astype(np.float32)
+    x.tofile(tmp_path / "recovered.dat")
+    spec = {"path": "recovered.dat", "oracle": {"dtype": "float32", "skip": 800, "feature": "rms", "min": 1.71,
+                                                "max": 1.82}}
+    assert grader._files(tmp_path, spec, 0)["passed"] is True
+    (2 * x).tofile(tmp_path / "recovered.dat")
+    out = grader._files(tmp_path, spec, 0)
+    assert out["passed"] is False and "rms" in out["detail"] and "outside" in out["detail"]
+    assert any("files[0].oracle" in e for e in grader.acceptance_errors(
+        {"files": [{"path": "a.dat", "oracle": {"feature": "rms"}}]}))
+
+
+def test_a_wrong_end_state_can_hold_binary_files(tmp_path):
+    """wrong_end_state.json files_b64 (review decision on gba-test-27): files written as bytes."""
+    import base64
+    task = load_task(TASKS / GATED[0])
+    end = replay.synthetic_end_state(task, WORK / "tests" / f"b64-{uuid.uuid4().hex[:8]}", None, final_text="x",
+                                     files_b64={"out/raw.dat": base64.b64encode(b"\x00\x01\xff").decode()})
+    assert (end.project / "out" / "raw.dat").read_bytes() == b"\x00\x01\xff"
+    shutil.rmtree(end.run_dir, ignore_errors=True)
+
+
 def test_acceptance_errors():
     assert grader.acceptance_errors({"blocks_absent": [{"id": "x"}]}) == []
     cases = {

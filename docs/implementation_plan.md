@@ -12,16 +12,16 @@ Today is Wed 14 Oct (W2). The gates are G1 Fri 16 Oct, G2 Fri 30 Oct (v0.9 end-t
 ### User decisions (14 Oct)
 1. **Claude drafts and the team decides.**
    - Claude drafts the natural-language test content: agent-task specs, flowgraph-task instructions and question templates.
-   - The team reviews, edits and decides.
+   - Review agents review, edit and decide (Decision (10 Nov) below).
    - Every drafted item records `provenance.drafted_by: "Claude (Anthropic)"` and `review.status: pending-team-review`.
    - Data Summary §11 D tells Qoherent the team writes the agent tasks with no AI involved. This change is recorded as a deviation for G1.
    - Anthropic models are excluded from the panel.
-   - Claude never drafts rubric prose; Table 5 bars the Claude family from drafting references.
-   - Calculation answers come from Claude's scripts, and a team member recomputes them blind.
+   - Review agents write and check the rubric prose, although Table 5 bars the Claude family from drafting references; pre-registration §10 records this.
+   - Calculation answers come from Claude's scripts, and two recomputer agents recompute them blind.
    - Knowledge-task facts are derived mechanically from the graph or the block YAML.
-   - Golden graphs and oracles written by Claude are declared in the role table and pass every automated gate plus team review.
+   - Golden graphs and oracles written by Claude are declared in the role table and pass every automated gate and the review.
    - From now on, Claude never judges, repairs or generates training data. Partition manifests are the only training-side output.
-2. **First set first.** Flowgraph tasks start with a first set of ~30 (≈ 10 dev + 20 test) covering build, modify, repair and parameter-tune and both L1 and L2. The set passes every gate and team review before scaling to 150. Tier A follows the same pattern: all specs are drafted, but only a first set is fully built and gated.
+2. **First set first.** Flowgraph tasks start with a first set of ~30 (≈ 10 dev + 20 test) covering build, modify, repair and parameter-tune and both L1 and L2. The set passes every gate and the review before scaling to 150. Tier A follows the same pattern: all specs are drafted, but only a first set is fully built and gated.
 3. **Location.** A new `project/grc-bench/` folder, a local git repo committed with Windows git only.
    - Never modified: `data/`, the proposals, the documents and `~/grc-agent` (per Qoherent: "no expected changes to the grc-agent repository").
    - Run directories live on the WSL filesystem (`~/grc-bench-work`), not `/mnt/c`.
@@ -30,6 +30,22 @@ Today is Wed 14 Oct (W2). The gates are G1 Fri 16 Oct, G2 Fri 30 Oct (v0.9 end-t
    - Settings: CPU, 16K context, `q8_0` KV cache with `-fa on`, `--jinja`, a pinned `--reasoning-format`, `-np 1`.
    - It tests plumbing only and is never a result.
    - The Windows Ollama can't be reached from WSL, and its `gemma3:12b` has no tool support.
+
+### Decision (10 Nov): review agents fill every review sheet
+Claude review agents review every item and fill in every sheet of `handoff/review_sheets/`
+(`docs/guidelines/review_protocol.md`):
+- two independent reviewers per sheet;
+- a writer agent and two checker agents per Tier-K rubric;
+- an expert agent that decides every disagreement, audits the agreements and does the expert review of
+  eval plan §5.3.
+
+The rules:
+- the decision rules are code (`./gb review`);
+- every agent run is declared in `reviews/review_log.jsonl`;
+- at most 30 agent runs before the freeze, at most 6 at once.
+
+Claude never changes training data. Pre-registration §10 records the deviations from the evaluation
+plan.
 
 ### Decision (16 Oct): Tier F runs in GRC-Agent's harness as "one lookup + one edit"
 GRC-Agent never lets the model write a .grc file. Its file tools refuse .grc writes, and the model edits only through `change_graph`. So Tier F is no longer "instruction → .grc YAML". A Tier-F sample is a short episode in the **same harness as Tier A**, with identical inputs:
@@ -154,7 +170,7 @@ Agents own disjoint modules. Each output is checked by a separate verifier agent
 - **Rule map** for the 14 unambiguous task-type spellings.
 - **The 134 ambiguous rows** are each classified with a reason, against `task_types.json` and `curriculum.md`. Raw labels are kept.
 - **Team labelling:**
-  - all ambiguous **test** items are labelled by two team members, and κ is reported;
+  - all ambiguous **test** items are labelled blind by two annotator agents, and κ is reported;
   - 10% of the training rows are spot-checked.
 - **Frozen before any test run.** Merges for groups under 20, and the factual vs. reasoning mapping, go into the G2 pre-registration.
 - **Question-family `cluster_id`s** for Tier K come from the twin groups.
@@ -335,12 +351,12 @@ Default-value, which-block and parameter-meaning questions are dropped. Answers 
   - offline web tools;
   - Data Summary A/C/D;
   - L3 tasks deferred to W5;
-  - Tier-F and Tier-A first sets, pending team review.
+  - Tier-F and Tier-A first sets, then reviewed by the review agents.
 
 ## Not executable now
 - **Needs money or access:** the throughput pilot; judge calibration runs, B2 and the panel (no API access or GPUs); base-model runs and item pruning (no weights or GPU); fine-tuned runs (training not started).
 - **Needs hardware:** Tier E on H1 (needs a 32 GB laptop and Nanbeige's fork build) and on H2, H3 and the server.
-- **Needs people:** expert review and all team reviews.
+- **Review:** the expert review and all reviews are done by review agents (Decision (10 Nov)).
 - **Later or another team's work:**
   - L3 tasks (W5);
   - scaling Tier F to 150 and Tier A to 30 tasks after review;

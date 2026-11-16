@@ -5,26 +5,30 @@ instruction or the starting flowgraph), together with §4.3 (Tier F), §5.3 (pru
 decision in [the approved plan](../implementation_plan.md) ("Tier F runs in GRC-Agent's harness as
 'one lookup + one edit'", and its oracle policy).
 
-Two team members review every Tier-F task, test and dev, before it is used. Eval plan Table 7
-budgets about 60 person-hours for all Tier-F tasks. Once you know the format, plan on about
-10 minutes per task per reviewer. The first tasks will take longer.
+Two review agents (`R1`, `R2`) review every Tier-F task, test and dev, before it is used, under the
+review protocol ([review_protocol.md](../guidelines/review_protocol.md)). Eval plan Table 7 budgets
+about 60 person-hours for all Tier-F tasks; the protocol replaces those hours with declared agent runs
+(pre-registration §10).
 
 ## Before you start
 
-- **Never paste a test task into ChatGPT, Claude or any other model or online tool.** Test items
-  are never sent to a model outside a declared run (eval plan §6). This covers the instruction, the
-  `.grc` files and the oracle.
-- **Work alone, on your own copy of the sheet.** Do not discuss a task with the other reviewer until
-  you have both recorded a decision.
-- **Do not edit the task files.** Write the edits you want in the sheet. The task owner applies them
-  and re-runs the gates. A generated task's files are written by its `build.py`, so the owner applies
-  its edits through the generator.
+- **Declared runs only.** Test items are never sent to a model outside a declared run (eval plan §6).
+  This covers the instruction, the `.grc` files and the oracle. Every review agent run is declared in
+  `reviews/review_log.jsonl`.
+- **Work alone.** Each reviewer works from its own input copy and never opens the other reviewer's
+  output.
+- **Do not edit the task files.** Write the edits you want in your output. The coordinator applies
+  the decided edits and re-runs the gates. A generated task's files are written by its `build.py`, so
+  the coordinator applies its edits through the generator.
+- **Run what you can.** Use `./gb tier-f check`, `./gb ladder` on the start graph and on solutions you
+  build, and record each command with its output as evidence. Never run `./gb tier-f gates`: it
+  rewrites the task's `gates.json`.
 - **Claude (Anthropic) drafted the instructions, references and oracles** (`provenance.drafted_by`):
   30 tasks by hand, and 165 through the seeded generator `grcbench.tier_f.generate`, which Claude
-  wrote (`provenance.generator`). Nothing is accepted until you approve it. Judge each task as
-  strictly as a human-written one.
-- **Do not run `./gb tier-f sheet` once people have started filling in the sheet.** It rewrites
-  `handoff/review_sheets/tier_f_first_set.csv` with empty decision columns. Always fill in a copy.
+  wrote (`provenance.generator`). Nothing is accepted until the review approves it. Judge each task
+  as strictly as one written by a stranger.
+- **Do not run `./gb tier-f sheet`.** It rewrites `handoff/review_sheets/tier_f_first_set.csv` with
+  empty decision columns.
 
 ## What a task is made of
 
@@ -217,8 +221,8 @@ or "continuous run" is not checked.
       train seed.
 - [ ] **Composed chains (`source.kind` = `composed_chain`) and generated chains
       (`source.kind` = `generated_chain`):** the task's signature falls in the task's split. Use the **functional signature v2**, described in
-      [`reports/tier_f_signature_v2.md`](../../reports/tier_f_signature_v2.md). On 18 Oct it is still
-      pending team review; the team reviews that report once, not task by task.
+      [`reports/tier_f_signature_v2.md`](../../reports/tier_f_signature_v2.md). The signature's
+      definition is fixed there; the review checks each task against it, not the definition itself.
   - **v2:** the signature is the set of functional classes of the reference's blocks (tone, filter,
     mix, resample, ...). Plumbing such as a Throttle, a sink or a type conversion does not count.
     Neither do constant gains and offsets, and block order does not matter.
@@ -268,10 +272,10 @@ or "continuous run" is not checked.
 
 This is the 16 Oct "one lookup + one edit" protocol.
 
-- [ ] **What the model sees of the start graph.** The task owner attaches to the sheet the
-      prefilled `inspect_graph` result exactly as the model gets it. It comes from a kept
-      golden-replay run (`./gb tier-a trace <run_dir>` prints it), together with
-      the start-graph rule (`tier_f.start` in the run's record). Check:
+- [ ] **What the model sees of the start graph.** The prefilled `inspect_graph` result, exactly as
+      the model gets it, comes from a kept golden-replay run (`./gb tier-a trace <run_dir>` prints
+      it), together with the start-graph rule (`tier_f.start` in the run's record). Where you have it,
+      check:
   - the result was not cut by the 4K cap (`tier_f.prefill.truncated` is false);
   - every instance name, parameter value and connection the model needs appears in it.
 
@@ -343,7 +347,7 @@ The sheet is `handoff/review_sheets/tier_f_first_set.csv`, written by `./gb tier
 | `reviewer_1_edits` | reviewer 1 | the edits or the reason for rejecting, and your `note:` lines (format below) |
 | `reviewer_2_decision` | reviewer 2 | as above |
 | `reviewer_2_edits` | reviewer 2 | as above |
-| `final_decision` | the task owner when both decisions are the same; otherwise the Qoherent expert | `approve`, `approve with edits` or `reject` |
+| `final_decision` | the coordinator when both decisions are the same (other than `approve with edits`); otherwise the expert agent | `approve`, `approve with edits` or `reject` |
 
 If the generated sheet has more columns than this table, they are information for you. Leave them
 as they are.
@@ -378,8 +382,8 @@ For a rejection, start the cell with the reason in a few words. Use one of: `wro
 `ambiguous instruction`, `broken oracle`, `duplicate`, `split`, `licence`, `cannot be checked` or
 `other`. Then explain.
 
-**Notes.** A line that starts with `note:` is a record for the team, not an edit. The task owner
-does not apply it. Use it for:
+**Notes.** A line that starts with `note:` is a record, not an edit. The coordinator does not apply
+it. Use it for:
 
 - `note: batch -- ...`: the one `change_graph` batch you would submit (section I). Every review
   has one;
@@ -388,33 +392,42 @@ does not apply it. Use it for:
 - `note: ladder -- ...`: the result of an alternative solution you ran (section E);
 - anything else you checked and want on record.
 
-So an `approve` row normally has `note:` lines only, and an `approve with edits` row has both. The
-generated sheet has no separate notes column. Separate `reviewer_1_notes` and `reviewer_2_notes`
-columns are proposed to the Tier-F owner; until they exist, notes go in the edits cell.
+So an `approve` row normally has `note:` lines only, and an `approve with edits` row has both. In
+your output the edits go in `edits` and the `note:` lines in `notes`; the filled sheet puts both in
+your edits cell.
+
+**Output fields.** One JSON object per task, written to your output file as soon as the task is done:
+
+- `sheet`: `"tier_f"`;
+- `key`: `{"task_id": ...}`;
+- `value`: the decision;
+- `edits`: the edit lines;
+- `notes`: the `note:` lines;
+- `evidence`: the commands you ran with their printed output, and quoted lines of the task files.
 
 ## After both reviews
 
-1. **Merge.** The task owner collects both copies into one sheet.
+1. **Decision rules.** The coordinator applies the decision rules of the review protocol.
 2. **Same decision.** If both decisions are the same, that is the `final_decision`. If both are
-   `approve with edits`, merge the two lists of edits. Two edits that contradict each other count
-   as a disagreement.
-3. **Different decisions.** The Qoherent expert decides (eval plan Table 1: "A Qoherent expert
-   decides every disagreement"). The two reviewers do not settle it between themselves first:
-   each edits cell already gives the reviewer's reasons, and the expert reads both. Write the
-   expert's decision in `final_decision`, and add `note: decided by <expert's initials>` in an
-   edits cell. The task owner counts how many tasks the expert decided.
-4. **Apply the edits.** The task owner applies the edits and re-runs the gates
-   (`./gb tier-f gates <task_dir>`). A task whose gates fail after the edits comes back to the
-   reviewers. Changed tasks get a new `version`. Once the benchmark is frozen, items are never
-   rewritten in place.
+   `approve with edits`, the expert agent merges the two lists of edits. Two edits that contradict
+   each other count as a disagreement.
+3. **Different decisions.** The expert agent decides (eval plan Table 1, "A Qoherent expert decides
+   every disagreement", with the expert agent in the expert's place). The expert agent decides every
+   disagreement. The two reviewers do not settle it between themselves first: each edits cell already gives the reviewer's reasons, and the
+   expert reads both. The expert's decision goes in `final_decision`, with `note: decided by EX` in an
+   edits cell. The coordinator counts how many tasks the expert decided.
+4. **Apply the edits.** The coordinator applies the decided edits and re-runs the gates
+   (`./gb tier-f gates <task_dir>`). A task whose gates fail after the edits goes back to the two
+   reviewers once; after that, the expert decides. Changed tasks get a new `version`. Once the
+   benchmark is frozen, items are never rewritten in place.
 5. **Record the result** in `task.json` → `review`:
    - `status`: `approved`, `approved-with-edits` or `rejected`;
-   - `reviewers`: your initials;
+   - `reviewers`: `R1;R2` (and `EX` where the expert decided);
    - `notes`: one line.
 6. **Count rejections.** Rejected tasks are removed and counted with their reason. We publish how
    many items were removed and why (eval plan §5.3).
-7. **The expert reviews next.** After the team review, the Qoherent expert reviews the task (see
-   [expert_review.md](expert_review.md)).
+7. **The expert reviews next.** After the two-reviewer review and the edits, the expert agent reviews
+   the task (see [expert_review.md](expert_review.md)).
 
 ## One-page summary
 

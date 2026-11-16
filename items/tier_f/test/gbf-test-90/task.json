@@ -15,34 +15,38 @@
  "cluster_id": "chain:channel_model|combine|conjugate|filter|mix|resample|tone",
  "disjointness": "A generated chain (tones, channel, shift, conjugate, resample) whose functional signature channel_model|combine|conjugate|filter|mix|resample|tone hashes to the test side and is reserved, so no training-side generator emits it (they emit only train-side signatures and skip the reserved list); Tier-F tasks with this signature share its cluster_id, and `./gb traces` checks the agent traces at task level.",
  "family": "build",
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Signal Source Add Channel Model Multiply Complex Conjugate Rational Resampler File Sink"
+ },
  "id": "gbf-test-90",
  "instruction": "In this flowgraph, at a sample rate of 48 kHz, use Signal Sources to make a 10.7 kHz complex tone with amplitude 0.25 and a -6.2 kHz complex tone with amplitude 0.5, and add them; then pass it through a Channel Model with no noise and a frequency offset of -2.25 kHz (freq_offset -2250/samp_rate); then shift it up by 3 kHz: multiply it with a complex 3 kHz tone of amplitude 1 from another Signal Source; then take its complex conjugate with a Conjugate block, which mirrors every tone to minus its frequency; then change its sample rate from 48 kHz to 72 kHz with a Rational Resampler (interpolation 3, decimation 2). Write the result as complex samples to a File Sink whose file name is resampled.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 5.45 kHz (within 54.5 Hz); 20 % of its power within 50 Hz of -11.45 kHz (within a tenth of that share); 80 % of its power within 50 Hz of 5.45 kHz (within a tenth of that share); an RMS level of 0.559 (within 5 %). The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_10700",
+   "block": "tone_1",
    "breaks": "the 10.7 kHz tone at 13.375 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "13375"
   },
   {
-   "block": "tone_10700",
+   "block": "tone_1",
    "breaks": "the 10.7 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
    "value": "0.375"
   },
   {
-   "block": "tone_6200",
+   "block": "tone_2",
    "breaks": "the -6.2 kHz tone at -7.75 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "-7750"
   },
   {
-   "block": "tone_6200",
+   "block": "tone_2",
    "breaks": "the -6.2 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -237,9 +241,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 18,
@@ -258,5 +266,5 @@
  "split": "test",
  "start_grc": null,
  "tier": "F",
- "version": 1
+ "version": 2
 }

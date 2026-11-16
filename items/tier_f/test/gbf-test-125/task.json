@@ -25,20 +25,24 @@
   "type": "wrong_value",
   "wrong_value": "samp_rate/(2*math.pi*1000)"
  },
+ "golden_lookup": {
+  "domain": "catalog",
+  "query": "Quadrature Demod"
+ },
  "id": "gbf-test-125",
- "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use Signal Sources to make a 2.5 kHz cosine with amplitude 0.6 and a 8.7 kHz cosine with amplitude 0.8, and add them; then high-pass filter it with a High Pass Filter (cutoff 5.6 kHz, transition width 400 Hz), so that only the tones above 5.6 kHz remain; then frequency-modulate it with a Frequency Mod block (sensitivity 2*pi*1000/samp_rate, so an input of 1.0 deviates by 1 kHz) and demodulate it with a Quadrature Demod block whose gain turns 500 Hz of deviation into an output of 1.0 (gain samp_rate/(2*pi*500)); then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; then pass it through a Channel Model with no noise and a frequency offset of -1.25 kHz (freq_offset -1250/samp_rate); and write the result as complex samples to a File Sink whose file name is received.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 7.45 kHz (within 74.5 Hz); 100 % of its power within 50 Hz of 7.45 kHz (within a tenth of that share); an RMS level of 1.6 (within 5 %). Instead, its RMS level is 0.8. Find the fault and fix it, keeping everything else as it is. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
+ "instruction": "The open flowgraph is meant to do the following, at a sample rate of 32 kHz: use Signal Sources to make a 2.5 kHz cosine with amplitude 0.6 and a 8.7 kHz cosine with amplitude 0.8, and add them; then high-pass filter it with a High Pass Filter (cutoff 5.6 kHz, transition width 400 Hz), so that only the tones above 5.6 kHz remain; then frequency-modulate it with a Frequency Mod block (sensitivity 2*math.pi*1000/samp_rate, so an input of 1.0 deviates by 1 kHz) and demodulate it with a Quadrature Demod block whose gain turns 500 Hz of deviation into an output of 1.0 (gain samp_rate/(2*math.pi*500)); then turn it into a complex analytic signal with a Hilbert block (65 taps), so that each tone keeps its amplitude at its positive frequency only; then pass it through a Channel Model with no noise and a frequency offset of -1.25 kHz (freq_offset -1250/samp_rate); and write the result as complex samples to a File Sink whose file name is received.dat. Measured over 16,384 samples after the first 4,096, the output should have its strongest component at 7.45 kHz (within 74.5 Hz); 100 % of its power within 50 Hz of 7.45 kHz (within a tenth of that share); an RMS level of 1.6 (within 5 %). Instead, its RMS level is 0.8. Find the fault and fix it, keeping everything else as it is. The flowgraph should keep producing samples until it is stopped; do not limit the number of samples.",
  "level": "L2",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "mutations": [
   {
-   "block": "tone_8700",
+   "block": "tone_2",
    "breaks": "the 8.7 kHz tone at 10.875 kHz",
    "op": "set_param",
    "param": "freq",
    "value": "10875"
   },
   {
-   "block": "tone_8700",
+   "block": "tone_2",
    "breaks": "the 8.7 kHz tone 50 % louder",
    "op": "set_param",
    "param": "amp",
@@ -139,6 +143,16 @@
     "group": "p2p",
     "kind": "same_connections_as_start",
     "mode": "isomorphic"
+   },
+   {
+    "group": "p2p",
+    "ids": [
+     "variable"
+    ],
+    "kind": "block_present",
+    "params": {
+     "value": "32000"
+    }
    }
   ]
  },
@@ -153,9 +167,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 303,
@@ -168,7 +185,8 @@
   "its strongest component at 7.45 kHz (within 74.5 Hz)",
   "100 % of its power within 50 Hz of 7.45 kHz (within a tenth of that share)",
   "an RMS level of 1.6 (within 5 %)",
-  "structure: same blocks and connections as the start graph"
+  "structure: same blocks and connections as the start graph",
+  "the sample rate stays at 32 kHz (samp_rate 32000)"
  ],
  "split": "test",
  "start_grc": "start.grc",

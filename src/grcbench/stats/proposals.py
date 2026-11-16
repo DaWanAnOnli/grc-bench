@@ -180,7 +180,7 @@ PROPOSALS = (
                  "95% interval >= 0.6",
      "proposal": "docs/guidelines/judge_calibration.md: the rule is applied twice and the judge "
                  "passes only if both hold: (1) unweighted kappa on the credits of every P and N row, "
-                 "judge vs the adjudicated human reference (unanimous label, else the adjudicator's), "
+                 "judge vs the adjudicated reference labelling (unanimous label, else the adjudicator's), "
                  "whole answers resampled; (2) linear-weighted kappa on the answers' score bands "
                  "0 | (0, 0.5) | [0.5, 1) | 1, each answer one item. Stricter than §8.1 read alone.",
      "where": ("agreement.judge_calibration", "agreement.score_band", "agreement.human_reference"),

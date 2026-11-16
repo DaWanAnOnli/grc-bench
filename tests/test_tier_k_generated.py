@@ -4,7 +4,7 @@ Fast tests on the files in the repository (no GNU Radio): the block questions ar
 blocks with a behaviour model, schema-valid, scorable by the rule cascade and kept apart from their
 answer key; the generator's seeds reach wide instance spaces; the rubric
 templates cover every test and dev question, hold no prose, never reach the judge unfilled, and the
-generator never overwrites what the team has filled in.
+generator never overwrites what the review has filled in.
 """
 
 from __future__ import annotations
@@ -42,13 +42,47 @@ def test_block_questions_are_valid_and_about_100():
         assert catalog[block]["eligible"] and block in modelled            # no test/train block split
         assert q["cluster_id"] == f"block_family:{catalog[block]['family']}"
         assert f"({blockgen.REFERENCE_SEED})" in q["provenance"]["generator_version"]
-        assert q["item_kind"] == "block_question" and q["review"]["status"] == "pending-team-review"
+        assert q["item_kind"] == "block_question"
+        assert q["review"] == blockgen.review_of(q["id"], q)               # the review protocol's decision
         assert q["block_question_kind"] in ("output_value", "output_count")   # behaviour, never catalog facts
         assert q["source"]["kind"] == "gnuradio_run"
         assert CANARY_GUID not in q["question"]
     per_block = Counter(q["source"]["block_id"] for q in QUESTIONS)
     assert max(per_block.values()) <= blockgen.MAX_PER_BLOCK
     assert len({q["question"] for q in QUESTIONS}) == len(QUESTIONS)        # no repeated question
+
+
+def test_the_decided_wording_edits_are_in_the_questions():
+    """reviews/block_questions.jsonl: the port base is stated on every multi-port question; the interleaver
+    mapping and the rounding rule are stated; the patterned interleaver's answers are exact."""
+    by_id = {a["question_id"]: a for a in ANSWERS}
+    for q in QUESTIONS:
+        block, text = q["source"]["block_id"], q["question"]
+        if " on its output port " in text:
+            assert "(ports counted from 0)" in text, q["id"]
+        for b, sentence in blockgen.BLOCK_NOTES.items():
+            assert (sentence in text) == (block == b), (q["id"], b)
+        if block in blockgen.EXACT_COPY:
+            assert by_id[q["id"]]["reference"]["tolerance"] == blockgen.INT_TOL["tolerance"]
+    assert set(blockgen.BLOCK_NOTES) == {"blocks_blockinterleaver_xx", "blocks_float_to_int"}
+    assert blockgen.EXACT_COPY == {"blocks_patterned_interleaver"}
+
+
+def test_review_status_follows_the_decided_records():
+    decided = {"approve": "approved", "approve with edits": "approved-with-edits", "reject": "rejected"}
+    rec = {"final": "approve with edits", "decided_by": "EX", "route": "disagreement"}
+    assert blockgen.review_status(rec) == {"status": "approved-with-edits", "reviewers": ["R1", "R2", "EX"],
+                                           "notes": "decided by EX (disagreement); edits applied in the template"}
+    assert blockgen.review_status(None)["status"] == "pending-team-review"
+    agreed = {"final": "approve", "decided_by": "R1;R2", "route": "agreement"}
+    assert blockgen.review_status(agreed)["status"] == "approved"
+    templ = blockgen.review_status(agreed, template_edited=True)
+    assert templ["status"] == "approved-with-edits" and "template edit" in templ["notes"]
+    assert set(decided) >= {"approve"}
+    for q in QUESTIONS:                                     # every question a template edit reached says so
+        edited = blockgen.template_edited(q["source"]["block_id"], q["question"])
+        assert (q["review"]["status"] == "approved-with-edits") == (
+            edited or blockgen.review_of(q["id"])["status"] == "approved-with-edits")
 
 
 def test_block_question_records_hold_no_answers_and_the_key_scores_them():
@@ -80,7 +114,7 @@ def test_reference_models_match_known_values():
 # ---------------------------------------------------------------- rubric templates
 @pytest.mark.parametrize("split,n", [("test", 185), ("dev", 107)])
 def test_one_empty_template_per_question(split, n):
-    temps = _jsonl(REPO / rubrics.OUT[split])
+    temps = [json.loads(line) for line in rubrics.outputs()[rubrics.OUT[split]].splitlines()]
     qs = _jsonl(rubrics.SOURCES[split])
     assert len(temps) == len(qs) == n
     assert [t["question_id"] for t in temps] == [q["id"] for q in qs]
@@ -95,7 +129,36 @@ def test_one_empty_template_per_question(split, n):
     assert [r["question_id"] for r in rows] == [q["id"] for q in qs]
 
 
-def test_the_generator_never_overwrites_team_content(tmp_path, capsys):
+@pytest.mark.parametrize("split", ["test", "dev"])
+def test_the_repository_rubrics_are_templates_or_the_decided_rubrics(split):
+    """Before the rubric review is decided the repository holds the templates; after it, every question's
+    decided rubric (./gb review rubrics): approved ones the judge reads, rejected ones removed from runs."""
+    from grcbench.review import records
+    from grcbench.tier_k import run as krun
+    recs = _jsonl(REPO / rubrics.OUT[split])
+    qs = _jsonl(rubrics.SOURCES[split])
+    assert [r["question_id"] for r in recs] == [q["id"] for q in qs]
+    decided = records.decided(f"rubric_{split}")
+    if not decided:
+        assert all(r["review"]["status"] == "pending-team-review" for r in recs)
+        return
+    assert {k[0] for k in decided} == {q["id"] for q in qs}
+    gone = {r["question_id"] for r in krun.removed(split)}
+    for r in recs:
+        status = r["review"]["status"]
+        assert status in ("approved", "approved-with-edits", "rejected"), r["question_id"]
+        assert r["review"]["reviewers"][:3] == ["W", "C1", "C2"]
+        if status == "rejected":
+            assert r["question_id"] in gone and r["required_points"] == [] and r["review"]["notes"]
+        else:
+            judge_prompt.check_reviewed(r)
+            judge_prompt.normalize_rubric(r)
+            assert r["question_id"] not in gone
+        if r["task_type"] == "calculation":
+            assert r["calc_status"] and r["calc_status"] != rubrics.PENDING_CALC
+
+
+def test_the_generator_never_overwrites_review_content(tmp_path, capsys):
     assert rubrics.main(["--out", str(tmp_path)]) == 0
     path = tmp_path / rubrics.OUT["dev"]
     rows = _jsonl(path)
@@ -103,9 +166,9 @@ def test_the_generator_never_overwrites_team_content(tmp_path, capsys):
     path.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
     before = path.read_text(encoding="utf-8")
     assert rubrics.main(["--out", str(tmp_path)]) == 1
-    assert path.read_text(encoding="utf-8") == before and "holds team content" in capsys.readouterr().out
+    assert path.read_text(encoding="utf-8") == before and "holds review content" in capsys.readouterr().out
     sheet = tmp_path / rubrics.SHEET["test"]
     text = sheet.read_text(encoding="utf-8").splitlines()
     text[1] = text[1] + "JR"                                                  # a filled cell at the row's end
     sheet.write_text("\n".join(text) + "\n", encoding="utf-8")
-    assert rubrics._team_content(rubrics.SHEET["test"], tmp_path)
+    assert rubrics._review_content(rubrics.SHEET["test"], tmp_path)

@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_3000
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: float, freq: '3000', amp: '0.5', showports: 'True'}
 - name: hilbert
@@ -34,8 +34,8 @@ blocks:
 connections:
 - [hilbert, '0', mixer, '0']
 - [lo, '0', mixer, '1']
-- [retune, strobe, tone_3000, cmd]
-- [tone_3000, '0', throttle, '0']
+- [retune, strobe, tone_1, cmd]
+- [tone_1, '0', throttle, '0']
 - [throttle, '0', hilbert, '0']
 - [mixer, '0', out, '0']
 - [mixer, '0', resampler, '0']

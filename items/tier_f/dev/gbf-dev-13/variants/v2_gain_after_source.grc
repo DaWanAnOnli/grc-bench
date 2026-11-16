@@ -4,7 +4,7 @@ blocks:
 - name: samp_rate
   id: variable
   parameters: {value: '48000'}
-- name: tone_9000
+- name: tone_1
   id: analog_sig_source_x
   parameters: {type: complex, freq: '9000'}
 - name: lo
@@ -29,7 +29,7 @@ connections:
 - [lo, '0', mixer, '1']
 - [mixer, '0', out, '0']
 - [magnitude, '0', out_b, '0']
-- [tone_9000, '0', gain, '0']
+- [tone_1, '0', gain, '0']
 - [gain, '0', mixer, '0']
 - [gain, '0', magnitude, '0']
 metadata: {file_format: 1}

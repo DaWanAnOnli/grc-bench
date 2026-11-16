@@ -1,6 +1,6 @@
 {
  "query_knowledge": {
-  "query": "analog_sig_source_x rational_resampler_xxx hilbert_fc blocks_multiply_xx blocks_file_sink",
+  "query": "Multiply",
   "domain": "catalog",
   "k": 10
  },

@@ -21,7 +21,8 @@ connected components (union-find) of the training questions under four kinds of 
   keep_both  a KEEP_BOTH decision in any *semantic_dedupe_decisions.jsonl. The dataset team judged
              these "near repeats ... useful training variation", which is exactly a dev-sibling risk.
 
-Thresholds (Claude's reading on 14 Oct 2026, pending team review; see BAND_READING): for each scored
+Thresholds (Claude's reading on 14 Oct 2026, checked by the review protocol's decided labels in
+reviews/twins.jsonl; see BAND_READING and band_counts): for each scored
 source, the threshold is the lower edge of the lowest band in which at least half of the pairs read
 were twins, meaning an answer to one would substantially answer the other. Below 0.92 the semantic
 scores are dominated by template neighbours ("Design a GNU Radio flowgraph to ..."), and union-find
@@ -59,8 +60,9 @@ SEMANTIC_CANDIDATES = DATASET / "03_questions_merged" / "semantic_duplicate_cand
 
 # Claude's reading of every training pair (both ends training questions, no shared 8-gram) in each
 # band, 14 Oct 2026. "twins" = an answer to one would substantially answer the other. The counts of
-# pairs are re-computed and checked by the tests; the twin judgments are pending team review
-# (handoff/review_sheets/tier_k_twin_threshold_review.csv).
+# pairs are re-computed and checked by the tests. The review protocol labels the same pairs independently
+# (handoff/review_sheets/tier_k_twin_threshold_review.csv, decided in reviews/twins.jsonl); band_counts
+# reports both, and ./gb split-dev refuses to build when the decided labels give another threshold.
 BAND_READING: dict[str, list[dict[str, Any]]] = {
     "semantic": [
         {"band": [0.94, 0.95], "pairs": 9, "twins": 8},
@@ -339,14 +341,44 @@ def edge_kind_counts(edges: Mapping[Pair, Sequence[str]]) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
-def band_counts(ev: Evidence, kind: str) -> list[dict[str, Any]]:
-    """Number of train-train pairs without a shared 8-gram in each BAND_READING band of `kind`."""
+def band_pairs(ev: Evidence, kind: str) -> list[list[Pair]]:
+    """The train-train pairs without a shared 8-gram in each BAND_READING band of `kind`."""
     scores = ev.semantic if kind == "semantic" else ev.lexical
     train = set(ev.train_ids)
+    return [[(a, b) for (a, b), s in scores.items()
+             if a in train and b in train and lo <= s < hi and (a, b) not in ev.ngram_train]
+            for lo, hi in (row["band"] for row in BAND_READING[kind])]
+
+
+def decided_twin_labels(reviews_dir: Path | None = None) -> dict[tuple[str, str, str], str]:
+    """The review protocol's decided labels of the threshold pairs (reviews/twins.jsonl):
+    {(source, id_a, id_b): "twin" | "not twin"}; empty before the sheet is decided."""
+    from grcbench.review.records import decided
+    return {k: r["final"] for k, r in decided("twins", reviews_dir=reviews_dir).items()}
+
+
+def band_counts(ev: Evidence, kind: str, decided: Mapping[tuple[str, str, str], str] | None = None
+                ) -> list[dict[str, Any]]:
+    """Per BAND_READING band of `kind`: the pairs now in the data, Claude's 14 Oct reading, and, once the
+    review protocol has decided the sheet, the decided twins (`decided`, default reviews/twins.jsonl)."""
+    decided = decided_twin_labels() if decided is None else decided
     out = []
-    for row in BAND_READING[kind]:
-        lo, hi = row["band"]
-        n = sum(1 for (a, b), s in scores.items()
-                if a in train and b in train and lo <= s < hi and (a, b) not in ev.ngram_train)
-        out.append({**row, "pairs_now": n, "twin_share": round(row["twins"] / row["pairs"], 3)})
+    for row, pairs in zip(BAND_READING[kind], band_pairs(ev, kind)):
+        n_decided = None
+        if decided:
+            missing = [p for p in pairs if (kind, *p) not in decided]
+            if missing:
+                raise ValueError(f"{kind} pair {missing[0]} has no decision in the twin review")
+            n_decided = sum(decided[(kind, *p)] == "twin" for p in pairs)
+        out.append({**row, "pairs_now": len(pairs), "twin_share": round(row["twins"] / row["pairs"], 3),
+                    "decided_twins": n_decided})
     return out
+
+
+def decided_threshold(rows: Sequence[Mapping[str, Any]]) -> float | None:
+    """The threshold rule on the decided labels: the lower edge of the lowest band in which at least half
+    of the pairs are twins (None: no band qualifies, or nothing is decided)."""
+    from grcbench.review.apply import threshold
+    if any(r.get("decided_twins") is None for r in rows):
+        return None
+    return threshold([{"band": r["band"], "pairs": r["pairs_now"], "twins": r["decided_twins"]} for r in rows])

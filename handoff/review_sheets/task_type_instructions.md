@@ -1,13 +1,14 @@
 # Task-type review sheets: instructions
 
-Two sheets, both UTF-8 CSV (open in Excel or LibreOffice). Background and counts: `reports/labels.md`,
-but **annotators of the test sheet must not open that report, `splits/task_type_labels.jsonl`,
-`splits/task_type_review_key.json` or `src/grcbench/labels/ambiguous_decisions.json` until their
-labels are returned**: those files show Claude's labels.
+Two sheets, both UTF-8 CSV, filled in under the review protocol
+([review_protocol.md](../../docs/guidelines/review_protocol.md)): two review agents, each alone, and
+the expert agent for every disagreement. Background and counts: `reports/labels.md`. The annotators of
+the test sheet do not open that report, `splits/task_type_labels.jsonl`, `splits/task_type_review_key.json`
+or `src/grcbench/labels/ambiguous_decisions.json` until their labels are recorded: those files show
+Claude's earlier labels.
 
-The test sheet holds frozen test questions. Keep it inside the team, and never paste its questions
-into ChatGPT, Claude or any other model or online tool (frozen-split rule: eval questions are never
-sent to any model).
+The test sheet holds frozen test questions. They go to no model outside the declared runs of the
+review protocol and of the benchmark (eval plan §6).
 
 ## Allowed labels (from `00_dataset_spec/task_types.json`)
 
@@ -29,20 +30,34 @@ Write exactly one of the six labels above in each label cell (lower case, as spe
 
 ## Sheet 1: `task_type_ambiguous_test.csv` (11 test questions, blind double labelling)
 
-1. Two team members label independently. Each works on **their own copy** of the sheet and fills in only
-   their own column (`annotator_1` or `annotator_2`). Do not discuss items until both are done.
+1. Two annotator agents (`A1`, `A2`) label independently, each from its own input copy.
 2. Read the question and pick the one type that best represents the main capability needed to answer it.
    `raw_label` is the question generator's own spelling, which is ambiguous by construction.
-3. Use `notes` for doubts. Return both copies; agreement (Cohen's κ, each annotator against the other and
-   against Claude) is computed with
-   `./gb labels agreement --test <copy_1.csv> <copy_2.csv>`.
-4. Disagreements are settled by discussion and the agreed label goes into the G2 pre-registration.
+3. Give the reason for every label in `notes`, in a sentence.
+4. Agreement (Cohen's κ, each annotator against the other and against Claude's earlier label) is computed
+   with `./gb labels agreement --test <copy_1.csv> <copy_2.csv>`.
+5. The expert agent decides every disagreement. The decided label goes into the pre-registration.
 
 ## Sheet 2: `task_type_spotcheck_train.csv` (170 training questions, spot-check)
 
 A seeded 10% sample of training rows, stratified by raw spelling, with at least one row for every
-spelling. `method` says whether the label came
-from the rule map (`rule`) or from Claude's reading of the question (`classified`). This check is not
-blind: read the question and the proposed label, then write the label you think is right in
-`reviewer_label` (the same label if you agree). Agreement is computed with
-`./gb labels agreement --train <sheet.csv>`.
+spelling. `method` says whether the label came from the rule map (`rule`) or from Claude's reading of
+the question (`classified`). This check is not blind:
+
+1. Read the question and the proposed label.
+2. Write the label you think is right as your value, the same label if you agree.
+3. Give a one-line reason whenever you differ from the proposed label.
+
+Two reviewer agents (`R1`, `R2`) each check every row. The expert agent decides where they differ.
+The decided label goes in `reviewer_label`. Agreement is computed with
+`./gb labels agreement --train <sheet.csv>`. The training data itself is not changed: the spot-check
+measures how often the proposed labels are right.
+
+## Output fields
+
+One JSON object per row, written to your output file as soon as the row is done:
+
+- `sheet`: `"task_type_test"` or `"task_type_train"`;
+- `key`: `{"id": ...}`;
+- `value`: one of the six labels;
+- `notes`: your reason.

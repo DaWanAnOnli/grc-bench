@@ -116,10 +116,17 @@ def test_section_8_records_decisions_1_to_7():
     s8 = " ".join(section(TEXT, "## 8.").split())
     s51 = " ".join(section(TEXT, "### 5.1").split()).lower()
     assert "human route" not in s51 and "human annotator" not in s51 and "`human`" not in s51
-    assert "human labels on 150 answers" in s51               # the judge calibration stays
+    assert "reference labelling of 150 answers by three annotator agents" in s51   # the judge calibration stays
+    from collections import Counter
+
+    from grcbench.common.io import read_jsonl
+    from grcbench.common.paths import SPLITS
+    counts = Counter(r["clean"] for r in read_jsonl(SPLITS / "task_type_labels.jsonl") if r["split"] == "eval")
+    merged = counts["design"] + counts["gnuradio_usage"]
     for n, d in ((1, "B0 is the base model served with the default tool grammar"),
                  (2, "accepted as written, including the strict bootstrap rule of H1a (95 % of pairs"),
-                 (3, "4K, 16K, 32K and 64K"), (4, "design + gnuradio_usage, of 50 frozen test items"),
+                 (3, "4K, 16K, 32K and 64K"),
+                 (4, f"design + gnuradio_usage, of {merged} frozen test items"),
                  (5, "(155 items)"), (6, "F5"), (7, "scored automatically")):
         item = re.search(rf"(?:^|\s){n}\. (.*?)(?=\s{n + 1}\. \*\*|$)", s8)
         assert item and d in item[1], (n, d)

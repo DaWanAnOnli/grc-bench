@@ -12,7 +12,9 @@
    {
     "id": "blocks_file_sink",
     "params": {
-     "file": "narrow.dat",
+     "file": {
+      "regex": "(^|/)narrow\\.dat$"
+     },
      "type": "complex"
     }
    }
@@ -94,9 +96,13 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
@@ -120,5 +126,5 @@
   "active_graph": null
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }
