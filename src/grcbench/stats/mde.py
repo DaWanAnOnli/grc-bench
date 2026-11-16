@@ -13,6 +13,10 @@ paired difference is at most p_d / n when a share p_d of the items is discordant
     mde(n_items, p_discordant, alpha=0.05, power=0.8) -> float (a proportion; x100 = points)
     n_for_mde(target, p_discordant, ...)               -> smallest n with mde(n, p_d) <= target
     table8()                                           -> the rows of Table 8, recomputed
+    v1_table()                                         -> the MDEs at the v1.0 test items (V1_ITEMS)
+
+A paired difference cannot exceed the share of items decided differently, so where mde(n, p_d) > p_d
+no comparison reaches the stated power under that assumption ("reachable" False).
 """
 
 from __future__ import annotations
@@ -27,6 +31,10 @@ P_DISCORDANT = (0.2, 0.3)          # Table 8's assumption: 20-30% of items decid
 
 # Table 8 as printed in the eval plan: tier -> (test items in v1.0, MDE low, MDE high) in points.
 TABLE8 = {"K": (285, 7, 9), "F": (150, 10, 13), "A": (30, 23, 28)}
+
+# The test items of benchmark v1.0, the ones the review kept (pre-registration §7 and §10). A test pins
+# these to the item files.
+V1_ITEMS = {"K": 277, "F": 129, "A": 25}
 
 
 def mde(n_items: int, p_discordant: float, alpha: float = ALPHA, power: float = POWER) -> float:
@@ -69,4 +77,17 @@ def table8(alpha: float = ALPHA, power: float = POWER) -> list[dict]:
                      "points": f"{points(lo)}-{points(hi)}",
                      "printed": f"{lo_printed}-{hi_printed}",
                      "matches_plan": (points(lo), points(hi)) == (lo_printed, hi_printed)})
+    return rows
+
+
+def v1_table(alpha: float = ALPHA, power: float = POWER) -> list[dict]:
+    """The MDE of each tier at its v1.0 test items, beside Table 8's planned count and range."""
+    rows = []
+    for tier, n in V1_ITEMS.items():
+        planned_n, lo_printed, hi_printed = TABLE8[tier]
+        mdes = [mde(n, pd, alpha, power) for pd in P_DISCORDANT]
+        rows.append({"tier": tier, "n_items": n, "mde_pd_0_2": mdes[0], "mde_pd_0_3": mdes[1],
+                     "points": f"{points(mdes[0])}-{points(mdes[1])}",
+                     "planned_items": planned_n, "planned": f"{lo_printed}-{hi_printed}",
+                     "reachable": tuple(m <= pd for m, pd in zip(mdes, P_DISCORDANT))})
     return rows

@@ -90,7 +90,7 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 | **H2a** recipe | Mixed SFT (knowledge, trajectories and replay) beats single-source SFT on every tier. | On the test split, Tiers K and F: the best S1 checkpoint against each single-source comparison arm of the same model, with the primary paired test of each tier, Holm-corrected in the RQ2 family. H2a holds for a tier if every comparison favours the mixed recipe at the corrected 5 % level. Tier A is compared on the dev split only, because the arms are not run on Tier A of the test split (Table 6). |
 | **H2b** preference stage | Defect-aware preference optimisation lowers the hallucinated-block rate by at least 30 % relative to SFT alone. | Tier F: the hallucinated-block rate of S1 + DPO and of S1 + DPOP against the best S1 checkpoint. H2b holds for a method if the relative reduction is at least 30 % and the paired test of the per-task rates is significant after Holm correction in the RQ2 family. |
 | **H3** curation | Adding validated repairs to PASS-only data raises accuracy and lowers the hallucinated-block rate at equal compute. | The curation comparison A2 runs on the dev split (eval plan §7.2): PASS + repaired against PASS-only, on Tier-K score and on the Tier-F hallucinated-block rate, paired tests, Holm-corrected in the RQ3 family. Because the dev split also served for model choices, H3 is reported with that limitation. |
-| **H4a** compression cost | 4-bit compression costs more on agentic (A) than on knowledge (K) metrics. | For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A minus the drop on Tier K, in percentage points, with a 95 % cluster-bootstrap interval (items resampled within each tier). H4a holds if the interval lies above 0 (`H4a-decision`, §8). Tier A's MDE of 23–28 points is printed beside the result. |
+| **H4a** compression cost | 4-bit compression costs more on agentic (A) than on knowledge (K) metrics. | For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A minus the drop on Tier K, in percentage points, with a 95 % cluster-bootstrap interval (items resampled within each tier). H4a holds if the interval lies above 0 (`H4a-decision`, §8). Tier A's MDE at its 25 test tasks (25–31 points) is printed beside the result. |
 | **H4b** speed | The MoE model (North-Mini-Code) reaches at least 80 tokens/s on the reference hardware at Q4_K_M. | Tier E on setup H2 (a laptop with a 4 GB GPU, MoE experts in CPU memory): the median generation speed of 5 warm llama-bench runs is at least 80 tokens/s, decided at each of 4K, 16K, 32K and 64K tokens of context. The result states the context range over which H4b holds ("holds up to 16K"); a context that cannot be run does not hold (`H4b-context`, §8). Setups H1 and H3 are reported beside it. |
 
 ## 4. Item quality before the freeze
@@ -305,13 +305,20 @@ default settings on 10 tasks.
   BF16, and H4a).
 - **What the benchmark can detect** (eval plan Table 8: 80 % power, 5 % significance, paired, 20–30 %
   of items decided differently). The MDE is printed beside every claim, with a design-effect
-  adjustment when items are clustered (`mde-design-effect`).
+  adjustment when items are clustered (`mde-design-effect`). It is computed at the v1.0 test items, the
+  ones the review kept (§10); `./gb stats mde` prints both rows.
 
-  | Tier | Test items | MDE (percentage points) |
-  |---|--:|---|
-  | K | 285 | 7–9 |
-  | F | 150 | 10–13 |
-  | A | 30 | 23–28 |
+  | Tier | Test items in Table 8 | MDE in Table 8 (points) | Test items in v1.0 | MDE in v1.0 (points) |
+  |---|--:|---|--:|---|
+  | K | 285 | 7–9 | 277 | 8–9 |
+  | F | 150 | 10–13 | 129 | 11–14 |
+  | A | 30 | 23–28 | 25 | 25–31 |
+
+  A paired difference cannot exceed the share of items the two models decide differently. At its 25
+  test tasks, Tier A's MDE is larger than the share of tasks decided differently at both of Table 8's
+  values (25 points at 20 %, 31 points at 30 %), so under Table 8's assumptions no paired Tier-A
+  comparison reaches 80 % power. Tier-A differences are reported with their intervals and this MDE, and
+  a non-significant Tier-A comparison is not read as evidence of no difference.
 
 - **Seeds.** The final setting of each model is trained with 3 seeds; the spread between seeds is
   reported separately from the item-level interval.
@@ -572,7 +579,7 @@ Proposals for G2 (deviation = changes a stated definition; extension = decides a
 ### H4a-decision (extension): Decision rule of H4a
 
 - Stated: proposal H4: 4-bit GGUF costs more on agentic (A) than knowledge (K) metrics; measured as the score change from BF16 to Q4.
-- Proposal: For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A (per-task success) minus the drop on Tier K (per-item credit), with a 95% percentile interval from a stratified cluster bootstrap (each tier's clusters resampled independently, B = 10,000). H4a holds if the interval lies above 0. Tier A's MDE (23-28 points) is printed beside it.
+- Proposal: For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A (per-task success) minus the drop on Tier K (per-item credit), with a 95% percentile interval from a stratified cluster bootstrap (each tier's clusters resampled independently, B = 10,000). H4a holds if the interval lies above 0. Tier A's MDE at its 25 test tasks (25-31 points) is printed beside it.
 - Code: functions.compression_cost_difference
 - Evidence: tests/test_preregistration.py::test_h4a_decision_rule: equal drops give an interval around 0; a 30-point larger Tier-A drop on 30 tasks holds.
 

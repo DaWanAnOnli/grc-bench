@@ -160,7 +160,7 @@ PROPOSALS = (
                  "(per-task success) minus the drop on Tier K (per-item credit), with a 95% percentile "
                  "interval from a stratified cluster bootstrap (each tier's clusters resampled "
                  "independently, B = 10,000). H4a holds if the interval lies above 0. Tier A's MDE "
-                 "(23-28 points) is printed beside it.",
+                 "at its 25 test tasks (25-31 points) is printed beside it.",
      "where": ("functions.compression_cost_difference",),
      "evidence": "tests/test_preregistration.py::test_h4a_decision_rule: equal drops give an interval "
                  "around 0; a 30-point larger Tier-A drop on 30 tasks holds."},

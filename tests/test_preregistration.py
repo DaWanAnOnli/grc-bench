@@ -195,3 +195,28 @@ def test_the_tier_a_context_cap_is_the_models_own_if_shorter():
 def test_the_wrong_form_count_matches_the_code():
     s51 = " ".join(section(TEXT, "### 5.1").split())
     assert "with a number scored 0 for the wrong form," in s51 and "wrong form alone" not in s51
+
+
+def test_the_mdes_of_section_7_are_at_the_v1_test_items():
+    from grcbench.review.items import active_dirs
+    from grcbench.stats import mde as md
+    from grcbench.tier_a.task import task_dirs as a_dirs
+    from grcbench.tier_f.taskio import task_dirs as f_dirs
+    from grcbench.tier_k.run import load_split
+    assert md.V1_ITEMS == {"K": len(load_split("test")), "F": len(active_dirs(f_dirs("test"))),
+                           "A": len(active_dirs(a_dirs("test")))}
+    s7 = section(TEXT, "## 7.")
+    for r in md.v1_table():
+        _, lo, hi = md.TABLE8[r["tier"]]
+        assert f"| {r['tier']} | {r['planned_items']} | {lo}–{hi} | {r['n_items']} | {r['points'].replace('-', '–')} |" in s7
+    a = md.v1_table()[2]
+    pts = a["points"].replace("-", "–")
+    assert "Tier A's MDE is larger than the share of tasks" in " ".join(s7.split())
+    assert f"Tier A's MDE at its {a['n_items']} test tasks ({pts} points) is printed beside the result." in TEXT
+    h4a = next(p for p in proposals.PROPOSALS if p["id"] == "H4a-decision")
+    assert f"Tier A's MDE at its {a['n_items']} test tasks ({a['points']} points) is printed beside it." in h4a["proposal"]
+
+
+def test_the_run_list_names_the_freeze_date():
+    head = runlog.RUN_LIST.read_text(encoding="utf-8").split("status:", 1)[0]
+    assert "at the freeze (17 Nov 2026)" in head and "13 Nov" not in head

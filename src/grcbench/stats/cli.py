@@ -278,8 +278,12 @@ def _c_mde():
     ok = all(r["matches_plan"] for r in rows)
     n = md.n_for_mde(0.10, 0.2)
     ok &= md.mde(n, 0.2) <= 0.10 < md.mde(n - 1, 0.2) and md.points(0.0742) == 7 and md.points(0.125) == 13
-    return "K 7-9, F 10-13, A 23-28; n_for_mde inverts mde", \
-        ", ".join(f"{r['tier']} {r['points']}" for r in rows) + f"; n(10 pts, 0.2) = {n}", ok
+    v1 = md.v1_table()                          # each MDE is mde() at the v1.0 count; reachable iff MDE <= p_d
+    ok &= all(r["mde_pd_0_2"] == md.mde(r["n_items"], 0.2) and r["mde_pd_0_3"] == md.mde(r["n_items"], 0.3)
+              and r["reachable"] == (r["mde_pd_0_2"] <= 0.2, r["mde_pd_0_3"] <= 0.3) for r in v1)
+    return "K 7-9, F 10-13, A 23-28; n_for_mde inverts mde; v1.0 rows", \
+        ", ".join(f"{r['tier']} {r['points']}" for r in rows) + f"; n(10 pts, 0.2) = {n}; v1.0 " \
+        + ", ".join(f"{r['tier']} {r['points']}" for r in v1), ok
 
 
 def _panel(seed: int = 4, n_models: int = 5, n_items: int = 285, n: int = 5) -> np.ndarray:
@@ -787,6 +791,14 @@ def print_table8(alpha: float, power: float) -> bool:
         print(f"{r['tier']:5s} {r['n_items']:5d} {100 * r['mde_pd_0_2']:8.2f} "
               f"{100 * r['mde_pd_0_3']:8.2f} {r['points']:>7s} {r['printed']:>6s} "
               f"{'yes' if r['matches_plan'] else 'NO'}")
+    print("\nAt the v1.0 test items (pre-registration §7)")
+    print(f"{'tier':5s} {'items':>5s} {'p_d=0.2':>8s} {'p_d=0.3':>8s} {'points':>7s}")
+    for r in md.v1_table(alpha, power):
+        note = "" if all(r["reachable"]) else (
+            "  larger than p_d at " + " and ".join(str(pd) for pd, ok in zip(md.P_DISCORDANT, r["reachable"])
+                                                   if not ok) + ": a paired comparison cannot reach this power")
+        print(f"{r['tier']:5s} {r['n_items']:5d} {100 * r['mde_pd_0_2']:8.2f} "
+              f"{100 * r['mde_pd_0_3']:8.2f} {r['points']:>7s}{note}")
     return all(r["matches_plan"] for r in rows)
 
 
