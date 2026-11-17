@@ -7,11 +7,11 @@
    "reasons": [
     "files[0]: shifted.dat does not exist",
     "files[1]: second_power_db.dat does not exist",
-    "answer[0]: low-pass cutoff: no answer line names 'low.?pass cut.?off'",
-    "answer[1]: mixer LO frequency: no answer line names 'lo frequency'",
-    "answer[2]: averaging length: no answer line names 'averaging length'",
-    "answer[3]: Moving Average default length: no answer line names 'moving average default length'",
-    "answer[4]: Log10 default n: no answer line names 'log10 default n'",
+    "answer[0]: low-pass cutoff: no answer line names 'low.?pass cut.?off[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[1]: mixer LO frequency: no answer line names 'lo frequency[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[2]: averaging length: no answer line names 'averaging length[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[3]: Moving Average default length: no answer line names 'moving average default length[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[4]: Log10 default n: no answer line names 'log10 default n[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
     "answer[5]: shifted RMS: expected value not derivable: 'shifted.dat does not exist in the project folder'",
     "answer[6]: mean power: expected value not derivable: 'second_power_db.dat does not exist in the project folder'"
    ],
@@ -39,9 +39,9 @@
      "reasons": [
       "files[0]: shifted.dat does not exist",
       "files[1]: second_power_db.dat does not exist",
-      "answer[2]: averaging length: expects 2000 after 'averaging length'",
-      "answer[3]: Moving Average default length: expects 1000 after 'moving average default length'",
-      "answer[4]: Log10 default n: expects 1 after 'log10 default n'",
+      "answer[2]: averaging length: expects 2000 after 'averaging length[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+      "answer[3]: Moving Average default length: expects 1000 after 'moving average default length[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+      "answer[4]: Log10 default n: expects 1 after 'log10 default n[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
       "answer[5]: shifted RMS: expected value not derivable: 'shifted.dat does not exist in the project folder'",
       "answer[6]: mean power: expected value not derivable: 'second_power_db.dat does not exist in the project folder'"
      ],

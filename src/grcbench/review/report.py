@@ -61,7 +61,15 @@ def sheet_summary(sheet: str, recs: Sequence[Mapping[str, Any]],
 
     removed = [{"key": list(r["key"]), "final": r["final"], "decided_by": r["decided_by"], "why": why(r)}
                for r in recs if r["final"] in REMOVED and spec.kind in ("decision", "rubric")]
-    return {
+    from grcbench.review import replacements
+    second: dict[str, Any] = {}
+    if replacements.groups(sheet):       # a sheet with a second round: its reserves and each round's audit
+        new = replacements.all_ids()
+        second = {"reserves": sorted(replacements.pick(replacements.groups(sheet),
+                                                       {r["key"][0]: r["final"] for r in recs})),
+                  "audit_rounds": {"first": decide.audit_outcome([j for j in sample if j[0][0] not in new]),
+                                   "second": decide.audit_outcome([j for j in sample if j[0][0] in new])}}
+    return {**second,
         "sheet": sheet, "rows": len(recs),
         "agreed": sum(r["route"] == "agreement" for r in recs),
         "expert": sum(r["decided_by"] == "EX" for r in recs),
@@ -121,6 +129,19 @@ def render(summaries: Sequence[Mapping[str, Any]], runs: Sequence[Mapping[str, A
     lines.append(_table(["sheet", "item", "decision", "decided by", "reason"],
                         [[sh, " / ".join(r["key"]), r["final"], r["decided_by"], r["why"]] for sh, r in removed])
                  if removed else "None.")
+    second = [s for s in summaries if "audit_rounds" in s]
+    if second:
+        lines += ["", "## The second round: the replacement tasks", "",
+                  "The tasks that replace the ones the first round rejected were reviewed in a second round, with "
+                  "its own seeded audit sample (`docs/guidelines/review_protocol.md`). A reserve is an accepted "
+                  "replacement beyond the slots of the tasks it replaces: kept, counted under its final value above, "
+                  "and not scored.", "",
+                  _table(["sheet", "audit, first round: expert disagreed", "audit, second round: expert disagreed",
+                          "reserves"],
+                         [[s["sheet"], f"{s['audit_rounds']['first']['disagreements']} of "
+                                       f"{s['audit_rounds']['first']['n']}",
+                           f"{s['audit_rounds']['second']['disagreements']} of {s['audit_rounds']['second']['n']}",
+                           ", ".join(s["reserves"]) or "none"] for s in second])]
     if h1b:
         lines += ["", "## Expert review (H1b)", "",
                   "Every GNU Radio question and every Tier-F and Tier-A task, reviewed by the expert agent "

@@ -6,6 +6,8 @@
   "holds": false,
   "items": 42,
   "kept": 35,
+  "replacements": 9,
+  "replacements_accepted": 9,
   "share": 0.8333,
   "share_kept": 1.0,
   "unsure": 0
@@ -17,6 +19,8 @@
   "holds": false,
   "items": 195,
   "kept": 172,
+  "replacements": 27,
+  "replacements_accepted": 21,
   "share": 0.8821,
   "share_kept": 1.0,
   "unsure": 0

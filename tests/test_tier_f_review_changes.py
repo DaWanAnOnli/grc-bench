@@ -195,7 +195,9 @@ def test_the_search_applies_the_hilbert_band_and_the_l1_size_to_every_attempt():
 # ------------------------------------------------------------------------- the per-task patches
 def test_every_tier_f_patch_implements_a_decided_edit():
     """reviews/tier_f_patches.json: each patch names a task decided `approve with edits` and quotes one of the
-    expert's merged edits, and its op is one review.patches applies."""
+    expert's merged edits, and its op is one review.patches applies. A patch marked `post_review` is an edit after
+    the review (pre-registration §10, "Edits after the review"): it names a task the review kept, states its edit,
+    and the tasks with such patches are the seven build tasks §10 names."""
     from grcbench.common.paths import REPO
     from grcbench.review import patches
     path = REPO / "reviews" / "tier_f_patches.json"
@@ -203,11 +205,17 @@ def test_every_tier_f_patch_implements_a_decided_edit():
         pytest.skip("no Tier-F patches yet")
     recs = {json.loads(l)["key"][0]: json.loads(l)
             for l in (REPO / "reviews" / "tier_f.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()}
+    post = set()
     for p in json.loads(path.read_text(encoding="utf-8")):
         rec = recs.get(p["item"])
-        assert rec is not None and rec["final"] == "approve with edits", p["item"]
         assert p["op"] in patches.OPS and p.get("file", "task.json") == "task.json", p
+        if p.get("post_review"):
+            assert rec is not None and rec["final"] in ("approve", "approve with edits") and p["edit"], p["item"]
+            post.add(p["item"])
+            continue
+        assert rec is not None and rec["final"] == "approve with edits", p["item"]
         assert p["edit"] in (rec.get("ex") or rec.get("audit"))["edits"], (p["item"], p["edit"][:60])
+    assert post == {"gbf-dev-33", *(f"gbf-test-{i}" for i in (24, 37, 94, 114, 134, 135))}
 
 
 def test_the_search_skips_a_candidate_that_misses_a_rule(monkeypatch, tmp_path):

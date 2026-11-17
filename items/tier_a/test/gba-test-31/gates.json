@@ -7,11 +7,11 @@
    "reasons": [
     "files[0]: received.dat does not exist",
     "files[1]: second_power_db.dat does not exist",
-    "answer[0]: high-pass cutoff: no answer line names 'high.?pass cut.?off'",
-    "answer[1]: AGC reference: no answer line names 'agc reference'",
-    "answer[2]: averaging length: no answer line names 'averaging length'",
-    "answer[3]: AGC default maximum gain: no answer line names 'agc default max(imum)? gain'",
-    "answer[4]: Moving Average item types: no answer line names 'moving average (item )?types'",
+    "answer[0]: high-pass cutoff: no answer line names 'high.?pass cut.?off[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[1]: AGC reference: no answer line names 'agc reference[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[2]: averaging length: no answer line names 'averaging length[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[3]: AGC default maximum gain: no answer line names 'agc default max(imum)? gain[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[4]: Moving Average item types: no answer line names 'moving average (item )?types[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
     "answer[5]: received RMS: expected value not derivable: 'received.dat does not exist in the project folder'",
     "answer[6]: mean power: expected value not derivable: 'second_power_db.dat does not exist in the project folder'"
    ],
@@ -39,7 +39,7 @@
      "reasons": [
       "files[0]: received.dat does not exist",
       "files[1]: second_power_db.dat does not exist",
-      "answer[3]: AGC default maximum gain: expects 65536 after 'agc default max(imum)? gain'",
+      "answer[3]: AGC default maximum gain: expects 65536 after 'agc default max(imum)? gain[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
       "answer[5]: received RMS: expected value not derivable: 'received.dat does not exist in the project folder'",
       "answer[6]: mean power: expected value not derivable: 'second_power_db.dat does not exist in the project folder'"
      ],

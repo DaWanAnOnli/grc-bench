@@ -199,9 +199,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by R1;R2",
+  "reviewers": [
+   "R1",
+   "R2"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 174,

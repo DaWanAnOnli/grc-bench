@@ -148,3 +148,29 @@ def test_sheet_rows_cover_built_tasks_and_specs():
     for r in rows:
         assert set(r) <= set(spec_drafts.SHEET_COLUMNS)
         assert r["instruction"] and r["acceptance"] and r["start_state"]
+
+
+def test_the_set_report_gives_the_reviews_outcome_and_the_scored_tasks():
+    """reports/tier_a_first_set.md counts each task's review status and the tasks a run scores (30 test, 3 per
+    category, and 12 dev), not "pending team review" (review protocol; pre-registration §10)."""
+    from grcbench.tier_a import spec_drafts
+    text = spec_drafts._report(spec_drafts.built_rows(), spec_drafts.draft_rows())
+    assert "pending team review" not in text
+    assert "**Scored:** 30 test and 12 dev tasks" in text and "2 reserves" in text
+    assert "| knowledge | 7 | 0 | 7 | 3 | 2 | 1 |" in text
+
+
+def test_every_tier_a_post_review_patch_names_a_kept_task():
+    """reviews/tier_a_patches.json: a patch marked `post_review` is an edit after the review (pre-registration §10,
+    "Edits after the review"): it names a task the review kept, states its edit, writes task.json, and the only such
+    task is gba-test-24."""
+    import json as _json
+    from grcbench.review import patches
+    recs = {_json.loads(l)["key"][0]: _json.loads(l)
+            for l in (first_set.REVIEWS / "tier_a.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()}
+    post = [p for p in _json.loads((first_set.REVIEWS / "tier_a_patches.json").read_text(encoding="utf-8"))
+            if p.get("post_review")]
+    assert {p["item"] for p in post} == {"gba-test-24"}
+    for p in post:
+        assert recs[p["item"]]["final"] in ("approve", "approve with edits") and p["edit"]
+        assert p.get("file", "task.json") == "task.json" and p["op"] in patches.OPS

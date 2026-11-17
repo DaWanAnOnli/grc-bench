@@ -202,7 +202,8 @@ def build(today: str | None = None) -> str:
 
 def write(path: Path | None = None) -> Path:
     path = path or REPORTS / "tier_f_first_set.md"
-    path.write_text(build(), encoding="utf-8", newline="\n")
+    from grcbench.common.io import write_text
+    write_text(path, build())                                       # a report: written with path redaction
     return path
 
 

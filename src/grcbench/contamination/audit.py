@@ -483,10 +483,11 @@ def read_sheet(path) -> dict[tuple[str, str, str, str], dict[str, str]]:
 
 
 def write_sheet(tier: str, rows: list[dict[str, Any]], path=None) -> int:
-    """Write the review sheet of one tier. The team's decision, reviewer and notes are carried over
-    from the sheet on disk by (tier, item, corpus, training document); a reviewed pair that is no
-    longer flagged is kept at the end with signals 'not flagged in this run', so no review is lost.
-    Returns the number of reviewed rows carried over."""
+    """Write the review sheet of one tier. A reviewed pair (one with a decision, reviewer or notes on the
+    sheet on disk, matched by tier, item, corpus and training document) is written exactly as it was
+    reviewed, scores and texts included (review protocol: a sheet keeps its decided rows as reviewed);
+    a reviewed pair that is no longer flagged is kept at the end with signals 'not flagged in this run',
+    so no review is lost. Returns the number of reviewed rows carried over."""
     path = path or SHEETS / f"contamination_{tier}.csv"
     old = read_sheet(path)
     carried = len(old)
@@ -494,8 +495,8 @@ def write_sheet(tier: str, rows: list[dict[str, Any]], path=None) -> int:
     w = csv.DictWriter(buf, fieldnames=CSV_FIELDS, lineterminator="\n", extrasaction="ignore")
     w.writeheader()
     for r in rows:
-        prev = old.pop(_sheet_key(r), {})
-        w.writerow({**r, **{f: prev.get(f, "") for f in REVIEW_FIELDS}})
+        prev = old.pop(_sheet_key(r), None)
+        w.writerow(prev if prev is not None else {**r, **{f: "" for f in REVIEW_FIELDS}})
     for key in sorted(old):
         w.writerow({**old[key], "signals": NOT_FLAGGED})
     write_text(path, buf.getvalue())

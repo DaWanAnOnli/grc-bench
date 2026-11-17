@@ -144,6 +144,34 @@ def test_a_candidate_carries_its_edit_key():
     assert _cand("gbf-test-39", 428)["edit_key"] == ("repair", "missing_connection")
 
 
+def test_an_edit_key_names_the_block_type_not_the_instance():
+    """Second-round review (gbf-test-151 and gbf-test-51, gbf-test-153 and gbf-test-58): retuning or repairing tone_2
+    instead of tone_1 is the same edit, so the shared-cell rule keys an edit on the block id and the parameter."""
+    def graph(f1, f2):
+        return {"blocks": [{"name": "tone_1", "id": "analog_sig_source_x", "parameters": {"freq": f1}},
+                           {"name": "tone_2", "id": "analog_sig_source_x", "parameters": {"freq": f2}}]}
+    tune_1 = G.edit_key({"family": "parameter-tune"}, graph("1000", "2000"), graph("1500", "2000"))
+    tune_2 = G.edit_key({"family": "parameter-tune"}, graph("1000", "2000"), graph("1000", "2500"))
+    assert tune_1 == tune_2 == ("parameter-tune", ("analog_sig_source_x", "freq"))
+    fix_1 = G.edit_key({"family": "repair", "fault": {"type": "wrong_value", "block": "tone_1", "param": "freq"}},
+                       graph("1000", "2000"), None)
+    fix_2 = G.edit_key({"family": "repair", "fault": {"type": "wrong_value", "block": "tone_2", "param": "freq"}},
+                       graph("1000", "2000"), None)
+    assert fix_1 == fix_2 == ("repair", ("analog_sig_source_x", "freq"))
+
+
+def test_a_quantizer_phrase_names_the_short_to_float_scale_of_the_graph_it_describes():
+    """Second-round review (gbf-test-155): a parameter-tune task describes its start graph, whose Short To Float scale
+    is the detuned one; the phrase names that scale, and claims a rounding step only when the two scales agree."""
+    q = G.Quantize()
+    assert q.phrase({"scale": 10, "back": 10}, None) == (
+        "round it to steps of 0.1: convert it to short integers with a Float To Short block (scale 10) and back with "
+        "a Short To Float block (scale 10)")
+    assert q.phrase({"scale": 10, "back": 100}, None) == (
+        "convert it to short integers with a Float To Short block (scale 10) and back with a Short To Float block "
+        "(scale 100)")
+
+
 def test_a_shared_cell_takes_no_second_task_of_one_family_and_edit_and_no_task_beside_an_l2_one(monkeypatch, tmp_path):
     """--share-cells: a candidate is skipped when a task of its cell has the same family and edit key (a build: its
     stage list), or when a task of its cell is written at a level that never shares (L2)."""

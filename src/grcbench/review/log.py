@@ -38,6 +38,9 @@ def declare(path: Path, *, agent: int, role: str, sheets: list[str], rows: int, 
     entries = _entries(path)
     if any(e["agent"] == agent for e in entries):
         raise ValueError(f"agent {agent} is already declared")
+    if not any(lo <= agent <= hi for lo, hi in ROUNDS.values()):
+        raise ValueError(f"agent {agent} is outside the review's rounds: "
+                         + ", ".join(f"round {r}: agents {lo} to {hi}" for r, (lo, hi) in ROUNDS.items()))
     if len(entries) >= MAX_AGENTS:
         raise ValueError(f"the review is capped at {MAX_AGENTS} agent runs; {len(entries)} are declared")
     e = {"agent": agent, "role": role, "sheets": list(sheets), "rows": rows, "model": model, "date": date,

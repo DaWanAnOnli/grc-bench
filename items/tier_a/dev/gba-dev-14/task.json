@@ -3,14 +3,6 @@
   "blocks_present": [
    {
     "id": "epy_block"
-   },
-   {
-    "id": "blocks_file_sink",
-    "params": {
-     "file": {
-      "regex": "(^|/)sign[.]dat$"
-     }
-    }
    }
   ],
   "hier_block": {
@@ -145,6 +137,24 @@
       "min": 0.999,
       "point": "added",
       "skip": 4800
+     },
+     {
+      "feature": "mean",
+      "group": "f2p",
+      "max": 0.1,
+      "min": -0.1,
+      "point": "added",
+      "skip": 4800
+     },
+     {
+      "expect": 9500,
+      "feature": "peak_freq",
+      "fs": 96000.0,
+      "group": "f2p",
+      "n": 16384,
+      "point": "added",
+      "skip": 4800,
+      "tol": 95.0
      }
     ],
     "graph_checks": [
@@ -183,24 +193,28 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
   "rules": [
    {
+    "pattern": "\\bcategory\\b",
+    "reply": "Use the default."
+   },
+   {
     "pattern": "\\bsave\\b",
     "reply": "Yes, please save it."
    },
    {
-    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want)\\b",
+    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want|overwrite)\\b",
     "reply": "Yes, go ahead."
-   },
-   {
-    "pattern": "\\b(category|overwrite)\\b",
-    "reply": "Use the default."
    }
   ]
  },
@@ -214,5 +228,5 @@
   "active_graph": "resampled_tones.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

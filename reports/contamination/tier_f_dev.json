@@ -1391,7 +1391,7 @@
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-33/task.json",
-   "sha256": "1cae748b43be98b5a6337ee9d8535ef4cd051bf1bcd46f02f5a802d26ebc510b"
+   "sha256": "6e4a23f897ff601b00813ab55b98b4b2386d3d52bbfe6f92bebf647ff0716757"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-34/task.json",
@@ -1443,15 +1443,15 @@
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-46/task.json",
-   "sha256": "87dcae9c1a936a4bd45fd71fe957bbfdd886e54f7d1f38620e43c1a5c7a7f9c8"
+   "sha256": "bb1e29092d3226b3138ea640d2d798593bc822bd18db7ff10c555344927bb868"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-47/task.json",
-   "sha256": "580a7eb287019435f03249424bdd9a3b3927cd258c5dcc30b1ca72c399c92e86"
+   "sha256": "d9cec114e04c55ce17543957936e26110f7e92385febfc7f1f88f1c56514591e"
   },
   {
    "path": "grc-bench/items/tier_f/dev/gbf-dev-48/task.json",
-   "sha256": "4f5f45433d96a33892045f5f3ff7d6b8e3b0670371a493a7ab89018472883099"
+   "sha256": "1dad3aded9b8b5ca26371cbc6595c684ef59a6831176b21c30f4812857ddcedc"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",

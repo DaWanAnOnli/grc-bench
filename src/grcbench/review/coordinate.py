@@ -235,14 +235,21 @@ def decide_sheet(work: Path, sheet: str, reviews_dir: Path | None = None, sheet_
     if again:
         raise ValueError(f"{sheet}: {len(again)} row(s) already decided in an earlier round, e.g. {again[:3]}")
     check_audit(spec, recs, decide.audit_sample(sheet, [r["key"] for r in recs if "agreed" in r]))
+    if not merge:                        # a re-run of a round covers its records; a second round needs --merge
+        dropped = sorted(set(records.decided(sheet, reviews_dir=Path(reviews_dir or REPO / "reviews")))
+                         - {r["key"] for r in recs})
+        if dropped:
+            raise ValueError(f"{sheet}: {len(dropped)} decided row(s) would be dropped, e.g. {dropped[:3]}; "
+                             f"a second round is decided with --merge")
     recs = list(earlier.values()) + recs
     if spec.group:                       # the final values, too, carry one decision per group
         _, rows = inputs.read_sheet(sheet)
         records.check_groups(spec, rows, {r["key"]: {"value": r["final"]} for r in recs})
+    text = fill.filled(sheet, recs, require_all=require_all)          # before any write: a failing fill writes nothing
     records.write_records(Path(reviews_dir or REPO / "reviews") / f"{sheet}.jsonl", recs)
     out = Path(sheet_dir or inputs.SHEET_DIR) / spec.file
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(fill.filled(sheet, recs, require_all=require_all), encoding="utf-8")
+    out.write_text(text, encoding="utf-8")
     return recs
 
 
@@ -275,11 +282,14 @@ def decide_rubrics(work: Path, sheet: str, problems, calc: Mapping[str, Mapping[
     return recs
 
 
-def unreviewed(work: Path, sheet: str) -> dict[str, list[tuple[str, ...]]]:
-    """Sheet rows that one or both reviewers have not written."""
+def unreviewed(work: Path, sheet: str, reviews_dir: Path | None = None) -> dict[str, list[tuple[str, ...]]]:
+    """Sheet rows still to decide that one or both reviewers have not written (a row decided in an earlier
+    round is not expected again)."""
+    from grcbench.common.paths import REPO
     spec = SHEETS[sheet]
     _, rows = inputs.read_sheet(sheet)
-    keys = {tuple(str(r[c]) for c in spec.key) for r in rows}
+    done = set(records.decided(sheet, reviews_dir=Path(reviews_dir or REPO / "reviews")))
+    keys = {tuple(str(r[c]) for c in spec.key) for r in rows} - done
     r1, r2 = collect(work, sheet)
     return {spec.roles[0]: sorted(keys - set(r1)), spec.roles[1]: sorted(keys - set(r2)),
             "unknown": sorted((set(r1) | set(r2)) - keys)}

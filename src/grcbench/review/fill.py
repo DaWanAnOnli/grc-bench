@@ -169,7 +169,7 @@ def with_new_rows(sheet: str, generated: str, reviews_dir=None, path=None) -> st
     spec = SHEETS[sheet]
     path = path or SHEET_DIR / spec.file
     if not decided(sheet, reviews_dir=reviews_dir) or not path.exists():
-        return generated
+        return redact(generated)
     current = path.read_text(encoding="utf-8")
     reader = csv.DictReader(io.StringIO(current.lstrip("﻿")))
     have = {key_of(spec, r) for r in reader}

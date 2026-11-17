@@ -7,7 +7,6 @@
    "reasons": [
     "ladder: fails at V5: observation 'added': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'clipped.dat', 'type': 'float'}}; added max = observation missing; added min = observation missing; added rms = observation missing; graph check path: no such path",
     "blocks_present[0]: 0 matching block(s) []",
-    "blocks_present[1]: 0 matching block(s) []; candidates: [\"out (enabled): file='mirrored.dat'\", \"out_b (enabled): file='second_quantized.dat'\"]",
     "hier_block: clipper.block.yml is not in the run's block library; clipper.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
    ],
    "status": "completed"

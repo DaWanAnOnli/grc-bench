@@ -369,13 +369,16 @@ def test_review_sheet_keeps_team_decisions_across_reruns(tmp_path: Path):
         w = csv.DictWriter(fh, fieldnames=audit.CSV_FIELDS, lineterminator="\n")
         w.writeheader()
         w.writerows(rows)
-    # re-run: q1 still flagged (new scores), q2 no longer flagged
-    assert audit.write_sheet("tier_k_test", [{**row, "tfidf": 0.71}], path) == 2
+    # re-run: q1 still flagged (new scores, its item's text edited since), q2 no longer flagged, q3 new.
+    # A reviewed row stays exactly as it was reviewed (review protocol); a new pair is appended.
+    new_pair = {**row, "item_id": "q3", "doc_id": "t3"}
+    assert audit.write_sheet("tier_k_test", [{**row, "tfidf": 0.71, "item_text": "a, edited"}, new_pair], path) == 2
     with open(path, encoding="utf-8", newline="") as fh:
         again = list(csv.DictReader(fh))
-    assert [(r["item_id"], r["tfidf"], r["decision"], r["reviewer"], r["notes"]) for r in again] == [
-        ("q1", "0.71", "template twin", "JR", "different signal"), ("q2", "0.7", "same question", "JP", "")]
-    assert again[1]["signals"] == audit.NOT_FLAGGED
+    assert [(r["item_id"], r["tfidf"], r["item_text"], r["decision"], r["reviewer"], r["notes"]) for r in again] == [
+        ("q1", "0.7", "a", "template twin", "JR", "different signal"), ("q3", "0.7", "a", "", "", ""),
+        ("q2", "0.7", "a", "same question", "JP", "")]
+    assert again[0] == rows[0] and again[2]["signals"] == audit.NOT_FLAGGED
 
 
 def test_the_confirmed_rate_counts_items_with_a_pair_the_review_found_contaminated(tmp_path: Path):

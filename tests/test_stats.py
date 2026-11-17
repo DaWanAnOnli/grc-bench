@@ -401,12 +401,12 @@ def test_mde_reproduces_eval_plan_table8():
 
 def test_mde_at_the_v1_test_items():
     rows = md.v1_table()
-    assert [(r["tier"], r["n_items"], r["points"]) for r in rows] == [("K", 277, "8-9"), ("F", 129, "11-14"),
-                                                                      ("A", 25, "25-31")]
+    assert [(r["tier"], r["n_items"], r["points"]) for r in rows] == [("K", 277, "8-9"), ("F", 148, "10-13"),
+                                                                      ("A", 30, "23-28")]
     assert [(r["planned_items"], r["planned"]) for r in rows] == [(285, "7-9"), (150, "10-13"), (30, "23-28")]
-    assert rows[2]["mde_pd_0_2"] == pytest.approx(md.mde(25, 0.2))
-    # a paired difference cannot exceed the share of items decided differently: Tier A's MDE does, at both p_d
-    assert [r["reachable"] for r in rows] == [(True, True), (True, True), (False, False)]
+    assert rows[2]["mde_pd_0_2"] == pytest.approx(md.mde(30, 0.2))
+    # a paired difference cannot exceed the share of items decided differently: Tier A's MDE does at p_d 0.2
+    assert [r["reachable"] for r in rows] == [(True, True), (True, True), (False, True)]
 
 
 def test_n_for_mde_inverts_mde():
@@ -950,10 +950,10 @@ def test_cli_selfcheck_and_mde(capsys):
     assert f"{len(cli.CHECKS)}/{len(cli.CHECKS)} checks passed" in out and "FAIL" not in out
     assert cli.main(["mde"]) == 0
     out = capsys.readouterr().out
-    for line in ("K       285", "F       150", "A        30", "K       277", "F       129", "A        25"):
+    for line in ("K       285", "F       150", "A        30", "K       277", "F       148"):
         assert line in out
     assert out.count(" yes") == 3
-    assert out.count("cannot reach") == 1                  # Tier A at its 25 test tasks
+    assert out.count("cannot reach") == 1                  # Tier A at its 30 test tasks, at p_d 0.2
     assert cli.main(["mde", "--n", "150", "--pd", "0.2"]) == 0
     assert "MDE = 10.23 points" in capsys.readouterr().out
 

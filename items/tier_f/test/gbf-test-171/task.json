@@ -175,6 +175,23 @@
     "via_ids": [
      "rational_resampler_xxx"
     ]
+   },
+   {
+    "from_ids": [
+     "analog_noise_source_x",
+     "analog_fastnoise_source_x"
+    ],
+    "group": "main",
+    "kind": "path",
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "resampled.dat"
+    },
+    "via_ids": [
+     "blocks_add_xx"
+    ]
    }
   ]
  },
@@ -189,9 +206,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 400,
@@ -204,10 +225,10 @@
   "its strongest component at -9.1 kHz (within 91 Hz)",
   "96 % of its power within 50 Hz of -9.1 kHz (within a tenth of that share)",
   "an RMS level of 0.255 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; a path from the Noise Source through the Add block to the File Sink"
  ],
  "split": "test",
  "start_grc": null,
  "tier": "F",
- "version": 1
+ "version": 2
 }

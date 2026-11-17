@@ -97,6 +97,16 @@ def test_parameter_constraints_numeric_tolerance_and_text():
     assert not grader.param_ok(src, "nope", 1)[0]
 
 
+def test_a_regex_constraint_also_matches_the_evaluated_value():
+    """A file name set through a variable (file = out_name, out_name = 'tone.dat') meets a regex on the name, as it
+    already meets a plain string constraint (grader/4)."""
+    via_var = {"key": "blocks_file_sink", "state": "enabled", "params": {"file": "out_name"},
+               "evaluated": {"file": "tone.dat"}}
+    assert grader.param_ok(via_var, "file", "tone.dat")[0]
+    assert grader.param_ok(via_var, "file", {"regex": r"(^|/)tone[.]dat$"})[0]
+    assert not grader.param_ok(via_var, "file", {"regex": r"(^|/)other[.]dat$"})[0]
+
+
 def test_block_and_connection_checks_are_name_independent():
     renamed = copy.deepcopy(TONE_VIEW)
     renamed["blocks"] = {"tone_gen" if n == "src" else n: b for n, b in renamed["blocks"].items()}
@@ -169,6 +179,13 @@ def test_a_labelled_fact_must_stand_on_its_own_line():
     two = {"facts": [{"name": "taps", "source": {**src, "param": "decim"}, "match": "number", "label": r"filter 2"}]}
     assert not grader._answer("filter 2: 7", two, {"start": view})[0]["passed"]
     assert grader._answer("filter 2: 5", two, {"start": view})[0]["passed"]
+    # a labelled number keeps its SI prefix, milli and micro included, and a Unicode minus is a minus (grader/5)
+    level = {"name": "level", "label": r"level:", "match": "number", "rel_tol": 0.01}
+    assert grader._labelled(0.5, "level: 500 mV", level)[0] and grader._labelled(2e-6, "level: 2 us", level)[0]
+    assert grader._labelled(-6.02, "level: −6.02 dB", level)[0]
+    assert not grader._labelled(6.02, "level: −6.02 dB", level)[0]
+    assert grader.numbers_in("−3 dB") == [-3.0]
+    assert grader.GRADER_VERSION == "grcbench.tier_a.grader/5"
     assert grader.acceptance_errors({"answer": spec}) == []
     bad = {"answer": {"facts": [{**spec["facts"][0], "label": "("}]}}
     assert any("label" in e for e in grader.acceptance_errors(bad))

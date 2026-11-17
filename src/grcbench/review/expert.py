@@ -140,6 +140,7 @@ def write(work: Path, items: Sequence[Mapping[str, str]], date: str, reviews_dir
     rows, later = first_pass(work)
     out = Path(reviews_dir or REPO / "reviews")
     dates: dict[str, str] = {}
+    lines: dict[str, str] = {}            # an earlier round's records, written again exactly as they were
     if merge:
         keep_ = ("correct", "relevant", "verdict", "reason_code", "comment", "suggested_fix", "notes", "evidence")
         earlier = [json.loads(x) for x in (out / "expert_review.jsonl").read_text(encoding="utf-8").splitlines()
@@ -147,13 +148,20 @@ def write(work: Path, items: Sequence[Mapping[str, str]], date: str, reviews_dir
         again = sorted({r["item_id"] for r in earlier} & {k[0] for k in rows})
         if again:
             raise ValueError(f"{len(again)} item(s) already reviewed in an earlier round, e.g. {again[:3]}")
+        gone = sorted({r["item_id"] for r in earlier} - {it["item_id"] for it in items})
+        if gone:
+            raise ValueError(f"{len(gone)} earlier record(s) no longer in scope, e.g. {gone[:3]}")
         old_sheet = Path(sheet or SHEET)
+        team: dict[str, dict[str, str]] = {}
         if old_sheet.exists():
-            dates = {r["item_id"]: r.get("date", "") for r in csv.DictReader(
-                io.StringIO(old_sheet.read_text(encoding="utf-8-sig")))}
+            old_rows = list(csv.DictReader(io.StringIO(old_sheet.read_text(encoding="utf-8-sig"))))
+            dates = {r["item_id"]: r.get("date", "") for r in old_rows}
+            team = {r["item_id"]: {k: r.get(k) or "" for k in ("team_action", "team_action_by")} for r in old_rows}
         for r in earlier:
-            rows[(r["item_id"],)] = {k: r.get(k, "") for k in keep_}
+            rows[(r["item_id"],)] = {**{k: r.get(k, "") for k in keep_}, **team.get(r["item_id"], {})}
             later[(r["item_id"],)] = list(r.get("rechecks") or [])
+        lines = {json.loads(x)["item_id"]: x for x in (out / "expert_review.jsonl").read_text(encoding="utf-8")
+                 .splitlines() if x.strip()}
     missing = [it["item_id"] for it in items if (it["item_id"],) not in rows]
     if missing:
         raise ValueError(f"{len(missing)} item(s) with no expert row, e.g. {missing[:3]}")
@@ -163,12 +171,13 @@ def write(work: Path, items: Sequence[Mapping[str, str]], date: str, reviews_dir
     out.mkdir(parents=True, exist_ok=True)
     keep = ("correct", "relevant", "verdict", "reason_code", "comment", "suggested_fix", "notes", "evidence")
     (out / "expert_review.jsonl").write_text("".join(
-        json.dumps(records.redact({**dict(it), **{k: rows[(it["item_id"],)].get(k, "") for k in keep},
-                                   "removed_by_review": it["item_id"] in removed,
-                                   "replacement": it["item_id"] in replacements,
-                                   "rechecks": [{k: r.get(k, "") for k in keep}
-                                                for r in later.get((it["item_id"],), [])]}),
-                   ensure_ascii=False, sort_keys=True) + "\n" for it in items), encoding="utf-8")
+        (lines[it["item_id"]] if it["item_id"] in lines else
+         json.dumps(records.redact({**dict(it), **{k: rows[(it["item_id"],)].get(k, "") for k in keep},
+                                    "removed_by_review": it["item_id"] in removed,
+                                    "replacement": it["item_id"] in replacements,
+                                    "rechecks": [{k: r.get(k, "") for k in keep}
+                                                 for r in later.get((it["item_id"],), [])]}),
+                    ensure_ascii=False, sort_keys=True)) + "\n" for it in items), encoding="utf-8")
     counts = h1b(items, rows, removed, replacements)
     (out / "expert_review_h1b.json").write_text(json.dumps(counts, indent=1, sort_keys=True) + "\n",
                                                 encoding="utf-8")

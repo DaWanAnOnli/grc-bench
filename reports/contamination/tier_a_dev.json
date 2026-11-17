@@ -1296,11 +1296,11 @@
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-13/task.json",
-   "sha256": "0d59c4735e2bcd32255e525e40919912c36fa8b97916765e1b0ed20b9e08d291"
+   "sha256": "110fc2f153a1c6d02e92a77fd36d8e48a3a1a5a4d319c7168806f04128583d7f"
   },
   {
    "path": "grc-bench/items/tier_a/dev/gba-dev-14/task.json",
-   "sha256": "60ab5f82b82c9540864088859a85ee29967ef229ecfc4cf226f836e2791bbb3a"
+   "sha256": "e6828d2f289d4721f2c7c5024560ecbaa27300c9e462581c6426fd0fa3605c7d"
   }
  ],
  "status": "flags are candidates for team review; nothing is removed",

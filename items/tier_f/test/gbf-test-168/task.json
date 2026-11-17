@@ -197,9 +197,13 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (disagreement)",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved"
  },
  "source": {
   "attempt": 75,

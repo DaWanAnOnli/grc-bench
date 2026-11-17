@@ -1065,6 +1065,31 @@ def test_a_patched_task_that_was_approved_becomes_approved_with_edits(tmp_path):
     assert "instruction: say Make -- expert review (H1b)" in rec["review"]["notes"]
 
 
+def test_a_post_review_edit_is_named_as_one_in_the_tasks_notes(tmp_path):
+    """An edit made after a task's review (a patch with `post_review`, pre-registration §10) changes an approved
+    task to approved-with-edits and is named in its notes; it is not an expert edit."""
+    from grcbench.review import items
+    out = lambda v: {"value": v, "edits": [], "notes": ""}
+    recs = records.build(sheets.SHEETS["tier_f"], {("gbf-test-5",): out("approve"), ("gbf-test-6",): out("approve with edits")},
+                         {("gbf-test-5",): out("approve"), ("gbf-test-6",): out("approve with edits")},
+                         {("gbf-test-6",): out("approve with edits")})
+    records.write_records(tmp_path / "tier_f.jsonl", recs)
+    (tmp_path / "tier_f_patches.json").write_text(json.dumps([
+        {"item": i, "path": ["instruction"], "op": "replace_text", "old": old, "new": new,
+         "edit": "oracle: add a check -- a gap", "post_review": "decision of 17 Nov"}
+        for i in ("gbf-test-5", "gbf-test-6") for old, new in (("Build", "Make"), (" it", " this"))]),
+        encoding="utf-8")       # one edit applied as two patches is named once
+    task = lambda i: {"id": i, "version": 1, "instruction": "Build it.", "review": {"status": "pending-team-review"}}
+    rec, _ = items.apply("tier_f", "gbf-test-5", task("gbf-test-5"), {}, reviews_dir=tmp_path)
+    assert rec["instruction"] == "Make this." and rec["version"] == 2
+    assert rec["review"]["status"] == "approved-with-edits" and rec["review"]["reviewers"] == ["R1", "R2"]
+    assert rec["review"]["notes"] == "decided by R1;R2; post-review edit (decision of 17 Nov): oracle: add a check -- a gap"
+    rec, _ = items.apply("tier_f", "gbf-test-6", task("gbf-test-6"), {}, reviews_dir=tmp_path)
+    assert rec["review"]["status"] == "approved-with-edits" and "expert review (H1b)" not in rec["review"]["notes"]
+    assert rec["version"] == 3                  # edited by the review (2), then after it (3)
+    assert rec["review"]["notes"].endswith("; post-review edit (decision of 17 Nov): oracle: add a check -- a gap")
+
+
 # ------------------------------------------------------------------ declared runs ----------------
 
 def test_every_agent_run_is_declared_and_the_cap_of_each_round_holds(tmp_path):
@@ -1084,6 +1109,10 @@ def test_every_agent_run_is_declared_and_the_cap_of_each_round_holds(tmp_path):
         log.declare(path, agent=39, role="R1", sheets=["twins"], rows=1, brief_text="x", date="2026-11-10")
     with pytest.raises(ValueError, match="already"):
         log.declare(path, agent=3, role="R1", sheets=["twins"], rows=1, brief_text="x", date="2026-11-10")
+    for n in (0, 50):                                # a number outside both rounds, even on a short log
+        with pytest.raises(ValueError, match="round"):
+            log.declare(tmp_path / "other.jsonl", agent=n, role="R1", sheets=["twins"], rows=1, brief_text="x",
+                        date="2026-11-17")
 
 
 def test_an_output_hash_is_recorded_when_the_run_ends(tmp_path):
@@ -1174,6 +1203,15 @@ def test_a_second_round_is_decided_onto_the_first_rounds_records(tmp_path):
     with pytest.raises(ValueError, match="already decided"):        # a second round never re-decides a row
         coordinate.decide_sheet(round2, "twins", reviews_dir=reviews, sheet_dir=tmp_path / "s",
                                 require_all=False, merge=True)
+    # a second round decided without --merge would drop the first round's records: refused before any write
+    before = (reviews / "twins.jsonl").read_bytes()
+    with pytest.raises(ValueError, match="--merge"):
+        coordinate.decide_sheet(round2, "twins", reviews_dir=reviews, sheet_dir=tmp_path / "s2", require_all=False)
+    assert (reviews / "twins.jsonl").read_bytes() == before and not (tmp_path / "s2").exists()
+    # a failing fill writes nothing either
+    with pytest.raises(ValueError, match="no decision"):
+        coordinate.decide_sheet(round1, "twins", reviews_dir=tmp_path / "r3", sheet_dir=tmp_path / "s3")
+    assert not (tmp_path / "r3" / "twins.jsonl").exists()
 
 
 def test_a_second_rounds_input_holds_only_the_undecided_rows(tmp_path, monkeypatch):
@@ -1194,6 +1232,12 @@ def test_a_second_rounds_input_holds_only_the_undecided_rows(tmp_path, monkeypat
                           [_rec("twins", ("lexical", "a", "b"), {"value": "twin"}, {"value": "twin"}, "twin", "R1;R2")])
     out = inputs.write_blinded("twins", tmp_path / "in", undecided_only=True, reviews_dir=tmp_path / "reviews")
     assert [(r["id_a"], r["id_b"]) for r in _rows(out.read_text(encoding="utf-8"))] == [("c", "d")]
+    # the route's check for rows a reviewer left out looks only at the rows still to decide
+    from grcbench.review import coordinate
+    _jsonl(tmp_path / "w2" / "out" / "a31-R1-K.jsonl", [_twin("c", "d", "twin")])
+    _jsonl(tmp_path / "w2" / "out" / "a32-R2-K.jsonl", [_twin("c", "d", "twin")])
+    missing = coordinate.unreviewed(tmp_path / "w2", "twins", reviews_dir=tmp_path / "reviews")
+    assert missing == {"R1": [], "R2": [], "unknown": []}
 
 
 def test_a_second_expert_review_round_merges_and_h1b_counts_the_original_pool(tmp_path):
@@ -1205,14 +1249,36 @@ def test_a_second_expert_review_round_merges_and_h1b_counts_the_original_pool(tm
            [row(1), row(2, correct="no", verdict="reject", reason_code="other", comment="short")])
     expert.write(tmp_path / "w1", items[:2], date="2026-11-15", reviews_dir=tmp_path / "reviews",
                  sheet=tmp_path / "e.csv")
+    first = tmp_path / "reviews" / "expert_review.jsonl"
+    # a first-round record as it was written, before records carried "replacement"
+    first.write_text("".join(json.dumps({k: v for k, v in json.loads(l).items() if k != "replacement"},
+                                        ensure_ascii=False, sort_keys=True) + "\n"
+                             for l in first.read_text(encoding="utf-8").splitlines()), encoding="utf-8")
+    before = first.read_text(encoding="utf-8").splitlines()
+    # the team's action on a first-round item, entered on the filled sheet, is kept by the merge
+    reader = csv.DictReader(io.StringIO((tmp_path / "e.csv").read_text(encoding="utf-8")))
+    sheet_rows = list(reader)
+    sheet_rows[0].update(team_action="keep", team_action_by="JR")
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=reader.fieldnames, lineterminator="\n")
+    w.writeheader()
+    w.writerows(sheet_rows)
+    (tmp_path / "e.csv").write_text(buf.getvalue(), encoding="utf-8")
     _jsonl(tmp_path / "w2" / "out" / "a37-EX-H1b.jsonl", [row(31)])
+    with pytest.raises(ValueError, match="no longer in scope"):       # an earlier record is never dropped silently
+        expert.write(tmp_path / "w2", items[1:], date="2026-11-18", reviews_dir=tmp_path / "reviews",
+                     sheet=tmp_path / "e.csv", merge=True, replacements={"gba-test-31"})
     h = expert.write(tmp_path / "w2", items, date="2026-11-18", reviews_dir=tmp_path / "reviews",
                      sheet=tmp_path / "e.csv", merge=True, replacements={"gba-test-31"})["A"]
     assert (h["items"], h["accepted"], h["share"]) == (2, 1, 0.5)          # the original pool only
     assert (h["replacements"], h["replacements_accepted"]) == (1, 1)
-    recs = [json.loads(l) for l in (tmp_path / "reviews" / "expert_review.jsonl").read_text().splitlines()]
+    lines = first.read_text(encoding="utf-8").splitlines()
+    assert lines[:2] == before                                             # the first round's records as written
+    recs = [json.loads(l) for l in lines]
     assert [r["item_id"] for r in recs] == ["gba-test-1", "gba-test-2", "gba-test-31"]
-    assert [r["replacement"] for r in recs] == [False, False, True]
+    assert [r.get("replacement", False) for r in recs] == [False, False, True]
+    filled = list(csv.DictReader(io.StringIO((tmp_path / "e.csv").read_text(encoding="utf-8"))))
+    assert (filled[0]["team_action"], filled[0]["team_action_by"]) == ("keep", "JR")
     with pytest.raises(ValueError, match="already reviewed"):
         _jsonl(tmp_path / "w3" / "out" / "a38-EX-H1b.jsonl", [row(1)])
         expert.write(tmp_path / "w3", items, date="2026-11-18", reviews_dir=tmp_path / "reviews",
@@ -1247,6 +1313,36 @@ def test_a_reserve_task_is_neither_run_nor_counted_as_removed(tmp_path):
         items.refuse_rejected([{"id": "t2", "review": {"status": "reserve"}}])
 
 
+def test_a_reserve_accepted_with_edits_carries_its_edits_version(tmp_path):
+    """gba-test-36 is the knowledge group's fourth replacement (3 slots): accepted with edits after the first three,
+    it is a reserve, and its record still says that its decided edits are applied (version 2)."""
+    from grcbench.review import items
+    out = lambda v: {"value": v, "edits": [], "notes": ""}
+    keys = [(f"gba-test-{i}",) for i in (31, 32, 33, 36)]
+    recs = records.build(sheets.SHEETS["tier_a"], {k: out("approve with edits") for k in keys},
+                         {k: out("approve with edits") for k in keys}, {k: out("approve with edits") for k in keys})
+    records.write_records(tmp_path / "tier_a.jsonl", recs)
+    rec, _ = items.apply("tier_a", "gba-test-36", {"id": "gba-test-36", "version": 1,
+                                                   "review": {"status": "pending-team-review"}}, {}, reviews_dir=tmp_path)
+    assert rec["review"]["status"] == "reserve" and rec["version"] == 2
+    kept, _ = items.apply("tier_a", "gba-test-33", {"id": "gba-test-33", "version": 1,
+                                                    "review": {"status": "pending-team-review"}}, {}, reviews_dir=tmp_path)
+    assert kept["review"]["status"] == "approved-with-edits" and kept["version"] == 2
+    # a run uses neither the reserve nor a replacement still undecided (gba-test-34); an original task it does
+    assert items.active("tier_a", ["gba-test-01", "gba-test-31", "gba-test-34", "gba-test-36"],
+                        reviews_dir=tmp_path) == ["gba-test-01", "gba-test-31"]
+    from grcbench.runlog.log import RunRefused
+    with pytest.raises(RunRefused, match="gba-test-34"):
+        items.refuse_rejected([{"id": "gba-test-34", "review": {"status": "pending-team-review"}}])
+    items.refuse_rejected([{"id": "gba-test-01", "review": {"status": "pending-team-review"}}])
+    # while a group is not fully decided, none of its replacements is used: its slots are not settled yet
+    part = tmp_path / "part"
+    records.write_records(part / "tier_a.jsonl", [r for r in recs if r["key"] in keys[:2]])
+    assert items.active("tier_a", ["gba-test-01", "gba-test-31", "gba-test-32"], reviews_dir=part) == ["gba-test-01"]
+    from grcbench.review import replacements
+    assert replacements.unsettled("tier_a", reviews_dir=part) >= {"gba-test-31", "gba-test-32", "gba-test-33"}
+
+
 def test_a_regenerated_sheet_appends_new_rows_and_keeps_the_reviewed_rows_as_they_were(tmp_path):
     from grcbench.review import fill, records
     sheet = tmp_path / "tier_f_first_set.csv"
@@ -1276,3 +1372,27 @@ def test_the_tier_a_sheet_generator_keeps_the_reviewed_rows(tmp_path, monkeypatc
     spec_drafts.main([])
     after = sheet.read_text(encoding="utf-8")
     assert after.startswith(before) and len(after) >= len(before)
+
+
+def test_build_alls_tier_f_mirror_carries_the_decided_records_and_patches():
+    """Every Tier-F build.py applies reviews/tier_f.jsonl and reviews/tier_f_patches.json (review.items.apply), so the
+    mirror that `./gb build-all --tier-f` rebuilds in holds reviews/; without it every reviewed task differs."""
+    import inspect
+    from grcbench.common import build_all
+    src = inspect.getsource(build_all._tier_f)
+    assert '"reviews"' in src and '"src"' in src
+
+
+def test_the_summary_names_the_reserves_and_gives_each_rounds_audit():
+    from grcbench.review import report
+    out = lambda v: {"value": v, "edits": [], "notes": ""}
+    keys = [(f"gba-test-{i}",) for i in (31, 32, 33, 36)] + [("gba-test-01",), ("gba-test-02",)]
+    recs = records.build(sheets.SHEETS["tier_a"], {k: out("approve") for k in keys}, {k: out("approve") for k in keys},
+                         {}, audit={("gba-test-01",): {**out("reject"), "pass": "audit"},
+                                    ("gba-test-31",): {**out("approve"), "pass": "audit"}})
+    s = report.sheet_summary("tier_a", recs)
+    assert s["reserves"] == ["gba-test-36"]
+    assert s["audit_rounds"]["first"]["disagreements"] == 1 and s["audit_rounds"]["first"]["n"] == 1
+    assert s["audit_rounds"]["second"]["disagreements"] == 0 and s["audit_rounds"]["second"]["n"] == 1
+    text = report.render([s], [])
+    assert "gba-test-36" in text and "## The second round" in text

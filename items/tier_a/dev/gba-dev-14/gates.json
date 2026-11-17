@@ -5,9 +5,8 @@
    "end_reason": "agent_finished",
    "passed": true,
    "reasons": [
-    "ladder: fails at V5: observation 'added': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'sign.dat', 'type': 'float'}}; added max = observation missing; added min = observation missing; added rms = observation missing; graph check path: no such path",
+    "ladder: fails at V5: observation 'added': no sink matching {'block_id': 'blocks_file_sink', 'params': {'file': 'sign.dat', 'type': 'float'}}; added max = observation missing; added min = observation missing; added rms = observation missing; added mean = observation missing; added peak_freq = observation missing; graph check path: no such path",
     "blocks_present[0]: 0 matching block(s) []",
-    "blocks_present[1]: 0 matching block(s) []; candidates: [\"out (enabled): file='quantized.dat'\"]",
     "hier_block: sign_detect.block.yml is not in the run's block library; sign_detect.py is not in the run's block library; GNU Radio's catalog does not load it from the run's library"
    ],
    "status": "completed"

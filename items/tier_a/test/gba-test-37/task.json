@@ -3,14 +3,6 @@
   "blocks_present": [
    {
     "id": "epy_block"
-   },
-   {
-    "id": "blocks_file_sink",
-    "params": {
-     "file": {
-      "regex": "(^|/)clipped[.]dat$"
-     }
-    }
    }
   ],
   "hier_block": {
@@ -165,7 +157,7 @@
     "graph_checks": [
      {
       "from_ids": [
-       "blocks_throttle2"
+       "analog_sig_source_x"
       ],
       "group": "f2p",
       "kind": "path",
@@ -190,7 +182,7 @@
   20
  ],
  "id": "gba-test-37",
- "instruction": "Add an Embedded Python block to the open flowgraph that limits the tone to the range -0.3 to 0.3 (values beyond it are set to the limit), and write its output as float samples to a new File Sink with the file name clipped.dat. Run the flowgraph to check that the block does what it should. Then save the block to the block library as a reusable block with the block id clipper and the label Clipper, and save the flowgraph. Keep mirrored.dat and second_quantized.dat as it is. The flowgraph should keep producing samples until it is stopped.",
+ "instruction": "Add an Embedded Python block to the open flowgraph that limits the tone to the range -0.3 to 0.3 (values beyond it are set to the limit), and write its output as float samples to a new File Sink with the file name clipped.dat. Run the flowgraph to check that the block does what it should. Then save the block to the block library as a reusable block with the block id clipper and the label Clipper, and save the flowgraph. Keep mirrored.dat and second_quantized.dat as they are. The flowgraph should keep producing samples until it is stopped.",
  "license": "CC-BY-4.0 (original GRC-Bench item; licence to be confirmed by the team)",
  "provenance": {
   "drafted_by": "Claude (Anthropic)",
@@ -198,24 +190,28 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied; an accepted replacement beyond the slots of the tasks it replaces: kept and not scored (pre-registration §10)",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "reserve"
  },
  "scripted_user": {
   "max_turns": 2,
   "rules": [
    {
+    "pattern": "\\bcategory\\b",
+    "reply": "Use the default."
+   },
+   {
     "pattern": "\\bsave\\b",
     "reply": "Yes, please save it."
    },
    {
-    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want)\\b",
+    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want|overwrite)\\b",
     "reply": "Yes, go ahead."
-   },
-   {
-    "pattern": "\\b(category|overwrite)\\b",
-    "reply": "Use the default."
    }
   ]
  },
@@ -229,5 +225,5 @@
   "active_graph": "mirrored_tone.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

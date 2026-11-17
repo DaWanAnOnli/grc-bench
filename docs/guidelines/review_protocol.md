@@ -149,7 +149,12 @@ this protocol in a second round, with the same roles and rules:
 - **Which replacements count.** The replacements are numbered before the review. The first ones the
   review accepts, in id order, fill the slots of the tasks they replace (`grcbench.review.replacements`):
   per split for Tier F, and per category and split for Tier A. An accepted replacement beyond its slots
-  gets status `reserve`. It keeps its record and, like a rejected task, no run uses it.
+  gets status `reserve`. It keeps its record and, like a rejected task, no run uses it. Until every
+  replacement of a group is decided, no run uses any of them, because the group's slots are not settled.
+- **Edits after the review.** A decided item is not reviewed again. When the team decides to give a
+  first-round task an edit after its review (for example the one its replacement received), the edit
+  is a patch marked `post_review`: the task's notes name it as a post-review edit, its version goes up
+  by one, its gates are re-run, and pre-registration §10 lists it.
 
 ## What this protocol does not show
 

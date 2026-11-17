@@ -150,7 +150,7 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "decided by EX (edits to merge); decided edits applied",
+  "notes": "decided by EX (edits to merge); decided edits applied; post-review edit (decision of 17 Nov after the second round, pre-registration §10): scripted_user: replace the rules with [{\"pattern\": \"\\\\bcategory\\\\b\", \"reply\": \"Use the default.\"}, {\"pattern\": \"\\\\bsave\\\\b\", \"reply\": \"Yes, please save it.\"}, {\"pattern\": \"\\\\b(go ahead|proceed|apply|shall i|should i|do you want|overwrite)\\\\b\", \"reply\": \"Yes, go ahead.\"}] (max_turns unchanged) -- rules fire in order, so 'Which category should I put the block in?' got 'Yes, go ahead.', which does not answer it; the same order as the second-round save_block replacements (gba-test-34, -35, -37, gba-dev-14)",
   "reviewers": [
    "R1",
    "R2",
@@ -162,16 +162,16 @@
   "max_turns": 2,
   "rules": [
    {
+    "pattern": "\\bcategory\\b",
+    "reply": "Use the default."
+   },
+   {
     "pattern": "\\bsave\\b",
     "reply": "Yes, please save it."
    },
    {
-    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want)\\b",
+    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want|overwrite)\\b",
     "reply": "Yes, go ahead."
-   },
-   {
-    "pattern": "\\b(category|overwrite)\\b",
-    "reply": "Use the default."
    }
   ]
  },
@@ -185,5 +185,5 @@
   "active_graph": "dac_test_signal.grc"
  },
  "tier": "A",
- "version": 2
+ "version": 3
 }

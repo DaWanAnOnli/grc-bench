@@ -1594,5 +1594,30 @@
   "op": "set",
   "value": "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n\n#\n# SPDX-License-Identifier: GPL-3.0\n#\n# GNU Radio Python Flow Graph\n# Title: None\n# Author: David Pi\n# Copyright: GNU GPL 3.0+\n# Description: None\n# GNU Radio version: 3.10.12.0\n\nfrom gnuradio import blocks\nimport pmt\nimport threading\nfrom gnuradio import gr\nfrom gnuradio.filter import firdes\nfrom gnuradio.fft import window\nimport sys\nimport signal\nfrom argparse import ArgumentParser\nfrom gnuradio.eng_arg import eng_float, intx\nfrom gnuradio import eng_notation\n\n\n\n\nclass stream_mux_demo(gr.top_block):\n\n    def __init__(self):\n        gr.top_block.__init__(self, \"None\", catch_exceptions=True)\n\n        ##################################################\n        # Variables\n        ##################################################\n        self.tag1 = tag1 = gr.tag_utils.python_to_tag((0, pmt.intern(\"key1\"), pmt.intern(\"value1\"), pmt.intern(\"src\")))\n        self.tag0 = tag0 = gr.tag_utils.python_to_tag((0, pmt.intern(\"key0\"), pmt.intern(\"value0\"), pmt.intern(\"src\")))\n        self.samp_rate = samp_rate = 32000\n\n        ##################################################\n        # Blocks\n        ##################################################\n\n        self.stream_b = blocks.file_sink(gr.sizeof_float*1, 'stream_b.dat', False)\n        self.stream_b.set_unbuffered(False)\n        self.stream_a = blocks.file_sink(gr.sizeof_float*1, 'stream_a.dat', False)\n        self.stream_a.set_unbuffered(False)\n        self.mux_out = blocks.file_sink(gr.sizeof_float*1, 'mux_out.dat', False)\n        self.mux_out.set_unbuffered(False)\n        self.frame_header = blocks.vector_source_f((-1, -2), True, 1, [])\n        self.blocks_vector_source_x_0_0 = blocks.vector_source_f((5, 6, 7, 12, 13, 14), True, 1, [tag1])\n        self.blocks_vector_source_x_0 = blocks.vector_source_f((1, 2, 3, 4, 8, 9, 10, 11), True, 1, [tag0])\n        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_float*1, samp_rate, True, 0 if \"auto\" == \"auto\" else max( int(float(0.1) * samp_rate) if \"auto\" == \"time\" else int(0.1), 1) )\n        self.blocks_stream_mux_0 = blocks.stream_mux(gr.sizeof_float*1, [2, 4, 3])\n\n\n        ##################################################\n        # Connections\n        ##################################################\n        self.connect((self.blocks_stream_mux_0, 0), (self.blocks_throttle2_0, 0))\n        self.connect((self.blocks_throttle2_0, 0), (self.mux_out, 0))\n        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_stream_mux_0, 1))\n        self.connect((self.blocks_vector_source_x_0, 0), (self.stream_a, 0))\n        self.connect((self.blocks_vector_source_x_0_0, 0), (self.blocks_stream_mux_0, 2))\n        self.connect((self.blocks_vector_source_x_0_0, 0), (self.stream_b, 0))\n        self.connect((self.frame_header, 0), (self.blocks_stream_mux_0, 0))\n\n\n    def get_tag1(self):\n        return self.tag1\n\n    def set_tag1(self, tag1):\n        self.tag1 = tag1\n        self.blocks_vector_source_x_0_0.set_data((5, 6, 7, 12, 13, 14), [self.tag1])\n\n    def get_tag0(self):\n        return self.tag0\n\n    def set_tag0(self, tag0):\n        self.tag0 = tag0\n        self.blocks_vector_source_x_0.set_data((1, 2, 3, 4, 8, 9, 10, 11), [self.tag0])\n\n    def get_samp_rate(self):\n        return self.samp_rate\n\n    def set_samp_rate(self, samp_rate):\n        self.samp_rate = samp_rate\n        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)\n\n\n\n\ndef main(top_block_cls=stream_mux_demo, options=None):\n    tb = top_block_cls()\n\n    def sig_handler(sig=None, frame=None):\n        tb.stop()\n        tb.wait()\n\n        sys.exit(0)\n\n    signal.signal(signal.SIGINT, sig_handler)\n    signal.signal(signal.SIGTERM, sig_handler)\n\n    tb.start()\n\n    try:\n        input('Press Enter to quit: ')\n    except EOFError:\n        pass\n    tb.stop()\n    tb.wait()\n\n\nif __name__ == '__main__':\n    main()\n",
   "edit": "wrong_state: in wrong_end_state.json, replace the export/stream_mux_demo.py stub with the code grcc generates for start/stream_mux_demo.grc"
+ },
+ {
+  "item": "gba-test-24",
+  "file": "task.json",
+  "path": [
+   "scripted_user",
+   "rules"
+  ],
+  "op": "set",
+  "value": [
+   {
+    "pattern": "\\bcategory\\b",
+    "reply": "Use the default."
+   },
+   {
+    "pattern": "\\bsave\\b",
+    "reply": "Yes, please save it."
+   },
+   {
+    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want|overwrite)\\b",
+    "reply": "Yes, go ahead."
+   }
+  ],
+  "edit": "scripted_user: replace the rules with [{\"pattern\": \"\\\\bcategory\\\\b\", \"reply\": \"Use the default.\"}, {\"pattern\": \"\\\\bsave\\\\b\", \"reply\": \"Yes, please save it.\"}, {\"pattern\": \"\\\\b(go ahead|proceed|apply|shall i|should i|do you want|overwrite)\\\\b\", \"reply\": \"Yes, go ahead.\"}] (max_turns unchanged) -- rules fire in order, so 'Which category should I put the block in?' got 'Yes, go ahead.', which does not answer it; the same order as the second-round save_block replacements (gba-test-34, -35, -37, gba-dev-14)",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
  }
 ]

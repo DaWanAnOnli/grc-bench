@@ -6,10 +6,10 @@
    "passed": true,
    "reasons": [
     "files[0]: received.dat does not exist",
-    "answer[0]: high-pass cutoff: no answer line names 'high.?pass cut.?off'",
-    "answer[1]: LO frequency: no answer line names 'lo frequency'",
-    "answer[2]: channel frequency offset: no answer line names 'channel (frequency )?offset'",
-    "answer[3]: Channel Model default epsilon: no answer line names 'channel model default epsilon'",
+    "answer[0]: high-pass cutoff: no answer line names 'high.?pass cut.?off[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[1]: LO frequency: no answer line names 'lo frequency[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[2]: channel frequency offset: no answer line names 'channel (frequency )?offset[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[3]: Channel Model default epsilon: no answer line names 'channel model default epsilon[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
     "answer[4]: received peak frequency: expected value not derivable: 'received.dat does not exist in the project folder'",
     "answer[5]: received RMS: expected value not derivable: 'received.dat does not exist in the project folder'"
    ],
@@ -36,7 +36,7 @@
     {
      "reasons": [
       "files[0]: received.dat does not exist",
-      "answer[2]: channel frequency offset: expects 0.0859375 after 'channel (frequency )?offset'",
+      "answer[2]: channel frequency offset: expects 0.0859375 after 'channel (frequency )?offset[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
       "answer[4]: received peak frequency: expected value not derivable: 'received.dat does not exist in the project folder'",
       "answer[5]: received RMS: expected value not derivable: 'received.dat does not exist in the project folder'"
      ],

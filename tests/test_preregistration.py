@@ -211,7 +211,12 @@ def test_the_mdes_of_section_7_are_at_the_v1_test_items():
         assert f"| {r['tier']} | {r['planned_items']} | {lo}–{hi} | {r['n_items']} | {r['points'].replace('-', '–')} |" in s7
     a = md.v1_table()[2]
     pts = a["points"].replace("-", "–")
-    assert "Tier A's MDE is larger than the share of tasks" in " ".join(s7.split())
+    from scipy import stats as st
+    z = st.norm.ppf(0.975) + st.norm.ppf(0.8)           # MDE(n, p) <= p exactly when p >= z^2 / n
+    s7_flat = " ".join(s7.split())
+    assert f"At its {a['n_items']} test tasks, Tier A's MDE is" in s7_flat
+    assert f"reaches 80 % power only when more than about {round(100 * z * z / a['n_items'])} % of its tasks" in s7_flat
+    assert "a non-significant Tier-A comparison is not read as evidence of no difference" in s7_flat
     assert f"Tier A's MDE at its {a['n_items']} test tasks ({pts} points) is printed beside the result." in TEXT
     h4a = next(p for p in proposals.PROPOSALS if p["id"] == "H4a-decision")
     assert f"Tier A's MDE at its {a['n_items']} test tasks ({a['points']} points) is printed beside it." in h4a["proposal"]

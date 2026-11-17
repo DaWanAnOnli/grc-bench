@@ -7,9 +7,14 @@ that gave the right numbers to the wrong items. The replacements keep the catego
 - knowledge: a data sheet of the open flowgraph, one line per item. The items come from the graph, from GNU
   Radio's block definitions (blocks the graph uses, at their defaults) and from what the flowgraph writes when it
   runs (measured by the grader from the run's own files). Every fact has a label (grader: answer.facts[].label),
-  so a value given to the wrong item fails.
+  so a value given to the wrong item fails. A label ends with LABEL_END: it matches only an 'item: value' line
+  (or a table cell, 'item = value', a bold or bracketed item name), so a sentence that names the items before the
+  data sheet does not stand for the item's line. Where every item is a number and a graph setting is an
+  expression, the instruction asks for each value as a single number.
 - save_block: the agent writes a new Embedded Python block, wires it into the graph, checks its output and saves
-  it to the block library; nothing of the block is in the start graph.
+  it to the block library; nothing of the block is in the start graph. The ladder's observation point holds the
+  new File Sink by its evaluated file name, so a name set through a variable passes; the scripted user answers a
+  question about the category before any other rule (SAVE_BLOCK_RULES).
 
 Every start graph is a Tier-F test or dev reference graph that no other Tier-A task uses, with a Throttle so that
 a run of a few seconds writes a few seconds of samples. Slots: 3 knowledge and 2 save_block test tasks, 1 of each
@@ -25,11 +30,10 @@ import sys
 from typing import Any
 
 from ..common.paths import ITEMS
-from .first_set import RUN, SAVE_RULES, add, c, named, point, tf_graph, tf_task, wire, write
+from .first_set import RUN, add, c, named, point, tf_graph, tf_task, wire, write
 
 GENERATOR = ("grcbench.tier_a.replacements", "1")
 CC_BY = "CC-BY-4.0 (original GRC-Bench task; licence to be confirmed by the team)"
-KNOWLEDGE_SPECS = "t09_knowledge_concepts and t25_sync_chain_explain (explain a graph)"
 SAVE_SPECS = ("t13_epy_save_block (builds a duty-cycle gating block and saves it) and GRC-Agent scenario "
               "25_save_epy_block_to_library (a scale-by-three block on an empty graph)")
 
@@ -39,7 +43,20 @@ SLOTS = {"knowledge": {"test": (["gba-test-31", "gba-test-32", "gba-test-33", "g
          "save_block": {"test": (["gba-test-34", "gba-test-35", "gba-test-37"], 2),
                         "dev": (["gba-dev-14"], 1)}}
 REPLACEMENT_IDS = frozenset(i for split in SLOTS.values() for ids, _ in split.values() for i in ids)
-DATA_SHEET = ("Give one line per item, in the form 'item: value', using the item names below.")
+DATA_SHEET = "Give one line per item, in the form 'item: value', using the item names below."
+NUMBERS_SHEET = ("Give one line per item, in the form 'item: value', with each value as a single number, using the "
+                 "item names below.")
+LABEL_END = r"[\s*_`]*(?:\([^)\n]*\)[\s*_`]*)?[:|=]"     # appended to every fact label: an 'item: value' line
+NEAREST = ("Nearest training specs: t09_knowledge_concepts and t25_sync_chain_explain (explain a graph), which ask "
+           "for none of these items and measure no run; for the measured items, t08_run_verify_probe (runs a "
+           "level-probe chain briefly and reports the measured level)")
+NEAREST_METER = (" and t19_rssi_meter_build (a moving-average level meter logged to a file), which build their own "
+                 "chain and ask for no settings or block defaults of an open graph.")
+NEAREST_PROBE = ", which builds its own chain and asks for no settings or block defaults of an open graph."
+SAVE_BLOCK_RULES = [{"pattern": r"\bcategory\b", "reply": "Use the default."},
+                    {"pattern": r"\bsave\b", "reply": "Yes, please save it."},
+                    {"pattern": r"\b(go ahead|proceed|apply|shall i|should i|do you want|overwrite)\b",
+                     "reply": "Yes, go ahead."}]
 
 
 def _throttled(ref: dict, before: str, after: str, typ: str) -> dict:
@@ -80,20 +97,25 @@ def _source(tf_id: str, derivation: str) -> dict:
 
 
 def _knowledge(task_id: str, tf_id: str, graph_id: str, start: dict, items: list[str], facts: list[dict],
-               calls: list[dict], final: str, wrong_final: str, files: list[str], what: str) -> dict:
+               calls: list[dict], final: str, wrong_final: str, files: list[str], what: str,
+               numbers: bool = False, meter: bool = True) -> dict:
+    """`numbers`: every item is a number, asked as a single number; `meter`: the graph has a moving-average power
+    meter, so t19_rssi_meter_build is among the nearest training specs."""
+    facts = [{**f, "label": f["label"] + LABEL_END} for f in facts]
     return {
         "id": task_id, "category": "knowledge", "start": (f"{graph_id}.grc", start),
         "instruction": ("Without changing the open flowgraph, write me a short data sheet of it. Run it for about two "
-                        "seconds for the measured items, and ignore the first 0.1 s of each file. " + DATA_SHEET +
-                        " " + " ".join(f"{i + 1}. {item}" for i, item in enumerate(items))),
+                        "seconds for the measured items, and ignore the first 0.1 s of each file. "
+                        + (NUMBERS_SHEET if numbers else DATA_SHEET) + " "
+                        + " ".join(f"{i + 1}. {item}" for i, item in enumerate(items))),
         "scripted_user": {"rules": [], "max_turns": 1},
         "acceptance": {"graph_unchanged": True, "files": [{"path": f} for f in files], "answer": {"facts": facts}},
         "golden": {"calls": calls, "final_text": final},
         "wrong": start, "wrong_json": {"final_text": wrong_final},
         "source": _source(tf_id, "the Tier-F reference graph with a Throttle (samp_rate) after its sources"),
         "cluster_id": f"tier_f:{tf_id}", "license": tf_task(tf_id)["license"],
-        "disjointness": (f"A data sheet of {what}: settings, block-definition defaults and measured levels. Nearest "
-                         f"training specs: {KNOWLEDGE_SPECS}; neither asks for these items or measures a run."),
+        "disjointness": (f"A data sheet of {what}: settings, block-definition defaults and measured levels. "
+                         + NEAREST + (NEAREST_METER if meter else NEAREST_PROBE)),
     }
 
 
@@ -174,8 +196,8 @@ def _shifted_power_sheet() -> dict:
 def _fm_power_sheet() -> dict:
     tf = "gbf-test-112"
     start = _throttled(named(tf_graph(tf), "fm_power_meter"), "tone_1", "fm_mod", "float")
-    facts = [_graph_fact("modulator sensitivity", r"modulator sensitivity", "fm_mod", "sensitivity", rel_tol=1e-3),
-             _graph_fact("demodulator gain", r"demodulator gain", "fm_demod", "gain", rel_tol=1e-3),
+    facts = [_graph_fact("modulator sensitivity", r"modulator sensitivity", "fm_mod", "sensitivity", rel_tol=0.01),
+             _graph_fact("demodulator gain", r"demodulator gain", "fm_demod", "gain", rel_tol=0.01),
              _graph_fact("averaging length", r"averaging length", "average", "length"),
              _graph_fact("quantizer scale", r"quantizer scale", "to_short", "scale"),
              _yaml_fact("Float To Short default scale", r"float to short default scale", "blocks_float_to_short",
@@ -206,7 +228,8 @@ def _fm_power_sheet() -> dict:
         ("modulator sensitivity: 0.1309 rad/sample\ndemodulator gain: 3.8197\naveraging length: 1000\n"
          "quantizer scale: 1\nFloat To Short default scale: 1000\nmean power: -13.98 dB\nquantized peak: 6400 Hz\n"
          "I did not change the flowgraph."),
-        ["power_db.dat", "second_quantized.dat"], "an FM loopback with a power meter and a quantized copy")
+        ["power_db.dat", "second_quantized.dat"], "an FM loopback with a power meter and a quantized copy",
+        numbers=True)
 
 
 def _received_sheet() -> dict:
@@ -235,13 +258,13 @@ def _received_sheet() -> dict:
          "channel offset: the channel model's frequency offset, as a fraction of the sample rate;",
          "Channel Model default epsilon: the epsilon GNU Radio's Channel Model block takes by default;",
          "received peak: the frequency of the strongest component of received.dat, in Hz;",
-         "received RMS: the RMS level of received.dat."],
+         "received RMS: the RMS level of received.dat, to three significant figures."],
         facts, calls,
         ("high-pass cutoff: 1100 Hz\nLO frequency: 5250 Hz\nchannel offset: 0.0859375\nChannel Model default "
          "epsilon: 1.0\nreceived peak: 11400 Hz\nreceived RMS: 1.03\nI did not change the flowgraph."),
         ("high-pass cutoff: 1100 Hz\nLO frequency: 5250 Hz\nchannel offset: 2750\nChannel Model default "
          "epsilon: 1.0\nreceived peak: 8650 Hz\nreceived RMS: 1.03\nI did not change the flowgraph."),
-        ["received.dat"], "a shifted tone pair through a channel model")
+        ["received.dat"], "a shifted tone pair through a channel model", numbers=True, meter=False)
 
 
 def _retuned_sheet() -> dict:
@@ -297,13 +320,15 @@ EPY_SIGN = _epy("Sign: y = 1 where x >= 0, else -1.", "Sign", "np.where(x >= 0, 
 
 def _save_block(task_id: str, tf: str, graph_id: str, start: dict, tap: str, name: str, block_id: str, label: str,
                 code: str, wrong_code: str, out_file: str, what: str, checks: list[dict], instruction: str,
-                measure: str, final: str) -> dict:
-    """Write a new Embedded Python block after `tap`, record it to `out_file`, save it to the library."""
+                measure: str, final: str, path_from: str | None = None) -> dict:
+    """Write a new Embedded Python block after `tap`, record it to `out_file`, save it to the library. The path
+    check starts at `path_from` (default `tap`): the block the instruction names before the new one."""
     oracle = copy.deepcopy(tf_task(tf)["oracle"])
     oracle["checks"] = [{**{k: v for k, v in chk.items() if k not in ("requires", "property", "stretch")},
                          "group": "p2p"} for chk in oracle["checks"]]
     oracle["checks"] += [{"point": "added", "skip": 4800, "group": "f2p", **chk} for chk in checks]
-    oracle["graph_checks"] = [{"kind": "path", "from_ids": [start_id(start, tap)], "via_ids": ["epy_block"],
+    oracle["graph_checks"] = [{"kind": "path", "from_ids": [start_id(start, path_from or tap)],
+                               "via_ids": ["epy_block"],
                                "to_ids": ["blocks_file_sink"], "group": "f2p"}]
     obs = copy.deepcopy(tf_task(tf)["observation"])
     obs["points"] = obs["points"] + [point("added", out_file, "float")]
@@ -313,13 +338,11 @@ def _save_block(task_id: str, tf: str, graph_id: str, start: dict, tap: str, nam
     return {
         "id": task_id, "category": "save_block", "start": (f"{graph_id}.grc", start),
         "instruction": instruction,
-        "scripted_user": {"rules": [*SAVE_RULES, {"pattern": r"\b(category|overwrite)\b", "reply": "Use the default."}],
-                          "max_turns": 2},
+        "scripted_user": {"rules": copy.deepcopy(SAVE_BLOCK_RULES), "max_turns": 2},
         "acceptance": {
             "hier_block": {"block_id": block_id, "label": label, "inputs": 1, "outputs": 1},
             "ladder": {"rung": "V5", "observation": obs, "oracle": oracle},
-            "blocks_present": [{"id": "epy_block"},
-                               {"id": "blocks_file_sink", "params": {"file": {"regex": rf"(^|/){out_file.replace('.', '[.]')}$"}}}]},
+            "blocks_present": [{"id": "epy_block"}]},
         "golden": {"calls": [
             c("inspect_graph"),
             c("query_knowledge", {"query": "embedded python block", "domain": "docs", "k": 3}),
@@ -359,7 +382,8 @@ def _instruction(what: str, out_file: str, block_id: str, label: str, keep: str)
     return (f"Add an Embedded Python block to the open flowgraph that {what}, and write its output as float samples "
             f"to a new File Sink with the file name {out_file}. Run the flowgraph to check that the block does what "
             f"it should. Then save the block to the block library as a reusable block with the block id {block_id} "
-            f"and the label {label}, and save the flowgraph. Keep {keep} as it is. The flowgraph should keep "
+            f"and the label {label}, and save the flowgraph. Keep {keep} as {'they are' if ' and ' in keep else 'it is'}. "
+            f"The flowgraph should keep "
             f"producing samples until it is stopped.")
 
 
@@ -414,7 +438,7 @@ def _clipper_block() -> dict:
         ("I added an Embedded Python block after the tone that limits it to -0.3 .. 0.3, and a File Sink writing it to "
          "clipped.dat. A run gives a maximum of 0.3, a minimum of -0.3 and an RMS of about 0.257 for the 0.5 tone. I "
          "saved the block to the library as clipper (label Clipper) and saved the flowgraph. mirrored.dat and "
-         "second_quantized.dat are unchanged."))
+         "second_quantized.dat are unchanged."), path_from="tone_1")
 
 
 def _sign_block() -> dict:
@@ -424,7 +448,8 @@ def _sign_block() -> dict:
         "gba-dev-14", tf, "resampled_tones", start, "resampler", "sign", "sign_detect", "Sign Detector", EPY_SIGN,
         EPY_SIGN.replace("np.where(x >= 0, 1.0, -1.0)", "np.tanh(4.0 * x)"), "sign.dat", "a sign detector",
         [{"feature": "max", "min": 0.999, "max": 1.001}, {"feature": "min", "min": -1.001, "max": -0.999},
-         {"feature": "rms", "min": 0.999, "max": 1.001}],
+         {"feature": "rms", "min": 0.999, "max": 1.001}, {"feature": "mean", "min": -0.1, "max": 0.1},
+         {"feature": "peak_freq", "expect": 9500, "tol": 95.0, "fs": 96000.0, "n": 16384}],
         _instruction("outputs the sign of the resampler's output (1 where x >= 0, else -1)", "sign.dat",
                      "sign_detect", "Sign Detector", "quantized.dat"),
         _stats("sign.dat"),

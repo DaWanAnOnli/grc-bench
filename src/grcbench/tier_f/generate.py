@@ -41,7 +41,8 @@ only if it meets further rules (search_rule_misses): the Hilbert band fs/20 .. 0
 blocks at L1, no modify branch that repeats the main chain's next stage, no Conjugate right after a Conjugate, no
 quantizer whose input is already on its grid; and with --share-cells a candidate shares a cell only beside tasks of
 other families or edits, all written at a level that shares (_may_share). A reviewed task's recorded attempt still
-builds as it was.
+builds as it was. The second-round review (the replacement tasks) added: the quantizer phrase names the Short To
+Float scale of the graph it describes, and an edit's key (edit_key) names the block type, not the instance.
 
     ./gb tier-f generate --ids gbf-test-21,gbf-test-22      write those tasks (task folders and build.py)
     ./gb tier-f generate --split test                        every new task of the split
@@ -606,8 +607,12 @@ class Quantize(Stage):
         return [a, b], b
 
     def phrase(self, p, sig):
-        return (f"round it to steps of {fmt(1 / p['scale'])}: convert it to short integers with a Float To Short block "
-                f"(scale {p['scale']}) and back with a Short To Float block (scale {p['scale']})")
+        # the Short To Float scale of the graph described (a tune's start graph has the detuned one; second-round
+        # review, gbf-test-155), and a rounding step only where the two scales agree
+        back = p.get("back", p["scale"])
+        convert = (f"convert it to short integers with a Float To Short block (scale {p['scale']}) and back with a "
+                   f"Short To Float block (scale {back})")
+        return f"round it to steps of {fmt(1 / p['scale'])}: {convert}" if back == p["scale"] else convert
 
     def tunables(self, p, names):
         return [{"block": names[1], "param": "scale", "text": str(p["back"] * 10), "p": {**p, "back": p["back"] * 10},
@@ -1746,8 +1751,12 @@ def natural_lookup(fault: dict | None, ref: dict, start: dict | None, value_bloc
 def edit_key(record: dict, ref: dict, start: dict | None) -> tuple:
     """(family, the edit) of a task, for the shared-cell rule of generate (Tier-F review: tasks of one cell must not
     repeat a family and edit with new numbers). Build: the stage list; modify: the tap and the added stage; a
-    structural repair: the fault type; a tune or wrong-value repair: the block and parameter that change."""
+    structural repair: the fault type; a tune or wrong-value repair: the block type (its id, not its instance
+    name: tone_1 and tone_2 are one edit, second-round review) and the parameter that change. A tune of another
+    block of the same chain to the same output (a channel offset where another task retunes the tone) has another
+    key: the rule does not see that duplicate, and the review does (gbf-dev-48 and gbf-test-154)."""
     family = record.get("family")
+    kind = {b["name"]: b.get("id") for g in (start or {}, ref) for b in g.get("blocks") or []}
     notes = record.get("authoring_notes") or {}
     fault = record.get("fault") or {}
     if family == "build":
@@ -1757,13 +1766,13 @@ def edit_key(record: dict, ref: dict, start: dict | None) -> tuple:
     if family == "modify":
         return family, next((n for n in notes.get("notes") or [] if n.startswith("second output tapped")), "")
     if fault.get("type") == "wrong_value":
-        return family, (fault.get("block"), fault.get("param"))
+        return family, (kind.get(fault.get("block"), fault.get("block")), fault.get("param"))
     old = {b["name"]: b.get("parameters") or {} for b in (start or {}).get("blocks") or []}
     for b in ref.get("blocks") or []:
         p, q = b.get("parameters") or {}, old.get(b["name"], {})
         for key in sorted(set(p) | set(q)):
             if str(p.get(key)) != str(q.get(key)):
-                return family, (b["name"], key)
+                return family, (b.get("id"), key)
     return family, None
 
 

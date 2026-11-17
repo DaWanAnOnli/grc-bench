@@ -14,6 +14,8 @@ grcbench.tier_f.generate.replacement_plan and grcbench.tier_a.replacements.SLOTS
     pick(groups, finals) -> {reserve ids}          pure: the accepted ids beyond each settled group's slots
     reserve(sheet, reviews_dir=None) -> {ids}      pick over the decided records
     undecided(sheet, reviews_dir=None) -> {ids}    replacements with no decided record yet
+    unsettled(sheet, reviews_dir=None) -> {ids}    replacements of a group not fully decided: none is used yet
+    unsettled_ids(reviews_dir=None) -> {ids}       unsettled over both sheets
     all_ids() -> {ids}                             every replacement id (H1b counts the original pool only)
 """
 
@@ -60,6 +62,15 @@ def reserve(sheet: str, reviews_dir: Path | None = None) -> set[str]:
 def undecided(sheet: str, reviews_dir: Path | None = None) -> set[str]:
     finals = _finals(sheet, reviews_dir)
     return {i for ids, _ in groups(sheet) for i in ids if i not in finals}
+
+
+def unsettled(sheet: str, reviews_dir: Path | None = None) -> set[str]:
+    finals = _finals(sheet, reviews_dir)
+    return {i for ids, _ in groups(sheet) if not all(x in finals for x in ids) for i in ids}
+
+
+def unsettled_ids(reviews_dir: Path | None = None) -> set[str]:
+    return {i for sheet in _GROUPS for i in unsettled(sheet, reviews_dir)}
 
 
 def all_ids() -> set[str]:

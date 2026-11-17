@@ -42,7 +42,8 @@ Claude review agents review every item and fill in every sheet of `handoff/revie
 The rules:
 - the decision rules are code (`./gb review`);
 - every agent run is declared in `reviews/review_log.jsonl`;
-- at most 30 agent runs before the freeze, at most 6 at once.
+- at most 38 agent runs before the freeze, at most 6 at once: 30 in the first round and 8 in the
+  second, which reviews the tasks that replace the ones the first round rejected.
 
 Claude never changes training data. Pre-registration §10 records the deviations from the evaluation
 plan.

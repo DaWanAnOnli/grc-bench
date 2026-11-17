@@ -2,10 +2,12 @@
 
 A published file (a report, a decided review record, a filled sheet) names no person's user folder:
 - this machine's project folder becomes `<project>` (WSL, Windows, Git Bash and JSON-escaped spellings);
-- any Windows user folder (C:\\Users\\<name>, /mnt/c/Users/<name>) becomes `<home>`, and the project folder
+- any Windows user folder (C:\\Users\\<name>, /mnt/c/Users/<name>, /c/Users/<name>) becomes `<home>`, and the project folder
   inside another machine's user folder becomes `<project>` too;
 - any Linux home folder (/home/<name>) becomes `~`;
-- a Claude folder name that spells a user folder (C--Users-<name>-...) keeps `<user>` in its place.
+- a Claude folder name that spells a user folder (C--Users-<name>-...) keeps `<user>` in its place;
+- a Claude session's scratch folder (the folder of one session under `claude` in the user's temporary folder)
+  becomes `<scratch>`.
 
 Example and sandbox names stay: /home/user (the Tier-A sandbox), someone, you, u.
 
@@ -25,14 +27,16 @@ _DRIVE = r"(?:/mnt/[a-z]|\b[A-Za-z]:|/[a-z])"
 _END = r"(?=[\\/\s\"'`]|$)"
 
 _NAME = r"[A-Za-z0-9_]+(?:[.-][A-Za-z0-9_]+)*"     # a user name; a full stop after it ends the sentence
-WIN_USER = re.compile(r"(?:\b[A-Za-z]:" + _SEP + r"|/mnt/[a-z]/)Users" + _SEP + _KEEP + _NAME)
+WIN_USER = re.compile(r"(?:\b[A-Za-z]:" + _SEP + r"|/mnt/[a-z]/|(?<![\w.~/-])/[a-z]/)Users" + _SEP + _KEEP + _NAME)
 LINUX_HOME = re.compile(r"/home/" + _KEEP + r"[a-z_][a-z0-9_-]*")
 CLAUDE_FOLDER = re.compile(r"\b([A-Za-z])--Users-" + _KEEP + r"[A-Za-z0-9_]+")
+SCRATCH = re.compile(r"(?:<home>" + _SEP + r")?AppData" + _SEP + r"Local" + _SEP + r"Temp" + _SEP + r"claude"
+                     r"(?:" + _SEP + r"[^\\/\s\"'`]+){1,2}")          # a Claude session's scratch folder
 
 
 def private_paths(text: str) -> list[str]:
     """Every user folder the text names (empty when the text is clean)."""
-    return [m.group(0) for rx in (WIN_USER, LINUX_HOME, CLAUDE_FOLDER) for m in rx.finditer(text)]
+    return [m.group(0) for rx in (WIN_USER, LINUX_HOME, CLAUDE_FOLDER, SCRATCH) for m in rx.finditer(text)]
 
 
 def _patterns(root: PurePath, home: PurePath) -> list[tuple[re.Pattern, str]]:
@@ -52,7 +56,7 @@ def _patterns(root: PurePath, home: PurePath) -> list[tuple[re.Pattern, str]]:
     out.append((WIN_USER, "<home>"))
     if rest:
         out.append((re.compile(r"<home>" + rest + _END), "<project>"))
-    out += [(LINUX_HOME, "~"), (CLAUDE_FOLDER, r"\1--Users-<user>")]
+    out += [(LINUX_HOME, "~"), (CLAUDE_FOLDER, r"\1--Users-<user>"), (SCRATCH, "<scratch>")]
     return out
 
 

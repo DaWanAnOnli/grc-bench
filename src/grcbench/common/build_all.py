@@ -92,7 +92,7 @@ def _tier_f(work: Path) -> list[str]:
     from ..tier_f import taskio
     mirror = work / "tier_f_mirror" / "grc-bench"
     (mirror / "items").mkdir(parents=True)
-    for name in ("src", "splits", "reports"):
+    for name in ("src", "splits", "reports", "reviews"):     # reviews/: the decided records and patches build.py applies
         shutil.copytree(REPO / name, mirror / name, ignore=shutil.ignore_patterns("__pycache__"))
     shutil.copytree(REPO / "items" / "tier_f", mirror / "items" / "tier_f",
                     ignore=shutil.ignore_patterns("__pycache__"))

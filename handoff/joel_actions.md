@@ -10,14 +10,15 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
    - two independent reviewers per sheet (a writer and two checkers per rubric);
    - the expert agent for every disagreement;
    - decision rules in code (`./gb review`);
-   - at most 30 declared agent runs before the freeze (`reviews/review_log.jsonl`).
+   - at most 38 declared agent runs before the freeze, 30 in the first round and 8 in the second
+     (`reviews/review_log.jsonl`).
 
    The decided records are in `reviews/`, and the summary is `reports/review_summary.md`.
 
    | Sheet (`handoff/review_sheets/`) | Rows | Guide |
    |---|---|---|
-   | `tier_f_first_set.csv` | 195 tasks (30 drafted by hand, 165 generated) | `docs/checklists/tier_f_task_review.md` |
-   | `tier_a_first_set.csv` | 42 tasks | `docs/checklists/tier_a_task_review.md` |
+   | `tier_f_first_set.csv` | 222 tasks (30 drafted by hand, 192 generated; 27 of them replace tasks the first round rejected) | `docs/checklists/tier_f_task_review.md` |
+   | `tier_a_first_set.csv` | 51 tasks (9 of them replace tasks the first round rejected) | `docs/checklists/tier_a_task_review.md` |
    | `tier_k_block_questions.csv` | 100 questions | `tier_k_block_questions_instructions.md` (wording review, each question solved blind with GNU Radio) |
    | `rubric_sheet_test.csv`, `rubric_sheet_dev.csv` | 185 + 107 | `docs/guidelines/rubric_writing.md` (a writer agent and two checker agents) |
    | `task_type_ambiguous_test.csv` | 11 questions | `task_type_instructions.md` (two labels each; κ is reported) |
@@ -26,7 +27,7 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
    | `tier_k_twin_threshold_review.csv` | 235 pairs | `similarity_sheets_instructions.md`, section B (the dev-split twin thresholds) |
    | `tier_k_test_clusters.csv` | 10 rows | `similarity_sheets_instructions.md`, section A |
    | `contamination_tier_k_test.csv`, `contamination_tier_k_dev.csv`, `contamination_tier_f_test.csv`, `contamination_tier_f_dev.csv` | 188 + 30 + 17 + 6 flagged pairs (the Tier-A sheets have none) | `similarity_sheets_instructions.md`, section C |
-   | `expert_review.csv` | 397 items | `docs/checklists/expert_review.md` (the expert agent; H1b) |
+   | `expert_review.csv` | 433 items (H1b counts the original 397; the 36 replacements are reported beside it) | `docs/checklists/expert_review.md` (the expert agent; H1b) |
 
 2. **Make the team decisions** listed in `reports/tier_f_first_set.md` §6 (set level: 8 points; task
    level: 8 tasks) and in `reports/scoring_reviews/round2_status.md` (the open findings, before the
@@ -43,6 +44,9 @@ are needed. G2 is Fri 30 Oct: benchmark v0.9 runs end to end, and the pre-regist
    has not gone out yet. Model runs stay blocked until there is approval of the CAD 504, MiniMax and
    DeepSeek access, and Qoherent GPU access.
 6. **Send the training-team hand-off** (`handoff/training_team/START_HERE.md` and the files it lists).
+   The reserved-signature list (`handoff/training_team/flowgraph_reserved_signatures.txt`) has 206
+   entries, 17 more than the list the generated training graphs were filtered against. Ask the team to
+   check the graphs they have generated against the 206 entries, and to use this list from now on.
 
 ## On this machine
 

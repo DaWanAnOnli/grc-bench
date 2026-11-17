@@ -74,7 +74,7 @@ task.json "acceptance" (all keys optional, at least one assertion required; chec
 Parameter constraints (blocks_present, connections): a number (numeric equality on GRC's
 evaluated value, default tolerance 1e-9 relative), a string (raw text equality, quotes ignored;
 numeric if both parse as numbers), or {"value": x, "tol": a, "rel_tol": r} / {"equals": s} /
-{"in": [...]} / {"regex": r}.
+{"in": [...]} / {"regex": r} (re.search on the raw text or, as for a string, the evaluated value).
 
 Result (deterministic for a given end state):
     {"passed": bool, "valid": bool, "reasons": [why it failed], "checks": [{"name", "passed",
@@ -95,7 +95,9 @@ from ..common.paths import GNURADIO_BLOCKS
 from . import isolation
 from .task import Task, load_task
 
-GRADER_VERSION = "grcbench.tier_a.grader/3"     # 2: answer.forbid, files[].oracle; 3: answer.facts[].label
+GRADER_VERSION = "grcbench.tier_a.grader/5"     # 2: answer.forbid, files[].oracle; 3: answer.facts[].label;
+                                                 # 4: a regex constraint also matches the evaluated value;
+                                                 # 5: a labelled number keeps its m/u prefix; U+2212 is a minus
 # oracle features that measure a number (a "file" fact source; grcbench.tier_f.oracles)
 NUMERIC_FEATURES = ("peak_freq", "band_fraction", "rms", "mean", "max_abs", "min", "max", "max_int_dev",
                     "int_fraction")
@@ -306,8 +308,10 @@ def param_ok(block: dict[str, Any], param: str, constraint: Any) -> tuple[bool, 
             return _text(raw) == _text(constraint["equals"]), f"{param}={raw!r}"
         if "in" in constraint:
             return _text(raw) in {_text(v) for v in constraint["in"]}, f"{param}={raw!r}"
-        if "regex" in constraint:
-            return re.search(constraint["regex"], raw) is not None, f"{param}={raw!r}"
+        if "regex" in constraint:              # the raw text or, like a plain string, the evaluated value
+            hit = re.search(constraint["regex"], raw) is not None or (
+                isinstance(evaluated, str) and re.search(constraint["regex"], _text(evaluated)) is not None)
+            return hit, f"{param}={raw!r}"
         return False, f"unknown constraint {constraint!r}"
     want = _num(constraint)
     if isinstance(constraint, (int, float)) or (want is not None and actual is not None):
@@ -331,11 +335,14 @@ _NUMBER = re.compile(r"(?<![\w.])([-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:[e
                      r"(?:\s?([kKMGmuµ])(?=[A-Za-z/]|(?<=[kKMG])\b))?")
 
 
+MINUS = "−"      # the minus sign: read as "-"
+
+
 def numbers_in(text: str) -> list[float]:
     """Every number written in `text`, plain and (when an SI prefix follows) scaled: "32 kHz" gives
-    32 and 32000, "1,000" gives 1000, "2e3" gives 2000."""
+    32 and 32000, "1,000" gives 1000, "2e3" gives 2000; a minus sign (U+2212) counts as "-"."""
     out: list[float] = []
-    for m in _NUMBER.finditer(text or ""):
+    for m in _NUMBER.finditer((text or "").replace(MINUS, "-")):
         try:
             value = float(m.group(1).replace(",", ""))
         except ValueError:
@@ -645,11 +652,11 @@ def _labelled(value: Any, answer: str, fact: dict[str, Any]) -> tuple[bool, str]
         m = re.search(fact["label"], line, re.IGNORECASE)
         if m is None:
             continue
-        rest = line[m.end():]
+        rest = line[m.end():].replace(MINUS, "-")
         if fact["match"] == "number":
-            first = _NUMBER.search(rest)
-            ok, detail = match_fact(value, first.group(0) if first else "", "number", fact.get("tol"),
-                                    fact.get("rel_tol"))
+            first = _NUMBER.search(rest)          # parsed with the next character in view: "500 mV" keeps its m
+            ok, detail = match_fact(value, rest[first.start():first.end() + 1] if first else "", "number",
+                                    fact.get("tol"), fact.get("rel_tol"))
         else:
             ok, detail = match_fact(value, rest, fact["match"], fact.get("tol"), fact.get("rel_tol"))
         return ok, f"{detail} after {fact['label']!r}"

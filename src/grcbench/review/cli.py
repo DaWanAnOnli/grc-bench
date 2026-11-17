@@ -3,7 +3,7 @@
   inputs WORK SHEET... [--undecided]  write each reviewer's blinded input copy to WORK/inputs/ (--undecided:
                                       only the rows with no decided record, a second round)
   declare --agent N --role R --sheets S... --rows N --brief FILE
-                                      declare an agent run in reviews/review_log.jsonl (cap: 30)
+                                      declare an agent run in reviews/review_log.jsonl (cap: 38)
   finish --agent N OUTPUT...          record the run's output hash and row count
   route WORK SHEET...                 apply the decision rules; write the expert's queue and audit sample
   decide WORK SHEET... [--merge]      with the expert's rows: write reviews/<sheet>.jsonl and the filled sheet

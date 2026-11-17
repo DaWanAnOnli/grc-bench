@@ -7,11 +7,11 @@
    "reasons": [
     "files[0]: power_db.dat does not exist",
     "files[1]: second_quantized.dat does not exist",
-    "answer[0]: modulator sensitivity: no answer line names 'modulator sensitivity'",
-    "answer[1]: demodulator gain: no answer line names 'demodulator gain'",
-    "answer[2]: averaging length: no answer line names 'averaging length'",
-    "answer[3]: quantizer scale: no answer line names 'quantizer scale'",
-    "answer[4]: Float To Short default scale: no answer line names 'float to short default scale'",
+    "answer[0]: modulator sensitivity: no answer line names 'modulator sensitivity[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[1]: demodulator gain: no answer line names 'demodulator gain[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[2]: averaging length: no answer line names 'averaging length[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[3]: quantizer scale: no answer line names 'quantizer scale[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[4]: Float To Short default scale: no answer line names 'float to short default scale[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
     "answer[5]: mean power: expected value not derivable: 'power_db.dat does not exist in the project folder'",
     "answer[6]: quantized peak frequency: expected value not derivable: 'second_quantized.dat does not exist in the project folder'"
    ],
@@ -39,8 +39,8 @@
      "reasons": [
       "files[0]: power_db.dat does not exist",
       "files[1]: second_quantized.dat does not exist",
-      "answer[3]: quantizer scale: expects 1000 after 'quantizer scale'",
-      "answer[4]: Float To Short default scale: expects 1 after 'float to short default scale'",
+      "answer[3]: quantizer scale: expects 1000 after 'quantizer scale[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+      "answer[4]: Float To Short default scale: expects 1 after 'float to short default scale[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
       "answer[5]: mean power: expected value not derivable: 'power_db.dat does not exist in the project folder'",
       "answer[6]: quantized peak frequency: expected value not derivable: 'second_quantized.dat does not exist in the project folder'"
      ],

@@ -224,12 +224,12 @@ Distribution of each item's maximum cosine (quantiles over items):
 
 | Training corpus | TF-IDF p50 | p90 | p99 | max | Embedding p50 | p90 | p99 | max | Embedding scope |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| train_questions | 0.223 | 0.288 | 0.320 | 0.332 | 0.762 | 0.798 | 0.814 | 0.816 | all passages |
-| teacher_answers | 0.269 | 0.314 | 0.337 | 0.339 | 0.779 | 0.823 | 0.835 | 0.835 | TF-IDF candidates |
+| train_questions | 0.223 | 0.288 | 0.320 | 0.332 | 0.763 | 0.798 | 0.814 | 0.816 | all passages |
+| teacher_answers | 0.269 | 0.311 | 0.337 | 0.339 | 0.780 | 0.823 | 0.835 | 0.835 | TF-IDF candidates |
 | repaired | 0.234 | 0.260 | 0.287 | 0.289 | 0.783 | 0.824 | 0.838 | 0.840 | TF-IDF candidates |
 | repaired_glm | 0.248 | 0.277 | 0.304 | 0.314 | 0.784 | 0.819 | 0.840 | 0.840 | TF-IDF candidates |
 | sft_sessions | 0.266 | 0.338 | 0.355 | 0.356 | 0.771 | 0.812 | 0.819 | 0.821 | TF-IDF candidates |
-| task_specs | 0.177 | 0.221 | 0.252 | 0.266 | 0.764 | 0.792 | 0.813 | 0.813 | all passages |
+| task_specs | 0.177 | 0.220 | 0.252 | 0.266 | 0.764 | 0.792 | 0.813 | 0.814 | all passages |
 | agent_traces | 0.234 | 0.294 | 0.341 | 0.342 | 0.762 | 0.803 | 0.818 | 0.826 | TF-IDF candidates |
 
 Agreement between signals (items flagged by both):

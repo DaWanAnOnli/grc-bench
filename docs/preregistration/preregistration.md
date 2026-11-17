@@ -90,7 +90,7 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 | **H2a** recipe | Mixed SFT (knowledge, trajectories and replay) beats single-source SFT on every tier. | On the test split, Tiers K and F: the best S1 checkpoint against each single-source comparison arm of the same model, with the primary paired test of each tier, Holm-corrected in the RQ2 family. H2a holds for a tier if every comparison favours the mixed recipe at the corrected 5 % level. Tier A is compared on the dev split only, because the arms are not run on Tier A of the test split (Table 6). |
 | **H2b** preference stage | Defect-aware preference optimisation lowers the hallucinated-block rate by at least 30 % relative to SFT alone. | Tier F: the hallucinated-block rate of S1 + DPO and of S1 + DPOP against the best S1 checkpoint. H2b holds for a method if the relative reduction is at least 30 % and the paired test of the per-task rates is significant after Holm correction in the RQ2 family. |
 | **H3** curation | Adding validated repairs to PASS-only data raises accuracy and lowers the hallucinated-block rate at equal compute. | The curation comparison A2 runs on the dev split (eval plan §7.2): PASS + repaired against PASS-only, on Tier-K score and on the Tier-F hallucinated-block rate, paired tests, Holm-corrected in the RQ3 family. Because the dev split also served for model choices, H3 is reported with that limitation. |
-| **H4a** compression cost | 4-bit compression costs more on agentic (A) than on knowledge (K) metrics. | For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A minus the drop on Tier K, in percentage points, with a 95 % cluster-bootstrap interval (items resampled within each tier). H4a holds if the interval lies above 0 (`H4a-decision`, §8). Tier A's MDE at its 25 test tasks (25–31 points) is printed beside the result. |
+| **H4a** compression cost | 4-bit compression costs more on agentic (A) than on knowledge (K) metrics. | For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A minus the drop on Tier K, in percentage points, with a 95 % cluster-bootstrap interval (items resampled within each tier). H4a holds if the interval lies above 0 (`H4a-decision`, §8). Tier A's MDE at its 30 test tasks (23–28 points) is printed beside the result. |
 | **H4b** speed | The MoE model (North-Mini-Code) reaches at least 80 tokens/s on the reference hardware at Q4_K_M. | Tier E on setup H2 (a laptop with a 4 GB GPU, MoE experts in CPU memory): the median generation speed of 5 warm llama-bench runs is at least 80 tokens/s, decided at each of 4K, 16K, 32K and 64K tokens of context. The result states the context range over which H4b holds ("holds up to 16K"); a context that cannot be run does not hold (`H4b-context`, §8). Setups H1 and H3 are reported beside it. |
 
 ## 4. Item quality before the freeze
@@ -313,14 +313,15 @@ default settings on 10 tasks.
   | Tier | Test items in Table 8 | MDE in Table 8 (points) | Test items in v1.0 | MDE in v1.0 (points) |
   |---|--:|---|--:|---|
   | K | 285 | 7–9 | 277 | 8–9 |
-  | F | 150 | 10–13 | 129 | 11–14 |
-  | A | 30 | 23–28 | 25 | 25–31 |
+  | F | 150 | 10–13 | 148 | 10–13 |
+  | A | 30 | 23–28 | 30 | 23–28 |
 
-  A paired difference cannot exceed the share of items the two models decide differently. At its 25
-  test tasks, Tier A's MDE is larger than the share of tasks decided differently at both of Table 8's
-  values (25 points at 20 %, 31 points at 30 %), so under Table 8's assumptions no paired Tier-A
-  comparison reaches 80 % power. Tier-A differences are reported with their intervals and this MDE, and
-  a non-significant Tier-A comparison is not read as evidence of no difference.
+  A paired difference cannot exceed the share of items the two models decide differently. At its 30
+  test tasks, Tier A's MDE is 23 points at Table 8's 20 % and 28 points at its 30 %: larger than the share
+  of tasks decided differently at 20 %, and smaller at 30 %. So under Table 8's assumptions a paired
+  Tier-A comparison reaches 80 % power only when more than about 26 % of its tasks are decided
+  differently. Tier-A differences are reported with their intervals and this MDE, and a non-significant
+  Tier-A comparison is not read as evidence of no difference.
 
 - **Seeds.** The final setting of each model is trained with 3 seeds; the spread between seeds is
   reported separately from the item-level interval.
@@ -455,7 +456,8 @@ rate on dev answers (round-2 finding F5) can be measured.
     model's consistency and overstates the agreement two people would reach.
   - **Blinding.** Blinding is by what each agent's brief allows it to open, not by file permissions.
   - **Table 7.** The person-hours of the reviews, the rubrics, the calibration and the error analysis
-    become declared agent runs (at most 30 for the reviews before the freeze).
+    become declared agent runs (at most 38 for the reviews before the freeze: 30 in the first round,
+    8 in the second).
   - **Similarity sheets.** Both reviewers label every contamination pair, not reviewer 2 on a sample,
     and the agreement is reported on every pair and on the every-fifth sample.
 - **The freeze date.** The approved plans freeze benchmark v1.0 at gate G3 on Friday 13 November. The
@@ -478,12 +480,12 @@ rate on dev answers (round-2 finding F5) can be measured.
     same edit) and `gbf-test-22`, whose requested change has no effect on its output. So 129 test and
     43 dev tasks remain. The test levels are L1 25, L2 74 and L3 30, not the planned 60, 60 and 30:
     18 modify tasks with more than 5 blocks are relabelled L2 (eval plan §4.3: L1 has at most 5
-    blocks), and all 23 rejected tasks are L1. Results are reported per level with these counts.
+    blocks), and all 23 rejected tasks are L1. Results are reported per level, at the counts after the
+    replacements below.
   - **Tier A.** 7 of the 42 tasks are rejected (5 test, 2 dev): all 4 knowledge tasks and 3 of the 4
     save_block tasks, because a competent agent finishes them in 1 to 3 tool calls, below the
-    8-call floor of eval plan §4.4. So 25 test and 10 dev tasks remain. The test split has no
-    knowledge task and one save_block task, so Tier-A results are reported for the categories that
-    remain.
+    8-call floor of eval plan §4.4. So 25 test and 10 dev tasks remain, and the test split keeps no
+    knowledge task and one save_block task. The replacements below fill both categories again.
   - **Replacement tasks for Tiers F and A.** Each rejected Tier-F and Tier-A task is replaced by a task
     built after the review and reviewed in a second round under the same protocol: two reviewers, the
     expert agent with its audit, and its expert review. The second round uses 8 more declared agent runs.
@@ -499,11 +501,33 @@ rate on dev answers (round-2 finding F5) can be measured.
     slots: per split for Tier F, and per category and split for Tier A. An accepted replacement beyond
     the slots is kept as a reserve and not scored.
 
+    Both reviewers rejected 6 Tier-F replacements as duplicates of first-round tasks of their cells
+    (`gbf-test-151`, `-153`, `-154`, `-156`, `-164` and `gbf-dev-48`), and the expert agent's review
+    agreed on all six. The other 21 are accepted: 19 test replacements fill 19 of the 21 test slots, and
+    2 fill the dev slots. So Tier F has 148 test tasks (L1 33, L2 85, L3 30), 2 fewer than the planned
+    150, and 45 dev tasks. All 9 Tier-A replacements are accepted, and `gba-test-36` and `gba-test-37`
+    are reserves. So Tier A has 30 test tasks, 3 in each of its 10 categories, and 12 dev tasks, as
+    planned.
+  - **Edits after the review.** The second round found three faults that first-round tasks share with
+    their replacements, and the team decided on 17 November to apply the same edits to the first-round
+    tasks. An edited task's version goes up by one (to 2, or to 3 where the review had already edited
+    it), its status is `approved-with-edits`, its notes name the edit as a post-review edit, its gates
+    are re-run, and the expert agent of the second round checked that each edit is applied and closes
+    its gap.
+    - Seven Tier-F build tasks (`gbf-test-24`, `-37`, `-94`, `-114`, `-134`, `-135` and `gbf-dev-33`)
+      passed a graph that leaves out the tone their filter removes. They get the replacements' two graph
+      checks: a count of Signal Sources, and a path through the Add block.
+    - In `gba-test-24` the scripted user answered a question about the category with "Yes, go ahead.".
+      Its rules take the replacements' order, so the question gets "Use the default.".
+    - Fifteen Tier-A tasks check the File Sink's file name with a pattern on the parameter's text, which
+      fails a name set through a variable. The grader matches such a pattern against the evaluated value
+      too (grader version 4), as it already does for a plain name, so no task file changes.
+
     Tier K's removed questions are not replaced. Its frozen and dev questions come from the training
     team's held-out splits, and any new question from that source would overlap the training data.
   - **Sizes stated elsewhere in this document.** They are the sizes before the review. The analyses use
-    the items that remain: H1c subsamples Tier K to Tier F's 129 test tasks, and the minimum detectable
-    effects of §7 are computed at 277 (K), 129 (F) and 25 (A) items.
+    the items that remain: H1c subsamples Tier K to Tier F's 148 test tasks, and the minimum detectable
+    effects of §7 are computed at 277 (K), 148 (F) and 30 (A) items.
 - **How H1b counts the items the review removed.** The expert review covers every item in scope, the
   ones the two-reviewer review removed included, and H1b's share counts all of them. This rule was
   fixed, in the expert-review scope and the agents' briefs, before any expert verdict existed. The
@@ -512,7 +536,8 @@ rate on dev answers (round-2 finding F5) can be measured.
   (at most 172 of 195) or Tier A (at most 35 of 42). Beside the test, `reports/review_summary.md`
   gives the share over the items the review kept, as a description, not a test. The replacement tasks
   are not in the test either: they were built after the expert's verdicts were known. So H1b is
-  counted on the original pool, and the replacements' acceptance is reported beside it.
+  counted on the original pool, and the replacements' acceptance is reported beside it: 21 of 27 in
+  Tier F and 9 of 9 in Tier A.
 
 ## Appendix A: analysis proposals
 
@@ -601,7 +626,7 @@ Proposals for G2 (deviation = changes a stated definition; extension = decides a
 ### H4a-decision (extension): Decision rule of H4a
 
 - Stated: proposal H4: 4-bit GGUF costs more on agentic (A) than knowledge (K) metrics; measured as the score change from BF16 to Q4.
-- Proposal: For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A (per-task success) minus the drop on Tier K (per-item credit), with a 95% percentile interval from a stratified cluster bootstrap (each tier's clusters resampled independently, B = 10,000). H4a holds if the interval lies above 0. Tier A's MDE at its 25 test tasks (25-31 points) is printed beside it.
+- Proposal: For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A (per-task success) minus the drop on Tier K (per-item credit), with a 95% percentile interval from a stratified cluster bootstrap (each tier's clusters resampled independently, B = 10,000). H4a holds if the interval lies above 0. Tier A's MDE at its 30 test tasks (23-28 points) is printed beside it.
 - Code: functions.compression_cost_difference
 - Evidence: tests/test_preregistration.py::test_h4a_decision_rule: equal drops give an interval around 0; a 30-point larger Tier-A drop on 30 tasks holds.
 

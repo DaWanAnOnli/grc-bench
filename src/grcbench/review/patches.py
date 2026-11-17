@@ -3,7 +3,8 @@ machine-applied patches (reviews/<tier>_patches.json), and the task's generator 
 writes the task, so a re-run keeps every decided edit.
 
 A patch: {"item": <task id>, "file": "task.json" (default), "path": [key or index, ...], "op": ..., "edit":
-<the decided edit it implements>}, with
+<the decided edit it implements>, "post_review"?: <the decision behind an edit made after the task's review
+(pre-registration §10); the task's notes name it as a post-review edit>}, with
   set           "value": replace (or create the last key of) the value at `path`
   delete        remove the value at `path`
   append        "value": append to the list at `path`

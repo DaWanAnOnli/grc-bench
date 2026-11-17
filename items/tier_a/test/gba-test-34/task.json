@@ -3,14 +3,6 @@
   "blocks_present": [
    {
     "id": "epy_block"
-   },
-   {
-    "id": "blocks_file_sink",
-    "params": {
-     "file": {
-      "regex": "(^|/)squared[.]dat$"
-     }
-    }
    }
   ],
   "hier_block": {
@@ -155,24 +147,28 @@
   "generator_version": "1"
  },
  "review": {
-  "notes": "",
-  "reviewers": [],
-  "status": "pending-team-review"
+  "notes": "decided by EX (edits to merge); decided edits applied",
+  "reviewers": [
+   "R1",
+   "R2",
+   "EX"
+  ],
+  "status": "approved-with-edits"
  },
  "scripted_user": {
   "max_turns": 2,
   "rules": [
    {
+    "pattern": "\\bcategory\\b",
+    "reply": "Use the default."
+   },
+   {
     "pattern": "\\bsave\\b",
     "reply": "Yes, please save it."
    },
    {
-    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want)\\b",
+    "pattern": "\\b(go ahead|proceed|apply|shall i|should i|do you want|overwrite)\\b",
     "reply": "Yes, go ahead."
-   },
-   {
-    "pattern": "\\b(category|overwrite)\\b",
-    "reply": "Use the default."
    }
   ]
  },
@@ -186,5 +182,5 @@
   "active_graph": "quantized_tones.grc"
  },
  "tier": "A",
- "version": 1
+ "version": 2
 }

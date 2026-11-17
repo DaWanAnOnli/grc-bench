@@ -1063,5 +1063,665 @@
    "domain": "catalog"
   },
   "edit": "metadata: add to task.json \"golden_lookup\": {\"query\": \"Signal Source Throttle Rational Resampler Float To Short Short To Float Message Strobe File Sink\", \"domain\": \"catalog\"} and re-run ./gb tier-a tier-f-golden on the task -- every block id of the answer is pasted into the golden query; the new query is the catalog labels of the blocks the build adds"
+ },
+ {
+  "item": "gbf-dev-46",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 2,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"rectified.dat\"}, \"group\": \"main\"} -- the Low Pass Filter removes the 8 kHz tone completely, so a graph without tone_1 and the Add passes V5, and with the tone gone the stated 6.85 kHz cutoff is not tested (a 10 kHz cutoff then passes); the instruction asks for both cosines to be made and added (section C)"
+ },
+ {
+  "item": "gbf-dev-46",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "rectified.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"rectified.dat\"}, \"group\": \"main\"} -- the Low Pass Filter removes the 8 kHz tone completely, so a graph without tone_1 and the Add passes V5, and with the tone gone the stated 6.85 kHz cutoff is not tested (a 10 kHz cutoff then passes); the instruction asks for both cosines to be made and added (section C)"
+ },
+ {
+  "item": "gbf-dev-46",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   4
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks"
+ },
+ {
+  "item": "gbf-test-161",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 3,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"mirrored.dat\"}, \"group\": \"main\"} -- the Low Pass Filter removes the -7 kHz tone completely, so a graph without tone_2 and the Add passes V5, and with that tone gone the stated 5.1 kHz cutoff is not tested (a 9 kHz cutoff then passes); the instruction asks for both tones to be made and added, and for the oscillator to come 'from another Signal Source' (section C)"
+ },
+ {
+  "item": "gbf-test-161",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "mirrored.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"mirrored.dat\"}, \"group\": \"main\"} -- the Low Pass Filter removes the -7 kHz tone completely, so a graph without tone_2 and the Add passes V5, and with that tone gone the stated 5.1 kHz cutoff is not tested (a 9 kHz cutoff then passes); the instruction asks for both tones to be made and added, and for the oscillator to come 'from another Signal Source' (section C)"
+ },
+ {
+  "item": "gbf-test-161",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, two of them joined in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, two of them joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks"
+ },
+ {
+  "item": "gbf-test-169",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_noise_source_x",
+    "analog_fastnoise_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "resampled.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph check {\"kind\": \"path\", \"from_ids\": [\"analog_noise_source_x\", \"analog_fastnoise_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the noise carries about 1.5 % of the output power, inside the band-share and RMS tolerances, so the reference without the Noise Source and the Add passes V5; the instruction asks to 'add complex Gaussian noise of amplitude 0.1 from a Noise Source (seed 0) with an Add block' (section C)"
+ },
+ {
+  "item": "gbf-test-169",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink; two Rational Resamplers",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; two Rational Resamplers; a path from the Noise Source through the Add block to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink; two Rational Resamplers\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; two Rational Resamplers; a path from the Noise Source through the Add block to the File Sink\" -- the plain-words list names the new check"
+ },
+ {
+  "item": "gbf-test-171",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_noise_source_x",
+    "analog_fastnoise_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "resampled.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph check {\"kind\": \"path\", \"from_ids\": [\"analog_noise_source_x\", \"analog_fastnoise_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the noise carries about 4 % of the output power, inside the band-share and RMS tolerances, so the reference without the Noise Source and the Add passes V5; the instruction asks to 'add complex Gaussian noise of amplitude 0.05 from a Noise Source (seed 0) with an Add block' (section C)"
+ },
+ {
+  "item": "gbf-test-171",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; a path from the Noise Source through the Add block to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; a path from the Noise Source through the Add block to the File Sink\" -- the plain-words list names the new check"
+ },
+ {
+  "item": "gbf-test-174",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 2,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_noise_source_x\", \"analog_fastnoise_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"filtered.dat\"}, \"group\": \"main\"} -- the High Pass Filter removes the 1.7 kHz tone and the noise carries about 6 % of the power, inside the tolerances, so a graph with only the 3.2 kHz source and the filter passes V5, and then any cutoff below 3.2 kHz passes; the instruction asks for both cosines and the noise to be added (section C). A noise path alone does not catch a graph that keeps the noise but drops the 1.7 kHz tone (it passes V5), so the Signal Source count is needed too"
+ },
+ {
+  "item": "gbf-test-174",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_noise_source_x",
+    "analog_fastnoise_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "filtered.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_noise_source_x\", \"analog_fastnoise_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"filtered.dat\"}, \"group\": \"main\"} -- the High Pass Filter removes the 1.7 kHz tone and the noise carries about 6 % of the power, inside the tolerances, so a graph with only the 3.2 kHz source and the filter passes V5, and then any cutoff below 3.2 kHz passes; the instruction asks for both cosines and the noise to be added (section C). A noise path alone does not catch a graph that keeps the noise but drops the 1.7 kHz tone (it passes V5), so the Signal Source count is needed too"
+ },
+ {
+  "item": "gbf-test-174",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, and a path from the Noise Source through the Add block to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, and a path from the Noise Source through the Add block to the File Sink\" -- the plain-words list names the new checks"
+ },
+ {
+  "item": "gbf-dev-33",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 3,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"mirrored.dat\"}, \"group\": \"main\"} -- the filter removes the 7 kHz tone (tone_1) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-dev-33",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "mirrored.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"mirrored.dat\"}, \"group\": \"main\"} -- the filter removes the 7 kHz tone (tone_1) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-dev-33",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   4
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, joined in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-24",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 2,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"quantized.dat\"}, \"group\": \"main\"} -- the filter removes the 7.8 kHz tone (tone_1) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-24",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "quantized.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"quantized.dat\"}, \"group\": \"main\"} -- the filter removes the 7.8 kHz tone (tone_1) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-24",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   4
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-37",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 3,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"mirrored.dat\"}, \"group\": \"main\"} -- the filter removes the -7.3 kHz tone (tone_1) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-37",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "mirrored.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"mirrored.dat\"}, \"group\": \"main\"} -- the filter removes the -7.3 kHz tone (tone_1) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-37",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   4
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, joined in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-94",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 2,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the filter removes the 10 kHz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-94",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "resampled.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the filter removes the 10 kHz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-94",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-114",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 2,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"mirrored.dat\"}, \"group\": \"main\"} -- the filter removes the 900 Hz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-114",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "mirrored.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"mirrored.dat\"}, \"group\": \"main\"} -- the filter removes the 900 Hz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-114",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-134",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 3,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the filter removes the 6.8 kHz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-134",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "resampled.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the filter removes the 6.8 kHz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-134",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, two of them joined in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, two of them joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-135",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "block_present",
+   "ids": [
+    "analog_sig_source_x"
+   ],
+   "min": 2,
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the filter removes the 7.8 kHz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-135",
+  "file": "task.json",
+  "path": [
+   "oracle",
+   "graph_checks"
+  ],
+  "op": "append",
+  "value": {
+   "kind": "path",
+   "from_ids": [
+    "analog_sig_source_x"
+   ],
+   "via_ids": [
+    "blocks_add_xx"
+   ],
+   "to_ids": [
+    "blocks_file_sink"
+   ],
+   "to_params": {
+    "file": "resampled.dat"
+   },
+   "group": "main"
+  },
+  "edit": "oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 2, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the filter removes the 7.8 kHz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
+ },
+ {
+  "item": "gbf-test-135",
+  "file": "task.json",
+  "path": [
+   "spec_properties",
+   3
+  ],
+  "op": "replace_text",
+  "old": "structure: a path from a Signal Source through each stated stage to the File Sink",
+  "new": "structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined with the noise in an Add block on the path to the File Sink",
+  "edit": "metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; two Signal Sources, joined with the noise in an Add block on the path to the File Sink\" -- the plain-words list names the new checks",
+  "post_review": "decision of 17 Nov after the second round, pre-registration §10"
  }
 ]

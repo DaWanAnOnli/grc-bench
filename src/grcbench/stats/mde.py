@@ -34,7 +34,7 @@ TABLE8 = {"K": (285, 7, 9), "F": (150, 10, 13), "A": (30, 23, 28)}
 
 # The test items of benchmark v1.0, the ones the review kept (pre-registration §7 and §10). A test pins
 # these to the item files.
-V1_ITEMS = {"K": 277, "F": 129, "A": 25}
+V1_ITEMS = {"K": 277, "F": 148, "A": 30}
 
 
 def mde(n_items: int, p_discordant: float, alpha: float = ALPHA, power: float = POWER) -> float:

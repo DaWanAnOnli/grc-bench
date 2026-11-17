@@ -1300,9 +1300,10 @@ PENDING = {"status": "pending-team-review", "reviewers": [], "notes": ""}
 
 
 def review_of(task_id: str) -> dict:
-    """The task's `review` field from its decided record (reviews/tier_a.jsonl; docs/guidelines/review_protocol.md)."""
-    from grcbench.review.items import review_field
-    return review_field("tier_a", task_id, reviews_dir=REVIEWS) or dict(PENDING)
+    """The task's `review` field from its decided record (reviews/tier_a.jsonl; docs/guidelines/review_protocol.md),
+    with the edits its task.json patches add (an expert-review or post-review edit, review.items.review_after)."""
+    from grcbench.review.items import review_after
+    return review_after("tier_a", task_id, _patches(task_id, "task.json"), reviews_dir=REVIEWS) or dict(PENDING)
 
 
 def _patches(task_id: str, file: str) -> list[dict]:

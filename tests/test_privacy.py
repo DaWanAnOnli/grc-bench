@@ -26,6 +26,7 @@ HOME = "/home/" + NAME
     MNT + "/Docs/x.py",
     HOME + "/grc-agent/x.py",
     "claude\\C--Users-" + NAME + "-Documents-proj\\scratchpad",
+    "/c/" + "Users/" + NAME + "/Documents/x.md",                     # Git Bash
 ])
 def test_a_user_folder_is_found_and_redacted(text):
     assert privacy.private_paths(text)
@@ -41,6 +42,26 @@ def test_a_user_folder_is_found_and_redacted(text):
 ])
 def test_sandbox_and_example_paths_are_not_private(text):
     assert privacy.private_paths(text) == []
+
+
+def test_a_claude_scratch_folder_becomes_scratch():
+    """A session's scratch folder is a path on this machine even with its user redacted (code review a37)."""
+    temp = "\\".join(["App" + "Data", "Local", "Temp", "cl" + "aude"])          # built at run time, as above
+    text = "<home>\\" + temp + "\\C--Users-<user>-Documents-proj\\0123-abcd\\scratchpad\\x.log"
+    assert privacy.private_paths(text)
+    out = privacy.redact(text, project_root=PurePosixPath("/mnt/c/Users/someone/proj"),
+                         home=PurePosixPath("/home/someone"))
+    assert out == "<scratch>\\scratchpad\\x.log" and privacy.private_paths(out) == []
+    escaped = text.replace("\\", "\\\\")                                # as JSON escapes it
+    assert privacy.redact(escaped, project_root=PurePosixPath("/mnt/c/Users/someone/proj"),
+                          home=PurePosixPath("/home/someone")) == "<scratch>\\\\scratchpad\\\\x.log"
+
+
+def test_a_sheet_generated_before_any_decision_is_redacted(tmp_path):
+    from grcbench.review import fill
+    generated = "task_id,instruction\ngbf-test-1,see " + MNT + "/x.grc\n"
+    out = fill.with_new_rows("tier_f", generated, reviews_dir=tmp_path / "none", path=tmp_path / "s.csv")
+    assert NAME not in out and "<home>/x.grc" in out
 
 
 def test_the_project_folder_of_another_machine_becomes_project():

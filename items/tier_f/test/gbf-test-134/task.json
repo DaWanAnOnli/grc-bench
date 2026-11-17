@@ -191,6 +191,30 @@
     "via_ids": [
      "rational_resampler_xxx"
     ]
+   },
+   {
+    "group": "main",
+    "ids": [
+     "analog_sig_source_x"
+    ],
+    "kind": "block_present",
+    "min": 3
+   },
+   {
+    "from_ids": [
+     "analog_sig_source_x"
+    ],
+    "group": "main",
+    "kind": "path",
+    "to_ids": [
+     "blocks_file_sink"
+    ],
+    "to_params": {
+     "file": "resampled.dat"
+    },
+    "via_ids": [
+     "blocks_add_xx"
+    ]
    }
   ]
  },
@@ -205,12 +229,12 @@
  },
  "reference_grc": "reference.grc",
  "review": {
-  "notes": "decided by R1;R2",
+  "notes": "decided by R1;R2; post-review edit (decision of 17 Nov after the second round, pre-registration §10): oracle: add the main graph checks {\"kind\": \"block_present\", \"ids\": [\"analog_sig_source_x\"], \"min\": 3, \"group\": \"main\"} and {\"kind\": \"path\", \"from_ids\": [\"analog_sig_source_x\"], \"via_ids\": [\"blocks_add_xx\"], \"to_ids\": [\"blocks_file_sink\"], \"to_params\": {\"file\": \"resampled.dat\"}, \"group\": \"main\"} -- the filter removes the 6.8 kHz tone (tone_2) completely, so a graph without that tone and without the Add passes V5 (coordinator's ladder probe, 17 Nov); the instruction asks for every stated source to be made and added (section C). The same checks as the second-round replacements gbf-dev-46 and gbf-test-161; post-review edit (decision of 17 Nov after the second round, pre-registration §10): metadata: in spec_properties replace \"structure: a path from a Signal Source through each stated stage to the File Sink\" with \"structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, two of them joined in an Add block on the path to the File Sink\" -- the plain-words list names the new checks",
   "reviewers": [
    "R1",
    "R2"
   ],
-  "status": "approved"
+  "status": "approved-with-edits"
  },
  "source": {
   "attempt": 139,
@@ -223,10 +247,10 @@
   "its strongest component at -1.7 kHz (within 17 Hz)",
   "100 % of its power within 50 Hz of -1.7 kHz (within a tenth of that share)",
   "an RMS level of 2 (within 5 %)",
-  "structure: a path from a Signal Source through each stated stage to the File Sink"
+  "structure: a path from a Signal Source through each stated stage to the File Sink; three Signal Sources, two of them joined in an Add block on the path to the File Sink"
  ],
  "split": "test",
  "start_grc": null,
  "tier": "F",
- "version": 1
+ "version": 2
 }

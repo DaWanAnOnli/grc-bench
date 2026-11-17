@@ -7,10 +7,10 @@
    "reasons": [
     "files[0]: power_db.dat does not exist",
     "files[1]: second_levelled.dat does not exist",
-    "answer[0]: strobe period: no answer line names 'strobe period'",
-    "answer[1]: retune frequency: no answer line names 'retune frequency'",
-    "answer[2]: AGC reference: no answer line names 'agc reference'",
-    "answer[3]: Message Strobe input port: no answer line names '(strobe )?input port'",
+    "answer[0]: strobe period: no answer line names 'strobe period[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[1]: retune frequency: no answer line names 'retune frequency[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[2]: AGC reference: no answer line names 'agc reference[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+    "answer[3]: Message Strobe input port: no answer line names '(strobe )?input port[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
     "answer[4]: mean power: expected value not derivable: 'power_db.dat does not exist in the project folder'",
     "answer[5]: levelled RMS: expected value not derivable: 'second_levelled.dat does not exist in the project folder'"
    ],
@@ -38,8 +38,8 @@
      "reasons": [
       "files[0]: power_db.dat does not exist",
       "files[1]: second_levelled.dat does not exist",
-      "answer[1]: retune frequency: expects -7800 after 'retune frequency'",
-      "answer[3]: Message Strobe input port: expects 'set_msg' after '(strobe )?input port'",
+      "answer[1]: retune frequency: expects -7800 after 'retune frequency[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
+      "answer[3]: Message Strobe input port: expects 'set_msg' after '(strobe )?input port[\\\\s*_`]*(?:\\\\([^)\\\\n]*\\\\)[\\\\s*_`]*)?[:|=]'",
       "answer[4]: mean power: expected value not derivable: 'power_db.dat does not exist in the project folder'",
       "answer[5]: levelled RMS: expected value not derivable: 'second_levelled.dat does not exist in the project folder'"
      ],
