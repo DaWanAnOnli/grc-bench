@@ -394,6 +394,16 @@ def oracle_grounding_context(block_ids: Iterable[str]) -> str:
     return grounding_context_text(oracle_grounding(block_ids))
 
 
+def tier_f_grounding(task: dict[str, Any]) -> dict[str, Any]:
+    """B1 on a Tier-F task (pre-registration §5.2, §8 decision 12): the oracle-grounding block for every
+    block of the task's reference graph, as tier_a.tier_f_mode places it before the instruction. `task` is
+    a loaded Tier-F task (tier_f_mode.load_tier_f_task: the record plus `_dir`)."""
+    import yaml
+    reference = Path(task["_dir"]) / task["reference_grc"]
+    ids = reference_block_ids(yaml.safe_load(reference.read_text(encoding="utf-8")))
+    return {"kind": "oracle grounding", "block_ids": ids, "text": oracle_grounding_context(ids)}
+
+
 # --------------------------------------------------------------------------------------------
 # Running GRC-Agent: isolated worker process, or in-process inside an episode
 # --------------------------------------------------------------------------------------------

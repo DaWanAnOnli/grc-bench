@@ -46,12 +46,19 @@ holds the blinding key and therefore labels nothing.
 
 ### Where the answers come from
 
-The answers come from the logged Tier-K runs of three source groups (eval plan §8.1):
+The answers come from the logged Tier-K test runs of the main runs (pre-registration §6), in three
+source groups:
 
-- **base models:** the B0 runs of Nanbeige4.2-3B and North-Mini-Code;
-- **B2:** DeepSeek-V4.1-Flash, the cloud teacher;
-- **the panel:** the small open models, the open teachers, the closed frontier model and
-  Qwen3-30B-A3B.
+- **B0:** the base models, Nanbeige4.2-3B and North-Mini-Code, without documentation search;
+- **B1:** the same base models with documentation search;
+- **the fine-tuned models:** each target model fine-tuned on all the data, at the compression levels
+  of the main runs.
+
+Eval plan §8.1 draws them from the base models, B2 and the panel. Neither B2 nor the panel is among
+the main runs: both run afterwards, if time allows (pre-registration §6). B2 (DeepSeek-V4.1-Flash)
+is also the session teacher (Table 5), and a run on test questions while it creates training data
+is forbidden (eval plan §6). So there is no early B2 run. Pre-registration §10 records the source
+groups and the date below.
 
 ### Which answers can be drawn
 
@@ -94,29 +101,13 @@ An answer can be drawn only if **all** of these hold:
   the blinding key.
 - **Order:** the sheet lists the answers in a random order, not grouped by model or by question.
 
-**Open point, to be decided before G2: when the B2 and panel answers exist.** Eval plan Table 15
-schedules the calibration labels in week 4. In week 4, only the base models' answers exist:
+### When the answers are labelled
 
-- **B2** (DeepSeek-V4.1-Flash) "is run once, on the frozen benchmark in week 8" (proposal, baselines).
-  DeepSeek is also the session teacher (Table 5), and session collection runs from week 4 to
-  mid-November. An early B2 run on test questions would send test items to a teacher while it
-  creates training data, which eval plan §6 forbids. **So there is no early B2 run.**
-- **The panel** runs from week 5 ("Panel runs on Qoherent's machines", Table 15), and its members are
-  chosen at the freeze (§7.3).
-
-So in every option the **B2 share is labelled in week 8**, next to the second check and before any
-declared test result is judged. The options differ in when the rest is labelled:
-
-1. **Start in week 4.** Label the base-model share in week 4, and the panel share when the panel
-   answers exist. Judge scores used before the full 150 are labelled, for example for the item
-   statistics of week 6, are marked provisional.
-2. **Start when the panel answers exist.** Label the base-model and panel shares together, in week
-   5 or 6. Until the pass rule is applied, the item statistics use only the answers the rules
-   decide.
-
-Either way, the chosen schedule goes into the pre-registration as a deviation from Table 15. Option
-1 is also a deviation from §8.1 ("Before the judge grades any test answer"), because the judge
-grades base-model test answers before the full 150 are labelled.
+The 150 answers are drawn once the fine-tuned models' Tier-K test runs are logged, so that every
+source group has answers, and they are labelled before the judge grades any test answer (eval plan
+§8.1). Until the judge passes, Tier-K results use only the answers the rules decide, and no judge
+score is reported. Eval plan Table 15 schedules the labels in week 4, before any fine-tuned model
+exists; pre-registration §10 records the later date.
 
 ## Blinding
 
@@ -245,14 +236,14 @@ Then:
 ## Analysis and pass rule
 
 The statistics are computed with `grcbench.stats.agreement`. The unit of analysis and the interval
-method below are our proposal; they are fixed in the G2 pre-registration.
+method below are fixed in the pre-registration (Appendix A, `judge-gate`).
 
 **Pass rule** (eval plan §8.1, H1a): the judge passes if **Cohen's κ ≥ 0.7 and the lower end of its
 95% interval ≥ 0.6**.
 
 §8.1 does not say what κ is computed on. A disqualifying error, a `DU` or a confirmed invented name
 sets an answer's score to 0, so a κ on the points alone would miss a judge that wrongly zeroes
-answers. Our proposal for G2 therefore applies the rule **twice**, and the judge passes only if
+answers. The pre-registration therefore applies the rule **twice**, and the judge passes only if
 both hold:
 
 1. **Rubric lines.** Compare the credit on every rubric point (`P` rows) and on every number the
@@ -268,14 +259,10 @@ both hold:
    verdicts through their effect: a correct answer zeroed by a false flag drops from band 3 to band
    0, the largest disagreement there is.
 
-**Condition 2 is a deviation, and it needs approval.** §8.1 and H1a state one κ. Condition 2 makes
-the rule stricter than they are as written. So it goes to the evaluation lead as a deviation, to be
-approved before G2 and declared in the pre-registration.
-
-- **If it is approved,** the judge passes only if both conditions hold.
-- **If it is not approved,** the judge passes on condition 1 alone, and the score-band κ is
-  reported as a diagnostic. The stats code then has to be changed to decide on condition 1 alone
-  (tell the stats owner).
+**Condition 2 is a deviation, accepted at sign-off.** §8.1 and H1a state one κ. Condition 2 makes
+the rule stricter than they are as written. The evaluation lead accepted it with the other analysis
+proposals (pre-registration §8, decision 2; Appendix A, `judge-gate`), so the judge passes only if
+both conditions hold.
 
 **What the code computes.** `judge_calibration` takes the rubric-line credits and each answer's
 judge and reference scores (`explain_score` on the judge's verdict and on the adjudicated labels). It
@@ -326,7 +313,8 @@ Fine-tuning on teacher answers can teach a model to sound right to a judge witho
 
 - **Sample:** 50 answers from our final models, 25 from each final model (Nanbeige and
   North-Mini-Code). They are drawn with the same eligibility rules and the same task-type
-  allocation, with the seed `grc-bench-judge-calibration-v1-finetuned`.
+  allocation, with the seed `grc-bench-judge-calibration-v1-finetuned`, from the fine-tuned answers
+  that are not among the 150.
 - **Procedure:** the same annotators, the same blinding, the same labelling rules and the same
   adjudication.
 - **Report:** the judge–reference score gap **for each model separately**, with its interval, next to
@@ -374,7 +362,7 @@ coordinator only and never sent to annotators. The error analysis uses the same 
 | `blind_id` | the opaque id on the annotators' sheet (`answer_id` here, `failure_id` in the error analysis) |
 | `sheet` | `judge_calibration`, `judge_calibration_finetuned` or `error_analysis` |
 | `item_id`, `split` | the question or task, and its split |
-| `source_group` | `base`, `b3`, `panel` or `final` |
+| `source_group` | `b0`, `b1` or `final` |
 | `model`, `configuration` | the model and its configuration (for example B0 at Q4_K_M) |
 | `run_id`, `sample_index` | the logged run and which of its samples this is |
 | `selection_seed` | the seed the sample was drawn with |
@@ -391,8 +379,9 @@ coordinator only and never sent to annotators. The error analysis uses the same 
       and uses settings that do not keep prompts.
 - [ ] The judge is run with the pre-registered template (version and hash recorded).
 - [ ] Labels and verdicts on `P` and `N` rows are turned into credits before the comparison.
-- [ ] Condition 2 is approved as a deviation, or not, before G2.
-- [ ] The pass rule is applied: both conditions if condition 2 is approved, condition 1 otherwise.
+- [ ] The 150 are drawn from B0, B1 and the fine-tuned models, once the fine-tuned models' Tier-K
+      test runs are logged.
+- [ ] The pass rule is applied: both conditions (pre-registration §8, decision 2).
       κ with its interval on the rubric lines and on the score bands, π, the score gap, the error
       and `H` rows, results per task type and annotator–annotator agreement are reported.
 - [ ] Every agent run is declared, and the change from Table 7's hours is recorded as a deviation.

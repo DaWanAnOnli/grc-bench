@@ -128,7 +128,7 @@ reference minus fresh, paired by slot, clustered by block). There is no test/tra
 | Contamination | 8-gram, TF-IDF and embedding audit of every tier, including Qoherent's 1,853 agent traces; task-level check of the traces (`./gb traces`); the flagged pairs are reviewed (confirmed rate: Tier K test 11.9 %, dev 4.7 %, Tier F 0 %) | `reports/contamination.md`, `reports/agent_traces.md` |
 | Review | every review sheet filled in by review agents and an expert agent (`./gb review`); decided records in `reviews/`; the expert review of 433 items (H1b counts the original 397, the 36 replacement tasks beside it) | `reports/review_summary.md`, `docs/guidelines/review_protocol.md` |
 | Analysis | `grcbench.stats`, self-check 39/39 | `./gb stats selfcheck` |
-| Pre-registration | draft for sign-off at G2; the run list is `status: draft`, so every test run is refused until then | `docs/preregistration/` |
+| Pre-registration | signed off and declared at the freeze (20 Nov 2026, tag `v1.0`); the run list is `status: declared`, so a test run is accepted only for a configuration on it | `docs/preregistration/` |
 | Final check | `./gb test`, `./gb audit`, `./gb baseline check` | `reports/compliance_review.md` |
 
 The reviews of every drafted item (`handoff/review_sheets/`) follow the review protocol; their decided

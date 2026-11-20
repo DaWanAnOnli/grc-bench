@@ -1,15 +1,23 @@
-# GRC-Bench declared test-split run list (eval plan Table 6 and §7.3), benchmark v0.9.
+# GRC-Bench declared test-split run list (eval plan Table 6 and §7.3), benchmark v1.0.
 # Companion of docs/preregistration/preregistration.md (§6).
 #
 # The test-run guard (grcbench.runlog) accepts a test-split run only for a configuration listed here,
-# and only once `status` is "declared". The team sets it to "declared" when it signs the
-# pre-registration off at G2 (30 Oct 2026); until then every test-split run is refused.
-# The list is amended once, at the freeze (20 Nov 2026): the panel's members fill their slots.
+# and only once `status` is "declared". The team set it to "declared" when it signed the
+# pre-registration off at the freeze (20 Nov 2026).
+# The main runs are 12 configurations: each target model's base model, its model fine-tuned on all the
+# data, and that model's compressed versions (preregistration.md §6, §8 decision 9). North-Mini-Code's
+# anchor is Q8_0, because its BF16 weights do not fit the 32 GB GPU of the main runs (§8 decision 15).
+# The 27 marked `later: true` run after them, if time allows: North-Mini-Code in BF16 (B0 and the final
+# model, on a GPU with at least 80 GB), the training variants outside the main runs (the preference stage,
+# seeds 2 and 3, the comparison arms) and the outside models (Qwen3-30B-A3B, B2, the panel's 11 slots).
+# The panel's members are entered in one dated amendment before the first panel run; until then the
+# guard refuses a slot with no member.
 #
 # tiers: K and F give n, the samples per item; A gives k, the runs per task; BFCL marks a run of the
-# Berkeley Function-Calling Leaderboard. Tier E (speed and memory) uses no test items and is not listed.
-status: draft
-version: "0.9"
+# Berkeley Function-Calling Leaderboard (preregistration.md §6, `./gb bfcl`). Tier E (speed and memory) uses
+# no test items and is not listed.
+status: declared
+version: "1.0"
 plan: Benchmark_Evaluation_Plan_to_7Dec.docx (CAD 504 budget case), Table 6 and section 7.3
 defaults:
   engine: llama.cpp b12020 (GGUF files, BF16 references included); API models through their provider
@@ -26,86 +34,91 @@ configurations:
   - {id: nb-bf16-b1, model: Nanbeige4.2-3B, precision: BF16, stage: B1 base model + documentation search,
      tiers: {K: {n: 5}, F: {n: 5}}, serves: [RQ2 baseline]}
   - {id: nb-bf16-s1, model: Nanbeige4.2-3B, precision: BF16, stage: best S1 checkpoint,
-     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H2a, H2b]}
-  - {id: nb-bf16-s1-dpo, model: Nanbeige4.2-3B, precision: BF16, stage: S1 + DPO,
+     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: true}, serves: [RQ2, H2a, H2b]}
+  - {id: nb-bf16-s1-dpo, model: Nanbeige4.2-3B, precision: BF16, stage: S1 + DPO, later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: if final}, serves: [H2b]}
-  - {id: nb-bf16-s1-dpop, model: Nanbeige4.2-3B, precision: BF16, stage: S1 + DPOP,
+  - {id: nb-bf16-s1-dpop, model: Nanbeige4.2-3B, precision: BF16, stage: S1 + DPOP, later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: if final}, serves: [H2b]}
-  # The final Nanbeige model is the better of nb-bf16-s1-dpo and nb-bf16-s1-dpop (no separate run).
+  # The final Nanbeige model is the best S1 checkpoint (SFT on all the data, §8 decision 9): nb-bf16-s1 in
+  # BF16, compressed below. The preference stage (S1 + DPO, S1 + DPOP) runs later, if it is trained.
   - {id: nb-q8-final, model: Nanbeige4.2-3B final, precision: Q8_0, stage: final model compressed,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [RQ4]}
   - {id: nb-q5km-final, model: Nanbeige4.2-3B final, precision: Q5_K_M, stage: final model compressed,
      tiers: {K: {n: 5}, F: {n: 5}}, serves: [RQ4]}
   - {id: nb-q4-final, model: Nanbeige4.2-3B final, precision: Q4_K_M, stage: final model compressed,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [RQ4, H4a]}
-  - {id: nb-final-seed2, model: Nanbeige4.2-3B final setting, precision: BF16, stage: seed 2,
+  - {id: nb-final-seed2, model: Nanbeige4.2-3B final setting, precision: BF16, stage: seed 2, later: true,
      tiers: {K: {n: 3}, F: {n: 3}, A: {k: 2}}, serves: [seed spread]}
-  - {id: nb-final-seed3, model: Nanbeige4.2-3B final setting, precision: BF16, stage: seed 3,
+  - {id: nb-final-seed3, model: Nanbeige4.2-3B final setting, precision: BF16, stage: seed 3, later: true,
      tiers: {K: {n: 3}, F: {n: 3}, A: {k: 2}}, serves: [seed spread]}
-  # The four comparison arms are named at sign-off (preregistration.md §8, item 9).
-  - {id: nb-arm-1, model: Nanbeige4.2-3B, precision: BF16, stage: comparison arm 1 (named at sign-off),
+  # The comparison arms (methodology proposal Table 7) run later, if they are trained (§8 decision 9).
+  - {id: nb-arm-1, model: Nanbeige4.2-3B, precision: BF16, stage: "comparison arm 1: knowledge-only SFT", later: true,
      tiers: {K: {n: 3}, F: {n: 3}}, serves: [H2a]}
-  - {id: nb-arm-2, model: Nanbeige4.2-3B, precision: BF16, stage: comparison arm 2 (named at sign-off),
+  - {id: nb-arm-2, model: Nanbeige4.2-3B, precision: BF16, stage: "comparison arm 2: trajectories-only SFT", later: true,
      tiers: {K: {n: 3}, F: {n: 3}}, serves: [H2a]}
-  - {id: nb-arm-3, model: Nanbeige4.2-3B, precision: BF16, stage: comparison arm 3 (named at sign-off),
-     tiers: {K: {n: 3}, F: {n: 3}}, serves: [H2a]}
-  - {id: nb-arm-no-general, model: Nanbeige4.2-3B, precision: BF16, stage: comparison arm without general data,
+  - {id: nb-arm-3, model: Nanbeige4.2-3B, precision: BF16, stage: "comparison arm 3: the other LoRA placement (shared or per-loop) than the final model's", later: true,
+     tiers: {K: {n: 3}, F: {n: 3}}, serves: [RQ2]}
+  - {id: nb-arm-no-general, model: Nanbeige4.2-3B, precision: BF16, stage: comparison arm without general data, later: true,
      tiers: {K: {n: 3}, F: {n: 3}, BFCL: true}, serves: [H2a]}
 
   # ------------------------------------------------------------------ North-Mini-Code
-  - {id: nmc-bf16-b0, model: North-Mini-Code, precision: BF16, stage: "B0 base model (server default: tool grammar on)",
+  - {id: nmc-q8-b0, model: North-Mini-Code, precision: Q8_0, stage: "B0 base model (server default: tool grammar on)",
+     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: true}, serves: [H1a, H1c, RQ2 baseline, RQ4 anchor]}
+  - {id: nmc-bf16-b0, model: North-Mini-Code, precision: BF16, stage: "B0 base model (server default: tool grammar on)", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 2}, BFCL: true}, serves: [H1a, H1c, RQ2 baseline, RQ4 anchor]}
   - {id: nmc-q4-b0, model: North-Mini-Code, precision: Q4_K_M, stage: "B0 base model (server default: tool grammar on)",
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1c, RQ2 baseline]}
   - {id: nmc-q4-b1, model: North-Mini-Code, precision: Q4_K_M, stage: B1 base model + documentation search,
      tiers: {K: {n: 5}, F: {n: 5}}, serves: [RQ2 baseline]}
-  - {id: nmc-q4-s1, model: North-Mini-Code, precision: Q4_K_M, stage: best S1 checkpoint,
+  # nmc-q4-s1 is the same model as nmc-q4-final while there is no preference stage.
+  - {id: nmc-q4-s1, model: North-Mini-Code, precision: Q4_K_M, stage: best S1 checkpoint, later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H2a, H2b]}
-  # Final model = the better preference method only (S1 + DPO or S1 + DPOP).
-  - {id: nmc-bf16-final, model: North-Mini-Code final, precision: BF16, stage: final model,
-     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: true}, serves: [H2b, RQ4 anchor, H4a]}
+  # The final model is the best S1 checkpoint (SFT on all the data, §8 decision 9), at Q8_0 (the anchor,
+  # §8 decision 15) and compressed; in BF16 later, on a GPU with at least 80 GB.
+  - {id: nmc-bf16-final, model: North-Mini-Code final, precision: BF16, stage: final model, later: true,
+     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: true}, serves: [RQ2, H2b, RQ4 anchor, H4a]}
   - {id: nmc-q8-final, model: North-Mini-Code final, precision: Q8_0, stage: final model,
-     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [RQ4]}
+     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: true}, serves: [RQ2, RQ4 anchor, H4a]}
   - {id: nmc-q5km-final, model: North-Mini-Code final, precision: Q5_K_M, stage: final model compressed,
      tiers: {K: {n: 5}, F: {n: 5}}, serves: [RQ4]}
   - {id: nmc-q4-final, model: North-Mini-Code final, precision: Q4_K_M, stage: final model,
-     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H2a, H2b, RQ4, H4a]}
-  - {id: nmc-q4-final-seed2, model: North-Mini-Code final setting, precision: Q4_K_M, stage: seed 2,
+     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [RQ2, H2a, H2b, RQ4, H4a]}
+  - {id: nmc-q4-final-seed2, model: North-Mini-Code final setting, precision: Q4_K_M, stage: seed 2, later: true,
      tiers: {K: {n: 3}, F: {n: 3}, A: {k: 2}}, serves: [seed spread]}
-  - {id: nmc-q4-final-seed3, model: North-Mini-Code final setting, precision: Q4_K_M, stage: seed 3,
+  - {id: nmc-q4-final-seed3, model: North-Mini-Code final setting, precision: Q4_K_M, stage: seed 3, later: true,
      tiers: {K: {n: 3}, F: {n: 3}, A: {k: 2}}, serves: [seed spread]}
-  - {id: nmc-q4-arm-attn, model: North-Mini-Code, precision: Q4_K_M, stage: "comparison arm, attention-only adapters",
+  - {id: nmc-q4-arm-attn, model: North-Mini-Code, precision: Q4_K_M, stage: "comparison arm, attention-only adapters", later: true,
      tiers: {K: {n: 3}, F: {n: 3}}, serves: [RQ2]}
 
-  # ------------------------------------------------------------------ references
-  - {id: qwen3-30b-a3b-q4, model: Qwen3-30B-A3B, precision: Q4_K_M, stage: architecture-matched open MoE reference,
+  # ------------------------------------------------------------------ references (run later)
+  - {id: qwen3-30b-a3b-q4, model: Qwen3-30B-A3B, precision: Q4_K_M, stage: architecture-matched open MoE reference, later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: b2-deepseek-v4.1-flash, model: DeepSeek-V4.1-Flash, precision: API, stage: B2 cloud teacher upper bound,
+  - {id: b2-deepseek-v4.1-flash, model: DeepSeek-V4.1-Flash, precision: API, stage: B2 cloud teacher upper bound, later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c, RQ2 upper bound]}
 
-  # ------------------------------------------------------------------ panel slots (members chosen at the freeze)
+  # ------------------------------------------------------------------ panel slots (run later; members chosen then)
   # Small open models up to about 8B parameters, 4-bit files on Qoherent's RTX 3060s.
-  - {id: panel-small-1, model: chosen at the freeze, precision: Q4_K_M, stage: "panel, small open model",
+  - {id: panel-small-1, model: chosen later, precision: Q4_K_M, stage: "panel, small open model", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: panel-small-2, model: chosen at the freeze, precision: Q4_K_M, stage: "panel, small open model",
+  - {id: panel-small-2, model: chosen later, precision: Q4_K_M, stage: "panel, small open model", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: panel-small-3, model: chosen at the freeze, precision: Q4_K_M, stage: "panel, small open model",
+  - {id: panel-small-3, model: chosen later, precision: Q4_K_M, stage: "panel, small open model", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: panel-small-4, model: chosen at the freeze, precision: Q4_K_M, stage: "panel, small open model",
+  - {id: panel-small-4, model: chosen later, precision: Q4_K_M, stage: "panel, small open model", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: panel-small-5, model: chosen at the freeze, precision: Q4_K_M, stage: "panel, small open model",
+  - {id: panel-small-5, model: chosen later, precision: Q4_K_M, stage: "panel, small open model", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: panel-small-6, model: chosen at the freeze, precision: Q4_K_M, stage: "panel, small open model",
+  - {id: panel-small-6, model: chosen later, precision: Q4_K_M, stage: "panel, small open model", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
   # Open teacher models through an API; Tier K also reported without their own family's questions.
-  - {id: panel-teacher-1, model: chosen at the freeze, precision: API, stage: "panel, open teacher",
+  - {id: panel-teacher-1, model: chosen later, precision: API, stage: "panel, open teacher", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: panel-teacher-2, model: chosen at the freeze, precision: API, stage: "panel, open teacher",
+  - {id: panel-teacher-2, model: chosen later, precision: API, stage: "panel, open teacher", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: panel-teacher-3, model: chosen at the freeze, precision: API, stage: "panel, open teacher",
+  - {id: panel-teacher-3, model: chosen later, precision: API, stage: "panel, open teacher", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
-  - {id: panel-teacher-4, model: chosen at the freeze, precision: API, stage: "panel, open teacher",
+  - {id: panel-teacher-4, model: chosen later, precision: API, stage: "panel, open teacher", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [H1a, H1b, H1c]}
   # One closed frontier model, one sample per item.
-  - {id: panel-frontier-1, model: chosen at the freeze, precision: API, stage: "panel, closed frontier model",
+  - {id: panel-frontier-1, model: chosen later, precision: API, stage: "panel, closed frontier model", later: true,
      tiers: {K: {n: 1}, F: {n: 1}, A: {k: 2}}, serves: [H1b, H1c]}

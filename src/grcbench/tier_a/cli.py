@@ -13,7 +13,10 @@
                        Tier-A episodes (runner.run_tasks), each graded by grader.grade: one run-log
                        guard for the batch (a test-split run needs a config id on
                        docs/preregistration/run_list.yaml and is logged before it starts; the
-                       default config id "adhoc" is never on it); one line per episode
+                       default config id "adhoc" is never on it); one line per episode. An episode
+                       that ends with an infrastructure error is re-run up to twice; the episodes
+                       scored as failures after 3 infrastructure errors are listed at the end, and the
+                       exit status is then 1 (pre-registration §8, decision 10)
     gates <task_dir|all> [--reps N] [--workers N] [--no-write] [--keep] [--json]
                        the Tier-A task gates (replay.gates: golden replay 10/10 within 8-20 calls,
                        do-nothing fails, wrong end state rejected, grader re-runs the final graph);
@@ -35,9 +38,10 @@
                        (replay.tier_f_gates); "all" = every items/tier_f task
     tier-f-sample <task_dir> [model] [--config-id ID] [--sample K] [--setting S]
                        one Tier-F sample ("one lookup + one edit"), graded; prints its record
-    tier-f <task_dir>... --config-id ID --reason TEXT [model] [--setting S] [--samples N]
+    tier-f <task_dir>... --config-id ID --reason TEXT [model] [--setting S] [--samples N] [--b1]
                        Tier-F samples in the "one lookup + one edit" setting (tier_f_mode), graded
-                       by V1 (well-formed edit) + the ladder V2-V5
+                       by V1 (well-formed edit) + the ladder V2-V5; re-runs as for "run"; --b1 puts
+                       each task's oracle grounding before its instruction (B1, pre-registration §5.2)
     trace <run_dir> [--no-thinking]
                        print the episode's SFT-format row (trace.export_run_dir)
 
@@ -137,6 +141,8 @@ def _batch_args(prog: str, argv: list[str]) -> tuple[Any, Any]:
     p.add_argument("--api-key-env", default=None, help="NAME of the environment variable holding the API key")
     p.add_argument("--scripted", default=None, help="JSON file with scripted turns (plumbing only)")
     p.add_argument("--no-stream", action="store_true", help="do not stream the model requests (models.py)")
+    if prog.endswith("tier-f"):
+        p.add_argument("--b1", action="store_true", help="B1: oracle grounding before each instruction")
     a = p.parse_args(argv)
     if a.scripted:
         spec = models.scripted(json.loads(Path(a.scripted).read_text(encoding="utf-8")))
@@ -147,6 +153,22 @@ def _batch_args(prog: str, argv: list[str]) -> tuple[Any, Any]:
     else:
         spec = models.openai_compatible(a.base_url, a.model, uds_path=a.uds, stream=False if a.no_stream else None)
     return a, spec
+
+
+def _reruns(res: Any) -> str:
+    n = len(getattr(res, "earlier_attempts", None) or [])
+    return f"  re-runs={n}" if n else ""
+
+
+def _list_infrastructure_failures(results: list[Any]) -> int:
+    """List the episodes scored as failures after their third infrastructure error (decision 10);
+    the batch's exit status: 1 if an episode's last run still ended with an infrastructure error."""
+    failed = [r for r in results if r.infrastructure_failure]
+    if failed:
+        print(f"scored as a failure after 3 infrastructure errors (pre-registration §8, decision 10): {len(failed)}")
+        for r in failed:
+            print(f"  {r.run_id}")
+    return 0 if all(r.status != "infrastructure_error" for r in results) else 1
 
 
 def _run(argv: list[str]) -> int:
@@ -161,7 +183,7 @@ def _run(argv: list[str]) -> int:
     def show(res: Any) -> None:
         verdict = "" if res.grade is None else ("PASS" if res.grade.get("passed") else "fail")
         print(f"{res.task_id:28s} s{res.sample:02d}  {verdict:4s} {res.status:20s} {res.end_reason:28s} "
-              f"requests={res.usage.get('requests')}  {res.run_dir}")
+              f"requests={res.usage.get('requests')}  {res.run_dir}{_reruns(res)}")
         if res.grade is not None and not res.grade.get("passed"):
             for reason in res.grade.get("reasons", [])[:8]:
                 print(f"    - {reason}")
@@ -173,7 +195,13 @@ def _run(argv: list[str]) -> int:
     except (RunRefused, TaskError, RelayError) as exc:
         print(f"refused: {exc}")
         return 2
-    return 0 if all(r.valid for r in results) else 1
+    return _list_infrastructure_failures(results)
+
+
+def _tier_f_grounding() -> Any:
+    """B1's oracle grounding for Tier F (tier_k.retriever; imported here, outside the agent package)."""
+    from ..tier_k.retriever import tier_f_grounding
+    return tier_f_grounding
 
 
 def _tier_f(argv: list[str]) -> int:
@@ -187,15 +215,16 @@ def _tier_f(argv: list[str]) -> int:
     def show(res: Any) -> None:
         grade = (res.tier_f or {}).get("grade") or {}
         print(f"{res.task_id:28s} s{res.sample:02d}  {'PASS' if grade.get('passed') else 'fail':4s} "
-              f"{grade.get('failure') or '':22s} {res.end_reason:26s} {res.run_dir}")
+              f"{grade.get('failure') or '':22s} {res.end_reason:26s} {res.run_dir}{_reruns(res)}")
     try:
         results = run_tier_f_samples([Path(t) for t in a.tasks], spec, config_id=a.config_id, reason=a.reason,
                                      samples=a.samples, setting=a.setting, mode=a.mode,
+                                     grounding=_tier_f_grounding() if a.b1 else None,
                                      run_root=Path(a.run_root) if a.run_root else None, on_result=show)
     except (RunRefused, TierFTaskError, RelayError) as exc:
         print(f"refused: {exc}")
         return 2
-    return 0 if all(r.valid for r in results) else 1
+    return _list_infrastructure_failures(results)
 
 
 def _trace(argv: list[str]) -> int:

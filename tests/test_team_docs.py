@@ -535,6 +535,29 @@ def test_calibration_guide_follows_the_judges_contract():
     assert judge_prompt.route(rubric, {"method": "numeric", "credit": 1.0, "details": {}}) == "judge"
 
 
+def test_calibration_answers_come_from_the_main_runs():
+    """The 150 come from B0, B1 and the fine-tuned models (the main runs, pre-registration §6); B2 and
+    the panel run later. The source groups are spelled the same in the guide, the README and the key."""
+    doc = _text(GUIDELINES / "judge_calibration.md")
+    flat = " ".join(_section(doc, "### Where the answers come from").split())
+    for group in ("**B0:** the base models", "**B1:** the same base models with documentation search",
+                  "**the fine-tuned models:** each target model fine-tuned on all the data"):
+        assert group in flat
+    assert "**B2:**" not in flat and "**the panel:**" not in flat
+    when = " ".join(_section(doc, "### When the answers are labelled").split())
+    assert "drawn once the fine-tuned models' Tier-K test runs are logged" in when
+    assert "before the judge grades any test answer" in when
+    values = "`b0`, `b1` or `final`"
+    assert values in " ".join(doc.split())
+    assert "| | `source_group` | `b0`, `b1`, `final` |" in _text(TEMPLATES / "README.md")
+    for stale in ("`b3`", "`panel`", "Open point", "Start in week 4"):
+        assert stale not in doc and stale not in _text(TEMPLATES / "README.md"), stale
+    assert "that are not among the 150" in " ".join(_section(doc, "## Second check").split())
+    prereg = " ".join((REPO / "docs/preregistration/preregistration.md").read_text(encoding="utf-8").split())
+    assert "answers of B0, B1 and the fine-tuned models, drawn once the fine-tuned models' runs are logged" in prereg
+    assert "- **The judge calibration's answers.** Eval plan §8.1 draws the 150 calibration answers" in prereg
+
+
 def test_calibration_guide_has_no_early_b2_run():
     flat = " ".join(_text(GUIDELINES / "judge_calibration.md").split())
     assert "So there is no early B2 run." in flat
@@ -627,8 +650,9 @@ def test_calibration_pass_rule_matches_the_gates_the_stats_code_computes():
     from grcbench.stats import agreement, functions
     flat = " ".join(_text(GUIDELINES / "judge_calibration.md").split())
     assert "applies the rule **twice**, and the judge passes only if both hold" in flat
-    assert "**Condition 2 is a deviation, and it needs approval.**" in flat
-    assert "**If it is not approved,** the judge passes on condition 1 alone" in flat
+    assert "**Condition 2 is a deviation, accepted at sign-off.**" in flat
+    assert "(pre-registration §8, decision 2; Appendix A, `judge-gate`)" in flat
+    assert "If it is not approved" not in flat and "G2" not in flat
     for name in ("gate_lines", "gate_bands", "passes_lines", "passes_bands", "h1a_decision",
                  "presence_agreement"):
         assert f"`{name}`" in flat, name

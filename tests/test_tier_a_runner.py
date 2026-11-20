@@ -73,6 +73,17 @@ def copy_task(src: Path, dest_root: Path, **changes) -> Path:
     return dest
 
 
+def fake_result(task_id: str, sample: int, status: str, *, earlier=(), **fields) -> runner.EpisodeResult:
+    """An EpisodeResult as run_episode returns it, without running anything (batch-loop tests)."""
+    attempt = len(earlier)
+    return runner.EpisodeResult(
+        run_id=runner.run_id_for(task_id, "cfg", "benchmark", sample, attempt=attempt), task_id=task_id,
+        task_version=1, split="dev", category="modify", config_id="cfg", setting="benchmark", sample=sample,
+        mode="evaluation", status=status, end_reason="model server error" if status == "infrastructure_error" else "done",
+        run_dir=f"/runs/{task_id}/benchmark-s{sample:02d}" + (f"-r{attempt}" if attempt else ""), caps={},
+        earlier_attempts=list(earlier), **fields)
+
+
 def episode(task, turns, root, guard, *, caps=None, sample=0, on_exhausted="text", config_id="pytest"):
     return runner.run_episode(task, models.scripted(turns, on_exhausted=on_exhausted), "benchmark", root,
                               config_id=config_id, sample=sample, caps=caps, **guard)
@@ -244,6 +255,21 @@ def test_a_draft_run_list_declares_nothing(tmp_path):
     assert runlog.declared_config_ids(run_list) == {"cfg-a"}
 
 
+def test_a_declared_slot_without_a_member_is_refused(tmp_path, capsys):
+    run_list = tmp_path / "run_list.yaml"
+    run_list.write_text("status: declared\nconfigurations:\n  - {id: cfg-a, model: Some-Model-3B}\n"
+                        "  - {id: panel-small-1, model: chosen later, later: true}\n")
+    assert runlog.declared_config_ids(run_list) == {"cfg-a", "panel-small-1"}
+    assert runlog.slots_without_member(run_list) == {"panel-small-1"}
+    runlog.guard(split="test", config_id="cfg-a", run_list=run_list)
+    with pytest.raises(runlog.RunRefused, match="no member yet"):
+        runlog.guard(split="test", config_id="panel-small-1", run_list=run_list)
+    runlog.guard(split="dev", config_id="panel-small-1", run_list=run_list)   # the dev split is open
+    assert runlog.main(["check", "cfg-a", "--run-list", str(run_list)]) == 0
+    assert runlog.main(["check", "panel-small-1", "--run-list", str(run_list)]) == 1
+    assert "no member yet" in capsys.readouterr().out
+
+
 def test_test_split_batch_is_logged_before_it_starts(tmp_path, guard, monkeypatch):
     test_task = copy_task(MODIFY, tmp_path, split="test")
     guard["run_list"].write_text("configurations:\n  - id: cfg-declared\n")
@@ -251,7 +277,7 @@ def test_test_split_batch_is_logged_before_it_starts(tmp_path, guard, monkeypatc
 
     def fake_run_episode(task, spec, setting, run_root, **kw):
         seen.append(runlog.read_log(guard["log_path"]))      # what the log holds when the episode starts
-        return kw["run_log_entry"]
+        return fake_result(task.id, kw["sample"], "completed", run_log_entry=kw["run_log_entry"])
     monkeypatch.setattr(runner, "run_episode", fake_run_episode)
     out = runner.run_tasks([test_task], models.scripted([]), config_id="cfg-declared", reason="unit test",
                            samples=2, **guard)
@@ -262,11 +288,139 @@ def test_test_split_batch_is_logged_before_it_starts(tmp_path, guard, monkeypatc
     assert entry["split"] == "test" and entry["items"] == ["fx-a-modify-tone"] and entry["config_id"] == "cfg-declared"
     assert entry["git_commit"] == runlog.git_commit() and (entry["git_commit"] == "uncommitted" or len(entry["git_commit"]) == 40)
     assert entry["settings"]["samples"] == 2 and entry["settings"]["caps"]["requests"] == 40
-    assert out[0] == entry
+    assert out[0].run_log_entry == entry
     # append-only: a second batch adds a line, the first is untouched
     runner.run_tasks([test_task], models.scripted([]), config_id="cfg-declared", reason="again", **guard)
     lines = guard["log_path"].read_text().splitlines()
     assert len(lines) == 2 and json.loads(lines[0]) == entry
+
+
+def test_an_infrastructure_error_is_re_run_at_most_twice_then_scored_as_a_failure(tmp_path, guard, monkeypatch):
+    """Pre-registration §8, decision 10: an episode that ends with an infrastructure error is re-run up to
+    twice, each run in its own directory; the third infrastructure error is scored as a failure and listed."""
+    assert runner.INFRA_RERUNS == 2
+    plans = {0: ["completed"], 1: ["infrastructure_error", "cap_failure"],
+             2: ["infrastructure_error", "infrastructure_error", "infrastructure_error", "completed"]}
+    calls = []
+
+    def fake_run_episode(task, spec, setting, run_root, **kw):
+        earlier = kw["earlier_attempts"]
+        calls.append((kw["sample"], len(earlier)))
+        return fake_result(task.id, kw["sample"], plans[kw["sample"]][len(earlier)], earlier=earlier)
+    monkeypatch.setattr(runner, "run_episode", fake_run_episode)
+    shown = []
+    out = runner.run_tasks([MODIFY], models.scripted([]), config_id="cfg", reason="unit test", samples=3,
+                           on_result=shown.append, **guard)
+    assert calls == [(0, 0), (1, 0), (1, 1), (2, 0), (2, 1), (2, 2)]        # never a fourth run
+    assert [r.status for r in out] == ["completed", "cap_failure", "infrastructure_error"] and shown == out
+    first, rerun, failed = out
+    assert first.earlier_attempts == [] and first.valid and not first.infrastructure_failure
+    assert len(rerun.earlier_attempts) == 1 and rerun.valid and rerun.run_dir.endswith("-s01-r1")
+    assert rerun.earlier_attempts[0]["run_dir"].endswith("-s01") and rerun.earlier_attempts[0]["end_reason"] == "model server error"
+    # the third infrastructure error: scored (valid), as a failure, with the two earlier runs listed
+    assert failed.valid and failed.infrastructure_failure and len(failed.earlier_attempts) == 2
+    assert [a["run_id"].endswith(s) for a, s in zip(failed.earlier_attempts, ("-s02", "-s02-r1"))] == [True, True]
+    assert failed.run_id.endswith("benchmark-s02-r2")
+    # one run that is still to be re-run is not scored
+    assert not fake_result("t", 0, "infrastructure_error", earlier=[{}]).valid
+    assert runner.EpisodeResult.from_dict(failed.to_dict()).infrastructure_failure
+    grade = runner.infrastructure_failure_grade(failed)
+    assert grade["valid"] is True and grade["passed"] is False and "decision 10" in grade["reasons"][0]
+
+
+def test_a_tier_f_sample_is_re_run_after_an_infrastructure_error(tmp_path, guard, monkeypatch):
+    calls = []
+
+    def fake_sample(task_dir, spec, run_root, **kw):
+        earlier = kw["earlier_attempts"]
+        calls.append(len(earlier))
+        return fake_result("fx_modify_tone", kw["sample"], "infrastructure_error", earlier=earlier, tier="F")
+    monkeypatch.setattr(tier_f_mode, "run_tier_f_sample", fake_sample)
+    out = tier_f_mode.run_tier_f_samples([F_MODIFY], models.scripted([]), config_id="cfg", reason="unit test", **guard)
+    assert calls == [0, 1, 2] and len(out) == 1 and out[0].infrastructure_failure
+    assert tier_f_mode.run_dir_for(tmp_path, "cfg", "t", "benchmark", 0, attempt=2).name == "tier_f-benchmark-s00-r2"
+    assert tier_f_mode.run_dir_for(tmp_path, "cfg", "t", "benchmark", 0).name == "tier_f-benchmark-s00"
+    grade = tier_f_mode.infrastructure_failure_grade()
+    assert grade["passed"] is False and grade["failure"] == "infrastructure_error"
+
+
+def test_tier_f_b1_grounds_the_instruction_in_the_reference_blocks(monkeypatch):
+    """B1 on Tier F is oracle grounding (implementation plan, decision 16 Oct; pre-registration §5.2): GRC-Agent's
+    catalog entry for every block of the reference graph, placed before the instruction; nothing else changes."""
+    from grcbench.tier_k import retriever
+    seen = []
+    monkeypatch.setattr(retriever, "oracle_grounding_context", lambda ids: seen.append(list(ids)) or "CATALOG ENTRIES")
+    task = tier_f_mode.load_tier_f_task(F_MODIFY)
+    g = retriever.tier_f_grounding(task)
+    want = retriever.reference_block_ids(yaml.safe_load((F_MODIFY / "reference.grc").read_text()))
+    assert g == {"kind": tier_f_mode.B1_KIND, "block_ids": want, "text": "CATALOG ENTRIES"} and seen == [want]
+    assert "analog_sig_source_x" in want and "blocks_multiply_const_vxx" in want
+    record = {k: v for k, v in task.items() if not k.startswith("_")}
+    spec = {"task": {"record": record, "task_dir": str(F_MODIFY)}, "tier_f": {}}
+    assert tier_f_mode.task_from_spec(spec).instruction == record["instruction"]
+    spec["tier_f"]["grounding"] = g
+    assert tier_f_mode.task_from_spec(spec).instruction == retriever.add_to_prompt(record["instruction"],
+                                                                                  "CATALOG ENTRIES")
+    assert spec["task"]["record"]["instruction"] == record["instruction"]      # the record itself is unchanged
+
+
+def test_a_tier_f_b1_batch_grounds_each_task_once_and_logs_the_setting(tmp_path, guard, monkeypatch):
+    test_task = copy_task(F_MODIFY, tmp_path, split="test")
+    guard["run_list"].write_text("configurations:\n  - id: cfg-b1\n")
+    made, got = [], []
+
+    def grounding(t):
+        made.append(t["id"])
+        return {"kind": "oracle grounding", "block_ids": ["x"], "text": "G"}
+
+    def fake_sample(task_dir, spec, run_root, **kw):
+        got.append(kw["grounding"])
+        return fake_result("fx-modify-tone", kw["sample"], "completed", tier="F")
+    monkeypatch.setattr(tier_f_mode, "run_tier_f_sample", fake_sample)
+    tier_f_mode.run_tier_f_samples([test_task], models.scripted([]), config_id="cfg-b1", reason="unit test",
+                                   samples=2, grounding=grounding, **guard)
+    assert made == ["fx-modify-tone"] and [g["text"] for g in got] == ["G", "G"]
+    entry = runlog.read_log(guard["log_path"])[-1]
+    assert entry["settings"]["b1"] == "oracle grounding" and entry["config_id"] == "cfg-b1"
+    got.clear()
+    tier_f_mode.run_tier_f_samples([test_task], models.scripted([]), config_id="cfg-b1", reason="b0", **guard)
+    assert got == [None] and runlog.read_log(guard["log_path"])[-1]["settings"]["b1"] is None
+
+
+def test_the_tier_f_cli_passes_b1(tmp_path, monkeypatch):
+    from grcbench.tier_a import cli
+    turns = tmp_path / "turns.json"
+    turns.write_text("[]")
+    seen = {}
+
+    def fake_samples(tasks, spec, **kw):
+        seen.update(kw)
+        return []
+    monkeypatch.setattr(tier_f_mode, "run_tier_f_samples", fake_samples)
+    from grcbench.tier_k import retriever
+    assert cli.main(["tier-f", str(F_MODIFY), "--config-id", "c", "--reason", "r", "--scripted", str(turns), "--b1"]) == 0
+    assert seen["grounding"] is retriever.tier_f_grounding
+    assert cli.main(["tier-f", str(F_MODIFY), "--config-id", "c", "--reason", "r", "--scripted", str(turns)]) == 0
+    assert seen["grounding"] is None
+
+
+def test_the_batch_cli_lists_the_episodes_scored_as_infrastructure_failures(tmp_path, capsys, monkeypatch):
+    from grcbench.tier_a import cli
+    turns = tmp_path / "turns.json"
+    turns.write_text("[]")
+    earlier = [{"run_id": "a", "run_dir": "/runs/a", "end_reason": "model server error", "error": "ModelAPIError"}] * 2
+
+    def fake_run_tasks(tasks, spec, *, on_result=None, **kw):
+        out = [fake_result("fx-a-modify-tone", 0, "completed"),
+               fake_result("fx-a-modify-tone", 1, "infrastructure_error", earlier=earlier)]
+        for res in out:
+            on_result(res)
+        return out
+    monkeypatch.setattr(runner, "run_tasks", fake_run_tasks)
+    assert cli.main(["run", str(MODIFY), "--config-id", "c", "--reason", "r", "--scripted", str(turns), "--no-grade"]) == 1
+    out = capsys.readouterr().out
+    assert "re-runs=2" in out and "scored as a failure after 3 infrastructure errors" in out
+    assert out.strip().splitlines()[-1].endswith(fake_result("fx-a-modify-tone", 1, "x", earlier=earlier).run_id)
 
 
 def test_dev_runs_allowed_and_not_logged(guard):
@@ -942,6 +1096,26 @@ def test_tier_f_build_task_starts_from_samp_rate_only_graph(root, guard):
     seen = tool_returns(res)[rec["prefill"]["tool_call_id"]].content
     assert '"samp_rate"' in seen and "48000" in seen
     assert rec["edit"]["accepted"] and rec["grade"]["passed"], rec["grade"]
+
+
+@pytest.mark.slow
+@pytest.mark.gnuradio
+def test_a_tier_f_b1_sample_sends_the_grounding_before_the_instruction(root, guard):
+    """The model's first request carries GRC-Agent's catalog entries for the reference blocks, then the
+    instruction; the sample record names the grounding and its blocks, and the edit is graded as in B0."""
+    from grcbench.tier_k import retriever
+    task = tier_f_mode.load_tier_f_task(F_MODIFY)
+    g = retriever.tier_f_grounding(task)
+    assert retriever.GROUNDING_HEADER in g["text"].splitlines()[:2] and "analog_sig_source_x" in g["text"]
+    assert g["text"] == retriever.oracle_grounding_context(g["block_ids"])
+    turns = [{"tool_calls": [call("change_graph", SET_2K)]}, {"text": "never requested"}]
+    res = tier_f_mode.run_tier_f_sample(F_MODIFY, models.scripted(turns), root, config_id="pytest-f-b1",
+                                        grounding=g, **guard)
+    assert res.status == "completed" and res.tier_f["grade"]["passed"], (res.status, res.error)
+    assert res.tier_f["b1"] == {"kind": "oracle grounding", "block_ids": g["block_ids"], "chars": len(g["text"])}
+    msgs = json.loads((Path(res.run_dir) / runner.MESSAGES_FILE).read_text())
+    assert msgs[0]["parts"][0]["content"] == f"{g['text']}\n\n{task['instruction']}"
+    assert read_json(Path(res.run_dir) / runner.SPEC_FILE)["task"]["record"]["instruction"] == task["instruction"]
 
 
 @pytest.mark.slow

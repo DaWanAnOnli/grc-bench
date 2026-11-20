@@ -39,6 +39,11 @@ Episode status: "completed" (the agent finished, or the scripted user had no tur
 (a cap was hit: the task fails whatever its end state, eval plan §4.4), "agent_error" (the agent run
 raised: retries exhausted, a tool crashed; the end state is still graded) or "infrastructure_error"
 (the harness or the model server failed: the episode is invalid and is re-run, not scored).
+Re-runs (pre-registration §8, decision 10): run_tasks and tier_f_mode.run_tier_f_samples re-run an
+episode that ends with an infrastructure error at most INFRA_RERUNS (2) times, each run in its own
+directory (<setting>-sNN-r1, -r2); the result kept is the last run's, and it lists the earlier runs
+(EpisodeResult.earlier_attempts). An infrastructure error on the last allowed run is scored as a
+failure (EpisodeResult.infrastructure_failure: valid, never passed) and the batch command lists it.
 
 The same episode process runs the Tier-F setting (spec "kind": "tier_f", tier_f_mode.py): the task's
 start graph is materialised as project/flowgraph.grc, the history is prefilled with one full
@@ -110,6 +115,7 @@ TRACE_FILE, STDERR_FILE = "trace.jsonl", "episode.log"
 STATE_DIR, LIVE_GRC, PAGE_FILE, RESUME_DIR = "state", "live.grc", "page.json", "resume"
 PROCESS_MARGIN = 300.0          # seconds the episode process gets beyond the episode cap (setup, teardown)
 STATUSES = ("completed", "cap_failure", "agent_error", "infrastructure_error")
+INFRA_RERUNS = 2                # re-runs of an episode after an infrastructure error (pre-registration §8, decision 10)
 _SAFE = re.compile(r"[^A-Za-z0-9._-]+")
 
 
@@ -165,6 +171,7 @@ class EpisodeResult:
     tier: str = "A"
     tier_f: dict[str, Any] | None = None          # the Tier-F sample record (tier_f_mode.py)
     grade: dict[str, Any] | None = None           # the Tier-A grade (grader.grade), when graded
+    earlier_attempts: list[dict[str, Any]] = field(default_factory=list)   # this episode's earlier runs (decision 10)
 
     @property
     def cap_failure(self) -> bool:
@@ -173,8 +180,15 @@ class EpisodeResult:
 
     @property
     def valid(self) -> bool:
-        """False for infrastructure errors: such an episode is re-run, not scored."""
-        return self.status != "infrastructure_error"
+        """Whether the episode is scored. False for an infrastructure error with re-runs left: such an
+        episode is re-run, not scored. The infrastructure error of the last allowed run is scored."""
+        return self.status != "infrastructure_error" or self.infrastructure_failure
+
+    @property
+    def infrastructure_failure(self) -> bool:
+        """The third infrastructure error of an episode (INFRA_RERUNS re-runs used): scored as a failure
+        and listed (pre-registration §8, decision 10)."""
+        return self.status == "infrastructure_error" and len(self.earlier_attempts) >= INFRA_RERUNS
 
     def to_dict(self) -> dict[str, Any]:
         return dataclasses.asdict(self)
@@ -192,8 +206,38 @@ def _safe(text: str) -> str:
     return out
 
 
-def run_id_for(task_id: str, config_id: str, setting: str, sample: int) -> str:
-    return f"{_safe(config_id)}__{_safe(task_id)}__{setting}-s{sample:02d}"
+def attempt_suffix(attempt: int) -> str:
+    """The run-directory and run-id suffix of a re-run: "" for the first run, "-r1", "-r2" after it."""
+    return f"-r{attempt}" if attempt else ""
+
+
+def run_id_for(task_id: str, config_id: str, setting: str, sample: int, attempt: int = 0) -> str:
+    return f"{_safe(config_id)}__{_safe(task_id)}__{setting}-s{sample:02d}{attempt_suffix(attempt)}"
+
+
+def earlier_attempt(result: "EpisodeResult") -> dict[str, Any]:
+    """What a result lists about one of its episode's earlier runs."""
+    return {"run_id": result.run_id, "run_dir": result.run_dir, "end_reason": result.end_reason,
+            "error": (result.error or {}).get("type")}
+
+
+def with_reruns(run: Callable[[list[dict[str, Any]]], "EpisodeResult"]) -> "EpisodeResult":
+    """Run one episode, run(earlier_attempts), and re-run it after an infrastructure error, at most
+    INFRA_RERUNS times (pre-registration §8, decision 10). The last run's result is returned; it lists
+    the earlier runs, and an infrastructure error on the last allowed run is scored as a failure."""
+    earlier: list[dict[str, Any]] = []
+    while True:
+        res = run(list(earlier))
+        if res.status != "infrastructure_error" or len(earlier) >= INFRA_RERUNS:
+            return res
+        earlier.append(earlier_attempt(res))
+
+
+def infrastructure_failure_grade(result: "EpisodeResult") -> dict[str, Any]:
+    """The Tier-A grade of an episode scored as a failure after its third infrastructure error."""
+    return {"task_id": result.task_id, "passed": False, "valid": True, "status": result.status,
+            "reasons": [f"infrastructure error on all {INFRA_RERUNS + 1} runs: scored as a failure "
+                        "(pre-registration §8, decision 10)"], "checks": [], "graph": {}}
 
 
 def _settings(setting: str, caps: Caps, invalid_gate: str, streaming: bool = False) -> dict[str, Any]:
@@ -276,7 +320,8 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
                 invalid_gate: str = "pinned", run_log_entry: dict[str, Any] | None = None,
                 log_path: Path = runlog.LOG, run_list: Path = runlog.RUN_LIST, items_root: Path = ITEMS,
                 include_thinking: bool = True, grade_episode: bool = False, export_state: bool = False,
-                resume_from: Path | None = None, run_dir: Path | None = None) -> EpisodeResult:
+                resume_from: Path | None = None, run_dir: Path | None = None,
+                earlier_attempts: list[dict[str, Any]] | None = None) -> EpisodeResult:
     """Run one episode of `task` with the model `model_factory` (module docstring).
 
     task           a Task or a task directory
@@ -294,6 +339,8 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
                    with resume_from the task must have no start files and no start graph
     run_dir        an explicit run directory under ~/grc-bench-work (adhoc.py's session layout)
                    instead of <run_root>/<config>/<task>/<setting>-sNN
+    earlier_attempts  set by with_reruns on a re-run: the episode's earlier runs, each ended by an
+                   infrastructure error; the run directory and run id end in -r<number of them>
     Raises runlog.RunRefused (nothing is started) when the guard refuses the run.
     """
     task = task if isinstance(task, Task) else load_task(task)
@@ -316,7 +363,9 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
             settings=_settings(setting, caps, invalid_gate, spec.streams()), items=[task.id], item_splits=[task.split],
             reason=reason or f"Tier-A episode {task.id}", mode=mode, log_path=log_path,
             run_list=run_list, items_root=items_root)
-    run_id = run_id_for(task.id, config_id, setting, sample)
+    earlier_attempts = list(earlier_attempts or [])
+    attempt = len(earlier_attempts)
+    run_id = run_id_for(task.id, config_id, setting, sample, attempt)
     root = Path(run_root) if run_root is not None else isolation.RUNS_ROOT
     with contextlib.ExitStack() as stack:
         binds: list[Path] = []
@@ -326,7 +375,8 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
                                               allow_http_loopback=bool(spec.relay.get("allow_http_loopback"))))
             spec = dataclasses.replace(spec, base_url=LOCAL_BASE_URL, uds_path=str(relay.socket_path))
             binds.append(relay.dir)
-        target = Path(run_dir) if run_dir is not None else root / _safe(config_id) / _safe(task.id) / f"{setting}-s{sample:02d}"
+        target = (Path(run_dir) if run_dir is not None
+                  else root / _safe(config_id) / _safe(task.id) / f"{setting}-s{sample:02d}{attempt_suffix(attempt)}")
         run_dir, env = prepare_run_dir(task, target, spec)
         episode = {"run_id": run_id, "task": task.to_dict(), "model": spec.to_dict(), "setting": setting,
                    "caps": caps.to_dict(), "config_id": config_id, "sample": sample, "mode": mode,
@@ -351,6 +401,7 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
         result = _failed_result(episode, run_dir, task, spec, caps, proc.timed_out, process)
     result.process = process
     result.run_log_entry = run_log_entry
+    result.earlier_attempts = earlier_attempts
     if server is not None:
         result.harness = {**(result.harness or {}), "model_server": server}
         status = refusal_status(result.status, result.caps_hit, server, caps)
@@ -358,7 +409,9 @@ def run_episode(task: Task | Path | str, model_factory: ModelSpec | str | Callab
             result.status = status
             result.end_reason = (f"model server set below the model's context (n_ctx {server['n_ctx']}, "
                                  f"model {server['n_ctx_train'] or 'not reported'}, cap {caps.context_tokens})")
-    if grade_episode:
+    if grade_episode and result.infrastructure_failure:
+        result.grade = infrastructure_failure_grade(result)
+    elif grade_episode:
         from .grader import grade
         try:
             result.grade = grade(task, result)
@@ -399,7 +452,8 @@ def run_tasks(tasks: Iterable[Task | Path | str], model_factory: ModelSpec | str
               items_root: Path = ITEMS, on_result: Callable[[EpisodeResult], None] | None = None,
               grade_episodes: bool = False) -> list[EpisodeResult]:
     """Run `samples` episodes of every task: one guard and one run-log entry for the whole batch,
-    written before the first episode starts (eval plan §4.1)."""
+    written before the first episode starts (eval plan §4.1). An episode that ends with an
+    infrastructure error is re-run (with_reruns); `on_result` and the list get each episode's last run."""
     loaded = [t if isinstance(t, Task) else load_task(t) for t in tasks]
     from ..review.items import refuse_rejected
     refuse_rejected([{"id": t.id, **t.record} for t in loaded])      # rejected tasks are not run (eval plan §5.3)
@@ -416,10 +470,10 @@ def run_tasks(tasks: Iterable[Task | Path | str], model_factory: ModelSpec | str
     results = []
     for t in loaded:
         for k in range(samples):
-            res = run_episode(t, spec, setting, run_root, config_id=config_id, sample=k, caps=caps, mode=mode,
-                              reason=reason, invalid_gate=invalid_gate, run_log_entry=entry or {"logged": False},
-                              log_path=log_path, run_list=run_list, items_root=items_root,
-                              grade_episode=grade_episodes)
+            res = with_reruns(lambda earlier, t=t, k=k: run_episode(
+                t, spec, setting, run_root, config_id=config_id, sample=k, caps=caps, mode=mode, reason=reason,
+                invalid_gate=invalid_gate, run_log_entry=entry or {"logged": False}, log_path=log_path,
+                run_list=run_list, items_root=items_root, grade_episode=grade_episodes, earlier_attempts=earlier))
             results.append(res)
             if on_result is not None:
                 on_result(res)

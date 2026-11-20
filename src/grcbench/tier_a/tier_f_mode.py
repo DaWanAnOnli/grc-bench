@@ -43,6 +43,15 @@ Grading (host side, `grade`)
            fail at V1.
   A sample passes when V1-V5 all pass.
 
+B1 (oracle grounding; implementation plan, decision 16 Oct; pre-registration §5.2): the instruction is
+preceded by GRC-Agent's catalog entry for every block of the task's reference graph, laid out as
+tier_k.retriever.add_to_prompt places B1's block before a Tier-K question. The grounding is built on the
+host, once per task, by the function the caller passes (`grounding=`: tier_k.retriever.tier_f_grounding
+for `gb tier-a tier-f --b1`; this module never imports tier_k, so the shareable agent package stays free
+of benchmark content). It reaches the episode in the spec (`tier_f.grounding`), the task record stays
+unchanged, and everything else (budget, caps, start graph, grading) is the B0 setting. The sample record
+names it (`b1`: kind, block ids, characters) and the batch's run-log entry records `b1` in its settings.
+
 Build-task start graph rule (`start_graph_text`): options {id: default, generate_options: no_gui,
 output_language: python} plus one variable `samp_rate`. Its value is the task's sample rate when
 the instruction states one, i.e. the FIRST match in the instruction of "sample/sampling rate
@@ -230,12 +239,19 @@ class TierFBudget:
 # Episode process side
 # --------------------------------------------------------------------------------------------
 
+B1_KIND = "oracle grounding"
+
+
 def task_from_spec(spec: dict[str, Any]) -> Task:
     """The Task the episode runs: the Tier-F record, its start graph opened as flowgraph.grc, no
-    scripted user (a Tier-F sample is one turn)."""
+    scripted user (a Tier-F sample is one turn). With B1 the grounding precedes the instruction."""
     record, task_dir = spec["task"]["record"], Path(spec["task"]["task_dir"])
+    instruction = record["instruction"]
+    grounding = (spec.get("tier_f") or {}).get("grounding")
+    if grounding:
+        instruction = f"{grounding['text']}\n\n{instruction}"       # as tier_k.retriever.add_to_prompt
     return Task(id=record["id"], split=record["split"], version=int(record["version"]),
-                category=record["family"], instruction=record["instruction"],
+                category=record["family"], instruction=instruction,
                 start_state={"active_graph": START_GRAPH_NAME}, scripted_user={"max_turns": 0},
                 acceptance={}, task_dir=task_dir, record=record)
 
@@ -531,10 +547,18 @@ def grade(record: dict[str, Any], task: dict[str, Any], *, ladder_check: Callabl
     return out
 
 
-def run_dir_for(run_root: Path | None, config_id: str, task_id: str, setting: str, sample: int) -> Path:
-    from .runner import _safe
+def run_dir_for(run_root: Path | None, config_id: str, task_id: str, setting: str, sample: int,
+                attempt: int = 0) -> Path:
+    from .runner import _safe, attempt_suffix
     root = Path(run_root) if run_root is not None else isolation.RUNS_ROOT
-    return root / _safe(config_id) / _safe(task_id) / f"tier_f-{setting}-s{sample:02d}"
+    return root / _safe(config_id) / _safe(task_id) / f"tier_f-{setting}-s{sample:02d}{attempt_suffix(attempt)}"
+
+
+def infrastructure_failure_grade() -> dict[str, Any]:
+    """The Tier-F grade of a sample scored as a failure after its third infrastructure error
+    (pre-registration §8, decision 10)."""
+    return {"passed": False, "failure": "infrastructure_error", "rungs": {}, "first_failed": None,
+            "highest_passed": None}
 
 
 def run_tier_f_sample(task_dir: Path | str, model_factory: ModelSpec | str | Callable[..., Any],
@@ -543,10 +567,13 @@ def run_tier_f_sample(task_dir: Path | str, model_factory: ModelSpec | str | Cal
                       reason: str = "", grade_sample: bool = True, invalid_gate: str = "pinned",
                       run_log_entry: dict[str, Any] | None = None, log_path: Path = runlog.LOG,
                       run_list: Path = runlog.RUN_LIST, items_root: Path = ITEMS,
-                      include_thinking: bool = True) -> Any:
+                      include_thinking: bool = True, earlier_attempts: list[dict[str, Any]] | None = None,
+                      grounding: dict[str, Any] | None = None) -> Any:
     """Run one Tier-F sample of the task in `task_dir` (module docstring); returns the EpisodeResult
     with `tier_f` filled in (graded unless grade_sample=False). The run-log guard applies as for
-    Tier A (test split: declared configuration id, logged before the run starts)."""
+    Tier A (test split: declared configuration id, logged before the run starts). earlier_attempts:
+    as for runner.run_episode (a re-run after an infrastructure error, decision 10). grounding: B1's
+    oracle grounding (tier_k.retriever.tier_f_grounding's dict), placed before the instruction."""
     from .runner import (
         HARNESS_VERSION, PROCESS_MARGIN, RESULT_FILE, SPEC_FILE, STDERR_FILE, TRACE_FILE, EpisodeResult,
         _failed_result, run_id_for,
@@ -555,6 +582,7 @@ def run_tier_f_sample(task_dir: Path | str, model_factory: ModelSpec | str | Cal
     spec_model = as_spec(model_factory)
     caps = caps or tier_f_caps(setting)
     settings = {"setting": setting, "tier_f_setting": "one lookup + one edit", "caps": caps.to_dict(),
+                "b1": grounding["kind"] if grounding else None,
                 "invalid_gate": invalid_gate, "approvals": "all approved (GRC-Agent yolo)",
                 "streaming": spec_model.streams(),
                 "harness": HARNESS_VERSION}
@@ -563,7 +591,9 @@ def run_tier_f_sample(task_dir: Path | str, model_factory: ModelSpec | str | Cal
                                          settings=settings, items=[task["id"]], item_splits=[task["split"]],
                                          reason=reason or f"Tier-F sample {task['id']}", tier="F", mode=mode,
                                          log_path=log_path, run_list=run_list, items_root=items_root)
-    run_dir = isolation.check_run_dir(run_dir_for(run_root, config_id, task["id"], setting, sample))
+    earlier_attempts = list(earlier_attempts or [])
+    attempt = len(earlier_attempts)
+    run_dir = isolation.check_run_dir(run_dir_for(run_root, config_id, task["id"], setting, sample, attempt))
     if run_dir.exists():
         shutil.rmtree(run_dir)
     run_dir.mkdir(parents=True)
@@ -579,12 +609,13 @@ def run_tier_f_sample(task_dir: Path | str, model_factory: ModelSpec | str | Cal
         compact, start_rule = start_graph_text(task)
         write_text(run_dir / STATE_DIR / "start_compact.grc", compact)
         record = {k: v for k, v in task.items() if not k.startswith("_")}
-        episode = {"kind": "tier_f", "run_id": run_id_for(task["id"], config_id, f"tier_f-{setting}", sample),
+        episode = {"kind": "tier_f", "run_id": run_id_for(task["id"], config_id, f"tier_f-{setting}", sample, attempt),
                    "task": {"record": record, "task_dir": task["_dir"]}, "model": spec_model.to_dict(),
                    "setting": setting, "caps": caps.to_dict(), "config_id": config_id, "sample": sample, "mode": mode,
                    "invalid_gate": invalid_gate, "run_log_entry": run_log_entry,
                    "tier_f": {"prefill_id": prefill_call_id(task["id"]), "start": start_rule,
-                              "start_compact": str(run_dir / STATE_DIR / "start_compact.grc")}}
+                              "start_compact": str(run_dir / STATE_DIR / "start_compact.grc"),
+                              **({"grounding": grounding} if grounding else {})}}
         write_json(run_dir / SPEC_FILE, episode)
         t0 = time.monotonic()
         proc = isolation.run_episode_process(run_dir, "grcbench.tier_a.runner",
@@ -601,7 +632,13 @@ def run_tier_f_sample(task_dir: Path | str, model_factory: ModelSpec | str | Cal
         result.tier = "F"
     result.process = process
     result.run_log_entry = run_log_entry
-    if result.tier_f is not None and grade_sample and result.valid and "record_error" not in result.tier_f:
+    result.earlier_attempts = earlier_attempts
+    if grounding and result.tier_f is not None:
+        result.tier_f["b1"] = {"kind": grounding["kind"], "block_ids": grounding["block_ids"],
+                               "chars": len(grounding["text"])}
+    if grade_sample and result.infrastructure_failure:
+        result.tier_f = {**(result.tier_f or {}), "grade": infrastructure_failure_grade()}
+    elif result.tier_f is not None and grade_sample and result.valid and "record_error" not in result.tier_f:
         if result.cap_failure:
             result.tier_f["grade"] = {"passed": False, "failure": f"cap:{result.caps_hit[0]['cap'] if result.caps_hit else '?'}",
                                       "rungs": {}, "first_failed": None, "highest_passed": None}
@@ -619,8 +656,12 @@ def run_tier_f_samples(task_dirs: list[Path | str], model_factory: ModelSpec | s
                        config_id: str, reason: str, samples: int = 1, setting: str = "benchmark",
                        run_root: Path | None = None, mode: str = "evaluation", caps: Caps | None = None,
                        log_path: Path = runlog.LOG, run_list: Path = runlog.RUN_LIST, items_root: Path = ITEMS,
-                       on_result: Callable[[Any], None] | None = None) -> list[Any]:
-    """`samples` Tier-F samples of every task, with one guard and one run-log entry for the batch."""
+                       on_result: Callable[[Any], None] | None = None,
+                       grounding: Callable[[dict[str, Any]], dict[str, Any]] | None = None) -> list[Any]:
+    """`samples` Tier-F samples of every task, with one guard and one run-log entry for the batch. A sample
+    that ends with an infrastructure error is re-run (runner.with_reruns, decision 10). grounding: B1, a
+    function task -> oracle grounding (tier_k.retriever.tier_f_grounding), called once per task."""
+    from .runner import with_reruns
     tasks = [load_tier_f_task(d) for d in task_dirs]
     from ..review.items import refuse_rejected
     refuse_rejected(tasks)                                            # rejected tasks are not run (eval plan §5.3)
@@ -632,15 +673,17 @@ def run_tier_f_samples(task_dirs: list[Path | str], model_factory: ModelSpec | s
     entry = runlog.start_run(split=splits[0] if len(splits) == 1 else "+".join(splits), config_id=config_id,
                              model=spec_model.describe(),
                              settings={"setting": setting, "tier_f_setting": "one lookup + one edit",
-                                       "caps": caps.to_dict(), "samples": samples},
+                                       "caps": caps.to_dict(), "samples": samples, "b1": B1_KIND if grounding else None},
                              items=[t["id"] for t in tasks], item_splits=splits, reason=reason, tier="F", mode=mode,
                              log_path=log_path, run_list=run_list, items_root=items_root)
     out = []
     for t in tasks:
+        task_grounding = grounding(t) if grounding else None
         for k in range(samples):
-            res = run_tier_f_sample(t["_dir"], spec_model, run_root, config_id=config_id, sample=k, setting=setting,
-                                    caps=caps, mode=mode, reason=reason, run_log_entry=entry or {"logged": False},
-                                    log_path=log_path, run_list=run_list, items_root=items_root)
+            res = with_reruns(lambda earlier, t=t, k=k, g=task_grounding: run_tier_f_sample(
+                t["_dir"], spec_model, run_root, config_id=config_id, sample=k, setting=setting, caps=caps, mode=mode,
+                reason=reason, run_log_entry=entry or {"logged": False}, log_path=log_path, run_list=run_list,
+                items_root=items_root, earlier_attempts=earlier, grounding=g))
             out.append(res)
             if on_result is not None:
                 on_result(res)

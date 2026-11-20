@@ -1,9 +1,8 @@
-# GRC-Bench pre-registration (benchmark v0.9)
+# GRC-Bench pre-registration (benchmark v1.0)
 
-**Status: draft for the team's sign-off at gate G2 (Friday 30 October 2026).** After sign-off it is
-published on the Open Science Framework (OSF), before any fine-tuned model is run on the test split.
-It is amended once, at the freeze on Friday 20 November 2026 (§10). Any later deviation is reported
-in the 7 December report.
+**Status: signed off by the team and declared at the freeze on Friday 20 November 2026 (benchmark
+v1.0, git tag `v1.0`).** It is published on the Open Science Framework (OSF) before any fine-tuned
+model is run on the test split. Any later deviation is reported in the 7 December report.
 
 - **Team:** JJJP, University of Toronto MScAC: Joel Rompis (evaluation lead), Jiuyue Cai, Patricio
   Pizaña Vela, John Borland. Industry partner: Qoherent.
@@ -12,8 +11,8 @@ in the 7 December report.
   cited as "eval plan §n"). Rows of eval plan Table 1 marked "set by budget" follow the CAD 504 case.
 - **Companion files:**
   - `docs/preregistration/run_list.yaml`: the declared test-split run list (eval plan Table 6);
-  - the analysis code, package `grcbench.stats` of the `grc-bench` repository, at the commit named at
-    sign-off (Appendix A lists its open choices);
+  - the analysis code, package `grcbench.stats` of the `grc-bench` repository, at the commit tagged
+    `v1.0` (Appendix A lists its analysis choices);
   - the Tier-K question prompt and the judge prompt snapshot (Appendix B).
 
 ## 1. What this document fixes in advance
@@ -84,13 +83,13 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
 
 | Hypothesis | Statement | Decided by |
 |---|---|---|
-| **H1a** reliability | Model rankings are stable, the judge agrees with the reference labelling, and reference solutions are reproducible. | Per tier, all four parts must hold. (1) Kendall's τ between the rankings of two independent bootstrap resamples is at least 0.8 in at least 95 % of 1,000 pairs (`H1a-decision`). (2) The split-half τ, samples {1, 2} against {3, 4}, is at least 0.8. (3) The judge passes both calibration gates (§5.1, `judge-gate`). (4) Every remaining Tier-F and Tier-A reference passes 10 of 10 harness runs. |
-| **H1b** validity | GRC-Bench measures GNU Radio development skill, not general ability. | The expert agent of the review protocol accepts at least 90 % of the reviewed items of each tier as correct and relevant (first pass; an item marked `unsure` counts as not accepted). This measures the expert agent's acceptance, not a GNU Radio engineer's (§10). The correlations of each tier with published BFCL and MMLU-Pro engineering scores across the panel are reported with intervals and described, not tested (eval plan §9). |
-| **H1c** separation | Running the outputs separates models better than asking questions: Tier-F scores spread more widely, and more model pairs differ significantly, than Tier-K scores. | Tier K is subsampled to Tier F's 150 items. H1c holds if the 95 % bootstrap intervals of both SD(F) − SD(K₁₅₀) and sig_pairs(F) − sig_pairs(K₁₅₀) lie above 0, with the same test on both tiers (`H1c-test`, `H1c-mixed-n`, `H1c-decision`). |
-| **H2a** recipe | Mixed SFT (knowledge, trajectories and replay) beats single-source SFT on every tier. | On the test split, Tiers K and F: the best S1 checkpoint against each single-source comparison arm of the same model, with the primary paired test of each tier, Holm-corrected in the RQ2 family. H2a holds for a tier if every comparison favours the mixed recipe at the corrected 5 % level. Tier A is compared on the dev split only, because the arms are not run on Tier A of the test split (Table 6). |
-| **H2b** preference stage | Defect-aware preference optimisation lowers the hallucinated-block rate by at least 30 % relative to SFT alone. | Tier F: the hallucinated-block rate of S1 + DPO and of S1 + DPOP against the best S1 checkpoint. H2b holds for a method if the relative reduction is at least 30 % and the paired test of the per-task rates is significant after Holm correction in the RQ2 family. |
-| **H3** curation | Adding validated repairs to PASS-only data raises accuracy and lowers the hallucinated-block rate at equal compute. | The curation comparison A2 runs on the dev split (eval plan §7.2): PASS + repaired against PASS-only, on Tier-K score and on the Tier-F hallucinated-block rate, paired tests, Holm-corrected in the RQ3 family. Because the dev split also served for model choices, H3 is reported with that limitation. |
-| **H4a** compression cost | 4-bit compression costs more on agentic (A) than on knowledge (K) metrics. | For the final model of each architecture: the drop from BF16 to Q4_K_M on Tier A minus the drop on Tier K, in percentage points, with a 95 % cluster-bootstrap interval (items resampled within each tier). H4a holds if the interval lies above 0 (`H4a-decision`, §8). Tier A's MDE at its 30 test tasks (23–28 points) is printed beside the result. |
+| **H1a** reliability | Model rankings are stable, the judge agrees with the reference labelling, and reference solutions are reproducible. | Per tier, all four parts must hold. (1) Kendall's τ between the rankings of two independent bootstrap resamples is at least 0.8 in at least 95 % of 1,000 pairs (`H1a-decision`). (2) The split-half τ, samples {1, 2} against {3, 4}, is at least 0.8. (3) The judge passes both calibration gates (§5.1, `judge-gate`). (4) Every remaining Tier-F and Tier-A reference passes 10 of 10 harness runs. Parts 1 and 2 rank the outside models together with the target models, so H1a is decided once the outside models have run (§6); until then parts 3 and 4 are reported on their own. |
+| **H1b** validity | GRC-Bench measures GNU Radio development skill, not general ability. | The expert agent of the review protocol accepts at least 90 % of the reviewed items of each tier as correct and relevant (first pass; an item marked `unsure` counts as not accepted). This measures the expert agent's acceptance, not a GNU Radio engineer's (§10). The correlations of each tier with published BFCL and MMLU-Pro engineering scores across the panel are reported with intervals and described, not tested (eval plan §9), once the panel has run (§6). |
+| **H1c** separation | Running the outputs separates models better than asking questions: Tier-F scores spread more widely, and more model pairs differ significantly, than Tier-K scores. | Tier K is subsampled to Tier F's 150 items. H1c holds if the 95 % bootstrap intervals of both SD(F) − SD(K₁₅₀) and sig_pairs(F) − sig_pairs(K₁₅₀) lie above 0, with the same test on both tiers (`H1c-test`, `H1c-mixed-n`, `H1c-decision`). H1c is decided once the outside models have run (§6). |
+| **H2a** recipe | Mixed SFT (knowledge, trajectories and replay) beats single-source SFT on every tier. | On the test split, Tiers K and F: the best S1 checkpoint against each single-source comparison arm of the same model, with the primary paired test of each tier, Holm-corrected in the RQ2 family. H2a holds for a tier if every comparison favours the mixed recipe at the corrected 5 % level. Tier A is compared on the dev split only, because the arms are not run on Tier A of the test split (Table 6). H2a is decided only if the single-source arms are trained (§8, decision 9). |
+| **H2b** preference stage | Defect-aware preference optimisation lowers the hallucinated-block rate by at least 30 % relative to SFT alone. | Tier F: the hallucinated-block rate of S1 + DPO and of S1 + DPOP against the best S1 checkpoint. H2b holds for a method if the relative reduction is at least 30 % and the paired test of the per-task rates is significant after Holm correction in the RQ2 family. H2b is decided only if the preference stage is trained (§8, decision 9). |
+| **H3** curation | Adding validated repairs to PASS-only data raises accuracy and lowers the hallucinated-block rate at equal compute. | The curation comparison A2 runs on the dev split (eval plan §7.2): PASS + repaired against PASS-only, on Tier-K score and on the Tier-F hallucinated-block rate, paired tests, Holm-corrected in the RQ3 family. Because the dev split also served for model choices, H3 is reported with that limitation. H3 is decided only if the PASS-only comparison model is trained (§8, decision 9). |
+| **H4a** compression cost | 4-bit compression costs more on agentic (A) than on knowledge (K) metrics. | For the final model of each architecture: the drop from its anchor (BF16 for Nanbeige, Q8_0 for North-Mini-Code, §8 decision 15) to Q4_K_M on Tier A minus the drop on Tier K, in percentage points, with a 95 % cluster-bootstrap interval (items resampled within each tier). H4a holds if the interval lies above 0 (`H4a-decision`, §8). Tier A's MDE at its 30 test tasks (23–28 points) is printed beside the result. |
 | **H4b** speed | The MoE model (North-Mini-Code) reaches at least 80 tokens/s on the reference hardware at Q4_K_M. | Tier E on setup H2 (a laptop with a 4 GB GPU, MoE experts in CPU memory): the median generation speed of 5 warm llama-bench runs is at least 80 tokens/s, decided at each of 4K, 16K, 32K and 64K tokens of context. The result states the context range over which H4b holds ("holds up to 16K"); a context that cannot be run does not hold (`H4b-context`, §8). Setups H1 and H3 are reported beside it. |
 
 ## 4. Item quality before the freeze
@@ -176,7 +175,9 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   and its hash are fixed in Appendix B; any change needs a new version.
 - **Judge calibration** (eval plan §8.1; `docs/guidelines/judge_calibration.md`). Before the judge
   grades any test answer, it is compared with a reference labelling of 150 answers by three annotator
-  agents, adjudicated by the expert agent (§10). The judge passes only if both gates hold: Cohen's κ on the per-point
+  agents, adjudicated by the expert agent (§10). The 150 answers come from the main runs' Tier-K test
+  answers of B0, B1 and the fine-tuned models, drawn once the fine-tuned models' runs are logged
+  (§10). The judge passes only if both gates hold: Cohen's κ on the per-point
   credits is at least 0.7 with the lower end of its 95 % interval at least 0.6, and the linear-weighted
   κ on the answers' score bands meets the same thresholds. Scott's π and the mean judge–reference gap
   are reported, for each task type too. If MiniMax-M3 fails, Kimi K2.6 is calibrated with the same
@@ -204,6 +205,11 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   prompt and tool schemas. The history already holds one `inspect_graph` call on the start graph. The
   model may make at most one `query_knowledge` call and must then submit one atomic `change_graph`
   call, within 3 model turns. GRC-Agent applies the edit; a rejected edit is not retried.
+- **B1** (§8, decision 12). B1 on Tier F is oracle grounding: GRC-Agent's catalog entry for every block
+  of the task's reference solution is placed before the instruction, as B1 places the retrieved
+  documentation before a Tier-K question. The lookup, the edit, the caps and the grading are B0's. The
+  model is told which blocks the reference uses, so the result shows how far a model gets once it knows
+  the right blocks, not how much retrieval helps, and it is reported as oracle grounding (§10).
 - **Tool calls.** Every model served by llama.cpp runs with the server's default tool grammar
   (`--jinja`), which holds tool calls to the tools' JSON schemas (§8, decision 1). API models use the
   provider's tool calling, with strict mode where it is offered; their well-formed-call rates are
@@ -211,6 +217,10 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   the well-formed-call share mostly check the server rather than the model; the
   hallucinated-block rate stays informative, since the grammar fixes a call's form but not the block
   names in it, and V2–V5 compare as usual.
+- **Families and levels** (§8, decision 8). Modify changes the graph's structure or function;
+  parameter-tune changes values only, and its checks require the start graph's blocks. L1: at most 5
+  functional blocks, one sample rate and no modulator–demodulator chain. L2: 6–15 blocks, or a change
+  of sample rate, or modulation or demodulation. L3: message ports, tags or PDUs.
 - **Validity ladder.** V1 a well-formed `change_graph` call; V2 the graph loads with only real blocks;
   V3 it compiles (it validates and its Python code is generated); V4 it runs and every observation
   point receives data; V5 the task's oracle passes (signal checks and structural checks). Each check runs only if the previous one
@@ -231,8 +241,11 @@ Where the plan leaves a detail open, the rule cites the proposal of Appendix A t
   64K tokens of context, or the model's own context if shorter; at most 40 model requests; 30 minutes per
   episode (15 minutes for a Tier-F sample), with GRC-Agent's HTTP client waiting for the model server as long
   as that (§10); a time limit on each flowgraph run; web tools
-  offline; the shell in a sandbox without network. A run that hits a cap is a failure. Tool calls as
-  in Tier F: the llama.cpp server's default tool grammar for every model it serves, the provider's
+  offline; the shell in a sandbox without network. A run that hits a cap is a failure. The episode
+  process is limited to 8 GiB of memory and one hour of CPU time, and each shell command to 4 GiB and ten
+  minutes of CPU time (§8, decision 13). A shell command stopped at its limit returns its exit code to
+  the model; a tool that runs out of memory in the episode process ends the episode as an agent error,
+  and its end state is graded. Tool calls as in Tier F: the llama.cpp server's default tool grammar for every model it serves, the provider's
   tool calling (strict mode where offered) for API models (§8, decision 1). For the llama.cpp models
   the share of well-formed calls therefore mostly checks the server, as V1 does in Tier F.
 - **Scripted user.** Set replies for the questions a task expects; otherwise "please use your best
@@ -266,27 +279,57 @@ the tokens and the time, and the run's GPU-hours. All raw outputs are released w
 
 ## 6. The declared run list
 
-`run_list.yaml` lists the 38 configurations that may run on the test split (eval plan Table 6), with
+`run_list.yaml` lists the 39 configurations that may run on the test split (eval plan Table 6), with
 their model, precision, tiers, samples per item (n) and Tier-A runs per task (k), and the hypotheses
-they serve. In summary:
+they serve. The main runs are 12 configurations: each target model's base model (B0, and B1 on Tiers
+K and F), its model fine-tuned on all the data, and that model's compressed versions (§8, decision 9).
+The 7 December report compares the fine-tuned models with their base models (RQ2) and answers RQ4 on
+them. The other 27 configurations are marked `later: true` and run after the main runs if time
+allows: North-Mini-Code in BF16, the training variants outside the main runs and the outside models
+(§10). In summary:
 
-- **Nanbeige4.2-3B** (BF16 unless stated): B0, B1, the best S1 checkpoint, S1 + DPO and
-  S1 + DPOP, the final model compressed to Q8_0, Q5_K_M and Q4_K_M, seeds 2 and 3 of the final
-  setting, and four comparison arms.
-- **North-Mini-Code**, compared at the 4-bit deployment precision with BF16 as the anchor: B0 in BF16
-  and Q4, B1 and the best S1 checkpoint at Q4, the final model in BF16, Q8_0, Q5_K_M and Q4,
-  seeds 2 and 3, and one comparison arm (attention-only adapters).
-- **References:** Qwen3-30B-A3B at Q4 and the B2 cloud teacher, DeepSeek-V4.1-Flash.
-- **The panel** (eval plan §7.3): six small open models, four open teachers and one closed frontier
-  model. The panel's slots are declared now; its members are chosen and added at the freeze.
+- **Nanbeige4.2-3B** (BF16 unless stated). Main runs: B0, B1, the best S1 checkpoint (the final
+  model) and the final model compressed to Q8_0, Q5_K_M and Q4_K_M. Later: S1 + DPO and S1 + DPOP,
+  seeds 2 and 3 of the final setting, and four comparison arms (knowledge-only, trajectories-only,
+  the other LoRA placement, and the arm without general data).
+- **North-Mini-Code**, compared at the 4-bit deployment precision with Q8_0 as the anchor (§8,
+  decision 15). Main runs: B0 at Q8_0 and Q4, B1 at Q4, and the final model (the best S1 checkpoint) at
+  Q8_0, Q5_K_M and Q4. Later: B0 and the final model in BF16, which need a GPU with at least 80 GB; the
+  S1 checkpoint as its own Q4 configuration (the same model as the final model at Q4 while there is no
+  preference stage), seeds 2 and 3, and one comparison arm (attention-only adapters).
+- **References, run later:** Qwen3-30B-A3B at Q4 and the B2 cloud teacher, DeepSeek-V4.1-Flash.
+- **The panel, run later** (eval plan §7.3): six small open models, four open teachers and one closed
+  frontier model. Its slots are declared now, with the rules for their members (§4 and eval plan §7.3).
+  The members are chosen when the panel is to run, and are entered in `run_list.yaml` in one dated
+  amendment before the first panel run; the test-run guard refuses a slot with no member.
 
 Every configuration uses n = 5 samples per Tier-K and Tier-F item and, where it runs Tier A, k = 4
 runs per task, except the extra seeds (n = 3, k = 2), the comparison arms (n = 3), North-Mini-Code's
 BF16 B0 (k = 2) and the closed frontier model (n = 1, k = 2).
 
+**BFCL** (eval plan Table 6, RQ2; §8, decision 16). The configurations marked BFCL in `run_list.yaml`
+(in the main runs, each target model's base model and its fine-tuned model) run the Berkeley
+Function-Calling Leaderboard with its own package, `bfcl-eval` 2026.3.23 (BFCL v4), on its non-live and
+live categories: 3,641 single-turn cases that need no web service. The multi-turn categories are left
+out for time, the agentic ones because they call web services. The model is the configuration's
+llama.cpp server, called through BFCL's OpenAI-compatible chat handler with native tool calls (the
+server's default tool grammar, as in B0), at BFCL's own temperature 0.001, with each reply limited to
+16,384 tokens (`./gb bfcl`). BFCL's own checker scores the replies; its non-live and live overall
+accuracies are reported for each base model beside its fine-tuned model, described, not tested.
+
 **Engines and settings** (eval plan §7.1). All open models run in llama.cpp b12020 from GGUF files,
-BF16 references included. Each model uses its recommended sampling settings; greedy decoding is
-checked on the dev split only. Both target models keep an 8-bit KV cache in every Tier-A run; a check
+BF16 references included. Nanbeige4.2-3B is served with the team's chat template
+(`serve/templates/nanbeige42.jinja` in the team's evaluation repository, SHA-256
+`3d5fb57d879e88549d48211ba990eb7471084891b0af9cd8e6576351964981b2`): the model's own template, with
+the system messages at the start of a conversation merged into one, because its own template refuses
+GRC-Agent's two leading system messages. With one system message the prompt is unchanged.
+Each model uses its recommended sampling settings; greedy decoding is
+checked on the dev split only. North-Mini-Code at Q8_0 keeps the experts of its first four layers in CPU
+memory (`--n-cpu-moe 4`), so that it fits the 32 GB GPU of the main runs. Tier-K answers may be
+generated through several server slots at once, each holding at least the answer limit plus 4,096
+tokens (and the B1 documentation budget for B1); Tier-F and Tier-A episodes run at most two at a time,
+each slot holding the full 64K context (§8, decision 14). The slots and the layer placement change the
+speed, not the requests. Both target models keep an 8-bit KV cache in every Tier-A run; a check
 on 10 tasks compares it with a 16-bit cache. The 4K tool-output cap is checked against GRC-Agent's
 default settings on 10 tasks.
 
@@ -304,7 +347,9 @@ default settings on 10 tasks.
   reported next to it (Cohen's h or the matched odds ratio; the paired difference with its interval).
 - **Corrections.** Holm–Bonferroni within each research question: RQ2 (H2a and H2b, and every
   comparison of a trained model with B0 and B1), RQ3 (H3) and RQ4 (every compression level against
-  BF16, and H4a).
+  BF16, and H4a). If configurations marked `later: true` add comparisons to a research question after
+  the 7 December report, the correction is applied again over the whole family, and both sets of
+  adjusted p-values are reported.
 - **What the benchmark can detect** (eval plan Table 8: 80 % power, 5 % significance, paired, 20–30 %
   of items decided differently). The MDE is printed beside every claim, with a design-effect
   adjustment when items are clustered (`mde-design-effect`). It is computed at the v1.0 test items, the
@@ -323,10 +368,10 @@ default settings on 10 tasks.
   differently. Tier-A differences are reported with their intervals and this MDE, and a non-significant
   Tier-A comparison is not read as evidence of no difference.
 
-- **Seeds.** The final setting of each model is trained with 3 seeds; the spread between seeds is
-  reported separately from the item-level interval.
+- **Seeds.** If time allows, the final setting of each model is trained with 2 more seeds (§8,
+  decision 9); the spread between the 3 seeds is then reported separately from the item-level interval.
 - **Memorisation check (Tier K).** The headline configurations (B0 and the final model of each target,
-  and B2) also answer the private fresh set. The gap is the reference-minus-fresh mean item score over
+  and B2 when it runs) also answer the private fresh set. The gap is the reference-minus-fresh mean item score over
   the paired slots, clustered by block, with both 95 % intervals; memorisation is flagged when both lie
   above 0 (`fresh-set-gap`). The headline Tier-K score stays the reference set's.
 - **Item analysis.** Difficulty and discrimination for every item; a Rasch model as an exploratory
@@ -341,9 +386,9 @@ default settings on 10 tasks.
 
 ## 8. Decisions at sign-off
 
-Decisions 1–7 were taken by the evaluation lead on 27 October 2026; the rule cascade, the judge
-template, the statistics package, the label groups and the run list implement them. Decisions 8–11
-are open; each states what has to be decided and the option this draft proposes.
+Decisions 1–7 were taken by the evaluation lead on 27 October 2026, decisions 8–11 on 19 November 2026
+and decisions 12–16 on 20 November 2026; the rule cascade, the judge template, the statistics package, the label groups, the Tier-F
+items and the run list implement them.
 
 1. **B0 and the tool grammar.** B0 is the base model served with the default tool grammar
    (`--jinja`) on Tiers A and F, as is every later stage of every model llama.cpp serves; there is
@@ -365,16 +410,38 @@ are open; each states what has to be decided and the option this draft proposes.
 7. **No human route.** Every Tier-K answer is scored automatically, by the rules' fixed conventions
    and the judge, with the fallback judge's single attempt and a score of 0 after failed replies
    (§5.1).
-8. **Tier-F decisions** of `reports/tier_f_reviews/fix_plan.md` §7: the level rule, the boundary
-   between modify and parameter-tune, the hand-composed L2 tasks, the role-table declaration, the
-   canary policy, GPL attribution, documented output-only limits, and the overlap between dev-10 and
-   test-17.
-9. **The four Nanbeige comparison arms** on the test split (Table 6): name them (proposal Table 7:
-   data source A1 and adapter placement A3).
-10. **Infrastructure re-runs:** *proposed:* an episode with an infrastructure error is re-run up to
-    twice; if it fails a third time it is scored as a failure and listed.
-11. **The code version:** the commit of the `grc-bench` repository made at sign-off, which this
-    document cites for the analysis code.
+8. **Tier-F decisions** of `reports/tier_f_reviews/fix_plan.md` §7. The family boundary and the
+   level rule are as §5.2 states them: L1 has at most 5 functional blocks, one sample rate and no
+   modulator–demodulator chain, and `gbf-test-06` (control through a message port) is L3. Tasks
+   composed by hand or by the generator, rather than converted from GNU Radio examples, are recorded
+   in §10, and so is the canary policy: the item record carries the canary. Tasks derived from GNU
+   Radio examples keep their GPL-3.0-or-later attribution in their licence field. `gbf-test-05` keeps
+   its documented limit, an output check that a hard-coded output could pass. The role-table
+   declaration (§4, §10), the graph checks of `gbf-dev-01` and `gbf-dev-07`, and the separate faults of
+   `gbf-dev-10` and `gbf-test-17` are in the items.
+9. **Training variants.** For the main runs each target model is trained once, by supervised
+   fine-tuning (SFT) on all the data, so there are two arms per model: the base model and the
+   fine-tuned model, whose best S1 checkpoint is the final model. The preference stage (S1 + DPO,
+   S1 + DPOP), seeds 2 and 3, the comparison arms of the methodology proposal's Table 7 and the
+   curation comparison of H3 are not part of the main runs. Their configurations stay declared with
+   `later: true` (§6), and H2a, H2b and H3 are decided only if the variants they need are trained.
+10. **Infrastructure re-runs.** An episode that ends with an infrastructure error is re-run up to
+    twice; if it fails a third time, it is scored as a failure and listed. A crash of the model server
+    or an exception in the harness is an infrastructure error; reaching a cap, a malformed tool call
+    and a reply the server cannot parse are the model's failures (§5.3).
+11. **The code version:** the commit tagged `v1.0` in the public `grc-bench` repository, which this
+    document cites for the analysis code; the manifest of the OSF upload gives its hash.
+12. **B1 on Tier F** is oracle grounding (§5.2). Every Tier-F sample, B0 included, already makes its
+    one lookup through GRC-Agent's own search, so B1 adds the catalog entries of the reference
+    solution's blocks before the instruction.
+13. **Resource limits** of an episode, as the harness sets them (§5.3): 8 GiB of memory and one hour of
+    CPU time for the episode process, 4 GiB and ten minutes of CPU time for each shell command.
+14. **Parallel server slots** (§6): Tier-K answers through several slots, each holding a full answer;
+    Tier-F and Tier-A episodes at most two at a time, each with the full context.
+15. **North-Mini-Code's anchor is Q8_0** (§6, §10). Its BF16 configurations need a GPU with at least
+    80 GB; they stay declared, marked `later: true`.
+16. **BFCL** runs on each target model's base model and on its fine-tuned model, with the pinned package,
+    categories and settings of §6.
 
 Work that remains before any test run: the judge calibration (§5.1), which needs API access to
 MiniMax-M3 and produces the record that the judge runner (`./gb tier-k judge`) requires before it
@@ -385,7 +452,8 @@ rate on dev answers (round-2 finding F5) can be measured.
 
 - The v1.0 items of every tier, after the two-reviewer and expert reviews and pruning, with the number
   of removed items and the reasons (`reports/review_summary.md`).
-- The panel's members, entered in their declared slots of `run_list.yaml`.
+- The run list: the two target models' configurations as the main runs, and the outside models'
+  configurations marked to run after them (§6).
 - The MDEs recomputed for the final item counts.
 - One amendment of this document, if needed. Every later deviation is reported in the 7 December
   report.
@@ -538,6 +606,43 @@ rate on dev answers (round-2 finding F5) can be measured.
   are not in the test either: they were built after the expert's verdicts were known. So H1b is
   counted on the original pool, and the replacements' acceptance is reported beside it: 21 of 27 in
   Tier F and 9 of 9 in Tier A.
+- **Outside models after the main runs.** Eval plan §7.3 runs the panel, Qwen3-30B-A3B and B2
+  together with the target models, and chooses the panel's members at the freeze. Here the main runs
+  are the two target models' base and fine-tuned configurations, and the 7 December report compares
+  the fine-tuned models with their base models. The 13 outside-model configurations run afterwards,
+  if time allows, and the panel's members are chosen then (§6). So H1a and H1c, and H1b's correlations with published
+  scores, are decided only once the outside models have run, and so are the comparisons that need
+  them: the RQ2 upper bound (B2) and the open MoE model of North-Mini-Code's size (Qwen3-30B-A3B).
+- **The judge calibration's answers.** Eval plan §8.1 draws the 150 calibration answers from the base
+  models, B2 and the panel, and Table 15 labels them in week 4. Here they come from the main runs, in
+  three source groups: B0, B1 and the fine-tuned models. They are drawn once the fine-tuned models'
+  Tier-K test runs are logged and labelled before the judge grades any test answer (§5.1); until the
+  judge passes, no judge score is reported.
+- **B1 on Tier F.** The evaluation plan's B1 baseline (its Table 1) runs on Tiers K and F, with the
+  retrieved pages added to the prompt. In Tier F every configuration already makes its one lookup through GRC-Agent's own search,
+  so B1 there is oracle grounding: the catalog entries of the reference solution's blocks (§5.2). It
+  tells the model which blocks to use, and its result is reported as grounding, not as retrieval.
+- **North-Mini-Code's anchor.** Eval plan Table 6 anchors North-Mini-Code's compression comparison at
+  BF16. Its BF16 weights (61 GB) do not fit the 32 GB GPU of the main runs: with the experts in CPU
+  memory it generates about 5 tokens per second, and its two dev Tier-A episodes took 25 and 26 of the
+  30 minutes allowed, so the clock rather than the model would decide many episodes. Q8_0 (31 GB) runs
+  with the experts of four layers in CPU memory at about 83 tokens per second and is the anchor here
+  (§6); H4a's drop for North-Mini-Code is from Q8_0 to Q4_K_M. The BF16 configurations keep their
+  declared settings, marked `later: true`, for a GPU with at least 80 GB.
+- **Training variants.** The methodology proposal's Table 7 compares data sources (knowledge-only,
+  trajectories-only, both, and both with general replay), adapter placements, a preference stage (DPO
+  and DPOP) and three seeds, and H3 compares PASS-only with PASS + repaired data. The main runs train each
+  target model once, by SFT on all the data (§8, decision 9). The variants keep their declared
+  configurations, marked `later: true`; H2a, H2b and H3 are decided only if the variants they need are
+  trained, and the spread between seeds is reported only if seeds 2 and 3 are trained.
+- **Where the Tier-F tasks come from.** Eval plan §4.3 draws Tier-F tasks from GNU Radio's example
+  flowgraphs, permissively licensed community flowgraphs and simple hand-written L1 chains. Of the 148
+  test tasks, 128 come from the seeded generator (`tier_f/generate.py`), 14 were composed by hand and
+  6 are built from GNU Radio examples; of the 45 dev tasks, 35, 6 and 4 (§8, decision 8). Scores on the
+  example-based tasks are reported separately (§5.2).
+- **The canary.** Eval plan §6 puts the canary in every released file. Here every item record carries
+  it (a Tier-F or Tier-A task's `task.json`, a Tier-K question's record), and the other files of a
+  task do not (§8, decision 8). The canary never appears in a file a model under test sees.
 
 ## Appendix A: analysis proposals
 

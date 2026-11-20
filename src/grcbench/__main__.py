@@ -50,6 +50,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "prereg": ("grcbench.stats.prereg:main", "fill the pre-registration's generated appendices"),
     "runlog": ("grcbench.runlog.log:main", "append-only test-run log"),
     "e2e": ("grcbench.e2e:main", "benchmark v0.9 end to end on the dev split with the smoke model (G2)"),
+    "bfcl": ("grcbench.bfcl_run:main", "BFCL runs of the run list's BFCL configurations (bfcl-eval, pinned)"),
     # review protocol
     "review": ("grcbench.review.cli:main", "review protocol: blinded inputs, declared runs, decisions, checks"),
 }

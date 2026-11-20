@@ -8,8 +8,10 @@ reason." Tier-A runs (and any other harness) call `start_run` before anything ex
       evaluation mode, test split  the configuration id must be declared in
                                    docs/preregistration/run_list.yaml; while that file does not
                                    exist, or its `status` is not "declared" (a draft awaiting the
-                                   team's sign-off at G2), every test run is refused.
+                                   team's sign-off), every test run is refused.
                                    Runs outside the list are refused, not run as "exploratory".
+                                   A declared slot whose model is still to be chosen
+                                   (`model: chosen later`) is refused until its member is entered.
       evaluation mode, dev split   allowed (the dev split is for every choice; it is not logged here)
       collection mode              (training-session collection, proposal §4.4) refuses every test
                                    or dev item: by its split, and by its id if a benchmark item of
@@ -116,6 +118,18 @@ def declared_config_ids(run_list: Path = RUN_LIST) -> set[str] | None:
     return ids
 
 
+def slots_without_member(run_list: Path = RUN_LIST) -> set[str]:
+    """Declared configuration ids whose model is still to be chosen (`model: chosen later`, the
+    panel's slots until their members are entered). A test run of such a slot is refused."""
+    import yaml
+    if not Path(run_list).is_file():
+        return set()
+    data = yaml.safe_load(Path(run_list).read_text(encoding="utf-8"))
+    entries = data.get("configurations", data.get("runs")) if isinstance(data, dict) else data
+    return {str(e.get("id", e.get("config_id"))) for e in entries or []
+            if isinstance(e, dict) and str(e.get("model", "")).strip().lower().startswith("chosen ")}
+
+
 def benchmark_item_ids(items_root: Path = ITEMS) -> dict[str, str]:
     """{item id: split} for every Tier-A and Tier-F item directory and Tier-K item file record."""
     ids: dict[str, str] = {}
@@ -177,6 +191,9 @@ def guard(*, split: str, config_id: str, items: Iterable[str] = (), item_splits:
         if config_id not in declared:
             raise RunRefused(f"test-split runs are refused: configuration {config_id!r} is not on the "
                              f"declared run list {run_list}")
+        if config_id in slots_without_member(run_list):
+            raise RunRefused(f"test-split runs are refused: slot {config_id!r} has no member yet; its "
+                             "member is entered in run_list.yaml, in one dated amendment, before its first run")
     elif split != "dev":
         raise RunRefused(f"evaluation runs use the dev or test split, not {split!r}")
 
@@ -251,6 +268,9 @@ def main(argv: list[str] | None = None) -> int:
         if declared is None:
             print(f"no declared run list at {a.run_list} (missing, or its status is not 'declared'): "
                   "every test-split run is refused")
+            return 1
+        if a.config_id in declared and a.config_id in slots_without_member(Path(a.run_list)):
+            print(f"{a.config_id}: a declared slot with no member yet; its test runs are refused")
             return 1
         ok = a.config_id in declared
         print(f"{a.config_id}: {'declared' if ok else 'NOT on the declared run list'}")

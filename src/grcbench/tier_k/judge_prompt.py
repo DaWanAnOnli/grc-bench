@@ -211,7 +211,7 @@ PLACEHOLDER_REVIEW = "placeholder"
 # Names a model may give itself or its maker; the judge never sees them (bias control, [52]). Whole
 # words, case-sensitive; kept: "Llama.cpp", "Claude Shannon" / "Claude E. Shannon" / "Claude-Shannon",
 # "Claude Berrou", "GPT partition" and "OpenAI compatible" / "OpenAI-compatible" (any case after the name).
-# The panel's members are added at the freeze.
+# The panel's members are added when they are chosen, in the amendment that enters them (pre-registration §6).
 REDACT_TERMS = ("North-Mini-Code", "Nanbeige", "Qwen", "DeepSeek", "Kimi", "Moonshot AI", "MiniMax", "Mistral",
                 "Llama", "Gemma", "ChatGPT", "GPT", "Claude", "Anthropic", "OpenAI", "Alibaba Cloud",
                 "Google DeepMind", "Meta AI")
