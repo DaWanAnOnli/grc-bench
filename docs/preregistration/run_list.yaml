@@ -4,6 +4,9 @@
 # The test-run guard (grcbench.runlog) accepts a test-split run only for a configuration listed here,
 # and only once `status` is "declared". The team set it to "declared" when it signed the
 # pre-registration off at the freeze (20 Nov 2026).
+# Amendment 1 (21 Nov 2026, preregistration.md §11): nmc-q8-b0 is postponed (`later: true`) and nb-q4-b0,
+# Nanbeige's base model at Q4_K_M, joins the main runs; the counts below are the declared ones of 20 Nov,
+# and with the amendment the list has 40 configurations, 12 main runs and 28 marked `later: true`.
 # The main runs are 12 configurations: each target model's base model, its model fine-tuned on all the
 # data, and that model's compressed versions (preregistration.md §6, §8 decision 9). North-Mini-Code's
 # anchor is Q8_0, because its BF16 weights do not fit the 32 GB GPU of the main runs (§8 decision 15).
@@ -31,6 +34,8 @@ configurations:
   # ------------------------------------------------------------------ Nanbeige4.2-3B (BF16 unless stated)
   - {id: nb-bf16-b0, model: Nanbeige4.2-3B, precision: BF16, stage: "B0 base model (server default: tool grammar on)",
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: true}, serves: [H1a, H1c, RQ2 baseline]}
+  - {id: nb-q4-b0, model: Nanbeige4.2-3B, precision: Q4_K_M, stage: "B0 base model (server default: tool grammar on)",
+     tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}}, serves: [RQ2 baseline, RQ4]}          # Amendment 1 (21 Nov 2026)
   - {id: nb-bf16-b1, model: Nanbeige4.2-3B, precision: BF16, stage: B1 base model + documentation search,
      tiers: {K: {n: 5}, F: {n: 5}}, serves: [RQ2 baseline]}
   - {id: nb-bf16-s1, model: Nanbeige4.2-3B, precision: BF16, stage: best S1 checkpoint,
@@ -62,7 +67,7 @@ configurations:
      tiers: {K: {n: 3}, F: {n: 3}, BFCL: true}, serves: [H2a]}
 
   # ------------------------------------------------------------------ North-Mini-Code
-  - {id: nmc-q8-b0, model: North-Mini-Code, precision: Q8_0, stage: "B0 base model (server default: tool grammar on)",
+  - {id: nmc-q8-b0, model: North-Mini-Code, precision: Q8_0, stage: "B0 base model (server default: tool grammar on)", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 4}, BFCL: true}, serves: [H1a, H1c, RQ2 baseline, RQ4 anchor]}
   - {id: nmc-bf16-b0, model: North-Mini-Code, precision: BF16, stage: "B0 base model (server default: tool grammar on)", later: true,
      tiers: {K: {n: 5}, F: {n: 5}, A: {k: 2}, BFCL: true}, serves: [H1a, H1c, RQ2 baseline, RQ4 anchor]}

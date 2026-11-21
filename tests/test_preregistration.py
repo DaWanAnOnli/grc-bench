@@ -44,7 +44,7 @@ def test_every_hypothesis_has_a_decision_rule():
 
 def test_run_list_after_decision_1():
     ids = {c["id"] for c in RUN_LIST["configurations"]}
-    assert len(ids) == 39 and "b2-deepseek-v4.1-flash" in ids
+    assert len(ids) == 40 and "b2-deepseek-v4.1-flash" in ids    # Amendment 1
     assert not ({"nb-bf16-b2", "nmc-q4-b2"} & ids) and not any(i.startswith("b3-") for i in ids)
     stages = {c["id"]: c["stage"] for c in RUN_LIST["configurations"]}
     assert stages["b2-deepseek-v4.1-flash"] == "B2 cloud teacher upper bound"
@@ -231,15 +231,15 @@ def test_the_run_list_names_the_freeze_date():
 
 OUTSIDE = {"qwen3-30b-a3b-q4", "b2-deepseek-v4.1-flash"}
 MAIN = {"nb-bf16-b0", "nb-bf16-b1", "nb-bf16-s1", "nb-q8-final", "nb-q5km-final", "nb-q4-final",   # decision 9:
-        "nmc-q8-b0", "nmc-q4-b0", "nmc-q4-b1", "nmc-q8-final", "nmc-q5km-final",  # base and SFT on all data;
-        "nmc-q4-final"}                                                         # decision 15: NMC's anchor Q8_0
+        "nb-q4-b0", "nmc-q4-b0", "nmc-q4-b1", "nmc-q8-final", "nmc-q5km-final",  # base and SFT on all data;
+        "nmc-q4-final"}                       # decision 15: NMC's anchor Q8_0; Amendment 1: nb-q4-b0 for nmc-q8-b0
 
 
 def test_the_main_runs_are_the_base_and_fine_tuned_models():
     configs = RUN_LIST["configurations"]
     panel = {c["id"] for c in configs if c["id"].startswith("panel-")}
     later = {c["id"] for c in configs if c.get("later")}
-    assert {c["id"] for c in configs} - later == MAIN and len(later) == 27
+    assert {c["id"] for c in configs} - later == MAIN and len(later) == 28
     assert panel | OUTSIDE <= later
     assert {c["model"] for c in configs if c["id"] in panel} == {"chosen later"}
     assert runlog.slots_without_member() == panel                    # the guard refuses them until entered
@@ -330,6 +330,26 @@ def test_section_8_records_decisions_12_to_15():
     h4a = next(line for line in TEXT.splitlines() if line.startswith("| **H4a**"))
     assert "Q8_0 for North-Mini-Code" in h4a
     by_id = {c["id"]: c for c in RUN_LIST["configurations"]}
-    assert by_id["nmc-q8-b0"]["precision"] == "Q8_0" and not by_id["nmc-q8-b0"].get("later")
+    assert by_id["nmc-q8-b0"]["precision"] == "Q8_0" and by_id["nmc-q8-b0"].get("later")   # Amendment 1
     assert by_id["nmc-bf16-b0"].get("later") and by_id["nmc-bf16-final"].get("later")
     assert "RQ4 anchor" in by_id["nmc-q8-b0"]["serves"] and "RQ4 anchor" in by_id["nmc-q8-final"]["serves"]
+
+
+def test_amendment_1_puts_nanbeige_q4_b0_in_place_of_nmc_q8_b0():
+    """21 Nov 2026: nmc-q8-b0 postponed, nb-q4-b0 added; stated in §11, pointed to from the status line, and in
+    the run list (its header and entries)."""
+    flat = " ".join(TEXT.split())
+    assert "Amendment 1 (21 November 2026, §11) changes the run list." in flat.split("- **Team:**")[0]
+    s11 = " ".join(section(TEXT, "## 11. Amendments").split())
+    assert "**Amendment 1 (21 November 2026, the evaluation lead).**" in s11
+    for phrase in ("(`nmc-q8-b0`) is postponed", "(`nb-q4-b0`: Tiers K and F with n = 5, Tier A with k = 4)",
+                   "The run list has 40 configurations: 12 main runs and 28 marked `later: true`."):
+        assert phrase in s11, phrase
+    by_id = {c["id"]: c for c in RUN_LIST["configurations"]}
+    nb = by_id["nb-q4-b0"]
+    assert nb["precision"] == "Q4_K_M" and not nb.get("later") and nb["model"] == "Nanbeige4.2-3B"
+    assert nb["tiers"] == {"K": {"n": 5}, "F": {"n": 5}, "A": {"k": 4}}
+    assert by_id["nmc-q8-b0"].get("later") is True and not by_id["nb-q4-final"].get("later")
+    head = runlog.RUN_LIST.read_text(encoding="utf-8").split("status:", 1)[0]
+    assert "Amendment 1 (21 Nov 2026" in head and "40 configurations, 12 main runs and 28" in head
+    assert RUN_LIST["status"] == "declared" and RUN_LIST["version"] == "1.0"

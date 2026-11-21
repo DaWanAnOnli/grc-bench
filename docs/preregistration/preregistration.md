@@ -2,7 +2,8 @@
 
 **Status: signed off by the team and declared at the freeze on Friday 20 November 2026 (benchmark
 v1.0, git tag `v1.0`).** It is published on the Open Science Framework (OSF) before any fine-tuned
-model is run on the test split. Any later deviation is reported in the 7 December report.
+model is run on the test split. Any later deviation is reported in the 7 December report. Amendment 1
+(21 November 2026, §11) changes the run list.
 
 - **Team:** JJJP, University of Toronto MScAC: Joel Rompis (evaluation lead), Jiuyue Cai, Patricio
   Pizaña Vela, John Borland. Industry partner: Qoherent.
@@ -643,6 +644,19 @@ rate on dev answers (round-2 finding F5) can be measured.
 - **The canary.** Eval plan §6 puts the canary in every released file. Here every item record carries
   it (a Tier-F or Tier-A task's `task.json`, a Tier-K question's record), and the other files of a
   task do not (§8, decision 8). The canary never appears in a file a model under test sees.
+
+## 11. Amendments
+
+- **Amendment 1 (21 November 2026, the evaluation lead).** North-Mini-Code's base model at Q8_0
+  (`nmc-q8-b0`) is postponed: it stays declared, marked `later: true`. In its place the main runs gain
+  Nanbeige4.2-3B's base model at Q4_K_M (`nb-q4-b0`: Tiers K and F with n = 5, Tier A with k = 4),
+  converted and served like the other Nanbeige configurations (§6). It is compared with the fine-tuned
+  model at Q4_K_M (`nb-q4-final`), base against fine-tuned at the 4-bit deployment precision (RQ2), and
+  with `nb-bf16-b0` for what 4-bit compression costs the base model. With `nmc-q8-b0`, North-Mini-Code's
+  base-model anchor at Q8_0 and its base-model BFCL run wait too; its base model is compared with its
+  fine-tuned model at Q4_K_M (`nmc-q4-b0`, `nmc-q4-final`). The run list has 40 configurations: 12 main
+  runs and 28 marked `later: true`. The amendment is published before the first test run of
+  `nb-q4-b0`; no test run before it is affected.
 
 ## Appendix A: analysis proposals
 

@@ -28,7 +28,7 @@ def test_bfcl_runs_only_the_marked_configurations(tmp_path):
     marked = bfcl_run.bfcl_configurations()
     assert {"nb-bf16-b0", "nb-bf16-s1", "nmc-q8-b0", "nmc-q8-final"} <= set(marked)
     main = {k for k, c in marked.items() if not c.get("later")}
-    assert main == {"nb-bf16-b0", "nb-bf16-s1", "nmc-q8-b0", "nmc-q8-final"}   # base and fine-tuned, both models
+    assert main == {"nb-bf16-b0", "nb-bf16-s1", "nmc-q8-final"}   # Amendment 1: nmc-q8-b0 (and its BFCL) later
     with pytest.raises(bfcl_run.BfclError, match="BFCL mark"):
         bfcl_run.check_configuration("nmc-q4-b0")
     other = tmp_path / "run_list.yaml"
